@@ -5,7 +5,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Dashboard Den Bosch V5.8</title>
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
 <style>
@@ -997,6 +997,7 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
 
 function toggleMuteVideo(event) { event.stopPropagation(); const video = document.getElementById('videoBG'); video.muted = !video.muted; document.querySelector('#mute-video-knop i').className = video.muted ? "bi bi-volume-up" : "bi bi-volume-mute"; }
 
+
 let afspeellijst = [];
 let huidigeIndex = 0;
 
@@ -1009,28 +1010,31 @@ function kiesMuziekMap(event) {
   }
   document.getElementById('muziekMapInput').click();
 }
+
 function verwerkGekozenMap(event) {
   const bestanden = Array.from(event.target.files);
 
-  // Zoek een afbeelding (zoals bg.jpg) in de map en stel in als achtergrond
-  const coverFoto = bestanden.find(file => /\.(jpg|jpeg|png|webp)$/i.test(file.name));
   const zijPlayer = document.getElementById('zijPlayer');
+  
+  // 1. Kijk of er een hoesje/foto in de gekozen muziekmap zit
+  const coverFoto = bestanden.find(file => /\.(jpg|jpeg|png|webp)$/i.test(file.name));
 
-  if (coverFoto && zijPlayer) {
-    const fotoUrl = URL.createObjectURL(coverFoto);
+  if (zijPlayer) {
+    let fotoUrl;
 
-    // DIT IS DE NIEUWE GEBUNCHTE CODE OM HET VEEL FELLER EN GESTRETCHED TE MAKEN:
-    // 1. We zetten een heel DUN filter (rgba(0,0,0,0.1)) en de url
+    if (coverFoto) {
+      // Als er wel een hoesje is gevonden, gebruik die!
+      fotoUrl = URL.createObjectURL(coverFoto);
+    } else {
+      // Zo niet, val dan terug op jouw vaste plaatje in de hoofdmap
+      fotoUrl = 'muziek-bg.jpg'; // (vervang dit eventueel met de echte bestandsnaam van je vaste plaatje)
+    }
+
+    // Pas de achtergrond toe
     zijPlayer.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('${fotoUrl}')`;
-
-    // 2. We dwingen de stretch rechtstreeks via JavaScript
     zijPlayer.style.backgroundSize = "100% 100%";
     zijPlayer.style.backgroundPosition = "center center";
     zijPlayer.style.backgroundRepeat = "no-repeat";
-
-  } else if (zijPlayer) {
-    // Geen foto? Herstel naar standaard.
-    zijPlayer.style.backgroundImage = 'none';
   }
 
   afspeellijst = bestanden
@@ -1253,6 +1257,16 @@ function vernieuwAfspeellijstWeergave() {
         activeerWakeLock();
 
             }
+window.addEventListener('DOMContentLoaded', () => {
+  const zijPlayer = document.getElementById('zijPlayer');
+  if (zijPlayer) {
+    zijPlayer.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('muziek-bg.jpg')`;
+    zijPlayer.style.backgroundSize = "100% 100%";
+    zijPlayer.style.backgroundPosition = "center center";
+    zijPlayer.style.backgroundRepeat = "no-repeat";
+  }
+});
+
 </script>
 
 
