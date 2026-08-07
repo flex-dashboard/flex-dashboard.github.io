@@ -1,0 +1,2093 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta name="referrer" content="no-referrer">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Den Bosch V5.8</title>
+<link rel="stylesheet" href="bootstrap-icons.css">
+
+<style>
+
+#afspeellijstContainer {
+  max-height: 180px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  margin-top: 10px;
+  padding: 5px;
+}
+
+#afspeellijst {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+#afspeellijst li {
+  padding: 6px 10px;
+  color: #fff;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  text-align: left;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#afspeellijst li:hover {
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+}
+
+#afspeellijst li.actief {
+  color: #00ffcc;
+  font-weight: bold;
+}
+
+
+  .rainbow-range {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 100%;
+    height: 10px;
+    border-radius: 5px;
+    background: linear-gradient(to right, #ff0000 0%, #ff8000 17%, #ffff00 33%, #00ff00 50%, #00ffff 67%, #0000ff 83%, #ff00ff 100%);
+    outline: none;
+    cursor: pointer;
+  }
+  .rainbow-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #111111;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.8);
+  }
+  .rainbow-range::-moz-range-thumb {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #ffffff;
+    border: 2px solid #111111;
+    cursor: pointer;
+    box-shadow: 0 0 5px rgba(0,0,0,0.8);
+  }
+  .color-badge {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    border: 1px solid #ffffff;
+    vertical-align: middle;
+    margin-left: 6px;
+    box-shadow: 0 0 4px rgba(0,0,0,0.8);
+  }
+#zijPlayer {
+  position: fixed;
+  top: 50%;
+  right: -230px;
+  transform: translateY(-50%);
+  width: 230px;
+  background: rgba(0, 0, 0, 0.85);
+  color: white;
+  padding: 15px;
+  border-radius: 15px 0 0 15px;
+  transition: right 0.4s ease;
+  z-index: 9999;
+  box-shadow: -4px 0 15px rgba(0,0,0,0.5);
+  background-size: 100% 100% !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  transition: background-image 0.5s ease-in-out;
+}
+
+#zijPlayer.uitgeklapt {
+  right: 0;
+}
+
+#playerToggleBtn {
+  position: absolute;
+  left: -35px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 35px;
+  height: 40px;
+  background: transparent;
+  color: rgba(255, 255, 255, 0.8);
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.9));
+}
+
+.player-inhoud {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+#nummerTitel {
+  font-weight: bold;
+  font-size: 0.9rem;
+  text-align: center;
+  width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+#playerTijd {
+  font-size: 0.8rem;
+  opacity: 0.8;
+}
+
+.player-knoppen {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: nowrap;
+}
+
+.player-knoppen button {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  margin: 0 4px;
+  padding: 4px 0;
+  flex: 1;
+}
+
+.volume-container {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.volume-container input {
+  width: 100%;
+  cursor: pointer;
+}
+
+
+</style>
+
+
+
+<style>
+
+/* --- VISUALIZER ZIJPANEEL & INSTELLINGEN --- */
+.toggle-menu-btn {
+  position: fixed; top: 20px; right: 20px;
+  width: 46px; height: 46px; border-radius: 50%;
+  background: rgba(8, 16, 12, 0.85);
+  backdrop-filter: blur(12px);
+  border: 1px solid rgba(0, 255, 136, 0.3);
+  color: #00ff88; font-size: 22px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  z-index: 101; transition: all 0.25s ease;
+  box-shadow: 0 0 15px rgba(0,255,136,0.2);
+}
+.toggle-menu-btn:hover { transform: rotate(45deg) scale(1.1); background: rgba(0, 255, 136, 0.25); }
+
+.menu-panel {
+  position: fixed; top: 0; right: 0; bottom: 0;
+  width: 360px; max-width: 90vw; height: 100vh;
+  background: rgba(10, 15, 18, 0.94);
+  backdrop-filter: blur(25px);
+  border-left: 1px solid rgba(255, 255, 255, 0.18);
+  padding: 24px 20px;
+  display: flex; flex-direction: column; gap: 20px;
+  z-index: 100;
+  box-shadow: -10px 0 40px rgba(0, 0, 0, 0.95), 0 0 35px rgba(0, 255, 136, 0.12);
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  overflow-y: auto;
+}
+
+.menu-panel.hidden {
+  opacity: 0; pointer-events: none;
+  transform: translateX(100%);
+}
+
+.top-bar {
+  display: flex; flex-direction: column;
+  gap: 14px; padding-bottom: 14px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.top-bar-header { display: flex; justify-content: space-between; align-items: center; }
+.menu-title { font-size: 13px; text-transform: uppercase; letter-spacing: 1.5px; color: #00ff88; font-weight: 800; }
+.btn-group { display: flex; flex-direction: column; gap: 8px; width: 100%; }
+
+.menu-panel select {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff; font-size: 13px; font-weight: 600;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 10px 14px; border-radius: 10px;
+  cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 6px;
+  transition: all 0.2s ease; outline: none; width: 100%;
+  appearance: none; padding-right: 28px;
+  background-image: url("data:image/svg+xml;charset=UTF-8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%2300ff88' stroke-width='2.5'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 12px center;
+}
+.menu-panel select:hover { background-color: rgba(0, 255, 136, 0.2); border-color: rgba(0, 255, 136, 0.6); color: #00ff88; }
+.menu-panel select option { background: #0b1210; color: #fff; }
+
+.close-btn { background: none; border: none; color: #aaa; font-size: 22px; cursor: pointer; padding: 4px; transition: color 0.2s; width: auto; }
+.close-btn:hover { color: #ff5555; background: none; border-color: transparent; }
+
+.section-title { font-size: 11px; text-transform: uppercase; letter-spacing: 1.2px; color: #00ff88; font-weight: 800; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.controls-container { display: flex; flex-direction: column; gap: 20px; }
+.slider-grid { display: flex; flex-direction: column; gap: 12px; }
+.slider-item { display: flex; flex-direction: column; gap: 6px; }
+.slider-item label { font-size: 11px; text-transform: uppercase; letter-spacing: 0.6px; color: #9cb3a4; font-weight: 700; display: flex; justify-content: space-between; }
+.slider-item label span { color: #00ff88; font-weight: 700; }
+
+.menu-panel input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.15); outline: none; }
+.menu-panel input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #00ff88; cursor: pointer; box-shadow: 0 0 8px rgba(0, 255, 136, 0.8); transition: transform 0.1s; }
+.menu-panel input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.25); }
+   
+    /* TERUGKNOP VAN VISUALISATIE */
+    #lamp-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: white; z-index: 999999; cursor: pointer; }
+
+    /* BASIS STIJL & LICHTGEWICHT LED BACKGROUNDS */
+    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; color: white; background-color: #000; background-position: center; background-repeat: no-repeat; box-sizing: border-box; transition: border 0.3s ease, box-shadow 0.3s ease; border: 0px solid transparent; }
+   
+    /* LED RAND REGENBOOG - 5PX */
+    body.led-regenboog {
+        border: 5px solid transparent !important;
+        border-image: linear-gradient(45deg, #ff0000, #ff8c00, #ffff00, #32cd32, #007bff, #8a2be2, #ff0000) 1 !important;
+        animation: regenboog-led 6s linear infinite;
+    }
+    @keyframes regenboog-led {
+        0% { filter: hue-rotate(0deg); }
+        100% { filter: hue-rotate(360deg); }
+    }
+   
+    /* ANIMATIE RECEPTEN VOOR DE FOTOLIJST MODUS */
+    @keyframes effect-zoom { from { transform: scale(1.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+    @keyframes effect-slide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    @keyframes effect-rotate { from { transform: rotate(-5deg) scale(1.2); opacity: 0; } to { transform: rotate(0deg) scale(1); opacity: 1; } }
+    @keyframes effect-blur { from { filter: blur(20px); opacity: 0; } to { filter: blur(0px); opacity: 1; } }
+    @keyframes effect-bounce { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+    @keyframes effect-fade { from { opacity: 0; } to { opacity: 1; } }
+
+    .gloed { text-shadow: 3px 3px 6px rgba(0, 0, 0, 1), -1px -1px 0 rgba(0, 0, 0, 1), 1px -1px 0 rgba(0, 0, 0, 1), -1px 1px 0 rgba(0, 0, 0, 1), 1px 1px 0 rgba(0, 0, 0, 1); }
+
+    /* SLIDESHOW ZONDER ZWARTE BALKEN */
+    #slideshow-container {
+        display: none;
+        position: fixed;
+        top: 0; left: 0;
+        width: 100vw; height: 100vh;
+        z-index: 2;
+        background-color: black;
+        overflow: hidden;
+    }
+
+    #ss-blur-bg {
+        position: absolute;
+        top: -5%; left: -5%;
+        width: 110%; height: 110%;
+        background-size: cover;
+        background-position: center;
+        filter: blur(25px) brightness(0.5);
+        z-index: 3;
+    }
+
+    #ss-foto-fg {
+        position: absolute;
+        top: 0; left: 0;
+        width: 100%; height: 100%;
+        background-size: contain;
+        background-repeat: no-repeat;
+        background-position: center;
+        z-index: 4;
+    }
+
+    /* POSITIES ONDERDELEN */
+    #weer-sectie { position: fixed; top: 15px; left: 20px; z-index: 999; display: flex; align-items: center; gap: 30px; }
+    #knoppen-links { position: fixed; top: 300px; left: 20px; z-index: 999; display: flex; flex-direction: column; gap: 15px; }
+
+   
+    #muziek-rechts {
+        position: fixed;
+        top: 20px;
+        right: 20px;
+        z-index: 999;
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        width: 150px;
+        align-items: center;
+    }
+
+    /* CONTAINER DEFINITIES RECHTSONDER */
+    #led-knop-container { position: fixed; bottom: 150px; right: 22px; z-index: 9999; }
+    #bg-pauze-container { position: fixed; bottom: 200px; right: 22px; z-index: 9999; }
+
+
+    .led-bedienknop {
+        width: 50px;
+        background: rgba(0,0,0,0.8);
+        border: 1px solid rgba(255,255,255,0.4);
+        color: #ffcc00;
+        font-size: 10px;
+        font-weight: bold;
+        padding: 4px 6px;
+        border-radius: 4px;
+        cursor: pointer;
+        text-transform: uppercase;
+        transition: all 0.2s;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+    .led-bedienknop:hover { background: none; border-color: white; }
+    .led-bedienknop i { font-size: 14px; }
+   
+    /* PAUZEKNOP STATUS KLEUR */
+    .bg-gepauzeerd { color: #ff3333 !important; border-color: #ff3333 !important; }
+
+   
+
+    /* SPOTIFY CONTAINER */
+    #spotify-container {
+        position: fixed;
+        bottom: 60px;
+        right: 5px;
+        width: 55px;
+        height: 55px;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+        z-index: 9999;
+        background-color: transparent;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        cursor: pointer;
+    }
+
+    #spotify-container::before {
+        content: '';
+        width: 20px;
+        height: 20px;
+        background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg');
+        background-size: contain;
+        background-repeat: no-repeat;
+        position: absolute;
+        top: 27px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+    #spotify-container:hover {
+        width: 210px;
+        height: 380px;
+        border-radius: 12px;
+        transform: scale(0.8);
+        transform-origin: bottom right;
+        background-color: #282828;
+        padding-top: 10px;
+    }
+
+    #spotify-container:hover::before { display: none; }
+    #spotify-container iframe { opacity: 0; transition: opacity 0.3s ease; }
+    #spotify-container:hover iframe { opacity: 1; }
+
+
+
+    /* INKLAPBARE RADIO */
+    #radio-hover-wrapper { position: fixed; top: 5px; right: 180px; z-index: 1001; display: flex; flex-direction: column; align-items: center; }
+    #radio-balk-trigger { background-color: #1a1a1a; color: white; border: 1px solid rgba(255,255,255,0.2); padding: 5px 12px; font-size: 11px; font-weight: bold; text-transform: uppercase; cursor: pointer; border-radius: 4px; margin-bottom: 2px; }
+    #radio-balk { display: none; flex-direction: row; align-items: flex-start; background-color: rgba(0, 0, 0, 0.85); padding: 5px; border-radius: 4px; box-shadow: 0px 4px 10px rgba(0,0,0,0.5); }
+    #radio-hover-wrapper:hover #radio-balk { display: flex; }
+    .radio-knop-smal { width: 35px; height: 110px; margin: 0 1px; border: 1px solid rgba(255,255,255,0.1); background-color: #1a1a1a; color: white; cursor: pointer; writing-mode: vertical-rl; font-size: 11px; text-transform: uppercase; padding: 0; display: flex; align-items: center; justify-content: center; transition: all 0.2s ease; }
+    .radio-knop-smal:hover { background-color: #252525; border-color: rgba(255,255,255,0.5); }
+    .radio-knop-smal.spelend { background-color: #ffcc00 !important; color: black !important; border-color: #ffcc00; height: 85px; }
+
+
+
+    #muziek-rechts .ronde-knop { width: 45px !important; height: 45px !important; margin: 0 !important; }
+    #muziek-rechts .ronde-knop i { font-size: 22px !important; }
+
+
+    /* FLEXIBELE MIDDENCONTAINER */
+    #flex-midden-container {
+        position: fixed;
+        top: 50%; left: 50%;
+        transform: translate(-50%, -50%);
+        width: 100vw;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    #klok-container {
+        text-align: center;
+        width: 100%;
+        pointer-events: auto;
+    }
+    #klok-regel { font-size: 26vw; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; font-weight: bold; line-height: 0.9; letter-spacing: -1vw; cursor: pointer; display: inline-flex; align-items: baseline; justify-content: center; color: white; }
+    .regenboog-stijl { background: linear-gradient(to right, #ff0000 0%, #ff8c00 30%, #ffff00 60%, #32cd32 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.8)) !important; display: inline-block; }
+    #sec { background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; color: white !important; -webkit-text-fill-color: white !important; opacity: 0.6 !important; font-size: 6vw !important; margin-left: 15px !important; letter-spacing: 3px !important; display: inline-block !important; visibility: visible !important; }
+
+    #datum-container { text-align: center; bottom: 230px; width: 100%; margin-top: 1vh; }
+    #datum { font-size: 4.5vw; text-transform: uppercase; font-weight: bold; }
+
+    /* FLEXIBELE ONDERCONTAINER VOOR DE VERJAARDAGEN */
+    #verjaardagen-container {
+        position: fixed;
+        bottom: 60px;
+        left: 0;
+        width: 100vw;
+        display: flex;
+        justify-content: center;
+        z-index: 15;
+    }
+
+    .v-lijst { display: flex; justify-content: center; gap: 2vw; flex-wrap: nowrap; max-width: 90vw; }
+    .v-box { background: rgba(0,0,0,0.8); padding: 1.5vh 2vw; border-radius: 15px; border: 2px solid rgba(255,255,255,0.3); min-width: 15vw; text-align: center; text-transform: uppercase; font-size: 1.8vw; display: flex; flex-direction: column; justify-content: center; align-items: center; min-height: 10vh; box-sizing: border-box; }
+    .v-box b { color: #ffeb3b; display: block; margin-bottom: 5px; font-size: 2.2vw; }
+
+    .ronde-knop { background: rgba(0,0,0,0.6); border: 2px solid white; border-radius: 50%; width: 65px; height: 65px; display: flex; justify-content: center; align-items: center; cursor: pointer; overflow: hidden; transition: 0.3s; }
+    .ronde-knop:hover { background: rgba(255,255,255,0.2); }
+    .ronde-knop img { width: 100%; height: 100%; object-fit: cover; }
+    .ronde-knop i { font-size: 35px; color: white; }
+   
+    #videoBG { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 1; }
+    #sluit-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000; cursor: pointer; }
+    #mute-video-knop { position: fixed; top: 10px; left: 10px; z-index: 2000; display: none; background: #000000; border: none; color: white; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-size: 15px; }
+    #pauze-foto-knop { position: fixed; bottom: 20px; right: 20px; z-index: 2001; display: none; background: none; border: none; color: white; cursor: pointer; font-size: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
+
+    /* FULLSCREEN STIP */
+    #fullscreen-stip {
+        position: fixed;
+        bottom: 5px;
+        right: 5px;
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.2);
+        border-radius: 50%;
+        z-index: 99999;
+        cursor: pointer;
+        transition: background 0.2s;
+    }
+    #fullscreen-stip:hover { background: rgba(255, 255, 255, 0.6); }
+
+   
+ /* CSS GEDEELTE */
+        
+      
+html, body {
+    margin: 0;
+    padding: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    background-color: #000; /* Of de hoofdkleur van je achtergronden */
+}
+
+* { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
+
+#controls { 
+    position: absolute; 
+    top: 20px; 
+    left: 20px; 
+    z-index: 100; 
+    opacity: 0.3; 
+    transition: opacity 0.3s ease; 
+    pointer-events: auto; 
+}
+#controls:hover { opacity: 1; }
+
+button { 
+    background: none; 
+    color: white; 
+    border: none; 
+    cursor: pointer; 
+    font-family: inherit; 
+    font-size: 12px; 
+    text-transform: uppercase; 
+    transition: opacity 0.2s ease; 
+}
+button:hover { opacity: 0.7; }
+button:disabled { cursor: not-allowed; opacity: 0.5; }
+
+canvas { 
+    display: block; 
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw !important; 
+    height: 100vh !important; 
+    object-fit: cover; 
+}
+
+        .tp-dfwv { position: fixed !important; top: 20px !important; right: 120px !important; z-index: 1000 !important; display: none !important; transition: opacity 0.3s ease !important; }
+        .tp-dfwv.visible { display: block !important; }
+
+        .info { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 12px; text-transform: uppercase; text-align: center; z-index: 1000; line-height: 1.4; opacity: 0.8; }
+        .info a { color: white; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, 0.3); transition: border-bottom-color 0.2s ease; }
+        .info a:hover { border-bottom-color: white; }
+
+        @media (max-width: 768px) {
+            .info { font-size: 10px; bottom: 10px; }
+            #controls { top: 10px; left: 10px; }
+            
+        }
+
+#controlecentrum {
+        position: fixed !important;
+        top: 20px;
+        left: 20px;
+        z-index: 2147483647 !important;
+    }
+/* Stijl voor de Start Pop-up */
+.popup-overlay {
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(5px);
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.popup-inhoud {
+    background: rgba(20, 20, 20, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    padding: 30px;
+    width: 350px;
+    text-align: center;
+    color: #fff;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+}
+
+.popup-inhoud h2 { 
+    margin-top: 0; 
+    margin-bottom: 20px; 
+    font-family: sans-serif; 
+}
+
+.popup-knoppen { 
+    display: flex; 
+    flex-direction: column; 
+    gap: 10px; 
+}
+
+.popup-knoppen button {
+    padding: 12px; 
+    border: none; 
+    border-radius: 6px; 
+    font-weight: bold; 
+    cursor: pointer;
+    background: #0d6efd; 
+    color: #fff; 
+    font-size: 14px;
+}
+
+.popup-knoppen .btn-sluiten {
+    background: #6c757d;
+}
+
+</style>
+</head>
+
+<body>
+
+
+<div id="visualisatie-container" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;">
+  <canvas id="glcanvas" style="width: 100%; height: 100%; display: block;"></canvas>
+</div>
+
+  <div id="container">
+      <div id="controls">
+        <button id="audioBtn"></button>
+      </div>
+     
+<button onclick="location.reload()" style="position: fixed; bottom: 40px; right: 5px; width: 10px; height: 10px; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; z-index: 99999; cursor: pointer; padding: 0;"></button>
+
+<div id="slideshow-container">
+    <div id="ss-blur-bg"></div>
+    <div id="ss-foto-fg"></div>
+</div>
+
+<!-- Startscherm voor het kiezen van een eigen fotomap -->
+<div id="foto-start-scherm" style="display: none; position: fixed; top: 50%; left: 50%; transform: translate(-50%, -50%); text-align: center; z-index: 9999; background: rgba(0,0,0,0.8); padding: 30px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);">
+    <p style="color: white; font-size: 1.3rem; margin-bottom: 20px; font-family: sans-serif;">
+        Er is nog geen fotomap gekozen.
+    </p>
+    <button onclick="document.getElementById('foto-map-kiezer').click()" style="padding: 12px 24px; font-size: 1rem; border-radius: 8px; border: none; background: #007bff; color: white; cursor: pointer; font-weight: bold;">
+        <i class="bi bi-folder2-open"></i> Druk hier om je foto's te laden
+    </button>
+    
+    <!-- Dit is de onzichtbare browser-functie die de map opent -->
+    <input type="file" id="foto-map-kiezer" webkitdirectory directory multiple style="display: none;" onchange="verwerkGekozenFotomap(event)">
+</div>
+
+<div id="sluit-overlay" onclick="stopAllesEnTerug()"></div>
+<video id="videoBG" loop playsinline></video>
+<audio id="player" preload="auto"></audio>
+
+<div id="radio-hover-wrapper">
+    <div id="radio-balk-trigger">📻Radio📻</div>
+    <div id="radio-balk"></div>
+</div>
+
+<button id="mute-video-knop" onclick="toggleMuteVideo(event)"><i class="bi bi-volume-mute"></i></button>
+<button id="pauze-foto-knop" onclick="togglePauzeSlideshow(event)"><i class="bi bi-pause-fill"></i></button>
+
+
+
+<div id="weer-sectie" class="gloed">
+    <div id="temp-nu" style="font-size: 7vw; font-weight: bold; display: flex; align-items: center; gap: 10px;"><i id="icon-nu" class="bi bi-cloud-sun" style="font-size: 8vw;"></i> <span id="graden-nu">--°</span></div>
+    <div id="voorspelling" style="display: flex; gap: 15px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);"></div>
+</div>
+
+<div id="knoppen-links">
+    <button class="ronde-knop" onclick="activeerFotolijst()"><i class="bi bi-camera-fill"></i></button>
+    <button class="ronde-knop" onclick="activeerVideo('video/vuur.mp4')"><i class="bi bi-fire"></i></button>
+    <button class="ronde-knop" onclick="activeerVideo('video/vis.mp4')"><i class="bi bi-water"></i></button>
+    <button id="visualisatie-start-knop" class="ronde-knop" onclick="toggleVisualizer()">
+  <i class="bi bi-play-fill"></i>
+</button>
+    
+</div>
+
+<div id="muziek-rechts" style="position: fixed !important; right: 4px !important; top: 40px !important; width: auto !important; margin: 0 !important; z-index: 9999;">
+    <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
+        <button class="ronde-knop" onclick="setAchtergrond('achtergrond')"><i class="bi bi-camera"></i></button>
+        <button class="ronde-knop" onclick="setAchtergrond('vuur')"><i class="bi bi-fire"></i></button>
+        <button class="ronde-knop" onclick="setAchtergrond('vis')"><i class="bi bi-water"></i></button>
+        <button class="ronde-knop" onclick="kiesMuziekMap()"><i class="bi bi-play-fill"></i></button>
+    </div>
+</div>
+<div id="bg-pauze-container">
+    <button id="bg-pauze-knop" class="led-bedienknop" onclick="wisselBgPauze()"><i class="bi bi-pause-fill"></i></button>
+</div>
+
+<div id="led-knop-container">
+    <button id="led-knop" class="led-bedienknop" onclick="wisselLEDModus()">UIT</button>
+</div>
+
+<div id="dimmer-knop-container" style="display: none;">
+    <button id="dimmer-knop" class="led-bedienknop" onclick="handmatigDimmen()">FEL</button>
+</div>
+
+
+
+<div id="spotify-container">
+    <iframe style="border-radius:12px"
+    src="https://open.spotify.com/embed/playlist/1KcRhNuDftxoqaBXLm4imy?utm_source=generator"
+    width="100%" height="352" frameBorder="0"
+    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+    loading="lazy">
+</iframe>
+
+</div>
+
+<div id="flex-midden-container" class="gloed">
+    <div id="klok-container">
+        <div id="klok-regel" onclick="wisselKleur()"><span id="uren">00</span>:<span id="minuten">00</span><span id="sec">00</span></div>
+    </div>
+    <div id="datum-container">
+        <div id="datum">LADEN...</div>
+    </div>
+</div>
+
+<div id="verjaardagen-container" class="gloed">
+    <div id="onder-sectie" class="v-lijst"></div>
+</div>
+
+<div id="fullscreen-stip" onclick="toggleMijnFullscreen()"></div>
+
+<script>
+
+// Functie om de start pop-up te sluiten
+function sluitStartPopup() {
+    document.getElementById('start-popup').style.display = 'none';
+}
+
+// Tijdelijke functie voor de knop (zodat er geen foutmelding ontstaat als je erop klikt)
+function openVerjaardagBeheer() {
+    alert("Hier bouwen we straks het verjaardagenscherm in! work in proces");
+}
+ 
+    let huidigeStream = "";
+    let bgType = "achtergrond";
+    let fotoTimer;
+    let isFotolijstModus = false;
+    let slideshowPauze = false;
+    let isAchtergrondGepauzeerd = false;
+    let huidigeMapInstellingen = { min: 1, max: 20, map: '' };
+    let huidigeTrackNummer = 1;
+    let ledAan = false;
+    let handmatigeModus = false;
+
+    let fotoWachtrij = [];
+    const TOTAAL_FOTOS = 26;
+
+    let mijnWakeLock = null;
+    async function activeerWakeLock() {
+        try {
+            if ('wakeLock' in navigator) {
+                mijnWakeLock = await navigator.wakeLock.request('screen');
+            }
+        } catch (err) { console.log(err); }
+    }
+
+    document.addEventListener('visibilitychange', async () => {
+        if (mijnWakeLock !== null && document.visibilityState === 'visible') {
+            await activeerWakeLock();
+        }
+    });
+
+    function toggleMijnFullscreen() {
+        if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
+            else if (document.documentElement.webkitRequestFullscreen) { document.documentElement.webkitRequestFullscreen(); }
+        } else {
+            if (document.exitFullscreen) { document.exitFullscreen(); }
+            else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+        }
+    }
+
+    function vulFotoWachtrij() {
+        fotoWachtrij = [];
+        for (let i = 1; i <= TOTAAL_FOTOS; i++) { fotoWachtrij.push(i); }
+        for (let i = fotoWachtrij.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [fotoWachtrij[i], fotoWachtrij[j]] = [fotoWachtrij[j], fotoWachtrij[i]];
+        }
+    }
+
+    const player = document.getElementById('player');
+    
+
+    function wisselKleur() { document.getElementById('klok-regel').classList.toggle('regenboog-stijl'); }
+
+    function wisselLEDModus() {
+        ledAan = !ledAan;
+        const body = document.body;
+        const knop = document.getElementById('led-knop');
+        if (ledAan) {
+            body.classList.add('led-regenboog');
+            knop.innerText = "AAN";
+        } else {
+            body.classList.remove('led-regenboog');
+            knop.innerText = "UIT";
+        }
+    }
+
+  
+   
+    function wisselBgPauze() {
+        isAchtergrondGepauzeerd = !isAchtergrondGepauzeerd;
+        const knop = document.getElementById('bg-pauze-knop');
+        if (isAchtergrondGepauzeerd) {
+            knop.innerHTML = '<i class="bi bi-pause-fill"></i>';
+            knop.classList.add('bg-gepauzeerd');
+        } else {
+            knop.innerHTML = '<i class="bi bi-pause-fill"></i>';
+            knop.classList.remove('bg-gepauzeerd');
+            changeBg();
+        }
+   
+
+    }
+
+   
+    function verbergInterface(verberg) {
+        const d = verberg ? 'none' : 'flex';
+        const dBlock = verberg ? 'none' : 'block';
+        document.getElementById('terug-knop').style.display = verberg ? 'none' : 'block';
+        document.getElementById('weer-sectie').style.display = d;
+        document.getElementById('muziek-rechts').style.display = d;
+        document.getElementById('knoppen-links').style.display = d;
+        document.getElementById('flex-midden-container').style.display = dBlock;
+        document.getElementById('radio-hover-wrapper').style.display = d;
+        document.getElementById('spotify-container').style.display = d;
+        document.getElementById('led-knop-container').style.display = dBlock;
+        document.getElementById('bg-pauze-container').style.display = dBlock;
+        document.getElementById('verjaardagen-container').style.visibility = verberg ? 'hidden' : 'visible';
+        document.getElementById('sluit-overlay').style.display = verberg ? 'block' : 'none';
+        if(verberg && !isFotolijstModus) { document.getElementById('mute-video-knop').style.display = 'block'; } else { document.getElementById('mute-video-knop').style.display = 'none'; }
+        document.getElementById('pauze-foto-knop').style.display = (verberg && isFotolijstModus) ? 'block' : 'none';
+    }
+
+    const radioZenders = [
+        { n: "NPO 1", u: "https://icecast.omroep.nl/radio1-bb-mp3" },
+        { n: "NPO 2", u: "https://icecast.omroep.nl/radio2-bb-mp3" },
+        { n: "NPO 3", u: "https://icecast.omroep.nl/3fm-bb-mp3" },
+        { n: "SKY", u: "https://29033.live.streamtheworld.com/SKYRADIO.mp3" },
+        { n: "100%NL",u: "https://28503.live.streamtheworld.com/100PNL_MP3_SC" },
+        { n: "Q-MUSIC",u: "https://icecast-qmusicnl-cdp.triple-it.nl/Qmusic_nl_live.mp3" },
+        { n: "RADIO10",u: "https://25303.live.streamtheworld.com/RADIO10.mp3" },
+        { n: "VERONICA",u: "https://playerservices.streamtheworld.com/api/livestream-redirect/VERONICA.mp3" },
+        { n: "SLAM!", u: "https://25353.live.streamtheworld.com/SLAM_MP3_SC" },
+        { n: "Arrow", u: "https://stream.gal.io/arrow?1579873649949" },
+        { n: "538", u: "https://25593.live.streamtheworld.com/RADIO538.mp3" },
+        { n: "RADIONL", u: "https://stream.radionl.fm/radionl" },
+        { n: "Latin", u: "http://mediaserv33.live-streams.nl:8034" },
+        { n: "KINK", u: "https://playerservices.streamtheworld.com/api/livestream-redirect/KINK.mp3" },
+        { n: "Qdance",u: "https://playerservices.streamtheworld.com/api/livestream-redirect/Q_DANCE.mp3" }
+    ];
+
+    const radioBalk = document.getElementById('radio-balk');
+    radioZenders.forEach(z => {
+        const knop = document.createElement('button');
+        knop.className = 'radio-knop-smal';
+        knop.innerHTML = z.n;
+        knop.onclick = function() {
+            if (knop.classList.contains('spelend')) { player.pause(); player.src = ""; knop.classList.remove('spelend'); huidigeStream = ""; } else { document.querySelectorAll('.radio-knop-smal').forEach(k => k.classList.remove('spelend')); player.src = z.u; player.play(); knop.classList.add('spelend'); huidigeStream = player.src; }
+        };
+        radioBalk.appendChild(knop);
+    });
+
+    let gekozenFotoBestanden = [];
+let fotolijstWachtrij = [];
+
+function activeerFotolijst() { 
+    isFotolijstModus = true; 
+    slideshowPauze = false; 
+    
+    const video = document.getElementById('videoBG'); 
+    const ssContainer = document.getElementById('slideshow-container'); 
+    
+    video.pause(); 
+    video.style.display = 'none'; 
+    video.src = ""; 
+    
+    verbergInterface(true); 
+
+    // Kijken of er al foto's geladen zijn in het geheugen
+    if (gekozenFotoBestanden.length === 0) {
+        // Nog geen foto's? Toon het startscherm en verberg de slideshow-container
+        document.getElementById('foto-start-scherm').style.display = 'block';
+        ssContainer.style.display = 'none';
+    } else {
+        // Wel foto's? Verberg het startscherm en start de slideshow
+        document.getElementById('foto-start-scherm').style.display = 'none';
+        ssContainer.style.display = 'block';
+        
+        startSlideshow(); 
+        clearInterval(fotoTimer); 
+        fotoTimer = setInterval(startSlideshow, 10000); 
+        document.querySelector('#pauze-foto-knop i').className = "bi bi-pause-fill"; 
+    }
+}
+
+function verwerkGekozenFotomap(event) {
+    const bestanden = Array.from(event.target.files).filter(file => file.type.startsWith('image/'));
+    
+    if (bestanden.length === 0) {
+        alert("Geen afbeeldingen gevonden in deze map.");
+        return;
+    }
+
+    // Zet de gekozen bestanden om naar bruikbare paden
+    gekozenFotoBestanden = bestanden.map(file => URL.createObjectURL(file));
+    
+    // Reset en vul de unieke fotolijst-wachtrij
+    fotolijstWachtrij = [];
+    vulFotolijstWachtrij();
+
+    // Verberg het startscherm en toon de fotolijst
+    document.getElementById('foto-start-scherm').style.display = 'none';
+    document.getElementById('slideshow-container').style.display = 'block';
+
+    // Start direct de slideshow met alle effecten
+    startSlideshow();
+    clearInterval(fotoTimer);
+    fotoTimer = setInterval(startSlideshow, 10000);
+    document.querySelector('#pauze-foto-knop i').className = "bi bi-pause-fill";
+}
+
+function vulFotolijstWachtrij() {
+    if (gekozenFotoBestanden.length === 0) return;
+    
+    // Maak een lijst met indices van alle geladen foto's
+    fotolijstWachtrij = Array.from({ length: gekozenFotoBestanden.length }, (_, index) => index);
+    
+    // Schud de lijst willekeurig door elkaar (Fisher-Yates shuffle)
+    for (let i = fotolijstWachtrij.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [fotolijstWachtrij[i], fotolijstWachtrij[j]] = [fotolijstWachtrij[j], fotolijstWachtrij[i]];
+    }
+}
+
+function startSlideshow() {
+    if (slideshowPauze) return;
+
+    if (isFotolijstModus) {
+        if (fotolijstWachtrij.length === 0) vulFotolijstWachtrij();
+        const nr = fotolijstWachtrij.pop();
+        if (nr === undefined) return;
+
+        const pad = gekozenFotoBestanden[nr]; 
+        
+        const bgLayer = document.getElementById('ss-blur-bg');
+        const fgLayer = document.getElementById('ss-foto-fg');
+        bgLayer.style.backgroundImage = "url('" + pad + "')";
+        fgLayer.style.backgroundImage = "url('" + pad + "')";
+        const effecten = ['effect-zoom', 'effect-slide', 'effect-rotate', 'effect-blur', 'effect-bounce', 'effect-fade'];
+        const gekozenEffect = effecten[Math.floor(Math.random() * effecten.length)];
+        fgLayer.style.animation = 'none';
+        fgLayer.offsetHeight;
+        fgLayer.style.animation = gekozenEffect + " 2.5s ease-out forwards";
+    } else {
+        if (fotoWachtrij.length === 0) vulFotoWachtrij();
+        const nr = fotoWachtrij.pop();
+        document.body.style.animation = "none";
+        document.body.style.backgroundSize = "cover";
+        document.body.style.backgroundImage = "url('achtergrond/foto(" + nr + ").jpg')";
+    }
+}
+
+function togglePauzeSlideshow(event) { event.stopPropagation(); slideshowPauze = !slideshowPauze; document.querySelector('#pauze-foto-knop i').className = slideshowPauze ? "bi bi-play-fill" : "bi bi-pause-fill"; }
+
+function activeerVideo(bron) { isFotolijstModus = false; verbergInterface(true); const video = document.getElementById('videoBG'); document.body.style.backgroundImage = "none"; document.body.style.animation = "none"; video.style.display = 'block'; video.src = bron; video.load(); video.play(); }
+
+function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; clearInterval(fotoTimer); document.getElementById('slideshow-container').style.display = 'none'; document.getElementById('foto-start-scherm').style.display = 'none'; const video = document.getElementById('videoBG'); video.pause(); video.style.display = 'none'; verbergInterface(false); setAchtergrond(bgType); }
+   
+    function setAchtergrond(type) {
+        const video = document.getElementById('videoBG');
+        bgType = type;
+        isFotolijstModus = false;
+        document.body.style.animation = "none";
+        document.getElementById('slideshow-container').style.display = 'none';
+        if (type === 'achtergrond') {
+            video.pause();
+            video.style.display = 'none';
+            document.body.style.backgroundSize = "cover";
+            changeBg();
+        } else {
+            document.body.style.backgroundImage = "none";
+            video.style.display = 'block';
+            video.src = (type === 'vuur') ? 'video/vuur.mp4' : 'video/vis.mp4';
+            video.load();
+            video.play();
+        }
+    }
+
+function toggleMuteVideo(event) { event.stopPropagation(); const video = document.getElementById('videoBG'); video.muted = !video.muted; document.querySelector('#mute-video-knop i').className = video.muted ? "bi bi-volume-up" : "bi bi-volume-mute"; }
+
+let afspeellijst = [];
+let huidigeIndex = 0;
+
+function kiesMuziekMap(event) { 
+  if (event) event.stopPropagation();
+  else if (window.event) window.event.stopPropagation();
+
+  if (typeof player !== 'undefined' && !player.paused) {
+    player.pause();
+  }
+  document.getElementById('muziekMapInput').click();
+}
+function verwerkGekozenMap(event) {
+  const bestanden = Array.from(event.target.files);
+
+  // Zoek een afbeelding (zoals bg.jpg) in de map en stel in als achtergrond
+  const coverFoto = bestanden.find(file => /\.(jpg|jpeg|png|webp)$/i.test(file.name));
+  const zijPlayer = document.getElementById('zijPlayer');
+
+  if (coverFoto && zijPlayer) {
+    const fotoUrl = URL.createObjectURL(coverFoto);
+
+    // DIT IS DE NIEUWE GEBUNCHTE CODE OM HET VEEL FELLER EN GESTRETCHED TE MAKEN:
+    // 1. We zetten een heel DUN filter (rgba(0,0,0,0.1)) en de url
+    zijPlayer.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('${fotoUrl}')`;
+
+    // 2. We dwingen de stretch rechtstreeks via JavaScript
+    zijPlayer.style.backgroundSize = "100% 100%";
+    zijPlayer.style.backgroundPosition = "center center";
+    zijPlayer.style.backgroundRepeat = "no-repeat";
+
+  } else if (zijPlayer) {
+    // Geen foto? Herstel naar standaard.
+    zijPlayer.style.backgroundImage = 'none';
+  }
+
+  afspeellijst = bestanden
+    .filter(file => file.type.startsWith('audio/') || file.name.endsWith('.mp3'))
+    .map(file => ({
+      naam: file.name.replace(/\.[^/.]+$/, ""),
+      url: URL.createObjectURL(file)
+    }));
+
+  if (afspeellijst.length > 0) {
+    huidigeIndex = Math.floor(Math.random() * afspeellijst.length);
+    speelTrack(); 
+  }
+}
+
+function speelTrack() { 
+  if (afspeellijst.length === 0) return;
+
+  const track = afspeellijst[huidigeIndex];
+  player.src = track.url; 
+  player.load(); 
+  player.play(); 
+  player.onended = () => volgendeTrack();
+
+  const titelEl = document.getElementById('nummerTitel');
+  if (titelEl) titelEl.innerText = track.naam;
+}
+
+function volgendeTrack() { 
+  if (afspeellijst.length === 0) return;
+  huidigeIndex = Math.floor(Math.random() * afspeellijst.length); 
+  speelTrack(); 
+}
+
+function vorigeTrack() { 
+  if (afspeellijst.length === 0) return;
+  huidigeIndex = Math.floor(Math.random() * afspeellijst.length); 
+  speelTrack(); 
+}
+
+function toggleZijPlayer(event) {
+  if (event) event.stopPropagation();
+  const speler = document.getElementById('zijPlayer');
+  speler.classList.toggle('uitgeklapt');
+}
+
+function speelPauzeMuziek(event) {
+  if (event) event.stopPropagation();
+  else if (window.event) window.event.stopPropagation();
+
+  if (typeof player !== 'undefined' && player.src) {
+    const icon = document.getElementById('speelPauzeIcon');
+    if (player.paused) {
+      player.play();
+      if (icon) icon.className = "bi bi-pause-fill";
+    } else {
+      player.pause();
+      if (icon) icon.className = "bi bi-play-fill";
+    }
+  }
+}
+function stopMuziek() {
+  if (typeof player !== 'undefined') {
+    player.pause();
+    player.currentTime = 0;
+    const icon = document.getElementById('speelPauzeIcon');
+    if (icon) icon.className = "bi bi-play-fill";
+  }
+}
+
+if (typeof player !== 'undefined') {
+  player.addEventListener('timeupdate', () => {
+    const tijdEl = document.getElementById('playerTijd');
+    if (tijdEl && !isNaN(player.duration)) {
+      const huidigMin = Math.floor(player.currentTime / 60);
+      const huidigSec = Math.floor(player.currentTime % 60).toString().padStart(2, '0');
+      const totaalMin = Math.floor(player.duration / 60);
+      const totaalSec = Math.floor(player.duration % 60).toString().padStart(2, '0');
+      tijdEl.innerText = `${huidigMin}:${huidigSec} / ${totaalMin}:${totaalSec}`;
+    }
+  });
+}
+function toggleAfspeellijst(event) {
+  if (event) event.stopPropagation();
+  const container = document.getElementById('afspeellijstContainer');
+  if (container.style.display === 'none' || container.style.display === '') {
+    vernieuwAfspeellijstWeergave();
+    container.style.display = 'block';
+  } else {
+    container.style.display = 'none';
+  }
+}
+
+function vernieuwAfspeellijstWeergave() {
+  const ul = document.getElementById('afspeellijst');
+  ul.innerHTML = '';
+
+  let lijst = [];
+  if (typeof nummers !== 'undefined' && nummers.length) lijst = nummers;
+  else if (typeof playlist !== 'undefined' && playlist.length) lijst = playlist;
+  else if (typeof tracks !== 'undefined' && tracks.length) lijst = tracks;
+  else if (typeof afspeellijst !== 'undefined' && afspeellijst.length) lijst = afspeellijst;
+  else if (typeof muziekBestanden !== 'undefined' && muziekBestanden.length) lijst = muziekBestanden;
+
+  if (lijst.length > 0) {
+    lijst.forEach((file, index) => {
+      const li = document.createElement('li');
+      
+      let naam = "Nummer " + (index + 1);
+      if (file.name) naam = file.name;
+      else if (file.title) naam = file.title;
+      else if (file.naam) naam = file.naam;
+      else if (typeof file === 'string') naam = file;
+      
+      li.textContent = `${index + 1}. ${naam.replace(/\.[^/.]+$/, "")}`;
+      
+      if (typeof huidigeTrackIndex !== 'undefined' && index === huidigeTrackIndex) {
+        li.classList.add('actief');
+      }
+
+      li.onclick = function(e) {
+        e.stopPropagation();
+
+        // Werk alle bekende index-variabelen bij
+        if (typeof huidigeTrackIndex !== 'undefined') huidigeTrackIndex = index;
+        if (typeof trackIndex !== 'undefined') trackIndex = index;
+        if (typeof currentTrackIndex !== 'undefined') currentTrackIndex = index;
+        if (typeof huidigeIndex !== 'undefined') huidigeIndex = index;
+
+        // Roep de afspeelfunctie aan MÉT het gekozen nummer (index) als argument
+        if (typeof speelTrack === 'function') speelTrack(index);
+        else if (typeof playTrack === 'function') playTrack(index);
+        else if (typeof speelNummer === 'function') speelNummer(index);
+        else if (typeof loadTrack === 'function') loadTrack(index);
+        else if (typeof afspelen === 'function') afspelen(index);
+        
+        vernieuwAfspeellijstWeergave();
+      };
+      ul.appendChild(li);
+    });
+  } else {
+    ul.innerHTML = '<li style="cursor:default;">Geen nummers geladen</li>';
+  }
+}
+    const verjaardagen = [
+        { d: 10, m: 0, n: "🎁 Lisa 🎁" }, { d: 16, m: 0, n: "🎁 Joyce 🎁" }, { d: 19, m: 0, n: "🎁 Tom 🎁" },
+        { d: 4, m: 1, n: "† Joop †" }, { d: 10, m: 1, n: "🎁 Linn en Tess 🎁" }, { d: 15, m: 1, n: "🎁 Bert 🎁" },
+        { d: 11, m: 2, n: "† Marie †" }, { d: 19, m: 2, n: "† Theo †" }, { d: 31, m: 2, n: "🎁 Ton 🎁" },
+        { d: 4, m: 3, n: "🎁 Franka 🎁" }, { d: 14, m: 3, n: "† Dien †" },
+        { d: 10, m: 4, n: "💖MOEDERDAG" }, { d: 17, m: 4, n: "🎁 Peter 🎁" }, { d: 21, m: 4, n: "🎁 Ron 🎁" },{ d: 23, m: 4, n: "🎁 Jan 🎁" },
+        { d: 7, m: 5, n: "🎁 Diana 🎁" }, { d: 10, m: 5, n: "🎁 Djano 🎁" }, { d: 21, m: 5, n: "💖VADERDAG †" }, { d: 22, m: 5, n: "† Piet †" },
+        { d: 10, m: 6, n: "🎁 Mandy 🎁" }, { d: 12, m: 6, n: "🎁 Rena 🎁" }, { d: 20, m: 6, n: "🎁 Miriam 🎁" }, { d: 27, m: 6, n: "🎁 Frans 🎁" },
+        { d: 14, m: 7, n: "🎁 John 🎁" }, { d: 16, m: 7, n: "† Mariska †" }, { d: 17, m: 7, n: "🎁 Dylano 🎁" },
+        { d: 4, m: 8, n: "🎁 Ramon 🎁" }, { d: 6, m: 8, n: "🎁 Fleur 🎁" }, { d: 8, m: 8, n: "🎁 Jantje 🎁" }, { d: 28, m: 8, n: "🎁 Bep 🎁" },
+        { d: 24, m: 9, n: "🎁 Joke 🎁" },
+        { d: 1, m: 11, n: "🎁 Ria 🎁" }, { d: 1, m: 11, n: "† Willem †" }, { d: 9, m: 11, n: "† Mien †" }
+    ];
+
+    function updateClock() {
+        const nu = new Date();
+        const uur = nu.getHours();
+        const minuut = nu.getMinutes();
+        const seconde = nu.getSeconds();
+
+        if (minuut === 0 && seconde === 0 && (uur === 5 || uur === 6)) {
+            handmatigeModus = false;
+        }
+
+        if (!handmatigeModus) {
+            const knop = document.getElementById('dimmer-knop');
+            if (uur >= 5 && uur < 6) {
+                document.body.style.filter = "brightness(1.0)";
+                knop.innerText = "DIM";
+            } else {
+                document.body.style.filter = "brightness(1.0)";
+                knop.innerText = "FEL";
+            }
+        }
+
+        document.getElementById('uren').innerText = nu.getHours().toString().padStart(2, '0');
+        document.getElementById('minuten').innerText = nu.getMinutes().toString().padStart(2, '0');
+        document.getElementById('sec').innerText = nu.getSeconds().toString().padStart(2, '0');
+        document.getElementById('datum').innerText = nu.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
+        const maand = nu.getMonth();
+        const mNamen = ["JANUARI", "FEBRUARI", "MAART", "APRIL", "MEI", "JUNI", "JULI", "AUGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DECEMBER"];
+        const lijst = verjaardagen.filter(v => v.m === maand);
+        let html = ""; lijst.forEach(v => { html += `<div class="v-box"><b>${v.d} ${mNamen[maand]}</b>${v.n}</div>`; });
+        document.getElementById('onder-sectie').innerHTML = html;
+    }
+
+    function getWmoIcon(code) { if (code <= 1) return "bi-sun"; if (code <= 3) return "bi-cloud-sun"; if (code <= 48) return "bi-cloud-fog"; if (code <= 55) return "bi-cloud-drizzle"; if (code <= 65) return "bi-cloud-rain-heavy"; if (code <= 77) return "bi-cloud-snow"; if (code <= 82) return "bi-cloud-rain"; return "bi-cloud-lightning-rain"; }
+
+    async function getFullWeather() {
+        try {
+            const res = await fetch('https://api.open-meteo.com/v1/forecast?latitude=51.6978&longitude=5.3037&current_weather=true&daily=weathercode,temperature_2m_max,temperature_2m_min&timezone=Europe%2FBerlin');
+            const data = await res.json();
+            document.getElementById('graden-nu').innerText = Math.round(data.current_weather.temperature) + '°';
+            document.getElementById('icon-nu').className = "bi " + getWmoIcon(data.current_weather.weathercode);
+            let forecastHTML = ""; const dagen = ["ZO", "MA", "DI", "WO", "DO", "VR", "ZA"];
+            for (let i = 1; i <= 5; i++) {
+                let d = new Date(); d.setDate(d.getDate() + i);
+                let maxTemp = Math.round(data.daily.temperature_2m_max[i]); let minTemp = Math.round(data.daily.temperature_2m_min[i]);
+                forecastHTML += `<div class="dag-box" style="text-align: center; font-size: 22px; padding: 4px 8px; border-right: 1px solid rgba(255,255,255,0.2);"><b>${dagen[d.getDay()]}</b><div style="font-size:2vw;"><i class="bi ${getWmoIcon(data.daily.weathercode[i])}"></i></div>${maxTemp}° <span style="opacity:0.6">${minTemp}°</span></div>`;
+            }
+            document.getElementById('voorspelling').innerHTML = forecastHTML;
+        } catch (e) { console.log("Weerfout"); }
+    }
+
+    function changeBg() { if (bgType === 'achtergrond' && !isFotolijstModus && !isAchtergrondGepauzeerd) { startSlideshow(); } }
+
+    setInterval(updateClock, 1000);
+    setInterval(getFullWeather, 300000);
+    setInterval(changeBg, 300000);
+
+   window.onload = function() {
+        vulFotoWachtrij();
+        updateClock();
+        getFullWeather();
+        setAchtergrond('achtergrond');
+        activeerWakeLock();
+
+            }
+</script>
+
+
+
+<!-- VISUALIZER INSTELLINGENMENU & TANDWIEL -->
+<button id="showBtn" onclick="toggleMenu()" style="position: fixed; top: 8px; right: 8px; z-index: 999999; background: none; color: white; border: none; font-size: 14px; cursor: pointer; opacity: 0.7;">⚙️</button>
+<div class="menu-panel hidden" id="menu" style="right: 220px; height: auto; max-height: 80vh; overflow-y: auto;">
+  <div class="top-bar">
+    <div class="top-bar-header" style="display: flex; align-items: center; gap: 10px;">
+  <button class="close-btn" id="closeBtn" title="Verbergen (H)" style="font-size: 14px; padding: 0 4px; width: auto; height: auto;">✕</button>
+  <span class="menu-title">Instellingen</span>
+  <button id="savePresetBtn" title="Huidige instellingen opslaan in LocalStorage" style="background: none; border: 1px solid rgba(0,255,136,0.4); border-radius: 6px; color: #00ff88; cursor: pointer; padding: 2px 8px; font-size: 14px; transition: all 0.2s;">💾</button>
+</div>
+
+    <div class="btn-group">
+      <select id="presetSelect" title="Preset Kiezen">
+        <option value="petal_red" selected>🌸 Bloemblad Visual</option>
+         <option value="cyber">🌈 Cyber Spectrum</option>
+          <option value="basspumper">💥 Bass Pumper</option>
+          <option value="sidemirror">🪞 Side Mirror</option>
+          <option value="warp">🌀 Warp Drive</option>
+          <option value="chill">❄️ Chill Visual</option>
+          <option value="pulse">💓 Deep Pulse</option>
+          <option value="dance">🕺 Neon Dance</option>
+        </optgroup>
+      </select>
+
+      <select id="themeSelect" title="Kleurthema aanpassen">
+        <option value="2" selected>🎨 Thema: Fire & Gold (Rood)</option>
+        <option value="0">🎨 Thema: Emerald Green</option>
+        <option value="1">🎨 Thema: Neon Magenta</option>
+        <option value="3">🎨 Thema: Deep Ocean</option>
+        <option value="4">🎨 Thema: Acid Lime</option>
+        <option value="5">🎨 Thema: Cosmic Purple</option>
+        <option value="6">🎨 Thema: Spectrum Rainbow</option>
+        <option value="7">🎨 Thema: Mijn Keuze</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="controls-container">
+    <div>
+      <div class="section-title">🔊 Muziek & Audio Reactiviteit</div>
+      <div class="slider-grid">
+        <div class="slider-item">
+          <label>Master Sens <span id="valSens">1.5x</span></label>
+          <input type="range" id="slideSens" min="0.0" max="4.0" step="0.1" value="1.5">
+        </div>
+        <div class="slider-item">
+          <label>Bas Reactie <span id="valBass">2.2x</span></label>
+          <input type="range" id="slideBass" min="0.0" max="4.0" step="0.1" value="2.2">
+        </div>
+        <div class="slider-item">
+          <label>Mid Reactie <span id="valMid">1.5x</span></label>
+          <input type="range" id="slideMid" min="0.0" max="4.0" step="0.1" value="1.5">
+        </div>
+        <div class="slider-item">
+          <label>Treble Reactie <span id="valTreble">1.5x</span></label>
+          <input type="range" id="slideTreble" min="0.0" max="4.0" step="0.1" value="1.5">
+        </div>
+        <div class="slider-item">
+          <label>Beat Pulsatie <span id="valBeat">1.8x</span></label>
+          <input type="range" id="slideBeat" min="0.0" max="4.0" step="0.1" value="1.8">
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div class="section-title">🎨 Lijn & Accent Kleuren</div>
+      <div class="slider-grid">
+        <div class="slider-item">
+          <label><span>Lijn 1 Kleur</span> <span id="badgeHue1" class="color-badge" style="background: hsl(0, 100%, 50%);"></span></label>
+          <input type="range" id="slideHue1" class="rainbow-range" min="0" max="360" step="1" value="0">
+        </div>
+        <div class="slider-item">
+          <label><span>Lijn 2 Kleur</span> <span id="badgeHue2" class="color-badge" style="background: hsl(25, 100%, 50%);"></span></label>
+          <input type="range" id="slideHue2" class="rainbow-range" min="0" max="360" step="1" value="25">
+        </div>
+        <div class="slider-item">
+          <label><span>Lijn 3 Kleur</span> <span id="badgeHue3" class="color-badge" style="background: hsl(50, 100%, 50%);"></span></label>
+          <input type="range" id="slideHue3" class="rainbow-range" min="0" max="360" step="1" value="50">
+        </div>
+        <div class="slider-item">
+          <label><span>Lijn 4 Kleur</span> <span id="badgeHue4" class="color-badge" style="background: hsl(340, 100%, 50%);"></span></label>
+          <input type="range" id="slideHue4" class="rainbow-range" min="0" max="360" step="1" value="340">
+        </div>
+        <div class="slider-item">
+          <label><span>Gloed & Diepte</span> <span id="badgeHue5" class="color-badge" style="background: hsl(15, 100%, 50%);"></span></label>
+          <input type="range" id="slideHue5" class="rainbow-range" min="0" max="360" step="1" value="15">
+        </div>
+<!-- Nieuwe Achtergrond Kleur Slider -->
+<div class="slider-item">
+    <label><span>ACHTERGROND KLEUR</span><span id="badgeBg" class="color-badge"></span></label>
+    <input type="range" id="slideBg" class="rainbow-range" min="0" max="360" step="1" value="0">
+</div>
+</div>
+      </div>
+    </div>
+    
+
+    <div>
+      <div class="section-title">✨ Visuele Vorm & Effecten</div>
+      <div class="slider-grid">
+        <div class="slider-item">
+          <label>Snelheid <span id="valSpeed">1.0x</span></label>
+          <input type="range" id="slideSpeed" min="0.1" max="4.0" step="0.1" value="1.0">
+        </div>
+        <div class="slider-item">
+          <label>Sectoren <span id="valSlices">8</span></label>
+          <input type="range" id="slideSlices" min="2" max="24" step="1" value="8">
+        </div>
+        <div class="slider-item">
+          <label>Zoom <span id="valZoom">1.0x</span></label>
+          <input type="range" id="slideZoom" min="0.2" max="3.0" step="0.1" value="1.0">
+        </div>
+        <div class="slider-item">
+          <label>Vorm Vervorming <span id="valMorph">1.0x</span></label>
+          <input type="range" id="slideMorph" min="0.0" max="3.0" step="0.1" value="1.0">
+        </div>
+        <div class="slider-item">
+          <label>Wit Accent <span id="valWhite">0.0x</span></label>
+          <input type="range" id="slideWhite" min="0.0" max="2.0" step="0.1" value="0.0">
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SHADERS VOOR DE VISUALIZER -->
+<script id="vs" type="x-shader/x-vertex">
+  attribute vec2 a_position;
+  void main() {
+    gl_Position = vec4(a_position, 0.0, 1.0);
+  }
+</script>
+
+<script id="fs" type="x-shader/x-fragment">
+  precision mediump float;
+
+  uniform vec2 u_resolution;
+  uniform float u_time;
+  uniform float u_bass;
+  uniform float u_mid;
+  uniform float u_treble;
+  uniform float u_beat;
+  uniform float u_slices;
+  uniform float u_zoom;
+  uniform float u_morph;
+  uniform float u_white;
+  uniform int u_mode;
+  uniform float u_bg;
+
+  uniform float u_hue1;
+  uniform float u_hue2;
+  uniform float u_hue3;
+  uniform float u_hue4;
+  uniform float u_hue5;
+
+  #define PI 3.14159265359
+
+  // Kleurconversie met ondersteuning voor Zwart (<= -0.05) en Wit (>= 1.05)
+  vec3 hue2rgb(float hue) {
+    if (hue <= -0.05) return vec3(0.0); // Zwart
+    if (hue >= 1.05) return vec3(1.0);  // Wit
+    float h = mod(hue, 1.0);
+    vec3 col = clamp(abs(mod(h * 6.0 + vec3(0.0, 4.0, 2.0), 6.0) - 3.0) - 1.0, 0.0, 1.0);
+    return col * col;
+  }
+
+  void main() {
+    vec2 uv = (gl_FragCoord.xy - 0.5 * u_resolution.xy) / min(u_resolution.x, u_resolution.y);
+    uv *= u_zoom;
+
+    // Achtergrondkleur bepalen (0 = Zwart, 360 = Wit, daartussenin = HSL kleur)
+    vec3 finalBgColor;
+    if (u_bg <= 0.0) {
+        finalBgColor = vec3(0.0); // Zwart
+    } else if (u_bg >= 360.0) {
+        finalBgColor = vec3(1.0); // Wit
+    } else {
+        float hue = u_bg / 360.0;
+        vec3 p = abs(fract(hue + vec3(1.0, 2.0/3.0, 1.0/3.0)) * 6.0 - 3.0);
+        finalBgColor = clamp(p - 1.0, 0.0, 1.0);
+    }
+
+    if (u_mode == 1) {
+      float r = length(uv);
+      float a = atan(uv.y, uv.x);
+
+      float N = max(2.0, u_slices);
+      float sliceAngle = (2.0 * PI) / N;
+      a = mod(a, sliceAngle);
+      a = abs(a - sliceAngle * 0.5);
+
+      vec2 st = vec2(cos(a), sin(a)) * r;
+      vec3 accumColor = vec3(0.0);
+      float accumWeight = 0.0;
+
+      float bassPush = u_bass * u_beat * 0.35;
+      float midWave   = u_mid   * u_beat * 0.45;
+      float trebleSpin = u_treble * 0.25;
+
+      for (float i = 0.0; i < 4.0; i++) {
+        st = abs(st) - (0.22 + bassPush * 0.3);
+
+        float rot = u_time * 0.12 + i * 0.4 + trebleSpin;
+        mat2 m = mat2(cos(rot), -sin(rot), sin(rot), cos(rot));
+        st = m * st;
+
+        float d = length(st) * exp(-r * (0.7 - bassPush * 0.2));
+
+        float wave = sin(r * (7.0 + u_morph * 5.0) - u_time * 1.8 + i * 1.2 + midWave * 4.0);
+        d = sin(d * (8.0 + bassPush * 6.0) + u_time + wave) / 8.0;
+        d = abs(d);
+
+        d = pow(0.010 / max(d, 0.0008), 1.15);
+
+        vec3 layerCol;
+        if (i < 0.5) layerCol = hue2rgb(u_hue1);
+        else if (i < 1.5) layerCol = hue2rgb(u_hue2);
+        else if (i < 2.5) layerCol = hue2rgb(u_hue3);
+        else layerCol = hue2rgb(u_hue4);
+
+        vec3 col = mix(layerCol, hue2rgb(u_hue5), clamp(r * 0.3, 0.0, 1.0));
+
+        col *= (1.0 + u_bass * 1.5 + u_treble * 0.8);
+        accumColor += col * d;
+        accumWeight += d;
+      }
+
+      float lineAlpha = clamp(1.0 - exp(-accumWeight * 0.85), 0.0, 1.0);
+      vec3 avgLineCol = accumColor / max(accumWeight, 0.0001);
+
+      // Zorgt ervoor dat zwarte, witte én gekleurde lijnen helder op de achtergrond getekend worden
+      vec3 finalColor = mix(finalBgColor, avgLineCol, lineAlpha);
+
+      if (u_white > 0.0) {
+        float centerHighlight = exp(-r * 3.5) * u_white * (0.4 + u_bass * 0.6);
+        finalColor += vec3(centerHighlight);
+      }
+
+      gl_FragColor = vec4(finalColor, 1.0);
+
+    } else {
+      if (u_morph > 0.0) {
+        uv += vec2(
+          sin(uv.y * (4.0 + u_morph * 4.0) + u_time * 1.5), 
+          cos(uv.x * (4.0 + u_morph * 4.0) + u_time * 1.5)
+        ) * 0.08 * u_morph;
+      }
+
+      float angle = atan(uv.y, uv.x);
+      float radius = length(uv);
+      float sectors = max(2.0, u_slices);
+      
+      angle = mod(angle, 6.28318530718 / sectors);
+      angle = abs(angle - (3.14159265359 / sectors) * 0.5);
+
+      vec2 p = vec2(cos(angle), sin(angle)) * radius;
+
+      float audioImpact = (u_bass * 1.8 + u_mid * 1.2 + u_treble * 0.8) * u_beat;
+      
+      float wave1 = sin(p.x * 10.0 + u_time * 2.0 + audioImpact) * 0.5 + 0.5;
+      float wave2 = cos(p.y * 10.0 - u_time * 1.8 + audioImpact * 1.2) * 0.5 + 0.5;
+      float wave3 = sin((p.x + p.y) * 8.0 + u_time * 2.5) * 0.5 + 0.5;
+      float wave4 = cos(radius * 12.0 - u_time * 3.0 + audioImpact * 1.5) * 0.5 + 0.5;
+
+      vec3 c1 = hue2rgb(u_hue1);
+      vec3 c2 = hue2rgb(u_hue2);
+      vec3 c3 = hue2rgb(u_hue3);
+      vec3 c4 = hue2rgb(u_hue4);
+
+      float totalW = wave1 + wave2 + wave3 + wave4 + 0.0001;
+      vec3 patternCol = (c1 * wave1 + c2 * wave2 + c3 * wave3 + c4 * wave4) / totalW;
+      patternCol *= (0.6 + audioImpact * 0.5);
+
+      float patternAlpha = clamp((wave1 + wave2 + wave3 + wave4) * 0.25, 0.0, 1.0);
+      vec3 finalColor = mix(finalBgColor, patternCol, patternAlpha);
+
+      if (u_white > 0.0) {
+        float centerHighlight = exp(-radius * 3.0) * u_white * (0.5 + u_bass * 0.8);
+        finalColor += vec3(centerHighlight);
+      }
+
+      gl_FragColor = vec4(finalColor, 1.0);
+    }
+  }
+</script>
+
+<script>
+
+let klokVerborgen = false;
+
+function toggleKlok() {
+  if (typeof visualizerActive !== 'undefined' && !visualizerActive) {
+    return;
+  }
+
+  klokVerborgen = !klokVerborgen;
+  const dashboard = document.getElementById('container');
+
+  if (dashboard) {
+    if (klokVerborgen) {
+      dashboard.style.display = 'none'; 
+    } else {
+      dashboard.style.display = 'block'; 
+    }
+  }
+}
+
+document.addEventListener('click', function(event) {
+  if (typeof klokVerborgen !== 'undefined' && klokVerborgen) {
+    if (event.target.closest('#menu') || event.target.closest('#showBtn') || event.target.closest('#terug-knop') || event.target.closest('#lamp-knop-wrapper')) {
+      return; 
+    }
+    toggleKlok();
+  }
+});
+
+
+let visualizerActive = false;
+let visualizerInitialized = false;
+
+function toggleVisualizer() {
+  const container = document.getElementById('visualisatie-container');
+  const icon = document.querySelector('#visualisatie-start-knop i');
+
+  visualizerActive = !visualizerActive;
+
+  if (visualizerActive) {
+    if (container) container.style.display = 'block';
+    if (icon) icon.className = 'bi bi-pause-fill';
+
+    if (!visualizerInitialized && typeof initVisualizerEngine === 'function') {
+      initVisualizerEngine();
+      visualizerInitialized = true;
+    }
+  } else {
+    if (container) container.style.display = 'none';
+    if (icon) icon.className = 'bi bi-play-fill';
+  }
+}
+
+function initVisualizerEngine() {
+    const canvas = document.getElementById('glcanvas');
+    if (!canvas) return;
+    const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+    if (!gl) return;
+
+    const menu = document.getElementById('menu');
+    const closeBtn = document.getElementById('closeBtn');
+    const showBtn = document.getElementById('showBtn');
+    const presetSelect = document.getElementById('presetSelect');
+    const themeSelect = document.getElementById('themeSelect');
+
+    const slideSpeed = document.getElementById('slideSpeed');
+    const slideSlices = document.getElementById('slideSlices');
+    const slideSens = document.getElementById('slideSens');
+    const slideBass = document.getElementById('slideBass');
+    const slideMid = document.getElementById('slideMid');
+    const slideTreble = document.getElementById('slideTreble');
+    const slideBeat = document.getElementById('slideBeat');
+    const slideWhite = document.getElementById('slideWhite');
+    const slideZoom = document.getElementById('slideZoom');
+    const slideMorph = document.getElementById('slideMorph');
+
+    function toggleMenu() { menu.classList.toggle('hidden'); }
+    closeBtn.onclick = toggleMenu;
+    showBtn.onclick = toggleMenu;
+
+    function bindSliderLabel(id, unit = 'x') {
+      const slider = document.getElementById('slide' + id);
+      const val = document.getElementById('val' + id);
+      if (slider && val) {
+        slider.oninput = (e) => val.innerText = e.target.value + unit;
+      }
+    }
+    bindSliderLabel('Speed');
+    bindSliderLabel('Slices', '');
+    bindSliderLabel('Sens');
+    bindSliderLabel('Bass');
+    bindSliderLabel('Mid');
+    bindSliderLabel('Treble');
+    bindSliderLabel('Beat');
+    bindSliderLabel('White');
+    bindSliderLabel('Zoom');
+    bindSliderLabel('Morph');
+
+    function bindHueSlider(num) {
+      const slider = document.getElementById('slideHue' + num);
+      const badge = document.getElementById('badgeHue' + num);
+      if (slider && badge) {
+        const getHueColorCSS = (val) => {
+          let numVal = parseFloat(val);
+          if (numVal <= 0) return 'black';
+          if (numVal >= 360) return 'white';
+          return 'hsl(' + numVal + ', 100%, 50%)';
+        };
+        const update = (deg) => {
+          badge.style.backgroundColor = getHueColorCSS(deg);
+        };
+        slider.oninput = (e) => update(e.target.value);
+        update(slider.value);
+      }
+    }
+    bindHueSlider(1);
+    bindHueSlider(2);
+    bindHueSlider(3);
+    bindHueSlider(4);
+    bindHueSlider(5);
+
+    function createShader(gl, type, source) {
+      const shader = gl.createShader(type);
+      gl.shaderSource(shader, source);
+      gl.compileShader(shader);
+      if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
+          console.error('Shader fout:', gl.getShaderInfoLog(shader));
+      }
+      return shader;
+    }
+
+    const vsSource = document.getElementById('vs').text;
+    const fsSource = document.getElementById('fs').text;
+
+    const program = gl.createProgram();
+    gl.attachShader(program, createShader(gl, gl.VERTEX_SHADER, vsSource));
+    gl.attachShader(program, createShader(gl, gl.FRAGMENT_SHADER, fsSource));
+    gl.linkProgram(program);
+
+    const positionBuffer = gl.createBuffer();
+    gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([
+      -1, -1,  1, -1, -1,  1,
+      -1,  1,  1, -1,  1,  1,
+    ]), gl.STATIC_DRAW);
+
+    const locs = {
+      position: gl.getAttribLocation(program, 'a_position'),
+      resolution: gl.getUniformLocation(program, 'u_resolution'),
+      time: gl.getUniformLocation(program, 'u_time'),
+      bass: gl.getUniformLocation(program, 'u_bass'),
+      mid: gl.getUniformLocation(program, 'u_mid'),
+      treble: gl.getUniformLocation(program, 'u_treble'),
+      beat: gl.getUniformLocation(program, 'u_beat'),
+      slices: gl.getUniformLocation(program, 'u_slices'),
+      zoom: gl.getUniformLocation(program, 'u_zoom'),
+      morph: gl.getUniformLocation(program, 'u_morph'),
+      white: gl.getUniformLocation(program, 'u_white'),
+      mode: gl.getUniformLocation(program, 'u_mode'),
+      hue1: gl.getUniformLocation(program, 'u_hue1'),
+      hue2: gl.getUniformLocation(program, 'u_hue2'),
+      hue3: gl.getUniformLocation(program, 'u_hue3'),
+      hue4: gl.getUniformLocation(program, 'u_hue4'),
+      hue5: gl.getUniformLocation(program, 'u_hue5'),
+      bg: gl.getUniformLocation(program, 'u_bg'),
+    };
+
+    const slideBg = document.getElementById('slideBg');
+    const badgeBg = document.getElementById('badgeBg');
+
+    function getBgColorCSS(val) {
+        let num = parseFloat(val);
+        if (num <= 0) return 'black';
+        if (num >= 360) return 'white';
+        return 'hsl(' + num + ', 100%, 50%)';
+    }
+
+    if (slideBg && badgeBg) {
+        badgeBg.style.backgroundColor = getBgColorCSS(slideBg.value);
+        slideBg.addEventListener('input', (e) => {
+            badgeBg.style.backgroundColor = getBgColorCSS(e.target.value);
+        });
+    }    
+
+    function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      gl.viewport(0, 0, canvas.width, canvas.height);
+    }
+    window.addEventListener('resize', resize);
+    resize();
+
+    let audioCtx, analyser, dataArray, micStream = null;
+    let isAudioInit = false;
+
+    function initAudio() {
+      if (!audioCtx) {
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioCtx.createAnalyser();
+        analyser.fftSize = 512;
+        analyser.smoothingTimeConstant = 0.70;
+        dataArray = new Uint8Array(analyser.frequencyBinCount);
+      }
+      if (audioCtx.state === 'suspended') {
+        audioCtx.resume();
+      }
+      isAudioInit = true;
+    }
+
+    let currentMode = 1;
+
+    function setSliderVal(id, val, unit = 'x') {
+      const slider = document.getElementById('slide' + id);
+      const label = document.getElementById('val' + id);
+      if (slider && label) {
+        slider.value = val;
+        label.innerText = val + unit;
+      }
+    }
+
+    function setHueVal(num, val) {
+      const slider = document.getElementById('slideHue' + num);
+      const badge = document.getElementById('badgeHue' + num);
+      if (slider && badge) {
+        slider.value = val;
+        let numVal = parseFloat(val);
+        if (numVal <= 0) badge.style.backgroundColor = 'black';
+        else if (numVal >= 360) badge.style.backgroundColor = 'white';
+        else badge.style.backgroundColor = 'hsl(' + numVal + ', 100%, 50%)';
+      }
+    }
+
+    function applyTheme(themeIndex) {
+      const t = parseInt(themeIndex);
+      if (t === 2) { 
+        setHueVal(1, 0);   setHueVal(2, 25);  setHueVal(3, 50);  setHueVal(4, 340); setHueVal(5, 15);
+      } else if (t === 0) { 
+        setHueVal(1, 120); setHueVal(2, 140); setHueVal(3, 160); setHueVal(4, 80);  setHueVal(5, 100);
+      } else if (t === 1) { 
+        setHueVal(1, 300); setHueVal(2, 320); setHueVal(3, 340); setHueVal(4, 280); setHueVal(5, 0);
+      } else if (t === 3) { 
+        setHueVal(1, 200); setHueVal(2, 220); setHueVal(3, 240); setHueVal(4, 180); setHueVal(5, 260);
+      } else if (t === 4) { 
+        setHueVal(1, 80);  setHueVal(2, 100); setHueVal(3, 120); setHueVal(4, 60);  setHueVal(5, 140);
+      } else if (t === 5) { 
+        setHueVal(1, 260); setHueVal(2, 280); setHueVal(3, 300); setHueVal(4, 240); setHueVal(5, 320);
+      } else if (t === 6) { 
+        setHueVal(1, 0);   setHueVal(2, 90);  setHueVal(3, 180); setHueVal(4, 270); setHueVal(5, 45);
+      }
+    }
+
+    themeSelect.addEventListener('change', (e) => {
+      applyTheme(e.target.value);
+    });
+
+    let time = 0;
+    let smoothBass = 0, smoothMid = 0, smoothTreble = 0;
+
+    function render() {
+      if (visualizerActive) {
+        const speed = parseFloat(slideSpeed.value);
+        const slices = parseFloat(slideSlices.value);
+        const sens = parseFloat(slideSens.value);
+        const bassGain = parseFloat(slideBass.value);
+        const midGain = parseFloat(slideMid.value);
+        const trebleGain = parseFloat(slideTreble.value);
+        const beatImpact = parseFloat(slideBeat.value);
+        const white = parseFloat(slideWhite.value);
+        const zoom = parseFloat(slideZoom.value);
+        const morph = parseFloat(slideMorph.value);
+
+        const getHueNormalized = (id) => {
+          const el = document.getElementById(id);
+          if (!el) return 0.0;
+          let val = parseFloat(el.value);
+          if (isNaN(val)) return 0.0;
+          if (val <= 0) return -0.1;  // Signaal voor zwart
+          if (val >= 360) return 1.1; // Signaal voor wit
+          return val / 360.0;
+        };
+
+        const hue1 = getHueNormalized('slideHue1');
+        const hue2 = getHueNormalized('slideHue2');
+        const hue3 = getHueNormalized('slideHue3');
+        const hue4 = getHueNormalized('slideHue4');
+        const hue5 = getHueNormalized('slideHue5');
+
+        const bgSlider = document.getElementById('slideBg');
+        const bgVal = bgSlider ? parseFloat(bgSlider.value) : 0.0;
+
+        let rawBass = 0, rawMid = 0, rawTreble = 0;
+
+        if (isAudioInit && analyser) {
+          analyser.getByteFrequencyData(dataArray);
+          for (let i = 0; i < 10; i++) rawBass += dataArray[i];
+          for (let i = 10; i < 70; i++) rawMid += dataArray[i];
+          for (let i = 70; i < 200; i++) rawTreble += dataArray[i];
+
+          rawBass = (rawBass / 10 / 255) * sens * bassGain;
+          rawMid = (rawMid / 60 / 255) * sens * midGain;
+          rawTreble = (rawTreble / 130 / 255) * sens * trebleGain;
+        }
+
+        smoothBass += (rawBass - smoothBass) * 0.25;
+        smoothMid += (rawMid - smoothMid) * 0.20;
+        smoothTreble += (rawTreble - smoothTreble) * 0.20;
+
+        time += 0.01 * speed;
+
+        gl.useProgram(program);
+        gl.enableVertexAttribArray(locs.position);
+        gl.bindBuffer(gl.ARRAY_BUFFER, positionBuffer);
+        gl.vertexAttribPointer(locs.position, 2, gl.FLOAT, false, 0, 0);
+
+        gl.uniform2f(locs.resolution, canvas.width, canvas.height);
+        gl.uniform1f(locs.time, time);
+        gl.uniform1f(locs.bass, smoothBass);
+        gl.uniform1f(locs.mid, smoothMid);
+        gl.uniform1f(locs.treble, smoothTreble);
+        gl.uniform1f(locs.beat, beatImpact);
+        gl.uniform1f(locs.slices, slices);
+        gl.uniform1f(locs.zoom, zoom);
+        gl.uniform1f(locs.morph, morph);
+        gl.uniform1f(locs.white, white);
+        gl.uniform1i(locs.mode, currentMode);
+
+        gl.uniform1f(locs.hue1, hue1);
+        gl.uniform1f(locs.hue2, hue2);
+        gl.uniform1f(locs.hue3, hue3);
+        gl.uniform1f(locs.hue4, hue4);
+        gl.uniform1f(locs.hue5, hue5);
+        gl.uniform1f(locs.bg, bgVal);
+
+        gl.drawArrays(gl.TRIANGLES, 0, 6);
+      }
+      requestAnimationFrame(render);
+    }
+
+    (async function() {
+      try {
+        initAudio();
+        micStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        const source = audioCtx.createMediaStreamSource(micStream);
+        source.connect(analyser);
+      } catch (err) {}
+      render();
+    })();
+}
+
+const vasteKeuzes = {
+    "petal_red": { 
+        visual: "",
+        theme: "7",
+        sens: "1.6",
+        bass: "1.4",
+        mid: "1.5",
+        treble: "1.5",
+        beat: "2",
+        hue1: "129",
+        hue2: "360",
+        hue3: "140",
+        hue4: "288",
+        hue5: "0",
+        speed: "1.6",
+        slices: "10",
+        zoom: "1",
+        morph: "1.4",
+        white: "0"
+    },
+    "dance": {
+        visual: "",
+        theme: "7",
+        sens: "3.7",
+        bass: "1.1",
+        mid: "1",
+        treble: "1.5",
+        beat: "2",
+        hue1: "113",
+        hue2: "31",
+        hue3: "50",
+        hue4: "298",
+        hue5: "82",
+        speed: "0.8",
+        slices: "7",
+        zoom: "2.3",
+        morph: "1.5",
+        white: "0"
+    }
+};
+
+function getStorageKey() {
+    const presetVal = document.getElementById('presetSelect').value;
+    return 'dashboard_preset_' + presetVal;
+}
+
+document.getElementById('savePresetBtn').addEventListener('click', function() {
+    const getVal = (id) => {
+        const el = document.getElementById(id);
+        return el ? el.value : '';
+    };
+
+    const data = {
+        visual: getVal('visualSelect'),
+        theme: '7',
+        sens: getVal('slideSens'),
+        bass: getVal('slideBass'),
+        mid: getVal('slideMid'),
+        treble: getVal('slideTreble'),
+        beat: getVal('slideBeat'),
+        hue1: getVal('slideHue1'),
+        hue2: getVal('slideHue2'),
+        hue3: getVal('slideHue3'),
+        hue4: getVal('slideHue4'),
+        hue5: getVal('slideHue5'),
+        speed: getVal('slideSpeed'),
+        slices: getVal('slideSlices'),
+        zoom: getVal('slideZoom'),
+        morph: getVal('slideMorph'),
+        white: getVal('slideWhite'),
+        bg: getVal('slideBg')
+    };
+
+    localStorage.setItem(getStorageKey(), JSON.stringify(data));
+    
+    const btn = document.getElementById('savePresetBtn');
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✔';
+    btn.style.background = 'rgba(0,255,136,0.3)';
+    setTimeout(() => {
+        btn.innerHTML = originalText;
+        btn.style.background = 'none';
+    }, 1000);
+});
+
+function loadPresetSettings() {
+    const key = getStorageKey();
+    let savedData = localStorage.getItem(key);
+    let data = null;
+
+    const presetEl = document.getElementById('presetSelect');
+    const presetVal = presetEl ? presetEl.value : '1';
+
+    if (savedData) {
+        data = JSON.parse(savedData);
+    } else if (typeof vasteKeuzes !== 'undefined' && vasteKeuzes[presetVal]) {
+        data = vasteKeuzes[presetVal];
+    } else {
+        return;
+    }
+
+    if (data && data.bg !== undefined) {
+        const slideBgEl = document.getElementById('slideBg');
+        const badgeBgEl = document.getElementById('badgeBg');
+        if (slideBgEl) slideBgEl.value = data.bg;
+        if (badgeBgEl) {
+            let num = parseFloat(data.bg);
+            if (num <= 0) badgeBgEl.style.backgroundColor = 'black';
+            else if (num >= 360) badgeBgEl.style.backgroundColor = 'white';
+            else badgeBgEl.style.backgroundColor = 'hsl(' + num + ', 100%, 50%)';
+        }
+    }
+
+    function setFieldValue(id, value) {
+        const el = document.getElementById(id);
+        if (el && value !== undefined && value !== '') {
+            el.value = value;
+            el.dispatchEvent(new Event('input', { bubbles: true }));
+            el.dispatchEvent(new Event('change', { bubbles: true }));
+        }
+    }
+
+    setFieldValue('visualSelect', data.visual);
+    setFieldValue('themeSelect', '7');
+
+    setTimeout(() => {
+        setFieldValue('slideSens', data.sens);
+        setFieldValue('slideBass', data.bass);
+        setFieldValue('slideMid', data.mid);
+        setFieldValue('slideTreble', data.treble);
+        setFieldValue('slideBeat', data.beat);
+        setFieldValue('slideHue1', data.hue1);
+        setFieldValue('slideHue2', data.hue2);
+        setFieldValue('slideHue3', data.hue3);
+        setFieldValue('slideHue4', data.hue4);
+        setFieldValue('slideHue5', data.hue5);
+        setFieldValue('slideSpeed', data.speed);
+        setFieldValue('slideSlices', data.slices);
+        setFieldValue('slideZoom', data.zoom);
+        setFieldValue('slideMorph', data.morph);
+        setFieldValue('slideWhite', data.white);
+    }, 50);
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+    loadPresetSettings();
+});
+
+document.getElementById('presetSelect').addEventListener('change', function() {
+    loadPresetSettings();
+});
+</script>
+
+<div id="terug-knop" onclick="toggleKlok()" style="position: fixed; bottom: 20px; left: 20px; z-index: 2147483647; cursor: pointer; width: 10px; height: 10px; background: rgba(0,0,0,0.85); border-radius: 50%; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.7);">
+    <span style="font-size: 32px; color: white; font-weight: bold; line-height: 1; user-select: none;"></span>
+</div>
+</div>
+
+<input type="file" id="muziekMapInput" webkitdirectory directory multiple style="display:none;" onchange="verwerkGekozenMap(event)">
+<!-- Uitklapbare Zij-Player -->
+<div id="zijPlayer" onclick="event.stopPropagation()">
+  <button id="playerToggleBtn" onclick="toggleZijPlayer(event)">
+    <i class="bi bi-music-note-beamed"></i>
+  </button>
+  <div class="player-inhoud">
+    <div id="nummerTitel" onclick="kiesMuziekMap(event)" style="cursor: pointer;">Klik hier om muziek te laden</div>
+    <div id="playerTijd">0:00 / 0:00</div>    
+    <div class="player-knoppen">
+  <button onclick="vorigeTrack()"><i class="bi bi-skip-backward-fill"></i></button>
+  <button onclick="speelPauzeMuziek(event)"><i id="speelPauzeIcon" class="bi bi-pause-fill"></i></button>
+  <button onclick="toggleAfspeellijst(event)"><i class="bi bi-list-ul"></i></button>
+  <button onclick="stopMuziek()"><i class="bi bi-stop-fill"></i></button>
+  <button onclick="volgendeTrack()"><i class="bi bi-skip-forward-fill"></i></button>
+</div>
+
+<!-- Het uitklapbare venster voor alle nummers -->
+<div id="afspeellijstContainer" style="display: none;" onclick="event.stopPropagation();">
+  <ul id="afspeellijst"></ul>
+</div>
+
+    <div class="volume-container">
+      <i class="bi bi-volume-up-fill"></i>
+      <input type="range" id="spelerVolume" min="0" max="1" step="0.01" value="1" oninput="player.volume = this.value">
+    </div>
+  </div>
+</div>
+
+<!-- Start Pop-up -->
+<div id="start-popup" class="popup-overlay">
+    <div class="popup-inhoud">
+        <h2>Welkom</h2>
+        
+        <div class="popup-knoppen">
+            <button onclick="openVerjaardagBeheer()">Verjaardagen beheren</button>
+            <button onclick="sluitStartPopup()" class="btn-sluiten">Sluiten</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
