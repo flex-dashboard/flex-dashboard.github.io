@@ -179,10 +179,44 @@
   cursor: pointer;
 }
 
+/* === Voor schermen tot 1024px (Tablets) === */
+@media screen and (max-width: 1024px) {
+  #zijPlayer {
+    width: 210px;
+    right: -210px;
+  }
+}
 
+/* === Voor schermen tot 768px (Telefoons) === */
+@media screen and (max-width: 768px) {
+  #zijPlayer {
+    width: 280px;
+    right: -280px;
+  }
+  
+  #playerToggleBtn {
+    left: -44px;
+    width: 44px;
+    height: 50px;
+    font-size: 1.5rem;
+  }
+
+  .player-knoppen button {
+    font-size: 24px;
+    padding: 10px 5px;
+  }
+
+  #afspeellijst li {
+    padding: 12px 10px;
+    font-size: 15px;
+  }
+
+  #nummerTitel {
+    font-size: 1rem;
+    padding: 5px 0;
+  }
+}
 </style>
-
-
 
 <style>
 
@@ -256,13 +290,13 @@
 .menu-panel input[type="range"] { -webkit-appearance: none; width: 100%; height: 6px; border-radius: 4px; background: rgba(255, 255, 255, 0.15); outline: none; }
 .menu-panel input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #00ff88; cursor: pointer; box-shadow: 0 0 8px rgba(0, 255, 136, 0.8); transition: transform 0.1s; }
 .menu-panel input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.25); }
-   
+    
     /* TERUGKNOP VAN VISUALISATIE */
     #lamp-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: white; z-index: 999999; cursor: pointer; }
 
     /* BASIS STIJL & LICHTGEWICHT LED BACKGROUNDS */
     body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; color: white; background-color: #000; background-position: center; background-repeat: no-repeat; box-sizing: border-box; transition: border 0.3s ease, box-shadow 0.3s ease; border: 0px solid transparent; }
-   
+    
     /* LED RAND REGENBOOG - 5PX */
     body.led-regenboog {
         border: 5px solid transparent !important;
@@ -273,7 +307,7 @@
         0% { filter: hue-rotate(0deg); }
         100% { filter: hue-rotate(360deg); }
     }
-   
+    
     /* ANIMATIE RECEPTEN VOOR DE FOTOLIJST MODUS */
     @keyframes effect-zoom { from { transform: scale(1.3); opacity: 0; } to { transform: scale(1); opacity: 1; } }
     @keyframes effect-slide { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
@@ -319,11 +353,11 @@
     #weer-sectie { position: fixed; top: 15px; left: 20px; z-index: 999; display: flex; align-items: center; gap: 30px; }
     #knoppen-links { position: fixed; top: 300px; left: 20px; z-index: 999; display: flex; flex-direction: column; gap: 15px; }
 
-   
+    
     #muziek-rechts {
         position: fixed;
         top: 20px;
-        right: 20px;
+        right: 4px;
         z-index: 999;
         display: flex;
         flex-direction: column;
@@ -355,11 +389,11 @@
     }
     .led-bedienknop:hover { background: none; border-color: white; }
     .led-bedienknop i { font-size: 14px; }
-   
+    
     /* PAUZEKNOP STATUS KLEUR */
     .bg-gepauzeerd { color: #ff3333 !important; border-color: #ff3333 !important; }
 
-   
+    
 
     /* SPOTIFY CONTAINER */
     #spotify-container {
@@ -469,17 +503,17 @@
     .ronde-knop:hover { background: rgba(255,255,255,0.2); }
     .ronde-knop img { width: 100%; height: 100%; object-fit: cover; }
     .ronde-knop i { font-size: 35px; color: white; }
-   
+    
     #videoBG { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; object-fit: cover; z-index: 1; }
     #sluit-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 1000; cursor: pointer; }
     #mute-video-knop { position: fixed; top: 10px; left: 10px; z-index: 2000; display: none; background: #000000; border: none; color: white; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-size: 15px; }
     #pauze-foto-knop { position: fixed; bottom: 20px; right: 20px; z-index: 2001; display: none; background: none; border: none; color: white; cursor: pointer; font-size: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
 
-    /* FULLSCREEN STIP */
+ /* FULLSCREEN STIP */
     #fullscreen-stip {
         position: fixed;
-        bottom: 5px;
-        right: 5px;
+        bottom: 255px;
+        right: 20px;
         width: 10px;
         height: 10px;
         background: rgba(255, 255, 255, 0.2);
@@ -488,9 +522,9 @@
         cursor: pointer;
         transition: background 0.2s;
     }
-    #fullscreen-stip:hover { background: rgba(255, 255, 255, 0.6); }
+  
 
-   
+    
  /* CSS GEDEELTE */
         
       
@@ -555,7 +589,6 @@ canvas {
             #controls { top: 10px; left: 10px; }
             
         }
-
 #controlecentrum {
         position: fixed !important;
         top: 20px;
@@ -583,6 +616,10 @@ canvas {
     border-radius: 12px;
     padding: 30px;
     width: 350px;
+    max-width: 90vw;
+    max-height: 80vh;
+    overflow-y: auto;
+    overflow-x: auto;
     text-align: center;
     color: #fff;
     box-shadow: 0 10px 30px rgba(0,0,0,0.8);
@@ -615,7 +652,104 @@ canvas {
     background: #6c757d;
 }
 
+/* Taalschakelaar in de Pop-up */
+.taal-schakelaar {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.taal-knop {
+    padding: 8px 16px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: rgba(0, 0, 0, 0.5);
+    color: #fff;
+    border-radius: 20px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.taal-knop.actief {
+    background: #ffffff;
+    color: #000000;
+}
+@media screen and (max-width: 768px) {
+  .popup-inhoud {
+    width: 90vw;
+    padding: 20px;
+  }
+}
+
+/* === NIEUWE TOEVOEGINGEN SPECIFIEK VOOR TABLETS EN TELEFOONS === */
+
+/* Tablets (tot 1024px) */
+@media screen and (max-width: 1024px) {
+  .v-box {
+    font-size: 2.2vw;
+    padding: 1vh 1.5vw;
+  }
+  .v-box b {
+    font-size: 2.8vw;
+  }
+  #radio-hover-wrapper {
+    right: 120px;
+  }
+}
+
+/* Telefoons (tot 768px) */
+@media screen and (max-width: 768px) {
+  /* Verjaardagskaders leesbaar schalen op telefoons */
+  .v-lijst {
+    gap: 8px;
+    flex-wrap: wrap;
+  }
+  .v-box {
+    font-size: 11px;
+    min-width: 110px;
+    padding: 8px;
+    min-height: auto;
+  }
+  .v-box b {
+    font-size: 13px;
+  }
+
+  /* Radiobalk-positie aanpassen zodat hij niet over de instellingenknop valt */
+  #radio-hover-wrapper {
+    top: 10px;
+    right: 75px;
+  }
+  .radio-knop-smal {
+    width: 32px;
+    height: 90px;
+    font-size: 10px;
+  }
+
+  /* Menu-paneel vult mobiel scherm beter */
+  .menu-panel {
+    width: 100vw;
+    max-width: 100vw;
+    padding: 16px;
+  }
+
+  /* Klok en datum schaling voor mobiel scherm */
+  #klok-regel {
+    font-size: 22vw;
+  }
+  #datum {
+    font-size: 5.5vw;
+  }
+
+  /* Linkerknoppen positionering op mobiel */
+  #knoppen-links {
+    top: auto;
+    bottom: 80px;
+    left: 15px;
+  }
+}
+
 </style>
+
 </head>
 
 <body>
@@ -630,7 +764,8 @@ canvas {
         <button id="audioBtn"></button>
       </div>
      
-<button onclick="location.reload()" style="position: fixed; bottom: 40px; right: 5px; width: 10px; height: 10px; background: rgba(255, 255, 255, 0.2); border: none; border-radius: 50%; z-index: 99999; cursor: pointer; padding: 0;"></button>
+<button onclick="location.reload()" style="position: fixed; bottom: 270px; right: 10px; background: none; border: none; color: white; font-size: 16px; z-index: 50; cursor: pointer; padding: 4px; box-shadow: none;" title="Pagina vernieuwen">🔄</button>
+
 
 <div id="slideshow-container">
     <div id="ss-blur-bg"></div>
@@ -687,6 +822,7 @@ canvas {
         <button class="ronde-knop" onclick="kiesMuziekMap()"><i class="bi bi-play-fill"></i></button>
     </div>
 </div>
+
 <div id="bg-pauze-container">
     <button id="bg-pauze-knop" class="led-bedienknop" onclick="wisselBgPauze()"><i class="bi bi-pause-fill"></i></button>
 </div>
@@ -724,19 +860,48 @@ canvas {
     <div id="onder-sectie" class="v-lijst"></div>
 </div>
 
-<div id="fullscreen-stip" onclick="toggleMijnFullscreen()"></div>
+<div id="fullscreen-stip" onclick="toggleMijnFullscreen()">⛶</div>
 
 <script>
+
+// Standaard taal op Nederlands zetten
+let huidigeTaal = 'nl'; 
+
+function wisselTaal(taal) {
+    huidigeTaal = taal;
+    
+    // Knopjes visueel aanpassen (wit/zwart)
+    const knopNL = document.getElementById('taal-nl');
+    const knopEN = document.getElementById('taal-en');
+    
+    if (knopNL && knopEN) {
+        knopNL.classList.toggle('actief', taal === 'nl');
+        knopEN.classList.toggle('actief', taal === 'en');
+    }
+    
+    // Klok en weer direct verversen als de functies bestaan
+    if (typeof updateClock === 'function') {
+        updateClock();
+    }
+    if (typeof getFullWeather === 'function') {
+        getFullWeather();
+    }
+}
 
 // Functie om de start pop-up te sluiten
 function sluitStartPopup() {
     document.getElementById('start-popup').style.display = 'none';
 }
 
-// Tijdelijke functie voor de knop (zodat er geen foutmelding ontstaat als je erop klikt)
-function openVerjaardagBeheer() {
-    alert("Hier bouwen we straks het verjaardagenscherm in! work in proces");
+function openUitleg() {
+    // Bepaal het bestand: als huidigeTaal op 'en' staat pakt hij uitleg2.html, anders uitleg1.html
+    const bestand = (typeof huidigeTaal !== 'undefined' && huidigeTaal === 'en') ? 'uitleg2.html' : 'uitleg1.html';
+    
+    // Opent de juiste pagina als een pop-up venster van 600x500 pixels
+    window.open(bestand, 'UitlegPopup', 'width=600,height=500,scrollbars=yes,resizable=yes');
 }
+
+
  
     let huidigeStream = "";
     let bgType = "achtergrond";
@@ -1179,32 +1344,47 @@ function vernieuwAfspeellijstWeergave() {
     ul.innerHTML = '<li style="cursor:default;">Geen nummers geladen</li>';
   }
 }
-    const verjaardagen = [
-        { d: 10, m: 0, n: "🎁 Lisa 🎁" }, { d: 16, m: 0, n: "🎁 Joyce 🎁" }, { d: 19, m: 0, n: "🎁 Tom 🎁" },
-        { d: 4, m: 1, n: "† Joop †" }, { d: 10, m: 1, n: "🎁 Linn en Tess 🎁" }, { d: 15, m: 1, n: "🎁 Bert 🎁" },
-        { d: 11, m: 2, n: "† Marie †" }, { d: 19, m: 2, n: "† Theo †" }, { d: 31, m: 2, n: "🎁 Ton 🎁" },
-        { d: 4, m: 3, n: "🎁 Franka 🎁" }, { d: 14, m: 3, n: "† Dien †" },
-        { d: 10, m: 4, n: "💖MOEDERDAG" }, { d: 17, m: 4, n: "🎁 Peter 🎁" }, { d: 21, m: 4, n: "🎁 Ron 🎁" },{ d: 23, m: 4, n: "🎁 Jan 🎁" },
-        { d: 7, m: 5, n: "🎁 Diana 🎁" }, { d: 10, m: 5, n: "🎁 Djano 🎁" }, { d: 21, m: 5, n: "💖VADERDAG †" }, { d: 22, m: 5, n: "† Piet †" },
-        { d: 10, m: 6, n: "🎁 Mandy 🎁" }, { d: 12, m: 6, n: "🎁 Rena 🎁" }, { d: 20, m: 6, n: "🎁 Miriam 🎁" }, { d: 27, m: 6, n: "🎁 Frans 🎁" },
-        { d: 14, m: 7, n: "🎁 John 🎁" }, { d: 16, m: 7, n: "† Mariska †" }, { d: 17, m: 7, n: "🎁 Dylano 🎁" },
-        { d: 4, m: 8, n: "🎁 Ramon 🎁" }, { d: 6, m: 8, n: "🎁 Fleur 🎁" }, { d: 8, m: 8, n: "🎁 Jantje 🎁" }, { d: 28, m: 8, n: "🎁 Bep 🎁" },
-        { d: 24, m: 9, n: "🎁 Joke 🎁" },
-        { d: 1, m: 11, n: "🎁 Ria 🎁" }, { d: 1, m: 11, n: "† Willem †" }, { d: 9, m: 11, n: "† Mien †" }
-    ];
+    // Laad verjaardagen uit localStorage, of gebruik de 36 voorbeeldnamen als startpunt
+window.verjaardagen = JSON.parse(localStorage.getItem('mijnVerjaardagen')) || [
+    // Januari (0)
+    { d: 5, m: 0, n: "🎁 ANNA 🎁" }, { d: 18, m: 0, n: "† PETER †" }, { d: 27, m: 0, n: "🎁 SOPHIE 🎁" },
+    // Februari (1)
+    { d: 4, m: 1, n: "🎁 LUCAS 🎁" }, { d: 12, m: 1, n: "† EMMA †" }, { d: 25, m: 1, n: "🎁 LIAM 🎁" },
+    // Maart (2)
+    { d: 8, m: 2, n: "🎁 OLIVIA 🎁" }, { d: 15, m: 2, n: "† NOAH †" }, { d: 22, m: 2, n: "🎁 MILA 🎁" },
+    // April (3)
+    { d: 6, m: 3, n: "† DAAN †" }, { d: 14, m: 3, n: "🎁 TESSA 🎁" }, { d: 28, m: 3, n: "🎁 BRAM 🎁" },
+    // Mei (4)
+    { d: 3, m: 4, n: "🎁 SANNE 🎁" }, { d: 19, m: 4, n: "† LARS †" }, { d: 26, m: 4, n: "🎁 FLEUR 🎁" },
+    // Juni (5)
+    { d: 7, m: 5, n: "🎁 TIM 🎁" }, { d: 16, m: 5, n: "† JULIE †" }, { d: 24, m: 5, n: "🎁 JESSE 🎁" },
+    // Juli (6)
+    { d: 2, m: 6, n: "† EVA †" }, { d: 13, m: 6, n: "🎁 THOMAS 🎁" }, { d: 30, m: 6, n: "🎁 LISA 🎁" },
+    // Augustus (7)
+    { d: 5, m: 7, n: "🎁 MARK 🎁" }, { d: 15, m: 7, n: "† ANNE †" }, { d: 26, m: 7, n: "🎁 KEVIN 🎁" },
+    // September (8)
+    { d: 5, m: 8, n: "🎁 SEM 🎁" }, { d: 18, m: 8, n: "† YARA †" }, { d: 25, m: 8, n: "🎁 LUUK 🎁" },
+    // Oktober (9)
+    { d: 9, m: 9, n: "🎁 ZOE 🎁" }, { d: 17, m: 9, n: "† FINN †" }, { d: 29, m: 9, n: "NORA" },
+    // November (10)
+    { d: 4, m: 10, n: "† LEON †" }, { d: 12, m: 10, n: "🎁 ROSE 🎁" }, { d: 23, m: 10, n: "🎁 MAX 🎁" },
+    // December (11)
+    { d: 6, m: 11, n: "🎁 KIKI 🎁" }, { d: 15, m: 11, n: "† STIJN †" }, { d: 28, m: 11, n: "🎁 FENNA 🎁" }
+];
 
     function updateClock() {
-        const nu = new Date();
-        const uur = nu.getHours();
-        const minuut = nu.getMinutes();
-        const seconde = nu.getSeconds();
+    const nu = new Date();
+    const uur = nu.getHours();
+    const minuut = nu.getMinutes();
+    const seconde = nu.getSeconds();
 
-        if (minuut === 0 && seconde === 0 && (uur === 5 || uur === 6)) {
-            handmatigeModus = false;
-        }
+    if (minuut === 0 && seconde === 0 && (uur === 5 || uur === 6)) {
+        handmatigeModus = false;
+    }
 
-        if (!handmatigeModus) {
-            const knop = document.getElementById('dimmer-knop');
+    if (!handmatigeModus) {
+        const knop = document.getElementById('dimmer-knop');
+        if (knop) {
             if (uur >= 5 && uur < 6) {
                 document.body.style.filter = "brightness(1.0)";
                 knop.innerText = "DIM";
@@ -1213,17 +1393,33 @@ function vernieuwAfspeellijstWeergave() {
                 knop.innerText = "FEL";
             }
         }
-
-        document.getElementById('uren').innerText = nu.getHours().toString().padStart(2, '0');
-        document.getElementById('minuten').innerText = nu.getMinutes().toString().padStart(2, '0');
-        document.getElementById('sec').innerText = nu.getSeconds().toString().padStart(2, '0');
-        document.getElementById('datum').innerText = nu.toLocaleDateString('nl-NL', { weekday: 'long', day: 'numeric', month: 'long' }).toUpperCase();
-        const maand = nu.getMonth();
-        const mNamen = ["JANUARI", "FEBRUARI", "MAART", "APRIL", "MEI", "JUNI", "JULI", "AUGUSTUS", "SEPTEMBER", "OKTOBER", "NOVEMBER", "DECEMBER"];
-        const lijst = verjaardagen.filter(v => v.m === maand);
-        let html = ""; lijst.forEach(v => { html += `<div class="v-box"><b>${v.d} ${mNamen[maand]}</b>${v.n}</div>`; });
-        document.getElementById('onder-sectie').innerHTML = html;
     }
+
+    document.getElementById('uren').innerText = nu.getHours().toString().padStart(2, '0');
+    document.getElementById('minuten').innerText = nu.getMinutes().toString().padStart(2, '0');
+    document.getElementById('sec').innerText = nu.getSeconds().toString().padStart(2, '0');
+    
+    // Bepaal de taal: gekozen taal uit de pop-up, of anders automatisch de taal van de browser
+    const locale = (typeof huidigeTaal !== 'undefined' && huidigeTaal) ? huidigeTaal : navigator.language;
+    
+    // Datum automatisch in de taal van de bezoeker
+    const dagNaam = nu.toLocaleDateString(locale, { weekday: 'long' }).toUpperCase();
+    const dagNummer = nu.getDate();
+    const maandNaamDatum = nu.toLocaleDateString(locale, { month: 'long' }).toUpperCase();
+
+    document.getElementById('datum').innerText = `${dagNaam} ${dagNummer} ${maandNaamDatum}`;
+    
+    // Maandnaam bij verjaardagen automatisch in de taal van de bezoeker
+    const maand = nu.getMonth();
+    const maandNaam = new Date(2026, maand, 1).toLocaleDateString(locale, { month: 'long' }).toUpperCase();
+        
+    const lijst = window.verjaardagen.filter(v => v.m === maand);
+    let html = ""; 
+    lijst.forEach(v => { 
+        html += `<div class="v-box"><b>${v.d} ${maandNaam}</b>${v.n}</div>`; 
+    });
+    document.getElementById('onder-sectie').innerHTML = html;
+}
 
     function getWmoIcon(code) { if (code <= 1) return "bi-sun"; if (code <= 3) return "bi-cloud-sun"; if (code <= 48) return "bi-cloud-fog"; if (code <= 55) return "bi-cloud-drizzle"; if (code <= 65) return "bi-cloud-rain-heavy"; if (code <= 77) return "bi-cloud-snow"; if (code <= 82) return "bi-cloud-rain"; return "bi-cloud-lightning-rain"; }
 
@@ -1233,11 +1429,19 @@ function vernieuwAfspeellijstWeergave() {
             const data = await res.json();
             document.getElementById('graden-nu').innerText = Math.round(data.current_weather.temperature) + '°';
             document.getElementById('icon-nu').className = "bi " + getWmoIcon(data.current_weather.weathercode);
-            let forecastHTML = ""; const dagen = ["ZO", "MA", "DI", "WO", "DO", "VR", "ZA"];
+            
+            let forecastHTML = ""; 
+            const locale = (typeof huidigeTaal !== 'undefined' && huidigeTaal) ? huidigeTaal : navigator.language;
+
             for (let i = 1; i <= 5; i++) {
                 let d = new Date(); d.setDate(d.getDate() + i);
-                let maxTemp = Math.round(data.daily.temperature_2m_max[i]); let minTemp = Math.round(data.daily.temperature_2m_min[i]);
-                forecastHTML += `<div class="dag-box" style="text-align: center; font-size: 22px; padding: 4px 8px; border-right: 1px solid rgba(255,255,255,0.2);"><b>${dagen[d.getDay()]}</b><div style="font-size:2vw;"><i class="bi ${getWmoIcon(data.daily.weathercode[i])}"></i></div>${maxTemp}° <span style="opacity:0.6">${minTemp}°</span></div>`;
+                
+                // Dagen van het weerbericht automatisch in de taal van de bezoeker
+                let dagNaam = d.toLocaleDateString(locale, { weekday: 'short' }).toUpperCase();
+                let maxTemp = Math.round(data.daily.temperature_2m_max[i]); 
+                let minTemp = Math.round(data.daily.temperature_2m_min[i]);
+                
+                forecastHTML += `<div class="dag-box" style="text-align: center; font-size: 22px; padding: 4px 8px; border-right: 1px solid rgba(255,255,255,0.2);"><b>${dagNaam}</b><div style="font-size:2vw;"><i class="bi ${getWmoIcon(data.daily.weathercode[i])}"></i></div>${maxTemp}° <span style="opacity:0.6">${minTemp}°</span></div>`;
             }
             document.getElementById('voorspelling').innerHTML = forecastHTML;
         } catch (e) { console.log("Weerfout"); }
@@ -1249,14 +1453,14 @@ function vernieuwAfspeellijstWeergave() {
     setInterval(getFullWeather, 300000);
     setInterval(changeBg, 300000);
 
-   window.onload = function() {
+    window.onload = function() {
         vulFotoWachtrij();
         updateClock();
         getFullWeather();
         setAchtergrond('achtergrond');
         activeerWakeLock();
+    }
 
-            }
 window.addEventListener('DOMContentLoaded', () => {
   const zijPlayer = document.getElementById('zijPlayer');
   if (zijPlayer) {
@@ -1267,6 +1471,251 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
+// Globale variabele zodat de hoofdpagina de pop-up kan sluiten bij afsluiten
+let wereldwijdBeheerVenster = null;
+
+function openVerjaardagBeheer() {
+    // --- 1. SLIMME TAALDETECTIE ---
+    let isEngels = false;
+    
+    let opgeslagenTaal = localStorage.getItem('taal') || localStorage.getItem('lang') || localStorage.getItem('language');
+    if (opgeslagenTaal && opgeslagenTaal.toLowerCase().includes('en')) {
+        isEngels = true;
+    }
+    
+    try {
+        let buttons = document.querySelectorAll('button');
+        buttons.forEach(btn => {
+            if (btn.innerText.trim() === 'EN' || btn.innerText.trim() === 'English') {
+                let bg = window.getComputedStyle(btn).backgroundColor;
+                if (bg === 'rgb(255, 255, 255)' || btn.style.background === 'white' || btn.classList.contains('active')) {
+                    isEngels = true;
+                }
+            }
+        });
+    } catch(e) {}
+
+    if (window.taal === 'en' || window.huidigeTaal === 'en' || window.currentLang === 'en' || window.lang === 'en') {
+        isEngels = true;
+    }
+
+    // Open het venster en bewaar de referentie globaal
+    wereldwijdBeheerVenster = window.open('', 'BeheerPopup', 'width=800,height=750,scrollbars=yes');
+    if (!wereldwijdBeheerVenster) return;
+
+    // Sluit de pop-up automatisch als de hoofdpagina wordt afgesloten of ververst
+    window.onbeforeunload = function() {
+        if (wereldwijdBeheerVenster && !wereldwijdBeheerVenster.closed) {
+            wereldwijdBeheerVenster.close();
+        }
+    };
+
+    // Functie om de HTML van de pop-up op te bouwen op basis van de taal
+    function tekenVensterHtml() {
+        let t = {
+            titel: isEngels ? "Manage Birthdays (Auto-Save)" : "Verjaardagen Beheren (Auto-Save)",
+            uitleg: isEngels ? "Type the name and click 🎁 or † to add a symbol. Everything saves automatically!" : "Typ de naam en klik op 🎁 of † om direct een symbool toe te voegen. Alles wordt meteen opgeslagen!",
+            knopNieuw: isEngels ? "+ Add New Birthday" : "+ Nieuwe Verjaardag Toevoegen",
+            knopWis: isEngels ? "🗑️ Clear All Examples" : "🗑️ Wis Alle Voorbeelden",
+            tooltipExport: isEngels ? "Export Backup (Download JSON)" : "Back-up Opslaan (Download JSON)",
+            tooltipImport: isEngels ? "Import Backup (Upload JSON)" : "Back-up Inlezen (Upload JSON)",
+            knopVerwijder: isEngels ? "Delete" : "Verwijder"
+        };
+
+        let styleNL = !isEngels ? 'background: #fff; color: #000; font-weight: bold;' : 'background: #333; color: #fff;';
+        let styleEN = isEngels ? 'background: #fff; color: #000; font-weight: bold;' : 'background: #333; color: #fff;';
+
+        wereldwijdBeheerVenster.document.open();
+        wereldwijdBeheerVenster.document.write(`
+            <!DOCTYPE html>
+            <html>
+            <head>
+                <title>${t.titel}</title>
+                <style>
+                    body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; }
+                    .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
+                    .top-right { display: flex; gap: 6px; align-items: center; }
+                    .lang-box { display: flex; gap: 4px; margin-left: 6px; border-left: 1px solid #444; padding-left: 10px; }
+                    .lang-btn { border: 1px solid #555; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
+                    .small-icon-btn { background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+                    .small-icon-btn:hover { background: #444; border-color: #777; }
+                    .action-box { display: flex; gap: 10px; margin-bottom: 15px; }
+                    .item { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #222; padding: 10px; border-radius: 6px; }
+                    input[type="number"] { width: 55px; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px; }
+                    select { padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px; }
+                    input[type="text"] { flex-grow: 1; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px; }
+                    button.symbool { background: #444; color: #fff; border: 1px solid #666; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
+                    button.symbool:hover { background: #555; }
+                    button.del { background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; }
+                    button.add { background: #28a745; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 2; font-weight: bold; }
+                    button.clear-btn { background: #6c757d; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 14px; flex: 1; font-weight: bold; }
+                    button.clear-btn:hover { background: #5a6268; }
+                    h2 { margin: 0; }
+                    p { color: #aaa; font-size: 14px; margin-top: 5px; }
+                </style>
+            </head>
+            <body>
+                <div class="top-bar">
+                    <div>
+                        <h2>${t.titel}</h2>
+                        <p>${t.uitleg}</p>
+                    </div>
+                    <!-- Rechtsboven: Kleine back-up knopjes en taalkeuze -->
+                    <div class="top-right">
+                        <button class="small-icon-btn" onclick="window.exportBackup()" title="${t.tooltipExport}">💾</button>
+                        <button class="small-icon-btn" onclick="document.getElementById('importFile').click()" title="${t.tooltipImport}">📂</button>
+                        <div class="lang-box">
+                            <button class="lang-btn" style="${styleNL}" onclick="window.wisselTaal('nl')">NL</button>
+                            <button class="lang-btn" style="${styleEN}" onclick="window.wisselTaal('en')">EN</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Verborgen file input voor het inlezen van back-ups -->
+                <input type="file" id="importFile" accept=".json" style="display:none" onchange="window.importBackup(event)">
+
+                <div class="action-box">
+                    <button class="add" onclick="window.neemVoegToe()">${t.knopNieuw}</button>
+                    <button class="clear-btn" onclick="window.wisAlleVoorbeelden()">${t.knopWis}</button>
+                </div>
+
+                <div id="rijen-container"></div>
+            </body>
+            </html>
+        `);
+        wereldwijdBeheerVenster.document.close();
+        tekenPopupLijst();
+    }
+
+    // Functie om de lijst met rijen te tekenen
+    function tekenPopupLijst() {
+        let container = wereldwijdBeheerVenster.document.getElementById('rijen-container');
+        if (!container) return;
+        container.innerHTML = "";
+        
+        const maanden = isEngels ? ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] 
+                                 : ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
+        
+        let delTekst = isEngels ? "Delete" : "Verwijder";
+
+        if (!window.verjaardagen || !Array.isArray(window.verjaardagen)) {
+            window.verjaardagen = [];
+        }
+
+        window.verjaardagen.forEach((v, index) => {
+            let div = wereldwijdBeheerVenster.document.createElement('div');
+            div.className = 'item';
+            
+            let maandOptions = maanden.map((m, i) => `<option value="${i}" ${i == v.m ? 'selected' : ''}>${m}</option>`).join('');
+
+            div.innerHTML = `
+                <input type="number" value="${v.d}" min="1" max="31" id="d_${index}">
+                <select id="m_${index}">
+                    ${maandOptions}
+                </select>
+                <input type="text" value="${v.n || ''}" id="n_${index}" placeholder="Name / Naam">
+                <button type="button" class="symbool" id="cadeau_${index}" title="Cadeau">🎁</button>
+                <button type="button" class="symbool" id="kruis_${index}" title="Kruisje">†</button>
+                <button class="del" id="del_${index}">${delTekst}</button>
+            `;
+            container.appendChild(div);
+
+            div.querySelector(`#d_${index}`).onchange = function() {
+                window.verjaardagen[index].d = parseInt(this.value);
+                opslaanEnSync();
+            };
+            div.querySelector(`#m_${index}`).onchange = function() {
+                window.verjaardagen[index].m = parseInt(this.value);
+                opslaanEnSync();
+            };
+            div.querySelector(`#n_${index}`).oninput = function() {
+                window.verjaardagen[index].n = this.value;
+                opslaanEnSync();
+            };
+            
+            div.querySelector(`#cadeau_${index}`).onclick = function() {
+                let inputField = div.querySelector(`#n_${index}`);
+                inputField.value = "🎁 " + inputField.value.replace(/🎁|†/g, '').trim() + " 🎁";
+                window.verjaardagen[index].n = inputField.value;
+                opslaanEnSync();
+            };
+
+            div.querySelector(`#kruis_${index}`).onclick = function() {
+                let inputField = div.querySelector(`#n_${index}`);
+                inputField.value = "† " + inputField.value.replace(/🎁|†/g, '').trim() + " †";
+                window.verjaardagen[index].n = inputField.value;
+                opslaanEnSync();
+            };
+
+            div.querySelector(`#del_${index}`).onclick = function() {
+                window.verjaardagen.splice(index, 1);
+                opslaanEnSync();
+                tekenPopupLijst();
+            };
+        });
+    }
+
+    function opslaanEnSync() {
+        localStorage.setItem('mijnVerjaardagen', JSON.stringify(window.verjaardagen));
+        if (typeof updateClock === 'function') {
+            updateClock();
+        }
+    }
+
+    wereldwijdBeheerVenster.window.wisselTaal = function(taal) {
+        isEngels = (taal === 'en');
+        localStorage.setItem('taal', taal);
+        localStorage.setItem('lang', taal);
+        tekenVensterHtml();
+    };
+
+    wereldwijdBeheerVenster.window.neemVoegToe = function() {
+        if (!window.verjaardagen) window.verjaardagen = [];
+        window.verjaardagen.push({ d: 1, m: 0, n: isEngels ? "New Name" : "Nieuwe Naam" });
+        opslaanEnSync();
+        tekenPopupLijst();
+    };
+
+    wereldwijdBeheerVenster.window.wisAlleVoorbeelden = function() {
+        window.verjaardagen = [];
+        opslaanEnSync();
+        tekenPopupLijst();
+    };
+
+    wereldwijdBeheerVenster.window.exportBackup = function() {
+        let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.verjaardagen, null, 2));
+        let downloadAnchor = wereldwijdBeheerVenster.document.createElement('a');
+        downloadAnchor.setAttribute("href", dataStr);
+        downloadAnchor.setAttribute("download", "verjaardagen_backup.json");
+        wereldwijdBeheerVenster.document.body.appendChild(downloadAnchor);
+        downloadAnchor.click();
+        downloadAnchor.remove();
+    };
+
+    wereldwijdBeheerVenster.window.importBackup = function(event) {
+        let file = event.target.files[0];
+        if (!file) return;
+        let reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                let ingelezen = JSON.parse(e.target.result);
+                if (Array.isArray(ingelezen)) {
+                    window.verjaardagen = ingelezen;
+                    opslaanEnSync();
+                    tekenPopupLijst();
+                    alert(isEngels ? "Backup successfully restored!" : "Back-up succesvol hersteld!");
+                } else {
+                    alert(isEngels ? "Invalid file structure." : "Ongeldige bestandsstructuur.");
+                }
+            } catch(err) {
+                alert(isEngels ? "Error reading file." : "Fout bij het lezen van het bestand.");
+            }
+        };
+        reader.readAsText(file);
+    };
+
+    tekenVensterHtml();
+}
 </script>
 
 
@@ -2059,6 +2508,44 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 });
 </script>
 
+<!-- Dit style-blok doet he-le-maal niks op je Windows laptop. Het werkt alleen op smalle schermen. -->
+<style>
+@media screen and (max-width: 768px) {
+  /* Maak de terug-knop groot genoeg voor vingers, overschrijft de 10px */
+  #terug-knop {
+    width: 44px !important;
+    height: 44px !important;
+    bottom: 15px !important;
+    left: 15px !important;
+  }
+
+  /* Zorg dat de zij-player goed op een klein scherm past */
+  #zijPlayer .player-inhoud {
+    width: 85vw;
+    max-width: 320px;
+    padding: 15px;
+  }
+
+  /* Maak de speler-knoppen makkelijker aan te tikken */
+  .player-knoppen button {
+    font-size: 1.5rem;
+    margin: 0 8px;
+    padding: 10px;
+  }
+
+  /* Zorg dat de popup niet buiten het scherm valt */
+  .popup-inhoud {
+    width: 90%;
+    padding: 20px 15px;
+  }
+
+  .popup-knoppen button {
+    width: 100%;
+    margin-bottom: 10px;
+  }
+}
+</style>
+
 <div id="terug-knop" onclick="toggleKlok()" style="position: fixed; bottom: 20px; left: 20px; z-index: 2147483647; cursor: pointer; width: 10px; height: 10px; background: rgba(0,0,0,0.85); border-radius: 50%; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.7);">
     <span style="font-size: 32px; color: white; font-weight: bold; line-height: 1; user-select: none;"></span>
 </div>
@@ -2095,12 +2582,22 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 
 <!-- Start Pop-up -->
 <div id="start-popup" class="popup-overlay">
-    <div class="popup-inhoud">
+    <div class="popup-inhoud" style="position: relative;">
+        
+        <!-- Kruisje rechtsboven om te sluiten -->
+        <span onclick="sluitStartPopup()" style="position: absolute; top: 12px; right: 16px; cursor: pointer; font-size: 22px; color: #fff; font-weight: bold;">&times;</span>
+
+        <!-- Taalknoppen bovenin -->
+        <div class="taal-schakelaar">
+            <button id="taal-nl" class="taal-knop actief" onclick="wisselTaal('nl')">NL</button>
+            <button id="taal-en" class="taal-knop" onclick="wisselTaal('en')">EN</button>
+        </div>
+
         <h2>Welkom</h2>
         
         <div class="popup-knoppen">
             <button onclick="openVerjaardagBeheer()">Verjaardagen beheren</button>
-            <button onclick="sluitStartPopup()" class="btn-sluiten">Sluiten</button>
+            <button onclick="openUitleg()">Info / Uitleg</button>
         </div>
     </div>
 </div>
