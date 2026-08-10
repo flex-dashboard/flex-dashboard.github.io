@@ -807,7 +807,7 @@ canvas {
 <div id="knoppen-links">
     <button class="ronde-knop" onclick="activeerFotolijst()"><i class="bi bi-camera-fill"></i></button>
     <button class="ronde-knop" onclick="activeerVideo('video/vuur.mp4')"><i class="bi bi-fire"></i></button>
-    <button class="ronde-knop" onclick="activeerVideo('video/vis.mp4')"><i class="bi bi-water"></i></button>
+    <button class="ronde-knop" onclick="setAchtergrond('vis')"><i class="bi bi-water"></i></button>
     <button id="visualisatie-start-knop" class="ronde-knop" onclick="toggleVisualizer()">
   <i class="bi bi-play-fill"></i>
 </button>
@@ -1141,26 +1141,86 @@ function activeerVideo(bron) { isFotolijstModus = false; verbergInterface(true);
 function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; clearInterval(fotoTimer); document.getElementById('slideshow-container').style.display = 'none'; document.getElementById('foto-start-scherm').style.display = 'none'; const video = document.getElementById('videoBG'); video.pause(); video.style.display = 'none'; verbergInterface(false); setAchtergrond(bgType); }
    
     function setAchtergrond(type) {
-        const video = document.getElementById('videoBG');
-        bgType = type;
-        isFotolijstModus = false;
-        document.body.style.animation = "none";
-        document.getElementById('slideshow-container').style.display = 'none';
-        if (type === 'achtergrond') {
-            video.pause();
-            video.style.display = 'none';
-            document.body.style.backgroundSize = "cover";
-            changeBg();
-        } else {
-            document.body.style.backgroundImage = "none";
-            video.style.display = 'block';
-            video.src = (type === 'vuur') ? 'video/vuur.mp4' : 'video/vis.mp4';
-            video.load();
-            video.play();
-        }
+    const video = document.getElementById('videoBG');
+    let youtubeVak = document.getElementById('youtubeAchtergrond');
+
+    // 1. Maak het YouTube-scherm aan als die nog niet bestaat
+    if (!youtubeVak) {
+        youtubeVak = document.createElement('iframe');
+        youtubeVak.id = 'youtubeAchtergrond';
+        youtubeVak.style.position = 'fixed';
+        youtubeVak.style.top = '0';
+        youtubeVak.style.left = '0';
+        youtubeVak.style.width = '100vw';
+        youtubeVak.style.height = '100vh';
+        youtubeVak.style.zIndex = '-1'; 
+        youtubeVak.style.border = 'none';
+        youtubeVak.style.pointerEvents = 'none'; 
+        youtubeVak.style.display = 'none';
+        document.body.appendChild(youtubeVak);
     }
 
-function toggleMuteVideo(event) { event.stopPropagation(); const video = document.getElementById('videoBG'); video.muted = !video.muted; document.querySelector('#mute-video-knop i').className = video.muted ? "bi bi-volume-up" : "bi bi-volume-mute"; }
+    bgType = type;
+    isFotolijstModus = false;
+    document.body.style.animation = "none";
+    document.getElementById('slideshow-container').style.display = 'none';
+
+    if (type === 'achtergrond') {
+        video.pause();
+        video.style.display = 'none';
+        youtubeVak.style.display = 'none';
+        youtubeVak.src = ""; 
+        document.body.style.backgroundSize = "cover";
+        changeBg();
+    } else if (type === 'vis') {
+        // 2. YouTube aquarium mét geluid aan en API aan voor de muteknop
+        document.body.style.backgroundImage = "none";
+        video.pause();
+        video.style.display = 'none';
+        youtubeVak.style.display = 'block';
+        youtubeVak.src = "https://www.youtube.com/embed/HHi8qOtHnhE?autoplay=1&controls=0&mute=0&loop=1&playlist=HHi8qOtHnhE&enablejsapi=1";
+        isYoutubeMuted = false;
+    } else if (type === 'vuur') {
+        // 3. Lokaal haardvuur (vuur.mp4)
+        document.body.style.backgroundImage = "none";
+        youtubeVak.style.display = 'none';
+        youtubeVak.src = ""; 
+        video.style.display = 'block';
+        video.src = 'video/vuur.mp4'; 
+        video.load();
+        video.play();
+    }
+}
+
+let isYoutubeMuted = false;
+
+function toggleMuteVideo(event) { 
+    event.stopPropagation(); 
+    const video = document.getElementById('videoBG'); 
+    let youtubeVak = document.getElementById('youtubeAchtergrond');
+    let actieveMuteStatus = false;
+
+    // Kijk of we bij het YouTube aquarium ('vis') zijn
+    if (bgType === 'vis' && youtubeVak) {
+        if (isYoutubeMuted) {
+            // Zet YouTube geluid AAN
+            youtubeVak.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
+            isYoutubeMuted = false;
+        } else {
+            // Zet YouTube geluid UIT
+            youtubeVak.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
+            isYoutubeMuted = true;
+        }
+        actieveMuteStatus = isYoutubeMuted;
+    } else {
+        // Dit is voor je lokale haardvuur (vuur.mp4)
+        video.muted = !video.muted; 
+        actieveMuteStatus = video.muted;
+    }
+
+    // Jouw originele code om het icoontje te veranderen
+    document.querySelector('#mute-video-knop i').className = actieveMuteStatus ? "bi bi-volume-up" : "bi bi-volume-mute"; 
+}
 
 
 let afspeellijst = [];
