@@ -1150,10 +1150,11 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
         youtubeVak.id = 'youtubeAchtergrond';
         youtubeVak.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
         youtubeVak.style.position = 'fixed';
-        youtubeVak.style.top = '0';
-        youtubeVak.style.left = '0';
-        youtubeVak.style.width = '100vw';
-        youtubeVak.style.height = '100vh';
+        youtubeVak.style.top = '-60';
+        youtubeVak.style.left = '-60';
+        youtubeVak.style.width = 'calc(100vw + 120px)';    // Maakt het filmpje breder om op te vangen dat we hem verschuiven
+        youtubeVak.style.height = 'calc(100vh + 120px)';
+        youtubeVak.style.objectFit = 'cover';
         youtubeVak.style.zIndex = '-1'; 
         youtubeVak.style.border = 'none';
         youtubeVak.style.pointerEvents = 'none'; 
@@ -1534,12 +1535,12 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 });
 
-// Globale variabele zodat de hoofdpagina de pop-up kan sluiten bij afsluiten
+// Globale variabele voor eventuele compatibiliteit
 let wereldwijdBeheerVenster = null;
 
 function openVerjaardagBeheer() {
     // --- 1. SLIMME TAALDETECTIE ---
-    let isEngels = false;
+    let isEngels = window.isEngels || false;
     
     let opgeslagenTaal = localStorage.getItem('taal') || localStorage.getItem('lang') || localStorage.getItem('language');
     if (opgeslagenTaal && opgeslagenTaal.toLowerCase().includes('en')) {
@@ -1562,24 +1563,26 @@ function openVerjaardagBeheer() {
         isEngels = true;
     }
 
-    // Open het venster en bewaar de referentie globaal
-    wereldwijdBeheerVenster = window.open('', 'BeheerPopup', 'width=800,height=750,scrollbars=yes');
-    if (!wereldwijdBeheerVenster) return;
+    let modal = document.getElementById('beheerModal');
+if (modal) {
+    modal.style.display = 'flex';
+    if (typeof tekenVensterHtml === 'function') tekenVensterHtml();
+}
 
-    // Sluit de pop-up automatisch als de hoofdpagina wordt afgesloten of ververst
-    window.onbeforeunload = function() {
-        if (wereldwijdBeheerVenster && !wereldwijdBeheerVenster.closed) {
-            wereldwijdBeheerVenster.close();
-        }
+    // Functie om de modal direct te sluiten via het kruisje
+    window.sluitBeheerModal = function() {
+        let m = document.getElementById('beheerModal');
+        if (m) m.style.display = 'none';
     };
 
-    // Functie om de HTML van de pop-up op te bouwen op basis van de taal
-    function tekenVensterHtml() {
-        let t = {
+  function tekenVensterHtml() {
+    window.tekenVensterHtml = tekenVensterHtml;
+    let isEngels = window.isEngels || false;
+    let t = {
             titel: isEngels ? "Manage Birthdays (Auto-Save)" : "Verjaardagen Beheren (Auto-Save)",
             uitleg: isEngels ? "Type the name and click 🎁 or † to add a symbol. Everything saves automatically!" : "Typ de naam en klik op 🎁 of † om direct een symbool toe te voegen. Alles wordt meteen opgeslagen!",
             knopNieuw: isEngels ? "+ Add New Birthday" : "+ Nieuwe Verjaardag Toevoegen",
-            knopWis: isEngels ? "🗑️ Clear All Examples" : "🗑️ Wis Alle Voorbeelden",
+            
             tooltipExport: isEngels ? "Export Backup (Download JSON)" : "Back-up Opslaan (Download JSON)",
             tooltipImport: isEngels ? "Import Backup (Upload JSON)" : "Back-up Inlezen (Upload JSON)",
             knopVerwijder: isEngels ? "Delete" : "Verwijder"
@@ -1588,46 +1591,22 @@ function openVerjaardagBeheer() {
         let styleNL = !isEngels ? 'background: #fff; color: #000; font-weight: bold;' : 'background: #333; color: #fff;';
         let styleEN = isEngels ? 'background: #fff; color: #000; font-weight: bold;' : 'background: #333; color: #fff;';
 
-        wereldwijdBeheerVenster.document.open();
-        wereldwijdBeheerVenster.document.write(`
-            <!DOCTYPE html>
-            <html>
-            <head>
-                <title>${t.titel}</title>
-                <style>
-                    body { font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 20px; }
-                    .top-bar { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
-                    .top-right { display: flex; gap: 6px; align-items: center; }
-                    .lang-box { display: flex; gap: 4px; margin-left: 6px; border-left: 1px solid #444; padding-left: 10px; }
-                    .lang-btn { border: 1px solid #555; padding: 6px 10px; border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 13px; }
-                    .small-icon-btn { background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px; }
-                    .small-icon-btn:hover { background: #444; border-color: #777; }
-                    .action-box { display: flex; gap: 10px; margin-bottom: 15px; }
-                    .item { display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #222; padding: 10px; border-radius: 6px; }
-                    input[type="number"] { width: 55px; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px; }
-                    select { padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px; }
-                    input[type="text"] { flex-grow: 1; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px; }
-                    button.symbool { background: #444; color: #fff; border: 1px solid #666; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; }
-                    button.symbool:hover { background: #555; }
-                    button.del { background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px; }
-                    button.add { background: #28a745; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 2; font-weight: bold; }
-                    button.clear-btn { background: #6c757d; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 14px; flex: 1; font-weight: bold; }
-                    button.clear-btn:hover { background: #5a6268; }
-                    h2 { margin: 0; }
-                    p { color: #aaa; font-size: 14px; margin-top: 5px; }
-                </style>
-            </head>
-            <body>
-                <div class="top-bar">
+        let containerContent = document.getElementById('beheerModalContent');
+        if (!containerContent) return;
+
+        containerContent.innerHTML = `
+            <div style="font-family: Arial, sans-serif; background: #121212; color: #fff; padding: 10px;">
+                <div class="top-bar" style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
                     <div>
-                        <h2>${t.titel}</h2>
-                        <p>${t.uitleg}</p>
+                        <h2 style="margin: 0;">${t.titel}</h2>
+                        <p style="color: #aaa; font-size: 14px; margin-top: 5px;">${t.uitleg}</p>
                     </div>
-                    <!-- Rechtsboven: Kleine back-up knopjes en taalkeuze -->
-                    <div class="top-right">
-                        <button class="small-icon-btn" onclick="window.exportBackup()" title="${t.tooltipExport}">💾</button>
-                        <button class="small-icon-btn" onclick="document.getElementById('importFile').click()" title="${t.tooltipImport}">📂</button>
-                        <div class="lang-box">
+                    <!-- Rechtsboven: Sluitknop, back-up knopjes en taalkeuze -->
+                    <div class="top-right" style="display: flex; gap: 6px; align-items: center;">
+ 
+                        <button class="small-icon-btn" onclick="window.exportBackup()" title="${t.tooltipExport}" style="background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;">💾</button>
+                        <button class="small-icon-btn" onclick="document.getElementById('importFile').click()" title="${t.tooltipImport}" style="background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;">📂</button>
+                        <div class="lang-box" style="display: flex; gap: 4px; margin-left: 6px; border-left: 1px solid #444; padding-left: 10px;">
                             <button class="lang-btn" style="${styleNL}" onclick="window.wisselTaal('nl')">NL</button>
                             <button class="lang-btn" style="${styleEN}" onclick="window.wisselTaal('en')">EN</button>
                         </div>
@@ -1637,27 +1616,25 @@ function openVerjaardagBeheer() {
                 <!-- Verborgen file input voor het inlezen van back-ups -->
                 <input type="file" id="importFile" accept=".json" style="display:none" onchange="window.importBackup(event)">
 
-                <div class="action-box">
-                    <button class="add" onclick="window.neemVoegToe()">${t.knopNieuw}</button>
-                    <button class="clear-btn" onclick="window.wisAlleVoorbeelden()">${t.knopWis}</button>
+                <div class="action-box" style="display: flex; gap: 10px; margin-bottom: 15px;">
+                    <button class="add" onclick="window.neemVoegToe()" style="background: #28a745; color: white; border: none; padding: 12px; border-radius: 6px; cursor: pointer; font-size: 16px; flex: 2; font-weight: bold;">${t.knopNieuw}</button>
+                    
                 </div>
 
                 <div id="rijen-container"></div>
-            </body>
-            </html>
-        `);
-        wereldwijdBeheerVenster.document.close();
+            </div>
+        `;
         tekenPopupLijst();
     }
 
     // Functie om de lijst met rijen te tekenen
     function tekenPopupLijst() {
-        let container = wereldwijdBeheerVenster.document.getElementById('rijen-container');
+        let container = document.getElementById('rijen-container');
         if (!container) return;
         container.innerHTML = "";
         
         const maanden = isEngels ? ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"] 
-                                 : ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
+                               : ["Januari", "Februari", "Maart", "April", "Mei", "Juni", "Juli", "Augustus", "September", "Oktober", "November", "December"];
         
         let delTekst = isEngels ? "Delete" : "Verwijder";
 
@@ -1666,20 +1643,21 @@ function openVerjaardagBeheer() {
         }
 
         window.verjaardagen.forEach((v, index) => {
-            let div = wereldwijdBeheerVenster.document.createElement('div');
+            let div = document.createElement('div');
             div.className = 'item';
+            div.style.cssText = "display: flex; gap: 8px; margin-bottom: 10px; align-items: center; background: #222; padding: 10px; border-radius: 6px;";
             
             let maandOptions = maanden.map((m, i) => `<option value="${i}" ${i == v.m ? 'selected' : ''}>${m}</option>`).join('');
 
             div.innerHTML = `
-                <input type="number" value="${v.d}" min="1" max="31" id="d_${index}">
-                <select id="m_${index}">
+                <input type="number" value="${v.d}" min="1" max="31" id="d_${index}" style="width: 55px; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px;">
+                <select id="m_${index}" style="padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px;">
                     ${maandOptions}
                 </select>
-                <input type="text" value="${v.n || ''}" id="n_${index}" placeholder="Name / Naam">
-                <button type="button" class="symbool" id="cadeau_${index}" title="Cadeau">🎁</button>
-                <button type="button" class="symbool" id="kruis_${index}" title="Kruisje">†</button>
-                <button class="del" id="del_${index}">${delTekst}</button>
+                <input type="text" value="${v.n || ''}" id="n_${index}" placeholder="Name / Naam" style="flex-grow: 1; padding: 8px; background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; font-size: 16px;">
+                <button type="button" class="symbool" id="cadeau_${index}" title="Cadeau" style="background: #444; color: #fff; border: 1px solid #666; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;">🎁</button>
+                <button type="button" class="symbool" id="kruis_${index}" title="Kruisje" style="background: #444; color: #fff; border: 1px solid #666; padding: 8px 10px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold;">†</button>
+                <button class="del" id="del_${index}" style="background: #dc3545; color: white; border: none; padding: 8px 12px; border-radius: 4px; cursor: pointer; font-size: 14px;">${delTekst}</button>
             `;
             container.appendChild(div);
 
@@ -1725,37 +1703,36 @@ function openVerjaardagBeheer() {
         }
     }
 
-    wereldwijdBeheerVenster.window.wisselTaal = function(taal) {
-        isEngels = (taal === 'en');
-        localStorage.setItem('taal', taal);
-        localStorage.setItem('lang', taal);
-        tekenVensterHtml();
-    };
+window.wisselTaal = function(taal) {
+    window.isEngels = (taal === 'en');
+    localStorage.setItem('taal', taal);
+    localStorage.setItem('lang', taal);
 
-    wereldwijdBeheerVenster.window.neemVoegToe = function() {
+    let modal = document.getElementById('beheerModal');
+    if (modal && modal.style.display === 'flex' && typeof tekenVensterHtml === 'function') tekenVensterHtml();
+    
+    if (typeof updateClock === 'function') updateClock();
+};
+
+    window.neemVoegToe = function() {
         if (!window.verjaardagen) window.verjaardagen = [];
         window.verjaardagen.push({ d: 1, m: 0, n: isEngels ? "New Name" : "Nieuwe Naam" });
         opslaanEnSync();
         tekenPopupLijst();
     };
 
-    wereldwijdBeheerVenster.window.wisAlleVoorbeelden = function() {
-        window.verjaardagen = [];
-        opslaanEnSync();
-        tekenPopupLijst();
-    };
-
-    wereldwijdBeheerVenster.window.exportBackup = function() {
+   
+    window.exportBackup = function() {
         let dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(window.verjaardagen, null, 2));
-        let downloadAnchor = wereldwijdBeheerVenster.document.createElement('a');
+        let downloadAnchor = document.createElement('a');
         downloadAnchor.setAttribute("href", dataStr);
         downloadAnchor.setAttribute("download", "verjaardagen_backup.json");
-        wereldwijdBeheerVenster.document.body.appendChild(downloadAnchor);
+        document.body.appendChild(downloadAnchor);
         downloadAnchor.click();
         downloadAnchor.remove();
     };
 
-    wereldwijdBeheerVenster.window.importBackup = function(event) {
+    window.importBackup = function(event) {
         let file = event.target.files[0];
         if (!file) return;
         let reader = new FileReader();
@@ -1780,8 +1757,6 @@ function openVerjaardagBeheer() {
     tekenVensterHtml();
 }
 </script>
-
-
 
 <!-- VISUALIZER INSTELLINGENMENU & TANDWIEL -->
 <button id="showBtn" onclick="toggleMenu()" style="position: fixed; top: 8px; right: 8px; z-index: 999999; background: none; color: white; border: none; font-size: 14px; cursor: pointer; opacity: 0.7;">⚙️</button>
@@ -2659,10 +2634,19 @@ document.getElementById('presetSelect').addEventListener('change', function() {
         <h2>Welkom</h2>
         
         <div class="popup-knoppen">
-            <button onclick="openVerjaardagBeheer()">Verjaardagen beheren</button>
+            <button onclick="openVerjaardagBeheer()">Verjaardagen beheren / Manage Birthdays</button>
             <button onclick="openUitleg()">Info / Uitleg</button>
         </div>
     </div>
 </div>
+
+<div id="beheerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#121212; color:#fff; padding:20px; border-radius:8px; width:95%; max-width:700px; max-height:90vh; overflow-y:auto; position:relative; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        <!-- Rode sluitknop strak in de rechterbovenhoek -->
+        <button onclick="window.sluitBeheerModal()" title="Sluiten" style="position: absolute; top: 15px; right: 15px; background: #dc3545; color: #fff; border: none; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10;">✖</button>
+        <div id="beheerModalContent"></div>
+    </div>
+</div>
+
 </body>
 </html>
