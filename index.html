@@ -1150,12 +1150,14 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
         youtubeVak.id = 'youtubeAchtergrond';
         youtubeVak.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
         youtubeVak.style.position = 'fixed';
-        youtubeVak.style.top = '-60';
-        youtubeVak.style.left = '-60';
-        youtubeVak.style.width = 'calc(100vw + 120px)';    // Maakt het filmpje breder om op te vangen dat we hem verschuiven
-        youtubeVak.style.height = 'calc(100vh + 120px)';
-        youtubeVak.style.objectFit = 'cover';
-        youtubeVak.style.zIndex = '-1'; 
+        youtubeVak.style.top = '50%';
+        youtubeVak.style.left = '50%';
+        youtubeVak.style.width = '100vw';
+        youtubeVak.style.height = '56.25vw';               // Houdt exact de 16:9 verhouding van YouTube vast
+        youtubeVak.style.minHeight = '100vh';
+        youtubeVak.style.minWidth = '177.77vh';
+        youtubeVak.style.transform = 'translate(-50%, -50%) scale(1.25)'; // Zoomt de video in en duwt de randen (en titel) overal buiten
+        youtubeVak.style.zIndex = '-1';
         youtubeVak.style.border = 'none';
         youtubeVak.style.pointerEvents = 'none'; 
         youtubeVak.style.display = 'none';
