@@ -1148,6 +1148,7 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
     if (!youtubeVak) {
         youtubeVak = document.createElement('iframe');
         youtubeVak.id = 'youtubeAchtergrond';
+        youtubeVak.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
         youtubeVak.style.position = 'fixed';
         youtubeVak.style.top = '0';
         youtubeVak.style.left = '0';
@@ -1173,13 +1174,15 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
         document.body.style.backgroundSize = "cover";
         changeBg();
     } else if (type === 'vis') {
-        // 2. YouTube aquarium mét geluid aan en API aan voor de muteknop
+        // 2. YouTube aquarium (nocookie + mute=1 voor browser-autoplay)
         document.body.style.backgroundImage = "none";
         video.pause();
         video.style.display = 'none';
         youtubeVak.style.display = 'block';
-        youtubeVak.src = "https://www.youtube.com/embed/HHi8qOtHnhE?autoplay=1&controls=0&mute=0&loop=1&playlist=HHi8qOtHnhE&enablejsapi=1";
-        isYoutubeMuted = false;
+        
+        const myOrigin = (window.location.origin && window.location.origin !== 'null') ? encodeURIComponent(window.location.origin) : '';
+        youtubeVak.src = "https://www.youtube-nocookie.com/embed/HHi8qOtHnhE?autoplay=1&controls=0&mute=1&loop=1&playlist=HHi8qOtHnhE&enablejsapi=1" + (myOrigin ? "&origin=" + myOrigin : "");
+        isYoutubeMuted = true;
     } else if (type === 'vuur') {
         // 3. Lokaal haardvuur (vuur.mp4)
         document.body.style.backgroundImage = "none";
@@ -1192,7 +1195,7 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
     }
 }
 
-let isYoutubeMuted = false;
+let isYoutubeMuted = true;
 
 function toggleMuteVideo(event) { 
     event.stopPropagation(); 
@@ -1218,10 +1221,12 @@ function toggleMuteVideo(event) {
         actieveMuteStatus = video.muted;
     }
 
-    // Jouw originele code om het icoontje te veranderen
-    document.querySelector('#mute-video-knop i').className = actieveMuteStatus ? "bi bi-volume-up" : "bi bi-volume-mute"; 
+    // Icoontje bijwerken (veilig gecontroleerd op aanwezigheid knop)
+    const muteIcon = document.querySelector('#mute-video-knop i');
+    if (muteIcon) {
+        muteIcon.className = actieveMuteStatus ? "bi bi-volume-mute" : "bi bi-volume-up"; 
+    }
 }
-
 
 let afspeellijst = [];
 let huidigeIndex = 0;
