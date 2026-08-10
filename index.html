@@ -1167,38 +1167,36 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
     document.getElementById('slideshow-container').style.display = 'none';
 
     if (type === 'achtergrond') {
-        video.pause();
-        video.style.display = 'none';
-        youtubeVak.style.display = 'none';
-        youtubeVak.src = ""; 
-        document.body.style.backgroundSize = "cover";
-        changeBg();
-    } else if (type === 'vis') {
-        // 2. YouTube aquarium (nocookie + mute=1 voor browser-autoplay)
-        document.body.style.backgroundImage = "none";
-        video.pause();
-        video.style.display = 'none';
-        youtubeVak.style.display = 'block';
-        
-        const myOrigin = (window.location.origin && window.location.origin !== 'null') ? encodeURIComponent(window.location.origin) : '';
-        youtubeVak.src = "https://www.youtube-nocookie.com/embed/HHi8qOtHnhE?autoplay=1&controls=0&mute=1&loop=1&playlist=HHi8qOtHnhE&enablejsapi=1" + (myOrigin ? "&origin=" + myOrigin : "");
-        isYoutubeMuted = true;
-    } else if (type === 'vuur') {
-        // 3. Lokaal haardvuur (vuur.mp4)
-        document.body.style.backgroundImage = "none";
-        youtubeVak.style.display = 'none';
-        youtubeVak.src = ""; 
-        video.style.display = 'block';
-        video.src = 'video/vuur.mp4'; 
-        video.load();
-        video.play();
-    }
+    video.pause();
+    video.style.display = 'none';
+    youtubeVak.style.display = 'none';
+    youtubeVak.src = ""; 
+    document.body.style.backgroundSize = "cover";
+    changeBg();
+} else if (type === 'vis') {
+    // 2. YouTube aquarium (nieuwe embed link)
+    document.body.style.backgroundImage = "none";
+    video.pause();
+    video.style.display = 'none';
+    youtubeVak.style.display = 'block';
+    youtubeVak.src = "https://www.youtube.com/embed/6-mZrtWQrPw?autoplay=1&controls=0&mute=1&loop=1&playlist=6-mZrtWQrPw&rel=0";
+    isYoutubeMuted = true;
+} else if (type === 'vuur') {
+    // 3. Lokaal haardvuur (vuur.mp4)
+    document.body.style.backgroundImage = "none";
+    youtubeVak.style.display = 'none';
+    youtubeVak.src = ""; 
+    video.style.display = 'block';
+    video.src = 'video/vuur.mp4'; 
+    video.load();
+    video.play();
+}
 }
 
 let isYoutubeMuted = true;
 
 function toggleMuteVideo(event) { 
-    event.stopPropagation(); 
+    if (event) event.stopPropagation(); 
     const video = document.getElementById('videoBG'); 
     let youtubeVak = document.getElementById('youtubeAchtergrond');
     let actieveMuteStatus = false;
@@ -1215,19 +1213,19 @@ function toggleMuteVideo(event) {
             isYoutubeMuted = true;
         }
         actieveMuteStatus = isYoutubeMuted;
-    } else {
+    } else if (video) {
         // Dit is voor je lokale haardvuur (vuur.mp4)
         video.muted = !video.muted; 
+        video.volume = video.muted ? 0 : 1; // Dwingt het volume naar 0 of 1
         actieveMuteStatus = video.muted;
     }
 
-    // Icoontje bijwerken (veilig gecontroleerd op aanwezigheid knop)
+    // Icoontje bijwerken
     const muteIcon = document.querySelector('#mute-video-knop i');
     if (muteIcon) {
         muteIcon.className = actieveMuteStatus ? "bi bi-volume-mute" : "bi bi-volume-up"; 
     }
 }
-
 let afspeellijst = [];
 let huidigeIndex = 0;
 
@@ -2614,7 +2612,7 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 <div id="terug-knop" onclick="toggleKlok()" style="position: fixed; bottom: 20px; left: 20px; z-index: 2147483647; cursor: pointer; width: 10px; height: 10px; background: rgba(0,0,0,0.85); border-radius: 50%; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.7);">
     <span style="font-size: 32px; color: white; font-weight: bold; line-height: 1; user-select: none;"></span>
 </div>
-</div>
+
 
 <input type="file" id="muziekMapInput" webkitdirectory directory multiple style="display:none;" onchange="verwerkGekozenMap(event)">
 <!-- Uitklapbare Zij-Player -->
