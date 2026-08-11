@@ -112,21 +112,6 @@
   right: 0;
 }
 
-#playerToggleBtn {
-  position: absolute;
-  left: -35px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 35px;
-  height: 40px;
-  background: transparent;
-  color: rgba(255, 255, 255, 0.8);
-  border: none;
-  cursor: pointer;
-  font-size: 1rem;
-  filter: drop-shadow(0px 0px 4px rgba(0, 0, 0, 0.9));
-}
-
 .player-inhoud {
   display: flex;
   flex-direction: column;
@@ -193,14 +178,9 @@
     width: 280px;
     right: -280px;
   }
-  
-  #playerToggleBtn {
-    left: -44px;
-    width: 44px;
-    height: 50px;
-    font-size: 1.5rem;
-  }
 
+
+  
   .player-knoppen button {
     font-size: 24px;
     padding: 10px 5px;
@@ -764,7 +744,6 @@ canvas {
         <button id="audioBtn"></button>
       </div>
      
-<button onclick="location.reload()" style="position: fixed; bottom: 270px; right: 10px; background: none; border: none; color: white; font-size: 16px; z-index: 50; cursor: pointer; padding: 4px; box-shadow: none;" title="Pagina vernieuwen">🔄</button>
 
 
 <div id="slideshow-container">
@@ -807,7 +786,7 @@ canvas {
 <div id="knoppen-links">
     <button class="ronde-knop" onclick="activeerFotolijst()"><i class="bi bi-camera-fill"></i></button>
     <button class="ronde-knop" onclick="activeerVideo('video/vuur.mp4')"><i class="bi bi-fire"></i></button>
-    <button class="ronde-knop" onclick="setAchtergrond('vis')"><i class="bi bi-water"></i></button>
+    <button class="ronde-knop" onclick="activeerYoutubeSchoon('vis')"><i class="bi bi-water"></i></button>
     <button id="visualisatie-start-knop" class="ronde-knop" onclick="toggleVisualizer()">
   <i class="bi bi-play-fill"></i>
 </button>
@@ -816,21 +795,21 @@ canvas {
 
 <div id="muziek-rechts" style="position: fixed !important; right: 4px !important; top: 40px !important; width: auto !important; margin: 0 !important; z-index: 9999;">
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
-        <button class="ronde-knop" onclick="setAchtergrond('achtergrond')"><i class="bi bi-camera"></i></button>
-        <button class="ronde-knop" onclick="setAchtergrond('vuur')"><i class="bi bi-fire"></i></button>
-        <button class="ronde-knop" onclick="setAchtergrond('vis')"><i class="bi bi-water"></i></button>
-        <button class="ronde-knop" onclick="kiesMuziekMap()"><i class="bi bi-play-fill"></i></button>
+        <button id="showBtn" class="ronde-knop" onclick="toggleMenu()" title="Instellingen"><i class="bi bi-gear"></i></button>
+        <button class="ronde-knop" onclick="setAchtergrond('achtergrond')" title="Achtergrondfoto"><i class="bi bi-image"></i></button>
+        <button class="ronde-knop" onclick="setAchtergrond('vuur')" title="Brandhaard met klok"><i class="bi bi-fire"></i></button>
+        <button class="ronde-knop" onclick="setAchtergrond('vis')" title="Aquarium met klok"><i class="bi bi-water"></i></button>
+        <button class="ronde-knop" onclick="kiesMuziekMap()" title="Eigen muziek inladen"><i class="bi bi-play-fill"></i></button>
+        <button id="playerToggleBtn" class="ronde-knop" onclick="toggleZijPlayer(event)" title="Muziek Player"><i class="bi bi-music-note-beamed"></i></button>
+        <button id="bg-pauze-knop" class="ronde-knop" onclick="wisselBgPauze()" title="Achtergrond Pauzeren"><i class="bi bi-pause-fill"></i></button>
+        <button id="led-knop" class="ronde-knop" onclick="wisselLEDModus()" title="Dashboard Kader"><i class="bi bi-square"></i></button>
+        
+        <!-- Reload / Ververs knop -->
+        <button id="reload-knop" class="ronde-knop" onclick="location.reload()" title="Pagina vernieuwen"><i class="bi bi-arrow-clockwise"></i></button>
+        
+        <button id="fullscreen-knop" class="ronde-knop" onclick="toggleMijnFullscreen()" title="Volledig scherm"><i class="bi bi-fullscreen"></i></button>
     </div>
 </div>
-
-<div id="bg-pauze-container">
-    <button id="bg-pauze-knop" class="led-bedienknop" onclick="wisselBgPauze()"><i class="bi bi-pause-fill"></i></button>
-</div>
-
-<div id="led-knop-container">
-    <button id="led-knop" class="led-bedienknop" onclick="wisselLEDModus()">UIT</button>
-</div>
-
 <div id="dimmer-knop-container" style="display: none;">
     <button id="dimmer-knop" class="led-bedienknop" onclick="handmatigDimmen()">FEL</button>
 </div>
@@ -860,7 +839,6 @@ canvas {
     <div id="onder-sectie" class="v-lijst"></div>
 </div>
 
-<div id="fullscreen-stip" onclick="toggleMijnFullscreen()">⛶</div>
 
 <script>
 
@@ -994,6 +972,9 @@ function openUitleg() {
         document.getElementById('weer-sectie').style.display = d;
         document.getElementById('muziek-rechts').style.display = d;
         document.getElementById('knoppen-links').style.display = d;
+        document.getElementById('reload-knop').style.display = d;
+        document.getElementById('fullscreen-stip').style.display = d;
+
         document.getElementById('flex-midden-container').style.display = dBlock;
         document.getElementById('radio-hover-wrapper').style.display = d;
         document.getElementById('spotify-container').style.display = d;
@@ -1138,11 +1119,19 @@ function togglePauzeSlideshow(event) { event.stopPropagation(); slideshowPauze =
 
 function activeerVideo(bron) { isFotolijstModus = false; verbergInterface(true); const video = document.getElementById('videoBG'); document.body.style.backgroundImage = "none"; document.body.style.animation = "none"; video.style.display = 'block'; video.src = bron; video.load(); video.play(); }
 
+function activeerYoutubeSchoon(type) {
+    isFotolijstModus = false;
+    verbergInterface(true);
+    setAchtergrond(type);
+}
+
 function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; clearInterval(fotoTimer); document.getElementById('slideshow-container').style.display = 'none'; document.getElementById('foto-start-scherm').style.display = 'none'; const video = document.getElementById('videoBG'); video.pause(); video.style.display = 'none'; verbergInterface(false); setAchtergrond(bgType); }
    
     function setAchtergrond(type) {
     const video = document.getElementById('videoBG');
     let youtubeVak = document.getElementById('youtubeAchtergrond');
+
+
 
     // 1. Maak het YouTube-scherm aan als die nog niet bestaat
     if (!youtubeVak) {
@@ -1169,7 +1158,7 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
     document.body.style.animation = "none";
     document.getElementById('slideshow-container').style.display = 'none';
 
-    if (type === 'achtergrond') {
+ if (type === 'achtergrond') {
     video.pause();
     video.style.display = 'none';
     youtubeVak.style.display = 'none';
@@ -1182,7 +1171,7 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
     video.pause();
     video.style.display = 'none';
     youtubeVak.style.display = 'block';
-    youtubeVak.src = "https://www.youtube.com/embed/6-mZrtWQrPw?autoplay=1&controls=0&mute=1&loop=1&playlist=6-mZrtWQrPw&rel=0";
+    youtubeVak.src = "https://www.youtube.com/embed/6-mZrtWQrPw?autoplay=1&controls=0&mute=1&loop=1&playlist=6-mZrtWQrPw&rel=0&playsinline=1";
     isYoutubeMuted = true;
 } else if (type === 'vuur') {
     // 3. Lokaal haardvuur (vuur.mp4)
@@ -1761,7 +1750,7 @@ window.wisselTaal = function(taal) {
 </script>
 
 <!-- VISUALIZER INSTELLINGENMENU & TANDWIEL -->
-<button id="showBtn" onclick="toggleMenu()" style="position: fixed; top: 8px; right: 8px; z-index: 999999; background: none; color: white; border: none; font-size: 14px; cursor: pointer; opacity: 0.7;">⚙️</button>
+
 <div class="menu-panel hidden" id="menu" style="right: 220px; height: auto; max-height: 80vh; overflow-y: auto;">
   <div class="top-bar">
     <div class="top-bar-header" style="display: flex; align-items: center; gap: 10px;">
@@ -2566,6 +2555,8 @@ document.getElementById('presetSelect').addEventListener('change', function() {
     padding: 15px;
   }
 
+
+
   /* Maak de speler-knoppen makkelijker aan te tikken */
   .player-knoppen button {
     font-size: 1.5rem;
@@ -2594,20 +2585,18 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 <input type="file" id="muziekMapInput" webkitdirectory directory multiple style="display:none;" onchange="verwerkGekozenMap(event)">
 <!-- Uitklapbare Zij-Player -->
 <div id="zijPlayer" onclick="event.stopPropagation()">
-  <button id="playerToggleBtn" onclick="toggleZijPlayer(event)">
-    <i class="bi bi-music-note-beamed"></i>
-  </button>
-  <div class="player-inhoud">
-    <div id="nummerTitel" onclick="kiesMuziekMap(event)" style="cursor: pointer;">Klik hier om muziek te laden</div>
-    <div id="playerTijd">0:00 / 0:00</div>    
-    <div class="player-knoppen">
-  <button onclick="vorigeTrack()"><i class="bi bi-skip-backward-fill"></i></button>
-  <button onclick="speelPauzeMuziek(event)"><i id="speelPauzeIcon" class="bi bi-pause-fill"></i></button>
-  <button onclick="toggleAfspeellijst(event)"><i class="bi bi-list-ul"></i></button>
-  <button onclick="stopMuziek()"><i class="bi bi-stop-fill"></i></button>
-  <button onclick="volgendeTrack()"><i class="bi bi-skip-forward-fill"></i></button>
-</div>
-
+    <button onclick="toggleZijPlayer(event)" style="position: absolute; top: 55px; left: 10px; background: none; border: none; color: white; font-size: 22px; cursor: pointer; z-index: 10;" title="Sluiten"><i class="bi bi-x-lg"></i></button>
+    <div class="player-inhoud">
+        <div id="nummerTitel" onclick="kiesMuziekMap(event)" style="cursor: pointer;">Klik hier om muziek te laden</div>
+        <div id="playerTijd">0:00 / 0:00</div>    
+        <div class="player-knoppen">
+            <button onclick="vorigeTrack()"><i class="bi bi-skip-backward-fill"></i></button>
+            <button onclick="speelPauzeMuziek(event)"><i id="speelPauzeIcon" class="bi bi-pause-fill"></i></button>
+            <button onclick="toggleAfspeellijst(event)"><i class="bi bi-list-ul"></i></button>
+            <button onclick="stopMuziek()"><i class="bi bi-stop-fill"></i></button>
+            <button onclick="volgendeTrack()"><i class="bi bi-skip-forward-fill"></i></button>
+        </div>
+    </div>
 <!-- Het uitklapbare venster voor alle nummers -->
 <div id="afspeellijstContainer" style="display: none;" onclick="event.stopPropagation();">
   <ul id="afspeellijst"></ul>
