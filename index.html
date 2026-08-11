@@ -331,48 +331,33 @@
 
     /* POSITIES ONDERDELEN */
     #weer-sectie { position: fixed; top: 15px; left: 20px; z-index: 999; display: flex; align-items: center; gap: 30px; }
-    #knoppen-links { position: fixed; top: 300px; left: 20px; z-index: 999; display: flex; flex-direction: column; gap: 15px; }
+    #knoppen-links { 
+    position: fixed; 
+    top: 300px; 
+    left: 20px; 
+    z-index: 999; 
+    display: flex; 
+    flex-direction: column; 
+    gap: 15px; 
+    flex-wrap: wrap; 
+}
 
     
-    #muziek-rechts {
-        position: fixed;
-        top: 20px;
-        right: 4px;
-        z-index: 999;
-        display: flex;
-        flex-direction: column;
-        gap: 10px;
-        width: 150px;
-        align-items: center;
-    }
+#muziek-rechts {
+    position: fixed;
+    top: 20px;
+    right: 4px;
+    z-index: 999;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    max-width: 150px; /* Hier verander je width naar max-width */
+    width: 100%;      /* Hiermee wordt hij flexibel binnen die 150px */
+    flex-wrap: wrap;  /* Zorgt dat inhoud netjes meebeweegt */
+    align-items: center;
+}
 
-    /* CONTAINER DEFINITIES RECHTSONDER */
-    #led-knop-container { position: fixed; bottom: 150px; right: 22px; z-index: 9999; }
-    #bg-pauze-container { position: fixed; bottom: 200px; right: 22px; z-index: 9999; }
-
-
-    .led-bedienknop {
-        width: 50px;
-        background: rgba(0,0,0,0.8);
-        border: 1px solid rgba(255,255,255,0.4);
-        color: #ffcc00;
-        font-size: 10px;
-        font-weight: bold;
-        padding: 4px 6px;
-        border-radius: 4px;
-        cursor: pointer;
-        text-transform: uppercase;
-        transition: all 0.2s;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-    }
-    .led-bedienknop:hover { background: none; border-color: white; }
-    .led-bedienknop i { font-size: 14px; }
     
-    /* PAUZEKNOP STATUS KLEUR */
-    .bg-gepauzeerd { color: #ff3333 !important; border-color: #ff3333 !important; }
-
     
 
     /* SPOTIFY CONTAINER */
@@ -489,19 +474,7 @@
     #mute-video-knop { position: fixed; top: 10px; left: 10px; z-index: 2000; display: none; background: #000000; border: none; color: white; width: 30px; height: 30px; border-radius: 5px; cursor: pointer; font-size: 15px; }
     #pauze-foto-knop { position: fixed; bottom: 20px; right: 20px; z-index: 2001; display: none; background: none; border: none; color: white; cursor: pointer; font-size: 30px; text-shadow: 2px 2px 4px rgba(0,0,0,0.8); }
 
- /* FULLSCREEN STIP */
-    #fullscreen-stip {
-        position: fixed;
-        bottom: 255px;
-        right: 20px;
-        width: 10px;
-        height: 10px;
-        background: rgba(255, 255, 255, 0.2);
-        border-radius: 50%;
-        z-index: 99999;
-        cursor: pointer;
-        transition: background 0.2s;
-    }
+
   
 
     
@@ -796,6 +769,7 @@ canvas {
 <div id="muziek-rechts" style="position: fixed !important; right: 4px !important; top: 40px !important; width: auto !important; margin: 0 !important; z-index: 9999;">
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
         <button id="showBtn" class="ronde-knop" onclick="toggleMenu()" title="Instellingen"><i class="bi bi-gear"></i></button>
+<button id="fullscreen-knop" class="ronde-knop" onclick="toggleMijnFullscreen()" title="Volledig scherm"><i class="bi bi-fullscreen"></i></button>
         <button class="ronde-knop" onclick="setAchtergrond('achtergrond')" title="Achtergrondfoto"><i class="bi bi-image"></i></button>
         <button class="ronde-knop" onclick="setAchtergrond('vuur')" title="Brandhaard met klok"><i class="bi bi-fire"></i></button>
         <button class="ronde-knop" onclick="setAchtergrond('vis')" title="Aquarium met klok"><i class="bi bi-water"></i></button>
@@ -807,7 +781,7 @@ canvas {
         <!-- Reload / Ververs knop -->
         <button id="reload-knop" class="ronde-knop" onclick="location.reload()" title="Pagina vernieuwen"><i class="bi bi-arrow-clockwise"></i></button>
         
-        <button id="fullscreen-knop" class="ronde-knop" onclick="toggleMijnFullscreen()" title="Volledig scherm"><i class="bi bi-fullscreen"></i></button>
+        
     </div>
 </div>
 <div id="dimmer-knop-container" style="display: none;">
@@ -844,6 +818,11 @@ canvas {
 
 // Standaard taal op Nederlands zetten
 let huidigeTaal = 'nl'; 
+
+// Functie voor de telefoonversie knop
+window.openTelefoonVersie = function() {
+    window.location.href = 'indextelefoon.html';
+};
 
 function wisselTaal(taal) {
     huidigeTaal = taal;
@@ -965,26 +944,38 @@ function openUitleg() {
     }
 
    
-    function verbergInterface(verberg) {
-        const d = verberg ? 'none' : 'flex';
-        const dBlock = verberg ? 'none' : 'block';
-        document.getElementById('terug-knop').style.display = verberg ? 'none' : 'block';
-        document.getElementById('weer-sectie').style.display = d;
-        document.getElementById('muziek-rechts').style.display = d;
-        document.getElementById('knoppen-links').style.display = d;
-        document.getElementById('reload-knop').style.display = d;
-        document.getElementById('fullscreen-stip').style.display = d;
+function verbergInterface(verberg) {
+    const d = verberg ? 'none' : 'flex';
+    const dBlock = verberg ? 'none' : 'block';
+    
+    // Algemene elementen en containers
+    document.getElementById('terug-knop').style.display = verberg ? 'none' : 'block';
+    document.getElementById('weer-sectie').style.display = d;
+    document.getElementById('muziek-rechts').style.display = d;
+    document.getElementById('knoppen-links').style.display = d;
+    
+    // Rechterknoppen met specifieke ID's
+    document.getElementById('reload-knop').style.display = d;
+    document.getElementById('fullscreen-knop').style.display = d;
+    document.getElementById('led-knop').style.display = dBlock;
+    document.getElementById('bg-pauze-knop').style.display = dBlock;
 
-        document.getElementById('flex-midden-container').style.display = dBlock;
-        document.getElementById('radio-hover-wrapper').style.display = d;
-        document.getElementById('spotify-container').style.display = d;
-        document.getElementById('led-knop-container').style.display = dBlock;
-        document.getElementById('bg-pauze-container').style.display = dBlock;
-        document.getElementById('verjaardagen-container').style.visibility = verberg ? 'hidden' : 'visible';
-        document.getElementById('sluit-overlay').style.display = verberg ? 'block' : 'none';
-        if(verberg && !isFotolijstModus) { document.getElementById('mute-video-knop').style.display = 'block'; } else { document.getElementById('mute-video-knop').style.display = 'none'; }
-        document.getElementById('pauze-foto-knop').style.display = (verberg && isFotolijstModus) ? 'block' : 'none';
+    // Overige containers en elementen
+    document.getElementById('flex-midden-container').style.display = dBlock;
+    document.getElementById('radio-hover-wrapper').style.display = d;
+    document.getElementById('spotify-container').style.display = d;
+    document.getElementById('verjaardagen-container').style.visibility = verberg ? 'hidden' : 'visible';
+    document.getElementById('sluit-overlay').style.display = verberg ? 'block' : 'none';
+    
+    // Fotolijst en video specifieke knoppen
+    if (verberg && !isFotolijstModus) { 
+        document.getElementById('mute-video-knop').style.display = 'block'; 
+    } else { 
+        document.getElementById('mute-video-knop').style.display = 'none'; 
     }
+    
+    document.getElementById('pauze-foto-knop').style.display = (verberg && isFotolijstModus) ? 'block' : 'none';
+}
 
     const radioZenders = [
         { n: "NPO 1", u: "https://icecast.omroep.nl/radio1-bb-mp3" },
@@ -1565,6 +1556,7 @@ if (modal) {
         let m = document.getElementById('beheerModal');
         if (m) m.style.display = 'none';
     };
+
 
   function tekenVensterHtml() {
     window.tekenVensterHtml = tekenVensterHtml;
@@ -2617,10 +2609,11 @@ document.getElementById('presetSelect').addEventListener('change', function() {
         <span onclick="sluitStartPopup()" style="position: absolute; top: 12px; right: 16px; cursor: pointer; font-size: 22px; color: #fff; font-weight: bold;">&times;</span>
 
         <!-- Taalknoppen bovenin -->
-        <div class="taal-schakelaar">
-            <button id="taal-nl" class="taal-knop actief" onclick="wisselTaal('nl')">NL</button>
-            <button id="taal-en" class="taal-knop" onclick="wisselTaal('en')">EN</button>
-        </div>
+        <div class="taal-schakelaar" style="display: flex; align-items: center; gap: 6px;">
+                    <button id="taal-nl" class="taal-knop actief" onclick="wisselTaal('nl')">NL</button>
+                    <button id="taal-en" class="taal-knop" onclick="wisselTaal('en')">EN</button>
+                    <button id="telefoon-versie-knop" class="small-icon-btn" onclick="openTelefoonVersie()" title="Open Telefoon Versie" style="background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="bi bi-phone"></i></button>
+                </div>
 
         <h2>Welkom</h2>
         
