@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V6.0</title>
+<title>Dashboard Den Bosch V6.2</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -2650,28 +2650,19 @@ function schaalDashboard() {
     const wrapper = document.getElementById('dashboard-wrapper');
     if (!wrapper) return;
 
-    // Telefoon direct uitsluiten zodat deze niet schaalt en normaal blijft
-    const isTelefoon = /iPhone|iPod/i.test(navigator.userAgent) || (/Android/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent));
-    if (isTelefoon) {
-        wrapper.style.transform = 'none';
-        wrapper.style.left = '0';
-        wrapper.style.top = '0';
-        wrapper.style.opacity = '1';
-        return;
-    }
-    
-    // Op een PC of laptop verandert er niets (blijft exact zoals op je foto)
-    const isMobielOfTablet = /Mobi|Android|iPhone|iPad|iPod|Tablet/i.test(navigator.userAgent);
-    
-    if (!isMobielOfTablet) {
-        wrapper.style.transform = 'none';
-        wrapper.style.left = '0';
-        wrapper.style.top = '0';
-        wrapper.style.opacity = '1';
+    // Controleer of dit een iPad of tablet is
+    const ua = navigator.userAgent;
+    const isIPad = /iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const isAndroidTablet = /Android/i.test(ua) && !/Mobile/i.test(ua);
+    const isTablet = isIPad || isAndroidTablet || /Tablet/i.test(ua);
+
+    // ALS HET GEEN TABLET IS (dus als het een PC/laptop of een telefoon is): 
+    // Doe NIETS, laat de PC en telefoon volledig met rust!
+    if (!isTablet) {
         return;
     }
 
-    // Voor mobiel en tablet (zoals je iPad):
+    // Dit schaalgedeelte draait NU ALLEEN OP DE IPAD/TABLET:
     const basisBreedte = 1920; 
     const basisHoogte = 1080;  
     
@@ -2679,7 +2670,6 @@ function schaalDashboard() {
     const schaalY = window.innerHeight / basisHoogte;
     let schaal = Math.min(schaalX, schaalY);
     
-    // BELANGRIJK: Stel een ondergrens in! 
     if (schaal < 0.6) {
         schaal = 0.6;
     }
@@ -2693,8 +2683,6 @@ function schaalDashboard() {
 window.addEventListener('resize', schaalDashboard);
 window.addEventListener('load', schaalDashboard);
 </script>
-
-
 <script>
 // Automatische versie-controle (Huidige versie is V6.0)
 const huidigeVersie = "V6.0"; 
