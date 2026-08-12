@@ -496,6 +496,15 @@ html, body {
     box-sizing: border-box; 
 }
 
+#dashboard-wrapper {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+
+
 #controls { 
     position: absolute; 
     top: 20px; 
@@ -706,6 +715,8 @@ canvas {
 </head>
 
 <body>
+
+<div id="dashboard-wrapper">
 
 
 <div id="visualisatie-container" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;">
@@ -2630,6 +2641,8 @@ document.getElementById('presetSelect').addEventListener('change', function() {
         <button onclick="window.sluitBeheerModal()" title="Sluiten" style="position: absolute; top: 15px; right: 15px; background: #dc3545; color: #fff; border: none; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10;">✖</button>
         <div id="beheerModalContent"></div>
     </div>
+</div>
+
 </div>
 
 </body>
