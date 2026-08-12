@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V5.9</title>
+<title>Dashboard Den Bosch V6.0</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -2650,25 +2650,39 @@ function schaalDashboard() {
     const wrapper = document.getElementById('dashboard-wrapper');
     if (!wrapper) return;
 
-    // Controleer of dit een mobiele telefoon of tablet (zoals iPad) is:
-    const isTabletOfMobiel = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini|Tablet/i.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    
-    // Als dit GEEN tablet of telefoon is (dus jouw PC/Laptop), voer dan GEEN schaling uit!
-    if (!isTabletOfMobiel) {
+    // Telefoon direct uitsluiten zodat deze niet schaalt en normaal blijft
+    const isTelefoon = /iPhone|iPod/i.test(navigator.userAgent) || (/Android/i.test(navigator.userAgent) && /Mobile/i.test(navigator.userAgent));
+    if (isTelefoon) {
         wrapper.style.transform = 'none';
         wrapper.style.left = '0';
         wrapper.style.top = '0';
-        wrapper.style.opacity = '1'; // Zorgt dat alles op je PC direct zichtbaar en op zijn plek staat
+        wrapper.style.opacity = '1';
+        return;
+    }
+    
+    // Op een PC of laptop verandert er niets (blijft exact zoals op je foto)
+    const isMobielOfTablet = /Mobi|Android|iPhone|iPad|iPod|Tablet/i.test(navigator.userAgent);
+    
+    if (!isMobielOfTablet) {
+        wrapper.style.transform = 'none';
+        wrapper.style.left = '0';
+        wrapper.style.top = '0';
+        wrapper.style.opacity = '1';
         return;
     }
 
-    // Vanaf hier wordt het alleen op de iPad / tablets toegepast:
+    // Voor mobiel en tablet (zoals je iPad):
     const basisBreedte = 1920; 
     const basisHoogte = 1080;  
     
     const schaalX = window.innerWidth / basisBreedte;
     const schaalY = window.innerHeight / basisHoogte;
-    const schaal = Math.min(schaalX, schaalY);
+    let schaal = Math.min(schaalX, schaalY);
+    
+    // BELANGRIJK: Stel een ondergrens in! 
+    if (schaal < 0.6) {
+        schaal = 0.6;
+    }
     
     wrapper.style.transform = `scale(${schaal})`;
     wrapper.style.left = `${(window.innerWidth - (basisBreedte * schaal)) / 2}px`;
@@ -2678,6 +2692,22 @@ function schaalDashboard() {
 
 window.addEventListener('resize', schaalDashboard);
 window.addEventListener('load', schaalDashboard);
+</script>
+
+
+<script>
+// Automatische versie-controle (Huidige versie is V6.0)
+const huidigeVersie = "V6.0"; 
+const opgeslagenVersie = localStorage.getItem('dashboard_versie_check');
+
+if (opgeslagenVersie !== huidigeVersie) {
+    localStorage.setItem('dashboard_versie_check', huidigeVersie);
+    
+    // Voer alleen een herlading uit als er al een eerdere versie bekend was (zodat de eerste laadbeurt rustig blijft)
+    if (opgeslagenVersie !== null) {
+        window.location.reload();
+    }
+}
 </script>
 
 </body>
