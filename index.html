@@ -2645,5 +2645,36 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 
 </div>
 
+<script>
+function schaalDashboard() {
+    const wrapper = document.getElementById('dashboard-wrapper');
+    
+    // Als het scherm groter is dan 1200 pixels (je PC), doe dan NIKS en laat de PC-weergave met rust!
+    if (window.innerWidth > 1200) {
+        wrapper.style.transform = 'none';
+        wrapper.style.left = '0';
+        wrapper.style.top = '0';
+        wrapper.style.opacity = '1';
+        return;
+    }
+
+    // Vanaf hier wordt het alleen op kleine schermen (tablets/telefoons) toegepast:
+    const basisBreedte = 1920; 
+    const basisHoogte = 1080;  
+    
+    const schaalX = window.innerWidth / basisBreedte;
+    const schaalY = window.innerHeight / basisHoogte;
+    const schaal = Math.min(schaalX, schaalY);
+    
+    wrapper.style.transform = `scale(${schaal})`;
+    wrapper.style.left = `${(window.innerWidth - (basisBreedte * schaal)) / 2}px`;
+    wrapper.style.top = `${(window.innerHeight - (basisHoogte * schaal)) / 2}px`;
+    wrapper.style.opacity = '1';
+}
+
+window.addEventListener('resize', schaalDashboard);
+window.addEventListener('load', schaalDashboard);
+</script>
+
 </body>
 </html>
