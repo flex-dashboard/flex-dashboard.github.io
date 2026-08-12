@@ -716,7 +716,7 @@ canvas {
 
 <body>
 
-<div id="dashboard-wrapper">
+
 
 
 <div id="visualisatie-container" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;">
@@ -2643,46 +2643,7 @@ document.getElementById('presetSelect').addEventListener('change', function() {
     </div>
 </div>
 
-</div>
 
-<script>
-function schaalDashboard() {
-    const wrapper = document.getElementById('dashboard-wrapper');
-    if (!wrapper) return;
-
-    // Controleer of het een iPad of tablet is
-    const ua = navigator.userAgent;
-    const isIPad = /iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-    const isAndroidTablet = /Android/i.test(ua) && !/Mobile/i.test(ua);
-    const isTablet = isIPad || isAndroidTablet || /Tablet/i.test(ua);
-
-    // ALS HET GEEN TABLET IS (dus je PC, laptop of telefoon): 
-    // Direct stoppen. Geen enkele schaling, geen enkele wijziging op de PC!
-    if (!isTablet) {
-        return;
-    }
-
-    // Dit schaalgedeelte draait uitsluitend en alleen op de iPad/tablet:
-    const basisBreedte = 1920; 
-    const basisHoogte = 1080;  
-    
-    const schaalX = window.innerWidth / basisBreedte;
-    const schaalY = window.innerHeight / basisHoogte;
-    let schaal = Math.min(schaalX, schaalY);
-    
-    if (schaal < 0.6) {
-        schaal = 0.6;
-    }
-    
-    wrapper.style.transform = `scale(${schaal})`;
-    wrapper.style.left = `${(window.innerWidth - (basisBreedte * schaal)) / 2}px`;
-    wrapper.style.top = `${(window.innerHeight - (basisHoogte * schaal)) / 2}px`;
-    wrapper.style.opacity = '1';
-}
-
-window.addEventListener('resize', schaalDashboard);
-window.addEventListener('load', schaalDashboard);
-</script>
 
 <script>
 // Automatische versie-controle (Huidige versie is V6.0)
