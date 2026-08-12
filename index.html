@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V6.2</title>
+<title>Dashboard Den Bosch V6.3</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -2656,15 +2656,15 @@ function schaalDashboard() {
     const isAndroidTablet = /Android/i.test(ua) && !/Mobile/i.test(ua);
     const isTablet = isIPad || isAndroidTablet || /Tablet/i.test(ua);
 
-    // ALS HET GEEN TABLET IS (dus als het een PC/laptop of een telefoon is): 
-    // Doe NIETS, laat de PC en telefoon volledig met rust!
+    // ALS HET GEEN TABLET IS (dus je PC, laptop of telefoon): 
+    // Direct stoppen. Geen enkele schaling op de PC!
     if (!isTablet) {
         return;
     }
 
-    // Dit schaalgedeelte draait NU ALLEEN OP DE IPAD/TABLET:
-    const basisBreedte = 1920; 
-    const basisHoogte = 1080;  
+    // De werkelijke basismaat waarop je alles hebt gebouwd:
+    const basisBreedte = 1592; 
+    const basisHoogte = 895;  
     
     const schaalX = window.innerWidth / basisBreedte;
     const schaalY = window.innerHeight / basisHoogte;
@@ -2683,6 +2683,7 @@ function schaalDashboard() {
 window.addEventListener('resize', schaalDashboard);
 window.addEventListener('load', schaalDashboard);
 </script>
+
 <script>
 // Automatische versie-controle (Huidige versie is V6.0)
 const huidigeVersie = "V6.0"; 
