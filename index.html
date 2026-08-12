@@ -2650,21 +2650,21 @@ function schaalDashboard() {
     const wrapper = document.getElementById('dashboard-wrapper');
     if (!wrapper) return;
 
-    // Controleer of dit een iPad of tablet is
+    // Controleer of het een iPad of tablet is
     const ua = navigator.userAgent;
     const isIPad = /iPad/i.test(ua) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
     const isAndroidTablet = /Android/i.test(ua) && !/Mobile/i.test(ua);
     const isTablet = isIPad || isAndroidTablet || /Tablet/i.test(ua);
 
     // ALS HET GEEN TABLET IS (dus je PC, laptop of telefoon): 
-    // Direct stoppen. Geen enkele schaling op de PC!
+    // Direct stoppen. Geen enkele schaling, geen enkele wijziging op de PC!
     if (!isTablet) {
         return;
     }
 
-    // De werkelijke basismaat waarop je alles hebt gebouwd:
-    const basisBreedte = 1592; 
-    const basisHoogte = 895;  
+    // Dit schaalgedeelte draait uitsluitend en alleen op de iPad/tablet:
+    const basisBreedte = 1920; 
+    const basisHoogte = 1080;  
     
     const schaalX = window.innerWidth / basisBreedte;
     const schaalY = window.innerHeight / basisHoogte;
