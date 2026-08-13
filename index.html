@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V6.4</title>
+<title>Dashboard Den Bosch V6.5</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -342,7 +342,88 @@
     flex-wrap: wrap; 
 }
 
+/* Standaard: verberg de locatie op de PC */
+.alleen-mobiel {
+    display: none;
+}
+
+/* Alleen tonen op de telefoon binnen de media query */
+@media (max-width: 768px) {
+    .alleen-mobiel {
+        display: inline;
+        font-size: 0.5em;
+        margin-left: 10px;
+    }
+}
+
+/* ========================================= */
+/* SPECIAAL VOOR TELEFOON (MEDIA QUERY) */
+/* ========================================= */
+@media (max-width: 768px) {
     
+    /* Het weer op de telefoon: 5-daagse voorspelling boven, temperatuur/locatie eronder */
+    #weer-sectie {
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 95%;
+        display: flex;
+        flex-direction: column-reverse;
+        align-items: center;
+        gap: 10px;
+        z-index: 999;
+    }
+
+    #temp-nu {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        background: rgba(0, 0, 0, 0.6);
+        border: 2px solid rgba(255, 255, 255, 0.3);
+        border-radius: 40px;
+        padding: 8px 20px;
+        font-size: 6vw !important;
+        gap: 10px;
+    }
+
+    #locatie-naam {
+        transform: translateY(-3px);
+        display: inline-block;
+        font-size: 0.6em;
+    }
+
+    #knoppen-links {
+        position: fixed !important;
+        top: auto !important;
+        bottom: 140px !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        display: flex !important;
+        flex-direction: row !important;
+        flex-wrap: nowrap !important;
+        justify-content: center !important;
+        gap: 8px !important;
+        z-index: 999 !important;
+        background: none !important;
+        border: none !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+    }
+    #knoppen-links .ronde-knop {
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 16px !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+
+}
+
+
 #muziek-rechts {
     position: fixed;
     top: 20px;
@@ -496,15 +577,6 @@ html, body {
     box-sizing: border-box; 
 }
 
-#dashboard-wrapper {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 1920px;  /* De basisbreedte van je pc-scherm waarop je het hebt ontworpen */
-    height: 1080px; /* De basishoogte van je pc-scherm */
-    transform-origin: top left;
-}
-
 #controls { 
     position: absolute; 
     top: 20px; 
@@ -539,24 +611,20 @@ canvas {
     object-fit: cover; 
 }
 
-        .tp-dfwv { position: fixed !important; top: 20px !important; right: 120px !important; z-index: 1000 !important; display: none !important; transition: opacity 0.3s ease !important; }
-        .tp-dfwv.visible { display: block !important; }
+.tp-dfwv { position: fixed !important; top: 20px !important; right: 120px !important; z-index: 1000 !important; display: none !important; transition: opacity 0.3s ease !important; }
+.tp-dfwv.visible { display: block !important; }
 
-        .info { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 12px; text-transform: uppercase; text-align: center; z-index: 1000; line-height: 1.4; opacity: 0.8; }
-        .info a { color: white; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, 0.3); transition: border-bottom-color 0.2s ease; }
-        .info a:hover { border-bottom-color: white; }
+.info { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); color: white; font-size: 12px; text-transform: uppercase; text-align: center; z-index: 1000; line-height: 1.4; opacity: 0.8; }
+.info a { color: white; text-decoration: none; border-bottom: 1px solid rgba(255, 255, 255, 0.3); transition: border-bottom-color 0.2s ease; }
+.info a:hover { border-bottom-color: white; }
 
-        @media (max-width: 768px) {
-            .info { font-size: 10px; bottom: 10px; }
-            #controls { top: 10px; left: 10px; }
-            
-        }
 #controlecentrum {
-        position: fixed !important;
-        top: 20px;
-        left: 20px;
-        z-index: 2147483647 !important;
-    }
+    position: fixed !important;
+    top: 20px;
+    left: 20px;
+    z-index: 2147483647 !important;
+}
+
 /* Stijl voor de Start Pop-up */
 .popup-overlay {
     position: fixed;
@@ -636,13 +704,28 @@ canvas {
     background: #ffffff;
     color: #000000;
 }
-@media screen and (max-width: 768px) {
-  .popup-inhoud {
-    width: 90vw;
-    padding: 20px;
-  }
-}
 
+
+/* ================================================= */
+/* ÉÉN GECOMBINEERDE EN SCHONE MEDIA QUERY VOOR MOBIEL */
+/* ================================================= */
+@media (max-width: 768px) {
+    /* Info en controls aanpassing voor mobiel */
+    .info { font-size: 10px; bottom: 10px; }
+    #controls { top: 10px; left: 10px; }
+    
+    /* Pop-up inhoud passend op mobiel */
+    .popup-inhoud {
+        width: 90vw;
+        padding: 20px;
+    }
+
+    /* Achtergrond (canvas) netjes passend zodat het beestje niet afgesneden wordt */
+    canvas {
+        object-fit: contain !important;
+        background-color: #000 !important;
+    }
+}
 /* === NIEUWE TOEVOEGINGEN SPECIFIEK VOOR TABLETS EN TELEFOONS === */
 
 /* Tablets (tot 1024px) */
@@ -705,10 +788,52 @@ canvas {
   /* Linkerknoppen positionering op mobiel */
   #knoppen-links {
     top: auto;
-    bottom: 80px;
+    bottom: 65px;
     left: 15px;
   }
 }
+
+@media (max-width: 768px) {
+    /* Jouw bestaande achtergrond instellingen */
+    body {
+        background-size: cover !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+    }
+
+    /* Verplaats de hele groep naar beneden, in het midden */
+    #muziek-rechts {
+        position: absolute !important;
+        top: auto !important;
+        bottom: 140px !important; /* Pas dit getal aan om ze iets omhoog of omlaag te schuiven */
+        left: 50% !important;
+        right: auto !important;
+        transform: translateX(-50%) !important;
+        width: auto !important;
+        margin: 0 !important;
+        z-index: 9999 !important;
+    }
+
+    /* Dwing exact een raster van 5 kolommen af (2 rijen van 5) */
+    #muziek-rechts > div {
+        display: grid !important;
+        grid-template-columns: repeat(5, 45px) !important; /* Snoeihard 5 knoppen naast elkaar */
+        gap: 10px !important;
+        justify-content: center !important;
+        align-items: center !important;
+    }
+
+ #muziek-rechts {
+        position: absolute !important;
+        left: 50% !important;
+        right: auto !important;
+        /* -88% zet hem exact in het midden, 420px blijft keurig van de hoogte af */
+        transform: translate(-88%, 420px) !important;
+        width: auto !important;
+        z-index: 9999 !important;
+    }
+}
+
 
 </style>
 
@@ -763,7 +888,14 @@ canvas {
 
 
 <div id="weer-sectie" class="gloed">
-    <div id="temp-nu" style="font-size: 7vw; font-weight: bold; display: flex; align-items: center; gap: 10px;"><i id="icon-nu" class="bi bi-cloud-sun" style="font-size: 8vw;"></i> <span id="graden-nu">--°</span></div>
+    <div id="temp-nu" style="font-size: 7vw; font-weight: bold; display: flex; align-items: center; gap: 10px;">
+        <i id="icon-nu" class="bi bi-cloud-sun" style="font-size: 8vw;"></i> 
+        <span>
+            <span id="graden-nu">--°</span>
+            <!-- DEZE REGEL ZORGT VOOR DE LOCATIE OP DE TELEFOON -->
+            <span id="locatie-naam" class="alleen-mobiel"></span>
+        </span>
+    </div>
     <div id="voorspelling" style="display: flex; gap: 15px; background: rgba(0,0,0,0.4); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.2);"></div>
 </div>
 
@@ -780,7 +912,7 @@ canvas {
 <div id="muziek-rechts" style="position: fixed !important; right: 4px !important; top: 40px !important; width: auto !important; margin: 0 !important; z-index: 9999;">
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
         <button id="showBtn" class="ronde-knop" onclick="toggleMenu()" title="Instellingen"><i class="bi bi-gear"></i></button>
-<button id="fullscreen-knop" class="ronde-knop" onclick="toggleMijnFullscreen()" title="Volledig scherm"><i class="bi bi-fullscreen"></i></button>
+        <button id="fullscreen-knop" class="ronde-knop" onclick="toggleMijnFullscreen()" title="Volledig scherm"><i class="bi bi-fullscreen"></i></button>
         <button class="ronde-knop" onclick="setAchtergrond('achtergrond')" title="Achtergrondfoto"><i class="bi bi-image"></i></button>
         <button class="ronde-knop" onclick="setAchtergrond('vuur')" title="Brandhaard met klok"><i class="bi bi-fire"></i></button>
         <button class="ronde-knop" onclick="setAchtergrond('vis')" title="Aquarium met klok"><i class="bi bi-water"></i></button>
@@ -830,10 +962,18 @@ canvas {
 // Standaard taal op Nederlands zetten
 let huidigeTaal = 'nl'; 
 
-// Functie voor de telefoonversie knop
-window.openTelefoonVersie = function() {
-    window.location.href = 'indextelefoon.html';
-};
+// Functie voor volledig scherm (fullscreen)
+function schakelFullscreen() {
+    if (!document.fullscreenElement) {
+        document.documentElement.requestFullscreen().catch(err => {
+            console.log(`Fout bij openen van fullscreen: ${err.message}`);
+        });
+    } else {
+        if (document.exitFullscreen) {
+            document.exitFullscreen();
+        }
+    }
+}
 
 function wisselTaal(taal) {
     huidigeTaal = taal;
@@ -2578,6 +2718,14 @@ document.getElementById('presetSelect').addEventListener('change', function() {
     margin-bottom: 10px;
   }
 }
+
+@media (max-width: 768px) {
+    body {
+        background-size: 100% 100% !important;
+        background-repeat: no-repeat !important;
+        background-position: center !important;
+    }
+}
 </style>
 
 <div id="terug-knop" onclick="toggleKlok()" style="position: fixed; bottom: 20px; left: 20px; z-index: 2147483647; cursor: pointer; width: 10px; height: 10px; background: rgba(0,0,0,0.85); border-radius: 50%; align-items: center; justify-content: center; box-shadow: 0 4px 15px rgba(0,0,0,0.7);">
@@ -2623,8 +2771,9 @@ document.getElementById('presetSelect').addEventListener('change', function() {
         <div class="taal-schakelaar" style="display: flex; align-items: center; gap: 6px;">
                     <button id="taal-nl" class="taal-knop actief" onclick="wisselTaal('nl')">NL</button>
                     <button id="taal-en" class="taal-knop" onclick="wisselTaal('en')">EN</button>
-                    <button id="telefoon-versie-knop" class="small-icon-btn" onclick="openTelefoonVersie()" title="Open Telefoon Versie" style="background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="bi bi-phone"></i></button>
-                </div>
+                    <button id="fullscreen-knop" class="small-icon-btn" onclick="schakelFullscreen()" title="Klik hier voor volledig scherm" style="background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="bi bi-arrows-fullscreen"></i></button>
+</div>
+
 
         <h2>Welkom</h2>
         
@@ -2659,6 +2808,35 @@ if (opgeslagenVersie !== huidigeVersie) {
     }
 }
 </script>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    // Controleer of het scherm kleiner is dan 768px (dus een telefoon/tablet)
+    if (window.innerWidth <= 768 && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(function(position) {
+            const lat = position.coords.latitude;
+            const lon = position.coords.longitude;
+            
+            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=nl`)
+                .then(response => response.json())
+                .then(data => {
+                    if (data && data.address) {
+                        const stad = data.address.city || data.address.town || data.address.village || data.address.municipality;
+                        if (stad) {
+                            document.getElementById('locatie-naam').innerText = stad;
+                        }
+                    }
+                })
+                .catch(error => {
+                    console.log("Kon locatie niet ophalen", error);
+                });
+        }, function(error) {
+            console.log("Geen locatietoegang of niet beschikbaar");
+        });
+    }
+});;
+    </script>
+
 
 </body>
 </html>
