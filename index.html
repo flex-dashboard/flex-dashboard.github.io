@@ -10,6 +10,8 @@
 
 <style>
 
+
+
 /* PC-versie (ongewijzigd) */
 #terug-knop {
     position: fixed;
@@ -239,6 +241,19 @@
 <style>
 
 /* --- VISUALIZER ZIJPANEEL & INSTELLINGEN --- */
+
+/* Zet de query hier direct onder: */
+@media (max-width: 480px) {
+    #menu {
+        right: auto !important;
+        left: 50% !important;
+        transform: translateX(-50%) !important;
+        width: 85% !important;
+        max-width: 320px !important;
+        z-index: 99999 !important;
+        background: #0d1612 !important;
+    }
+}
 .toggle-menu-btn {
   position: fixed; top: 20px; right: 20px;
   width: 46px; height: 46px; border-radius: 50%;
@@ -637,8 +652,32 @@
   }
 }
 
-    #muziek-rechts .ronde-knop { width: 45px !important; height: 45px !important; margin: 0 !important; }
-    #muziek-rechts .ronde-knop i { font-size: 22px !important; }
+   #muziek-rechts .ronde-knop { 
+    width: 45px !important; 
+    height: 45px !important; 
+    margin: 0 !important; 
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+#muziek-rechts .ronde-knop i { 
+    font-size: 22px !important; 
+    line-height: 1 !important;
+}
+
+/* Fix tegen het verschuiven bij klikken */
+#muziek-rechts .ronde-knop:active,
+#muziek-rechts .ronde-knop:focus {
+    transform: none !important;
+    outline: none !important;
+}
+
+#muziek-rechts .ronde-knop:active i,
+#muziek-rechts .ronde-knop:focus i {
+    transform: none !important;
+    margin: 0 !important;
+}
 
 
     /* FLEXIBELE MIDDENCONTAINER */
@@ -801,6 +840,16 @@
 
     
  /* CSS GEDEELTE */
+
+
+
+/* Wanneer de 'schone-modus' actief is: */
+body.schone-modus #muziek-rechts {
+    display: none; /* Verbergt het oude paneel */
+}
+
+
+
         
       
 html, body {
@@ -2444,33 +2493,36 @@ window.wisselTaal = function(taal) {
 </script>
 
 <script>
-
 let klokVerborgen = false;
 
 function toggleKlok() {
-  if (typeof visualizerActive !== 'undefined' && !visualizerActive) {
-    return;
-  }
-
-  klokVerborgen = !klokVerborgen;
-  const dashboard = document.getElementById('container');
-
-if (dashboard) {
-    if (klokVerborgen) {
-      dashboard.style.display = 'none';
-      document.getElementById('terug-knop').style.opacity = '0.1';
-    } else {
-      dashboard.style.display = 'block';
-      document.getElementById('terug-knop').style.opacity = '1';
+    if (typeof visualizerActive !== 'undefined' && !visualizerActive) {
+        return;
     }
-  }
-}
+    
+    klokVerborgen = !klokVerborgen;
+    const dashboard = document.getElementById('container');
+    const terugKnop = document.getElementById('terug-knop');
 
+    // Zet of haal de 'schone-modus' klasse van de body af
+    if (klokVerborgen) {
+        document.body.classList.add('schone-modus');
+        if (dashboard) dashboard.style.display = 'none';
+        if (terugKnop) terugKnop.style.display = 'none';
+    } else {
+        document.body.classList.remove('schone-modus');
+        if (dashboard) dashboard.style.display = 'block';
+        if (terugKnop) {
+            terugKnop.style.display = 'flex';
+            terugKnop.style.opacity = '1';
+        }
+    }
+}
 document.addEventListener('click', function(event) {
   if (typeof klokVerborgen !== 'undefined' && klokVerborgen) {
-    if (event.target.closest('#menu') || event.target.closest('#showBtn') || event.target.closest('#terug-knop')) {
-      return; 
-    }
+    if (event.target.closest('#menu') || event.target.closest('#showBtn') || event.target.closest('#showBtn-hoek') || event.target.closest('#terug-knop')) {
+    return;
+}
     toggleKlok();
   }
 });
@@ -3119,6 +3171,73 @@ document.addEventListener('click', function(e) {
     document.getElementById('spotify-container').addEventListener('click', function(e) {
         this.classList.toggle('open');
     });
+</script>
+
+<!-- Definitieve onverwoestbare hoek-knop -->
+<button id="independent-gear-btn" title="Menu">
+    <i class="bi bi-gear" style="pointer-events: none;"></i>
+</button>
+
+<style>
+#independent-gear-btn {
+    display: none !important;
+    position: fixed !important;
+    top: 15px !important;
+    right: 15px !important;
+    z-index: 2147483647 !important; /* Altijd boven het menu */
+    width: 65px !important;
+    height: 65px !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    border: 2px solid white !important;
+    border-radius: 50% !important;
+    color: white !important;
+    align-items: center !important;
+    justify-content: center !important;
+    cursor: pointer !important;
+    font-size: 24px !important;
+    opacity: 1 !important;
+}
+
+/* Voorkom dat de knop doorzichtig of vaag wordt bij indrukken of focus */
+#independent-gear-btn:hover,
+#independent-gear-btn:active, 
+#independent-gear-btn:focus {
+    opacity: 1 !important;
+    background: rgba(0, 0, 0, 0.6) !important;
+    filter: none !important;
+    transform: none !important;
+    outline: none !important;
+    box-shadow: none !important;
+}
+</style>
+
+<script>
+(function() {
+    const btn = document.getElementById('independent-gear-btn');
+    
+    btn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        e.stopImmediatePropagation();
+        e.preventDefault();
+        
+        if (typeof toggleMenu === 'function') {
+            toggleMenu();
+        }
+    });
+
+    // Toon de knop alleen als de klok/container verborgen is
+    setInterval(function() {
+        const container = document.getElementById('container');
+        if (container) {
+            const isHidden = window.getComputedStyle(container).display === 'none';
+            if (isHidden) {
+                btn.style.setProperty('display', 'flex', 'important');
+            } else {
+                btn.style.setProperty('display', 'none', 'important');
+            }
+        }
+    }, 100);
+})();
 </script>
 
 </body>
