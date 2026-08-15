@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V6.8</title>
+<title>Dashboard Den Bosch V6.9</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -1512,15 +1512,30 @@ function stopAllesEnTerug() {
     isFotolijstModus = false; 
     slideshowPauze = false; 
     clearInterval(fotoTimer); 
+    
+    // Sluit eventuele openende schermen/containers
     document.getElementById('slideshow-container').style.display = 'none'; 
     document.getElementById('foto-start-scherm').style.display = 'none'; 
+    
+    // 1. ZORG DAT HET HAARDVUUR STOPT EN WGBT
     const video = document.getElementById('videoBG'); 
     video.pause(); 
+    video.currentTime = 0;
+    video.src = '';
     video.style.display = 'none'; 
+    
+    // 2. ZORG DAT HET YOUTUBE AQUARIUM (VISCOM) VOLLEDIG STOPT EN WEGBRAAT
+    let youtubeVak = document.getElementById('youtubeAchtergrond');
+    if (youtubeVak) {
+        youtubeVak.src = ''; // Dit breekt de YouTube stream direct af zodat hij stopt met spelen
+        youtubeVak.style.display = 'none';
+    }
+    
+    // Zet de interface en de standaard achtergrondfoto weer terug
     verbergInterface(false); 
     setAchtergrond(bgType); 
 }
-   
+
 function setAchtergrond(type) {
     const video = document.getElementById('videoBG');
     let youtubeVak = document.getElementById('youtubeAchtergrond');
