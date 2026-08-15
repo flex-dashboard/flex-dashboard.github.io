@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V6.7</title>
+<title>Dashboard Den Bosch V6.8</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -36,7 +36,7 @@
         width: 38px !important;
         height: 38px !important;
         font-size: 16px !important;
-        display: flex !important;
+        display: flex;
         align-items: center !important;
         justify-content: center !important;
         z-index: 999 !important;
@@ -438,7 +438,7 @@
         bottom: 440px !important;
         left: 150px !important;
         transform: translateX(-50%) !important;
-        display: flex !important;
+        display: flex;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         justify-content: center !important;
@@ -453,7 +453,7 @@
         width: 38px !important;
         height: 38px !important;
         font-size: 16px !important;
-        display: flex !important;
+        display: flex;
         align-items: center !important;
         justify-content: center !important;
     }
@@ -1508,27 +1508,41 @@ function activeerYoutubeSchoon(type) {
     setAchtergrond(type);
 }
 
-function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; clearInterval(fotoTimer); document.getElementById('slideshow-container').style.display = 'none'; document.getElementById('foto-start-scherm').style.display = 'none'; const video = document.getElementById('videoBG'); video.pause(); video.style.display = 'none'; verbergInterface(false); setAchtergrond(bgType); }
+function stopAllesEnTerug() { 
+    isFotolijstModus = false; 
+    slideshowPauze = false; 
+    clearInterval(fotoTimer); 
+    document.getElementById('slideshow-container').style.display = 'none'; 
+    document.getElementById('foto-start-scherm').style.display = 'none'; 
+    const video = document.getElementById('videoBG'); 
+    video.pause(); 
+    video.style.display = 'none'; 
+    verbergInterface(false); 
+    setAchtergrond(bgType); 
+}
    
-    function setAchtergrond(type) {
+function setAchtergrond(type) {
     const video = document.getElementById('videoBG');
     let youtubeVak = document.getElementById('youtubeAchtergrond');
-
-
 
     // 1. Maak het YouTube-scherm aan als die nog niet bestaat
     if (!youtubeVak) {
         youtubeVak = document.createElement('iframe');
         youtubeVak.id = 'youtubeAchtergrond';
         youtubeVak.setAttribute('referrerpolicy', 'strict-origin-when-cross-origin');
+        
+        // Zorgt ervoor dat de telefoon de video inline afspeelt en niet naar YouTube springt
+        youtubeVak.setAttribute('allow', 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share');
+        youtubeVak.setAttribute('allowfullscreen', 'true');
+
         youtubeVak.style.position = 'fixed';
         youtubeVak.style.top = '50%';
         youtubeVak.style.left = '50%';
         youtubeVak.style.width = '100vw';
-        youtubeVak.style.height = '56.25vw';               // Houdt exact de 16:9 verhouding van YouTube vast
+        youtubeVak.style.height = '56.25vw';               
         youtubeVak.style.minHeight = '100vh';
         youtubeVak.style.minWidth = '177.77vh';
-        youtubeVak.style.transform = 'translate(-50%, -50%) scale(1.25)'; // Zoomt de video in en duwt de randen (en titel) overal buiten
+        youtubeVak.style.transform = 'translate(-50%, -50%) scale(1.25)'; 
         youtubeVak.style.zIndex = '-1';
         youtubeVak.style.border = 'none';
         youtubeVak.style.pointerEvents = 'none'; 
@@ -1541,31 +1555,31 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
     document.body.style.animation = "none";
     document.getElementById('slideshow-container').style.display = 'none';
 
- if (type === 'achtergrond') {
-    video.pause();
-    video.style.display = 'none';
-    youtubeVak.style.display = 'none';
-    youtubeVak.src = ""; 
-    document.body.style.backgroundSize = "cover";
-    changeBg();
-} else if (type === 'vis') {
-    // 2. YouTube aquarium (nieuwe embed link)
-    document.body.style.backgroundImage = "none";
-    video.pause();
-    video.style.display = 'none';
-    youtubeVak.style.display = 'block';
-    youtubeVak.src = "https://www.youtube.com/embed/flPiIc1jWoA?autoplay=1&controls=0&mute=1&loop=1&playlist=flPiIc1jWoA&rel=0&playsinline=1&disablekb=1&modestbranding=1&enablejsapi=1";
-    isYoutubeMuted = true;
-} else if (type === 'vuur') {
-    // 3. Lokaal haardvuur (vuur.mp4)
-    document.body.style.backgroundImage = "none";
-    youtubeVak.style.display = 'none';
-    youtubeVak.src = ""; 
-    video.style.display = 'block';
-    video.src = 'video/vuur.mp4'; 
-    video.load();
-    video.play();
-}
+    if (type === 'achtergrond') {
+        video.pause();
+        video.style.display = 'none';
+        youtubeVak.style.display = 'none';
+        youtubeVak.src = ""; 
+        document.body.style.backgroundSize = "cover";
+        changeBg();
+    } else if (type === 'vis') {
+        // 2. YouTube aquarium
+        document.body.style.backgroundImage = "none";
+        video.pause();
+        video.style.display = 'none';
+        youtubeVak.style.display = 'block';
+        youtubeVak.src = "https://www.youtube.com/embed/flPiIc1jWoA?autoplay=1&controls=0&mute=1&loop=1&playlist=flPiIc1jWoA&rel=0&playsinline=1&disablekb=1&modestbranding=1&enablejsapi=1";
+        isYoutubeMuted = true;
+    } else if (type === 'vuur') {
+        // 3. Lokaal haardvuur
+        document.body.style.backgroundImage = "none";
+        youtubeVak.style.display = 'none';
+        youtubeVak.src = ""; 
+        video.style.display = 'block';
+        video.src = 'video/vuur.mp4'; 
+        video.load();
+        video.play();
+    }
 }
 
 let isYoutubeMuted = true;
@@ -1576,26 +1590,23 @@ function toggleMuteVideo(event) {
     let youtubeVak = document.getElementById('youtubeAchtergrond');
     let actieveMuteStatus = false;
 
-    // Kijk of we bij het YouTube aquarium ('vis') zijn
     if (bgType === 'vis' && youtubeVak) {
         if (isYoutubeMuted) {
-            // Zet YouTube geluid AAN
             youtubeVak.contentWindow.postMessage('{"event":"command","func":"unMute","args":""}', '*');
             isYoutubeMuted = false;
         } else {
-            // Zet YouTube geluid UIT
             youtubeVak.contentWindow.postMessage('{"event":"command","func":"mute","args":""}', '*');
             isYoutubeMuted = true;
         }
         actieveMuteStatus = isYoutubeMuted;
     } else if (video) {
-        // Dit is voor je lokale haardvuur (vuur.mp4)
         video.muted = !video.muted; 
-        video.volume = video.muted ? 0 : 1; // Dwingt het volume naar 0 of 1
+        video.volume = video.muted ? 0 : 1; 
         actieveMuteStatus = video.muted;
     }
+    
 
-    // Icoontje bijwerken
+// Icoontje bijwerken
     const muteIcon = document.querySelector('#mute-video-knop i');
     if (muteIcon) {
         muteIcon.className = actieveMuteStatus ? "bi bi-volume-mute" : "bi bi-volume-up"; 
