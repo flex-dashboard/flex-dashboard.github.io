@@ -1542,7 +1542,7 @@ function setAchtergrond(type) {
     const video = document.getElementById('videoBG');
     let youtubeVak = document.getElementById('youtubeAchtergrond');
 
-    // 1. Maak het YouTube-scherm aan als die nog niet bestaat
+    // 1. Maak het YouTube-scherm aan als dat nog niet bestaat
     if (!youtubeVak) {
         youtubeVak = document.createElement('iframe');
         youtubeVak.id = 'youtubeAchtergrond';
@@ -1582,8 +1582,8 @@ function setAchtergrond(type) {
         video.pause();
         video.style.display = 'none';
         youtubeVak.style.display = 'block';
-        youtubeVak.style.pointerEvents = "none";
-        youtubeVak.src = "https://www.youtube-nocookie.com/embed/flPiIc1jWoA?autoplay=1&controls=0&mute=1&loop=1&playlist=flPiIc1jWoA&rel=0&playsinline=1&disablekb=1&modestbranding=1&enablejsapi=1";
+        youtubeVak.style.pointerEvents = 'none';
+        youtubeVak.src = "https://www.youtube.com/embed/flPiIc1jWoA?autoplay=1&controls=0&mute=1&loop=1&playlist=flPiIc1jWoA&rel=0&playsinline=1&disablekb=1&modestbranding=1&enablejsapi=1";
         isYoutubeMuted = true;
     } else if (type === 'vuur') {
         document.body.style.backgroundImage = "none";
