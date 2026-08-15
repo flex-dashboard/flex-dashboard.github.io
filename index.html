@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V6.6</title>
+<title>Dashboard Den Bosch V6.7</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -26,7 +26,7 @@
 }
 
 /* Telefoonversie (media query) */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     #terug-knop {
         position: fixed !important;
         top: auto !important;
@@ -210,8 +210,8 @@
   }
 }
 
-/* === Voor schermen tot 768px (Telefoons) === */
-@media screen and (max-width: 768px) {
+/* === Voor schermen tot 480px (Telefoons) === */
+@media screen and (max-width: 480px) {
   #zijPlayer {
     width: 320px;
     right: -320px;
@@ -386,7 +386,7 @@
 }
 
 /* Alleen tonen op de telefoon binnen de media query */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     .alleen-mobiel {
         display: inline;
         font-size: 0.5em;
@@ -397,7 +397,7 @@
 /* ========================================= */
 /* SPECIAAL VOOR TELEFOON (MEDIA QUERY) */
 /* ========================================= */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     
     /* Het weer op de telefoon: 5-daagse voorspelling boven, temperatuur/locatie eronder */
     #weer-sectie {
@@ -482,14 +482,14 @@
     /* SPOTIFY CONTAINER */
     #spotify-container {
         position: fixed;
-        bottom: 20px; /* PC positie in de rechterkolom (pas dit getal aan als hij hoger/lager moet in het rijtje) */
-        right: 15px;  /* PC positie in de rechterkolom */
+        bottom: 20px;
+        right: 35px;  /* PC positie een stukje naar links verplaatst */
         width: 55px;
         height: 55px;
         overflow: hidden;
         transition: all 0.4s ease-in-out;
         z-index: 9999;
-        background-color: #1db954; /* Maakt de knop direct mooi Spotify-groen op de PC */
+        background-color: #1db954;
         border: none;
         border-radius: 50%;
         display: flex;
@@ -510,9 +510,10 @@
         top: 50%;
         left: 50%;
         transform: translate(-50%, -50%);
-        filter: brightness(0) invert(1); /* Zorgt dat het logo wit kleurt op de groene achtergrond */
+        filter: brightness(0) invert(1);
     }
-    #spotify-container:hover {
+    
+    #spotify-container.open {
         width: 210px;
         height: 380px;
         border-radius: 12px;
@@ -522,17 +523,16 @@
         padding-top: 10px;
     }
 
-    #spotify-container:hover::before { display: none; }
+    #spotify-container.open::before { display: none; }
     #spotify-container iframe { opacity: 0; transition: opacity 0.3s ease; }
-    #spotify-container:hover iframe { opacity: 1; }
+    #spotify-container.open iframe { opacity: 1; }
 
-    
-    /* === Mobiele query: Spotify-knop gecentreerd boven de radio === */
-    @media screen and (max-width: 768px) {
+    /* === Mobiele query === */
+    @media screen and (max-width: 480px) {
       #spotify-container {
         top: auto !important;
         right: auto !important;
-        bottom: 60px !important; /* Net boven de radioknop */
+        bottom: 60px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
         width: 55px !important;
@@ -541,8 +541,7 @@
         border-radius: 50% !important;
       }
       
-      /* Als je op mobiel tikt/opent, wordt hij net zo groot als op de PC en klapt hij naar boven uit */
-      #spotify-container:hover, #spotify-container.open {
+      #spotify-container.open {
         width: 210px !important;
         height: 380px !important;
         border-radius: 12px !important;
@@ -552,7 +551,6 @@
         padding-top: 10px !important;
       }
     }
-
 
     /* === INKLAPBARE RADIO (PC & Mobiel via klik) === */
 #radio-hover-wrapper { 
@@ -619,7 +617,7 @@
   height: 85px; 
 }
 /* === Mobiele query: Radio onderaan in het midden met klik-toggle === */
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   #radio-hover-wrapper {
     top: auto !important;
     right: auto !important;
@@ -681,7 +679,7 @@
     }
 
 /* Telefoonversie (media query) */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     #verjaardagen-container {
         position: fixed !important;
         top: 570px !important;
@@ -952,7 +950,7 @@ canvas {
 /* ================================================= */
 /* ÉÉN GECOMBINEERDE EN SCHONE MEDIA QUERY VOOR MOBIEL */
 /* ================================================= */
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     /* Info en controls aanpassing voor mobiel */
     .info { font-size: 10px; bottom: 10px; }
     #controls { top: 10px; left: 10px; }
@@ -985,8 +983,8 @@ canvas {
   }
 }
 
-/* Telefoons (tot 768px) */
-@media screen and (max-width: 768px) {
+/* Telefoons (tot 480px) */
+@media screen and (max-width: 480px) {
   /* Verjaardagskaders leesbaar schalen op telefoons */
   .v-lijst {
     gap: 8px;
@@ -1036,7 +1034,7 @@ canvas {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     /* Jouw bestaande achtergrond instellingen */
     body {
         background-size: cover !important;
@@ -1197,16 +1195,19 @@ let huidigeTaal = 'nl';
 // Functie voor volledig scherm (fullscreen)
 function schakelFullscreen() {
     if (!document.fullscreenElement) {
+        // We vragen fullscreen aan
         document.documentElement.requestFullscreen().catch(err => {
             console.log(`Fout bij openen van fullscreen: ${err.message}`);
         });
     } else {
+        // We verlaten fullscreen via de document-referentie
         if (document.exitFullscreen) {
-            document.exitFullscreen();
+            document.exitFullscreen().catch(err => {
+                console.log(`Fout bij sluiten van fullscreen: ${err.message}`);
+            });
         }
     }
 }
-
 function wisselTaal(taal) {
     huidigeTaal = taal;
     
@@ -1274,11 +1275,19 @@ function openUitleg() {
 
     function toggleMijnFullscreen() {
         if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-            if (document.documentElement.requestFullscreen) { document.documentElement.requestFullscreen(); }
-            else if (document.documentElement.webkitRequestFullscreen) { document.documentElement.webkitRequestFullscreen(); }
+            if (document.documentElement.requestFullscreen) { 
+                document.documentElement.requestFullscreen().catch(err => console.log(err)); 
+            }
+            else if (document.documentElement.webkitRequestFullscreen) { 
+                document.documentElement.webkitRequestFullscreen(); 
+            }
         } else {
-            if (document.exitFullscreen) { document.exitFullscreen(); }
-            else if (document.webkitExitFullscreen) { document.webkitExitFullscreen(); }
+            if (document.exitFullscreen) { 
+                document.exitFullscreen().catch(err => console.log(err)); 
+            }
+            else if (document.webkitExitFullscreen) { 
+                document.webkitExitFullscreen(); 
+            }
         }
     }
 
@@ -1545,7 +1554,7 @@ function stopAllesEnTerug() { isFotolijstModus = false; slideshowPauze = false; 
     video.pause();
     video.style.display = 'none';
     youtubeVak.style.display = 'block';
-    youtubeVak.src = "https://www.youtube.com/embed/6-mZrtWQrPw?autoplay=1&controls=0&mute=1&loop=1&playlist=6-mZrtWQrPw&rel=0&playsinline=1";
+    youtubeVak.src = "https://www.youtube.com/embed/flPiIc1jWoA?autoplay=1&controls=0&mute=1&loop=1&playlist=flPiIc1jWoA&rel=0&playsinline=1&disablekb=1&modestbranding=1&enablejsapi=1";
     isYoutubeMuted = true;
 } else if (type === 'vuur') {
     // 3. Lokaal haardvuur (vuur.mp4)
@@ -2916,7 +2925,7 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 
 <!-- Dit style-blok doet he-le-maal niks op je Windows laptop. Het werkt alleen op smalle schermen. -->
 <style>
-@media screen and (max-width: 768px) {
+@media screen and (max-width: 480px) {
   
   
 
@@ -2948,7 +2957,7 @@ document.getElementById('presetSelect').addEventListener('change', function() {
   }
 }
 
-@media (max-width: 768px) {
+@media (max-width: 480px) {
     body {
         background-size: 100% 100% !important;
         background-repeat: no-repeat !important;
@@ -3040,8 +3049,8 @@ if (opgeslagenVersie !== huidigeVersie) {
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
-    // Controleer of het scherm kleiner is dan 768px (dus een telefoon/tablet)
-    if (window.innerWidth <= 768 && navigator.geolocation) {
+    // Controleer of het scherm kleiner is dan 480px (dus een telefoon/tablet)
+    if (window.innerWidth <= 480 && navigator.geolocation) {
         navigator.geolocation.getCurrentPosition(function(position) {
             const lat = position.coords.latitude;
             const lon = position.coords.longitude;
@@ -3079,6 +3088,12 @@ document.addEventListener('click', function(e) {
     wrapper.classList.remove('open');
   }
 });
+</script>
+
+<script>
+    document.getElementById('spotify-container').addEventListener('click', function(e) {
+        this.classList.toggle('open');
+    });
 </script>
 
 </body>
