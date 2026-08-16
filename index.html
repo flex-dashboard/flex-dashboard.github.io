@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flex Dashboard V7.4</title>
+<title>Flex Dashboard V7.5</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -354,18 +354,21 @@
 /* ========================================= */
 #knoppen-links { 
     position: fixed !important; 
-    /* 300px omgezet naar hoogte-percentage van het pc-scherm */
-    top: 28vh !important; 
-    /* 20px omgezet naar breedte-percentage vanaf de linkerrand */
+    top: 50% !important; 
+    transform: translateY(-50%) !important; 
     left: 1vw !important; 
     z-index: 999 !important; 
     display: flex !important; 
     flex-direction: column !important; 
-    /* 15px tussenruimte schaalt mee met schermhoogte */
     gap: 1.5vh !important; 
-    flex-wrap: wrap !important; 
 }
 
+/* Zorgt dat de knoppen zelf meeschalen in de hoogte */
+#knoppen-links > * {
+    width: 6.5vh !important;
+    height: 6.5vh !important;
+    aspect-ratio: 1 / 1 !important;
+}
 /* Standaard: verberg de locatie op de PC */
 .alleen-mobiel {
     display: none;
@@ -465,16 +468,29 @@
 /* DIT IS DE PC VERSIE (BASIS) */
 /* ========================================= */
 #muziek-rechts {
-    position: fixed;
-    top: 4vh;
-    right: 0.2vw;          /* Afstand tot de rand */
-    z-index: 999;
-    display: flex;
-    flex-direction: column;
-    gap: 10px;
-    width: auto;           /* Zorgt dat de container niet breder is dan de knoppen zelf */
-    align-items: flex-end; /* Lijnt de knoppen strak aan de rechterkant uit */
-}    
+    position: fixed !important;
+    top: 2vh !important;               /* Terug strak naar boven */
+    transform: none !important;        /* Haalt de centrering naar het midden weg */
+    right: 1vw !important;
+    z-index: 999 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 0.6vh !important;             /* Tussenruimte zodat de hele rij strak past */
+    align-items: center !important;
+}
+
+/* Behoudt de grote maat van 6.5vh */
+#muziek-rechts > *,
+#muziek-rechts button {
+    width: 6.5vh !important;
+    height: 6.5vh !important;
+    min-width: 6.5vh !important;
+    min-height: 6.5vh !important;
+    max-width: 6.5vh !important;
+    max-height: 6.5vh !important;
+    flex-shrink: 0 !important;
+    border-radius: 50% !important;
+} 
     
 
    /* SPOTIFY CONTAINER */
