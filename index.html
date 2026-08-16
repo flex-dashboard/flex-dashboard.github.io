@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flex Dashboard V7.3</title>
+<title>Flex Dashboard V7.4</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -12,42 +12,6 @@
 
 
 
-/* PC-versie (ongewijzigd) */
-#terug-knop {
-    position: fixed;
-    left: 21px;
-    top: 620px;
-    width: 65px;
-    height: 65px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    z-index: 1000;
-    background-color: rgba(0, 0, 0, 0.7);
-    opacity: 1;
-}
-
-/* Telefoonversie (media query) */
-@media (max-width: 480px) {
-    #terug-knop {
-        position: fixed !important;
-        top: auto !important;
-        bottom: 440px !important; /* Zelfde hoogte als de andere 4 knoppen */
-        left: 150px !important;
-        transform: translate(96px, 0) !important; /* Plaatst hem precies rechts naast de 4-knops groep */
-        width: 38px !important;
-        height: 38px !important;
-        font-size: 16px !important;
-        display: flex;
-        align-items: center !important;
-        justify-content: center !important;
-        z-index: 999 !important;
-        background-color: rgba(0, 0, 0, 0.7) !important;
-        border-radius: 50% !important; /* Maakt hem mooi rond gelijk de rest */
-        box-shadow: none !important;
-        padding: 0 !important;
-    }
-}
 
 #afspeellijstContainer {
   max-height: 180px;
@@ -324,8 +288,7 @@
 .menu-panel input[type="range"]::-webkit-slider-thumb { -webkit-appearance: none; width: 16px; height: 16px; border-radius: 50%; background: #00ff88; cursor: pointer; box-shadow: 0 0 8px rgba(0, 255, 136, 0.8); transition: transform 0.1s; }
 .menu-panel input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.25); }
     
-    /* TERUGKNOP VAN VISUALISATIE */
-    #lamp-container { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background-color: white; z-index: 999999; cursor: pointer; }
+
 
     /* BASIS STIJL & LICHTGEWICHT LED BACKGROUNDS */
     body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; color: white; background-color: #000; background-position: center; background-repeat: no-repeat; box-sizing: border-box; transition: border 0.3s ease, box-shadow 0.3s ease; border: 0px solid transparent; }
@@ -384,15 +347,23 @@
 
     /* POSITIES ONDERDELEN */
     #weer-sectie { position: fixed; top: 15px; left: 20px; z-index: 999; display: flex; align-items: center; gap: 30px; }
-    #knoppen-links { 
-    position: fixed; 
-    top: 300px; 
-    left: 20px; 
-    z-index: 999; 
-    display: flex; 
-    flex-direction: column; 
-    gap: 15px; 
-    flex-wrap: wrap; 
+
+
+    /* ========================================= */
+/* DIT IS DE PC-VERSIE (NIET MOBIEL)         */
+/* ========================================= */
+#knoppen-links { 
+    position: fixed !important; 
+    /* 300px omgezet naar hoogte-percentage van het pc-scherm */
+    top: 28vh !important; 
+    /* 20px omgezet naar breedte-percentage vanaf de linkerrand */
+    left: 1vw !important; 
+    z-index: 999 !important; 
+    display: flex !important; 
+    flex-direction: column !important; 
+    /* 15px tussenruimte schaalt mee met schermhoogte */
+    gap: 1.5vh !important; 
+    flex-wrap: wrap !important; 
 }
 
 /* Standaard: verberg de locatie op de PC */
@@ -412,9 +383,8 @@
 /* ========================================= */
 /* SPECIAAL VOOR TELEFOON (MEDIA QUERY) */
 /* ========================================= */
+/* 1. Weer-sectie op mobiel */
 @media (max-width: 480px) {
-    
-    /* Het weer op de telefoon: 5-daagse voorspelling boven, temperatuur/locatie eronder */
     #weer-sectie {
         position: fixed;
         top: 10px;
@@ -427,7 +397,10 @@
         gap: 10px;
         z-index: 999;
     }
+}
 
+/* 2. Huidige temperatuur op mobiel */
+@media (max-width: 480px) {
     #temp-nu {
         display: flex;
         flex-direction: row;
@@ -440,58 +413,68 @@
         font-size: 6vw !important;
         gap: 10px;
     }
+}
 
+/* 3. Locatienaam op mobiel */
+@media (max-width: 480px) {
     #locatie-naam {
         transform: translateY(-3px);
         display: inline-block;
         font-size: 0.6em;
     }
+}
 
+/* 4. Positie en weergave van de 5-knoppen balk op mobiel */
+@media (max-width: 480px) {
     #knoppen-links {
-        position: fixed !important;
-        top: auto !important;
-        bottom: 440px !important;
-        left: 150px !important;
-        transform: translateX(-50%) !important;
-        display: flex;
+        position: absolute !important;
+        top: 33vh !important;
+        left: 0 !important;
+        width: 100% !important;
+        display: flex !important;
         flex-direction: row !important;
         flex-wrap: nowrap !important;
         justify-content: center !important;
-        gap: 8px !important;
-        z-index: 999 !important;
-        background: none !important;
-        border: none !important;
-        box-shadow: none !important;
-        padding: 0 !important;
-    }
-    #knoppen-links .ronde-knop {
-        width: 38px !important;
-        height: 38px !important;
-        font-size: 16px !important;
-        display: flex;
         align-items: center !important;
-        justify-content: center !important;
+        gap: 1.5vw !important;
+        z-index: 1000 !important;
     }
+}
 
+/* 5. Regels om de knoppen-balk te verbergen zodra JS dat vraagt */
+@media (max-width: 480px) {
+    #knoppen-links[style*="display: none"],
+    #knoppen-links[style*="display:none"],
+    #knoppen-links.hidden,
+    #knoppen-links.verborgen {
+        display: none !important;
+    }
+}
 
+/* 6. Formaat en vorm van de losse knoppen op mobiel */
+@media (max-width: 480px) {
+    #knoppen-links > * {
+        width: 12.5vw !important;
+        height: 12.5vw !important;
+        aspect-ratio: 1 / 1 !important;
+    }
 }
 
 
+/* ========================================= */
+/* DIT IS DE PC VERSIE (BASIS) */
+/* ========================================= */
 #muziek-rechts {
     position: fixed;
-    top: 20px;
-    right: 4px;
+    top: 4vh;
+    right: 0.2vw;          /* Afstand tot de rand */
     z-index: 999;
     display: flex;
     flex-direction: column;
     gap: 10px;
-    max-width: 150px; /* Hier verander je width naar max-width */
-    width: 100%;      /* Hiermee wordt hij flexibel binnen die 150px */
-    flex-wrap: wrap;  /* Zorgt dat inhoud netjes meebeweegt */
-    align-items: center;
-}
-
-    
+    width: auto;           /* Zorgt dat de container niet breder is dan de knoppen zelf */
+    align-items: flex-end; /* Lijnt de knoppen strak aan de rechterkant uit */
+}    
     
 
    /* SPOTIFY CONTAINER */
@@ -1107,44 +1090,40 @@ canvas {
     font-size: 5.5vw;
   }
 
-  /* Linkerknoppen positionering op mobiel */
-  #knoppen-links {
-    top: auto;
-    bottom: 65px;
-    left: 15px;
-  }
-}
 
+
+/* ========================================= */
+/* TELEFOONVERSIE: DIRECTE ALIGNMENT ZONDER LOOPS */
+/* ========================================= */
 @media (max-width: 480px) {
-    /* Jouw bestaande achtergrond instellingen */
+    /* Jouw achtergrond-instellingen */
     body {
         background-size: cover !important;
         background-repeat: no-repeat !important;
         background-position: center !important;
     }
 
-   
-
-    /* Dwing exact een raster van 5 kolommen af (2 rijen van 5) */
-    #muziek-rechts > div {
-        display: grid !important;
-        grid-template-columns: repeat(5, 45px) !important; /* Snoeihard 5 knoppen naast elkaar */
-        gap: 10px !important;
-        justify-content: center !important;
-        align-items: center !important;
-    }
-
- #muziek-rechts {
+    #muziek-rechts {
         position: absolute !important;
-        left: 50% !important;
+        /* Directe afstand vanaf de linkerrand; negeert de rekenfouten van het houdervak */
+        left: 13% !important;
         right: auto !important;
-        /* -88% zet hem exact in het midden, 420px blijft keurig van de hoogte af */
-        transform: translate(-88%, 420px) !important;
         width: auto !important;
+        margin: 0 !important;
+        padding: 0 !important;
+        /* Alleen de hoogte-instelling */
+        transform: translateY(57vh) !important;
         z-index: 9999 !important;
     }
-}
 
+    #muziek-rechts > div {
+        display: grid !important;
+        grid-template-columns: repeat(5, 45px) !important;
+        gap: 10px !important;
+        margin: 0 !important;
+        padding: 0 !important;
+    }
+}
 
 </style>
 
@@ -1214,13 +1193,17 @@ canvas {
     <button class="ronde-knop" onclick="activeerFotolijst()"><i class="bi bi-camera-fill"></i></button>
     <button class="ronde-knop" onclick="activeerVideo('video/vuur.mp4')"><i class="bi bi-fire"></i></button>
     <button class="ronde-knop" onclick="activeerYoutubeSchoon('vis')"><i class="bi bi-water"></i></button>
+
     <button id="visualisatie-start-knop" class="ronde-knop" onclick="toggleVisualizer()">
-  <i class="bi bi-play-fill"></i>
-</button>
-    
+        <i class="bi bi-play-fill"></i>
+    </button>
+
+    <div id="terug-knop" class="ronde-knop" onclick="toggleKlok()" style="z-index: 2147483647; cursor: pointer; display: flex; align-items: center; justify-content: center;">
+        <i class="bi bi-eye-slash"></i>
+    </div>
 </div>
 
-<div id="muziek-rechts" style="position: fixed !important; right: 4px !important; top: 40px !important; width: auto !important; margin: 0 !important; z-index: 9999;">
+<div id="muziek-rechts">
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
         <button id="showBtn" class="ronde-knop" onclick="toggleMenu()" title="Instellingen"><i class="bi bi-gear"></i></button>
         <button id="fullscreen-knop" class="ronde-knop" onclick="toggleMijnFullscreen()" title="Volledig scherm"><i class="bi bi-fullscreen"></i></button>
@@ -1234,14 +1217,12 @@ canvas {
         
         <!-- Reload / Ververs knop -->
         <button id="reload-knop" class="ronde-knop" onclick="location.reload()" title="Pagina vernieuwen"><i class="bi bi-arrow-clockwise"></i></button>
-        
-        
     </div>
 </div>
+
 <div id="dimmer-knop-container" style="display: none;">
     <button id="dimmer-knop" class="led-bedienknop" onclick="handmatigDimmen()">FEL</button>
 </div>
-
 
 
 <div id="spotify-container">
@@ -3076,9 +3057,6 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 }
 </style>
 
-<div id="terug-knop" class="ronde-knop" onclick="toggleKlok()"  z-index: 2147483647; cursor: pointer; display: flex; align-items: center; justify-content: center;">
-    <i class="bi bi-eye-slash"></i>
-</div>
 
 
 <input type="file" id="muziekMapInput" webkitdirectory directory multiple style="display:none;" onchange="verwerkGekozenMap(event)">
