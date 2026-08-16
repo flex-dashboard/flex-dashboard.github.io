@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Den Bosch V7.1</title>
+<title>Flex Dashboard V7.3</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -494,86 +494,117 @@
     
     
 
-    /* SPOTIFY CONTAINER */
+   /* SPOTIFY CONTAINER */
+#spotify-container {
+    position: fixed;
+    bottom: 20px;
+    right: 35px;
+    width: 55px;
+    height: 55px;
+    overflow: hidden;
+    transition: all 0.4s ease-in-out;
+    z-index: 9990;
+    background-color: #1db954;
+    border: none;
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    align-items: center;
+    cursor: pointer;
+}
+
+#spotify-container::before {
+    content: '';
+    width: 24px;
+    height: 24px;
+    background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg');
+    background-size: contain;
+    background-repeat: no-repeat;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    filter: brightness(0) invert(1);
+}
+
+/* Echte sluitknop netjes linksboven */
+#spotify-close {
+    position: absolute;
+    top: 8px;
+    left: 12px;
+    font-size: 14px;
+    color: #ffffff;
+    background: rgba(0, 0, 0, 0.6);
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    z-index: 10000;
+}
+
+#spotify-container.open #spotify-close {
+    display: flex;
+}
+
+#spotify-container iframe {
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+/* Open status (puur op basis van klik/open klasse voor zowel PC als mobiel) */
+#spotify-container.open {
+    width: 210px;
+    height: 380px;
+    border-radius: 12px;
+    transform: scale(0.8);
+    transform-origin: bottom right;
+    background-color: #282828;
+    padding-top: 10px;
+}
+
+#spotify-container.open::before { 
+    display: none; 
+}
+
+#spotify-container.open iframe { 
+    opacity: 1; 
+}
+
+/* === Mobiele query === */
+@media screen and (max-width: 480px) {
     #spotify-container {
-        position: fixed;
-        bottom: 20px;
-        right: 35px;  /* PC positie een stukje naar links verplaatst */
-        width: 55px;
-        height: 55px;
-        overflow: hidden;
-        transition: all 0.4s ease-in-out;
-        z-index: 9999;
-        background-color: #1db954;
-        border: none;
-        border-radius: 50%;
-        display: flex;
-        flex-direction: column;
-        justify-content: flex-start;
-        align-items: center;
-        cursor: pointer;
-    }
-
-    #spotify-container::before {
-        content: '';
-        width: 24px;
-        height: 24px;
-        background-image: url('https://upload.wikimedia.org/wikipedia/commons/1/19/Spotify_logo_without_text.svg');
-        background-size: contain;
-        background-repeat: no-repeat;
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        filter: brightness(0) invert(1);
-    }
-    
-    #spotify-container:hover {
-        width: 210px;
-        height: 380px;
-        border-radius: 12px;
-        transform: scale(0.8);
-        transform-origin: bottom right;
-        background-color: #282828;
-        padding-top: 10px;
-    }
-
-    #spotify-container:hover::before { display: none; }
-    #spotify-container iframe { opacity: 0; transition: opacity 0.3s ease; }
-    #spotify-container:hover iframe { opacity: 1; }
-
-    /* === Mobiele query === */
-    @media screen and (max-width: 480px) {
-      #spotify-container {
-        top: auto !important;
+        bottom: 65px !important;
         right: auto !important;
-        bottom: 60px !important;
         left: 50% !important;
         transform: translateX(-50%) !important;
-        width: 55px !important;
-        height: 55px !important;
-        background-color: #1db954 !important;
-        border-radius: 50% !important;
-      }
-      
-      #spotify-container:hover {
+        width: 40px !important;
+        height: 40px !important;
+    }
+    
+    #spotify-container::before {
+        width: 18px !important;
+        height: 18px !important;
+    }
+    
+    #spotify-container.open {
+        z-index: 99999 !important;
         width: 210px !important;
         height: 380px !important;
-        border-radius: 12px !important;
-        transform: translateX(-50%) !important;
+        transform: translateX(-50%) scale(1) !important;
         transform-origin: bottom center !important;
-        background-color: #282828 !important;
-        padding-top: 10px !important;
-      }
     }
-
+}
 
     /* === INKLAPBARE RADIO (PC & Mobiel via klik) === */
 #radio-hover-wrapper { 
   position: fixed; 
   top: 5px; 
   right: 180px; 
-  z-index: 1001; 
+  z-index: 100000 !important; 
   display: flex; 
   flex-direction: column; 
   align-items: center; 
@@ -1214,12 +1245,13 @@ canvas {
 
 
 <div id="spotify-container">
+    <span id="spotify-close">✕</span>
     <iframe style="border-radius:12px"
-    src="https://open.spotify.com/embed/playlist/1KcRhNuDftxoqaBXLm4imy?utm_source=generator"
-    width="100%" height="352" frameBorder="0"
-    allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
-    loading="lazy">
-</iframe>
+        src="https://open.spotify.com/embed/playlist/1KcRhNuDftxoqaBXLm4imy?utm_source=generator"
+        width="100%" height="352" frameBorder="0"
+        allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+        loading="lazy">
+    </iframe>
 
 </div>
 
@@ -3168,11 +3200,7 @@ document.addEventListener('click', function(e) {
 });
 </script>
 
-<script>
-    document.getElementById('spotify-container').addEventListener('click', function(e) {
-        this.classList.toggle('open');
-    });
-</script>
+
 
 <!-- Definitieve onverwoestbare hoek-knop -->
 <button id="independent-gear-btn" title="Menu">
@@ -3240,6 +3268,32 @@ document.addEventListener('click', function(e) {
     }, 100);
 })();
 </script>
+
+
+<script>
+document.getElementById('spotify-container').addEventListener('click', function(e) {
+    this.classList.toggle('open');
+});
+</script>
+
+<script>
+const spotifyContainer = document.getElementById('spotify-container');
+const spotifyClose = document.getElementById('spotify-close');
+
+// Openen wanneer je op de knop klikt (als hij nog dicht is)
+spotifyContainer.addEventListener('click', function(e) {
+    if (!spotifyContainer.classList.contains('open')) {
+        spotifyContainer.classList.add('open');
+    }
+});
+
+// Sluiten wanneer je op het kruisje klikt
+spotifyClose.addEventListener('click', function(e) {
+    e.stopPropagation(); // Voorkomt dat de klik doorloopt naar de container
+    spotifyContainer.classList.remove('open');
+});
+</script>
+
 
 </body>
 </html>
