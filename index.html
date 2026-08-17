@@ -3,8 +3,8 @@
 <head>
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Flex Dashboard V7.5</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>Flex Dashboard V7.9</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -291,7 +291,21 @@
 
 
     /* BASIS STIJL & LICHTGEWICHT LED BACKGROUNDS */
-    body, html { margin: 0; padding: 0; height: 100%; width: 100%; overflow: hidden; font-family: 'Segoe UI', Arial, sans-serif; color: white; background-color: #000; background-position: center; background-repeat: no-repeat; box-sizing: border-box; transition: border 0.3s ease, box-shadow 0.3s ease; border: 0px solid transparent; }
+body, html { 
+    margin: 0; 
+    padding: 0; 
+    height: 100dvh;                /* Aangepast: voorkomt het verspringen bij het draaien op de telefoon */
+    width: 100%; 
+    overflow: hidden; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    color: white; 
+    background-color: #000; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    box-sizing: border-box; 
+    transition: border 0.3s ease, box-shadow 0.3s ease; 
+    border: 0 solid transparent;   /* De 'px' erachter weggehaald */
+}
     
     /* LED RAND REGENBOOG - 5PX */
     body.led-regenboog {
@@ -345,8 +359,15 @@
         z-index: 4;
     }
 
-    /* POSITIES ONDERDELEN */
-    #weer-sectie { position: fixed; top: 15px; left: 20px; z-index: 999; display: flex; align-items: center; gap: 30px; }
+    #weer-sectie { 
+    position: fixed; 
+    top: 2vh;           /* 2% van de schermhoogte */
+    left: 1.5vw;        /* 1.5% van de schermbreedte */
+    z-index: 999; 
+    display: flex; 
+    align-items: center; 
+    gap: 1.5vw;         /* Zorgt dat de tussenruimte meeschaalt */
+}
 
 
     /* ========================================= */
@@ -364,16 +385,23 @@
 }
 
 /* Zorgt dat de knoppen zelf meeschalen in de hoogte */
-#knoppen-links > * {
+#knoppen-links > * { 
     width: 6.5vh !important;
     height: 6.5vh !important;
     aspect-ratio: 1 / 1 !important;
 }
+
+/* Regels om de knoppen-balk ook op de PC te verbergen zodra JS dat vraagt */
+#knoppen-links[style*="display: none"],
+#knoppen-links.hidden,
+#knoppen-links.verborgen {
+    display: none !important;
+}
+
 /* Standaard: verberg de locatie op de PC */
 .alleen-mobiel {
     display: none;
 }
-
 /* Alleen tonen op de telefoon binnen de media query */
 @media (max-width: 480px) {
     .alleen-mobiel {
@@ -431,7 +459,7 @@
 @media (max-width: 480px) {
     #knoppen-links {
         position: absolute !important;
-        top: 33vh !important;
+        top: 35vh !important;
         left: 0 !important;
         width: 100% !important;
         display: flex !important;
@@ -469,13 +497,13 @@
 /* ========================================= */
 #muziek-rechts {
     position: fixed !important;
-    top: 2vh !important;               /* Terug strak naar boven */
+    top: 9vh !important;                  /* Aangepast: een stukje naar beneden gezet */
     transform: none !important;        /* Haalt de centrering naar het midden weg */
     right: 1vw !important;
     z-index: 999 !important;
     display: flex !important;
     flex-direction: column !important;
-    gap: 0.6vh !important;             /* Tussenruimte zodat de hele rij strak past */
+    gap: 0.6vh !important;              /* Tussenruimte zodat de hele rij strak past */
     align-items: center !important;
 }
 
@@ -490,9 +518,14 @@
     max-height: 6.5vh !important;
     flex-shrink: 0 !important;
     border-radius: 50% !important;
-} 
-    
+}
 
+/* Regels om de rechterknoppen ook op de PC te verbergen zodra JS dat vraagt */
+#muziek-rechts[style*="display: none"],
+#muziek-rechts.hidden,
+#muziek-rechts.verborgen {
+    display: none !important;
+}
    /* SPOTIFY CONTAINER */
 #spotify-container {
     position: fixed;
@@ -710,32 +743,91 @@
     margin: 0 !important;
 }
 
+/* Regels om de rechterknoppen ook op mobiel te verbergen zodra JS dat vraagt */
+#muziek-rechts[style*="display: none"],
+#muziek-rechts.hidden,
+#muziek-rechts.verborgen {
+    display: none !important;
+}
 
-    /* FLEXIBELE MIDDENCONTAINER */
+
+    /* Dit is voor de pc-versie */
+#flex-midden-container {
+    position: fixed;
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100vw;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    pointer-events: none;
+    z-index: 10;
+}
+
+#klok-container {
+    text-align: center;
+    width: 100%;
+    pointer-events: auto;
+}
+
+#klok-regel { 
+    font-size: 26vw; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
+    font-weight: bold; 
+    line-height: 0.9; 
+    letter-spacing: -1vw; 
+    cursor: pointer; 
+    display: inline-flex; 
+    align-items: baseline; 
+    justify-content: center; 
+    color: white; 
+}
+
+.regenboog-stijl { 
+    background: linear-gradient(to right, #ff0000 0%, #ff8c00 30%, #ffff00 60%, #32cd32 100%) !important; 
+    -webkit-background-clip: text !important; 
+    background-clip: text !important; 
+    color: transparent !important; 
+    -webkit-text-fill-color: transparent !important; 
+    text-shadow: none !important; 
+    filter: drop-shadow(0.2vw 0.2vw 0.2vw rgba(0,0,0,0.8)) !important; 
+    display: inline-block; 
+}
+
+#sec { 
+    background: none !important; 
+    -webkit-background-clip: initial !important; 
+    background-clip: initial !important; 
+    color: white !important; 
+    -webkit-text-fill-color: white !important; 
+    opacity: 0.6 !important; 
+    font-size: 6vw !important; 
+    margin-left: 1vw !important; 
+    letter-spacing: 0.3vw !important; 
+    display: inline-block !important; 
+    visibility: visible !important; 
+}
+
+#datum-container { 
+    text-align: center; 
+    width: 100%; 
+    margin-top: 1vh; 
+}
+
+#datum { 
+    font-size: 4.5vw; 
+    text-transform: uppercase; 
+    font-weight: bold; 
+}
+
+/* Dit is voor de telefoon-versie (direct eronder gekoppeld) */
+@media (max-width: 480px) {
     #flex-midden-container {
-        position: fixed;
-        top: 50%; left: 50%;
-        transform: translate(-50%, -50%);
-        width: 100vw;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        align-items: center;
-        pointer-events: none;
-        z-index: 10;
+        top: 47%; 
     }
-
-    #klok-container {
-        text-align: center;
-        width: 100%;
-        pointer-events: auto;
-    }
-    #klok-regel { font-size: 26vw; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; font-weight: bold; line-height: 0.9; letter-spacing: -1vw; cursor: pointer; display: inline-flex; align-items: baseline; justify-content: center; color: white; }
-    .regenboog-stijl { background: linear-gradient(to right, #ff0000 0%, #ff8c00 30%, #ffff00 60%, #32cd32 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; color: transparent !important; -webkit-text-fill-color: transparent !important; text-shadow: none !important; filter: drop-shadow(2px 2px 2px rgba(0,0,0,0.8)) !important; display: inline-block; }
-    #sec { background: none !important; -webkit-background-clip: initial !important; background-clip: initial !important; color: white !important; -webkit-text-fill-color: white !important; opacity: 0.6 !important; font-size: 6vw !important; margin-left: 15px !important; letter-spacing: 3px !important; display: inline-block !important; visibility: visible !important; }
-
-    #datum-container { text-align: center; bottom: 230px; width: 100%; margin-top: 1vh; }
-    #datum { font-size: 4.5vw; text-transform: uppercase; font-weight: bold; }
+}
 
     /* FLEXIBELE ONDERCONTAINER VOOR DE VERJAARDAGEN */
     #verjaardagen-container {
@@ -1120,25 +1212,25 @@ canvas {
     }
 
     #muziek-rechts {
-        position: absolute !important;
-        /* Directe afstand vanaf de linkerrand; negeert de rekenfouten van het houdervak */
-        left: 13% !important;
-        right: auto !important;
-        width: auto !important;
-        margin: 0 !important;
-        padding: 0 !important;
-        /* Alleen de hoogte-instelling */
-        transform: translateY(57vh) !important;
-        z-index: 9999 !important;
-    }
+    position: absolute !important;
+    /* Directe afstand vanaf de linkerrand; negeert de rekenfouten van het houdervak */
+    left: 11.5% !important;
+    right: auto !important;
+    width: auto !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    /* Aangepast: verlaagd van 57vh naar 50vh zodat ze een stuk hoger komen te staan */
+    transform: translateY(50vh) !important;
+    z-index: 9999 !important;
+}
 
-    #muziek-rechts > div {
-        display: grid !important;
-        grid-template-columns: repeat(5, 45px) !important;
-        gap: 10px !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
+#muziek-rechts > div {
+    display: grid !important;
+    /* De px vervangen door vh zodat het volledig responsive schaalt */
+    grid-template-columns: repeat(5, 6.5vh) !important;
+    gap: 1.5vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
 }
 
 </style>
