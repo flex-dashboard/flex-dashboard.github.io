@@ -631,92 +631,203 @@ body, html {
     }
 }
 
-    /* === INKLAPBARE RADIO (PC & Mobiel via klik) === */
-#radio-hover-wrapper { 
-  position: fixed; 
-  top: 5px; 
-  right: 180px; 
-  z-index: 100000 !important; 
-  display: flex; 
-  flex-direction: column; 
-  align-items: center; 
-}
-#radio-balk-trigger { 
-  background-color: #1a1a1a; 
-  color: white; 
-  border: 1px solid rgba(255,255,255,0.2); 
-  padding: 5px 12px; 
-  font-size: 11px; 
-  font-weight: bold; 
-  text-transform: uppercase; 
-  cursor: pointer; 
-  border-radius: 4px; 
-  margin-bottom: 2px; 
+    /* === INKLAPBARE RADIO (PC & Mobiel) === */
+#radio-hover-wrapper {  
+  position: fixed;  
+  top: 5px;  
+  right: 180px;  
+  z-index: 10 !important; /* Veilig onder het welkomstscherm op de pc */  
+  display: flex;  
+  flex-direction: column;  
+  align-items: center;  
 }
 
-/* Standaard verborgen, totdat de 'open' klasse actief is */
-#radio-balk { 
-  display: none !important; 
-  flex-direction: row; 
-  align-items: flex-start; 
-  background-color: rgba(0, 0, 0, 0.85); 
-  padding: 5px; 
-  border-radius: 4px; 
-  box-shadow: 0px 4px 10px rgba(0,0,0,0.5); 
-}
-#radio-hover-wrapper.open #radio-balk { 
-  display: flex !important; 
+#radio-balk-trigger {  
+  background-color: #1a1a1a;  
+  color: white;  
+  border: 1px solid rgba(255,255,255,0.2);  
+  padding: 5px 12px;  
+  font-size: 11px;  
+  font-weight: bold;  
+  text-transform: uppercase;  
+  cursor: pointer;  
+  border-radius: 4px;  
+  margin-bottom: 2px;  
 }
 
-.radio-knop-smal { 
-  width: 35px; 
-  height: 110px; 
-  margin: 0 1px; 
-  border: 1px solid rgba(255,255,255,0.1); 
-  background-color: #1a1a1a; 
-  color: white; 
-  cursor: pointer; 
-  writing-mode: vertical-rl; 
-  font-size: 11px; 
-  text-transform: uppercase; 
-  padding: 0; 
-  display: flex; 
-  align-items: center; 
-  justify-content: center; 
-  transition: all 0.2s ease; 
+/* De container waar de balk en pijltjes in zitten */
+#radio-balk-container {
+  display: none !important;
+  flex-direction: row;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.85);
+  padding: 5px;
+  border-radius: 4px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
 }
-.radio-knop-smal:hover { 
-  background-color: #252525; 
-  border-color: rgba(255,255,255,0.5); 
+
+#radio-hover-wrapper.open #radio-balk-container {  
+  display: flex !important;  
 }
-.radio-knop-smal.spelend { 
-  background-color: #ffcc00 !important; 
-  color: black !important; 
-  border-color: #ffcc00; 
-  height: 85px; 
+
+#radio-balk {  
+  display: flex !important;  
+  flex-direction: row;  
+  align-items: flex-start;  
+  max-width: 220px !important; /* Zet hem op bijv. 220px of 250px zodat hij lekker smal is */
+  min-width: 0 !important;     /* DIT IS DE FIX: dwingt de balk om zich aan de max-breedte te houden */
+  overflow: hidden !important; 
+  scroll-behavior: smooth;
+  gap: 2px;
 }
-/* === Mobiele query: Radio onderaan in het midden met klik-toggle === */
+
+
+/* PC Pijltjesknoppen */
+.radio-pijl-pc {
+  background: transparent;
+  border: none;
+  color: white;
+  font-size: 16px;
+  cursor: pointer;
+  padding: 0 4px;
+}
+.radio-pijl-pc:hover {
+  color: #ffcc00;
+}
+
+/* Jouw originele knoppen-opmaak (verticale tekst over de hele lengte) */
+.radio-knop-smal {  
+  width: 35px;  
+  height: 110px;  
+  margin: 0 1px;  
+  border: 1px solid rgba(255,255,255,0.1);  
+  background-color: #1a1a1a;  
+  color: white;  
+  cursor: pointer;  
+  writing-mode: vertical-rl;  
+  font-size: 11px;  
+  text-transform: uppercase;  
+  padding: 0;  
+  display: flex;  
+  align-items: center;  
+  justify-content: center;  
+  transition: all 0.2s ease;  
+  flex-shrink: 0;
+}
+
+.radio-knop-smal:hover {  
+  background-color: #252525;  
+  border-color: rgba(255,255,255,0.5);  
+}
+
+/* De gele actieve status zoals je gewend was */
+.radio-knop-smal.spelend {  
+  background-color: #ffcc00 !important;  
+  color: black !important;  
+  border-color: #ffcc00;  
+  height: 85px;  
+}
+
+/* ==========================================================
+   2. MOBIELE VERSIE (Strict afgeschermd binnen de Media Query)
+   ========================================================== */
 @media screen and (max-width: 480px) {
+  
+  /* Al je mobiele overschrijvingen komen hier en nergens anders */
+  #radio-hover-wrapper {
+    /* Mobiel-specifieke lagen of posities voor de Spotify-kwestie */
+  }
+
+  #radio-balk {
+    max-width: 100% !important;
+    width: 100% !important;
+  }
+}
+
+@media screen and (max-width: 480px) {
+  /* De wrapper spant over de volle breedte onderaan, met een lagere z-index zodat popups eroverheen vallen */
   #radio-hover-wrapper {
     top: auto !important;
     right: auto !important;
     bottom: 10px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
+    left: 0 !important;
+    width: 100% !important;
+    transform: none !important;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    z-index: 1000000 !important; /* Blijft netjes achter je welkomstscherm bij de start */
   }
 
-  /* Desktop hover uitschakelen op mobiel */
-  #radio-hover-wrapper:hover #radio-balk {
-    display: none !important;
-  }
-
-  /* Alleen tonen wanneer de 'open' klasse actief is */
-  #radio-hover-wrapper.open #radio-balk {
-    display: flex !important;
-  }
+  /* De knop blijft lekker compact en netjes in het midden */
+  #radio-balk-trigger {
+    width: auto !important;
+    border-radius: 4px !important;
+    margin-bottom: 2px;
+  z-index: 900 !important; /* Blijft netjes onder je welkomstscherm in het begin */
 }
+  }
 
-   #muziek-rechts .ronde-knop { 
+  /* De radiobalk container over de volle breedte */
+  #radio-balk-container {
+    position: relative;
+    display: none !important;
+    flex-direction: row;
+    align-items: center;
+    background-color: rgba(0, 0, 0, 0.9);
+    width: 100% !important;
+    max-width: 100% !important;
+    padding: 5px 30px;
+    border-radius: 0;
+    box-sizing: border-box;
+  }
+
+  #radio-hover-wrapper.open #radio-balk-container {
+    display: flex !important;
+z-index: 100000 !important; /* Zodra je hem opent, springt de hele radio over Spotify heen */
+  }
+
+  /* De pijltjes zweven netjes op de randen */
+  .radio-pijl-pc {
+    display: flex !important;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: transparent !important;
+    border: none !important;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    z-index: 10;
+    padding: 10px 5px;
+  }
+
+  .radio-pijl-pc:hover {
+    color: #ffcc00;
+  }
+
+  .radio-pijl-pc:first-of-type {
+    left: 2px;
+  }
+
+  .radio-pijl-pc:last-of-type {
+    right: 2px;
+  }
+
+  /* Het rad vult de volle breedte en scrollt soepel */
+  #radio-balk {
+    width: 100%;
+    max-width: 100%;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    box-shadow: inset 15px 0 15px -10px rgba(0,0,0,0.8), inset -15px 0 15px -10px rgba(0,0,0,0.8);
+    gap: 2px;
+  }
+
+  #radio-balk::-webkit-scrollbar {
+    display: none;
+  }
+}   #muziek-rechts .ronde-knop { 
     width: 45px !important; 
     height: 45px !important; 
     margin: 0 !important; 
@@ -757,7 +868,7 @@ body, html {
     top: 50%; 
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 100vw;
+    width: max-content;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -768,7 +879,7 @@ body, html {
 
 #klok-container {
     text-align: center;
-    width: 100%;
+    width: auto;
     pointer-events: auto;
 }
 
@@ -785,6 +896,10 @@ body, html {
     color: white; 
 }
 
+#uren, #minuten, #sec {
+    cursor: pointer;
+    display: inline-block; /* Dwingt het klikvlak om strak om het cijfer te sluiten i.p.v. de hele regel te vullen */
+}
 .regenboog-stijl { 
     background: linear-gradient(to right, #ff0000 0%, #ff8c00 30%, #ffff00 60%, #32cd32 100%) !important; 
     -webkit-background-clip: text !important; 
@@ -1117,7 +1232,27 @@ canvas {
     background: #ffffff;
     color: #000000;
 }
+/* Stijl voor het logo op het welkomstscherm */
+#start-logo {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 140px;
+    height: auto;
+    z-index: 1000000 !important;
+    pointer-events: none;
+    border-radius: 50%; /* DIT MAAKT HEM AUTOMATISCH EEN 100% PERFECTE CIRKEL! */
+}
 
+@media (max-width: 480px) {
+    #start-logo {
+        bottom: 8px;
+        width: 135px;
+        position: absolute !important;
+        z-index: 2147483647 !important;
+    }
+}
 
 /* ================================================= */
 /* ÉÉN GECOMBINEERDE EN SCHONE MEDIA QUERY VOOR MOBIEL */
@@ -1141,19 +1276,7 @@ canvas {
 }
 /* === NIEUWE TOEVOEGINGEN SPECIFIEK VOOR TABLETS EN TELEFOONS === */
 
-/* Tablets (tot 1024px) */
-@media screen and (max-width: 1024px) {
-  .v-box {
-    font-size: 2.2vw;
-    padding: 1vh 1.5vw;
-  }
-  .v-box b {
-    font-size: 2.8vw;
-  }
-  #radio-hover-wrapper {
-    right: 120px;
-  }
-}
+
 
 /* Telefoons (tot 480px) */
 @media screen and (max-width: 480px) {
@@ -1172,23 +1295,6 @@ canvas {
     font-size: 13px;
   }
 
-  /* Radiobalk-positie aanpassen zodat hij niet over de instellingenknop valt */
-  #radio-hover-wrapper {
-    top: 10px;
-    right: 75px;
-  }
-  .radio-knop-smal {
-    width: 32px;
-    height: 90px;
-    font-size: 10px;
-  }
-
-  /* Menu-paneel vult mobiel scherm beter */
-  .menu-panel {
-    width: 100vw;
-    max-width: 100vw;
-    padding: 16px;
-  }
 
   /* Klok en datum schaling voor mobiel scherm */
   #klok-regel {
@@ -1276,10 +1382,19 @@ canvas {
 <audio id="player" preload="auto"></audio>
 
 <div id="radio-hover-wrapper">
-    <div id="radio-balk-trigger">📻Radio📻</div>
-    <div id="radio-balk"></div>
+    <button id="radio-balk-trigger" onclick="toggleRadioBalk()">📻FM📻</button>
+    <div id="radio-balk-container">
+        <!-- Normale klikbare linkerpijl voor de pc -->
+        <button class="radio-pijl-pc" onclick="scrollRadioBalk(-1)">&#10094;</button>
+        
+        <div id="radio-balk">
+            <!-- Jouw zenders -->
+        </div>
+        
+        <!-- Normale klikbare rechterpijl voor de pc -->
+        <button class="radio-pijl-pc" onclick="scrollRadioBalk(1)">&#10095;</button>
+    </div>
 </div>
-
 <button id="mute-video-knop" onclick="toggleMuteVideo(event)"><i class="bi bi-volume-mute"></i></button>
 <button id="pauze-foto-knop" onclick="togglePauzeSlideshow(event)"><i class="bi bi-pause-fill"></i></button>
 
@@ -1346,7 +1461,9 @@ canvas {
 
 <div id="flex-midden-container" class="gloed">
     <div id="klok-container">
-        <div id="klok-regel" onclick="wisselKleur()"><span id="uren">00</span>:<span id="minuten">00</span><span id="sec">00</span></div>
+        <div id="klok-regel">
+            <span id="uren" onclick="wisselKleur()">00</span>:<span id="minuten" onclick="wisselKleur()">00</span><span id="sec" onclick="wisselKleur()">00</span>
+        </div>
     </div>
     <div id="datum-container">
         <div id="datum">LADEN...</div>
@@ -1540,34 +1657,61 @@ function verbergInterface(verberg) {
     document.getElementById('pauze-foto-knop').style.display = (verberg && isFotolijstModus) ? 'block' : 'none';
 }
 
-    const radioZenders = [
-        { n: "NPO 1", u: "https://icecast.omroep.nl/radio1-bb-mp3" },
-        { n: "NPO 2", u: "https://icecast.omroep.nl/radio2-bb-mp3" },
-        { n: "NPO 3", u: "https://icecast.omroep.nl/3fm-bb-mp3" },
-        { n: "SKY", u: "https://29033.live.streamtheworld.com/SKYRADIO.mp3" },
-        { n: "100%NL",u: "https://28503.live.streamtheworld.com/100PNL_MP3_SC" },
-        { n: "Q-MUSIC",u: "https://icecast-qmusicnl-cdp.triple-it.nl/Qmusic_nl_live.mp3" },
-        { n: "RADIO10",u: "https://25303.live.streamtheworld.com/RADIO10.mp3" },
-        { n: "VERONICA",u: "https://playerservices.streamtheworld.com/api/livestream-redirect/VERONICA.mp3" },
-        { n: "SLAM!", u: "https://25353.live.streamtheworld.com/SLAM_MP3_SC" },
-        { n: "Arrow", u: "https://stream.gal.io/arrow?1579873649949" },
-        { n: "538", u: "https://25593.live.streamtheworld.com/RADIO538.mp3" },
-        { n: "RADIONL", u: "https://stream.radionl.fm/radionl" },
-        { n: "Latin", u: "http://mediaserv33.live-streams.nl:8034" },
-        { n: "KINK", u: "https://playerservices.streamtheworld.com/api/livestream-redirect/KINK.mp3" },
-        { n: "Qdance",u: "https://playerservices.streamtheworld.com/api/livestream-redirect/Q_DANCE.mp3" }
-    ];
+const radioZenders = [
+    { n: "NPO 1", u: "https://icecast.omroep.nl/radio1-bb-mp3" },
+    { n: "NPO 2", u: "https://icecast.omroep.nl/radio2-bb-mp3" },
+    { n: "NPO 3", u: "https://icecast.omroep.nl/3fm-bb-mp3" },
+    { n: "SKY", u: "https://29033.live.streamtheworld.com/SKYRADIO.mp3" },
+    { n: "100%NL",u: "https://28503.live.streamtheworld.com/100PNL_MP3_SC" },
+    { n: "Q-MUSIC",u: "https://icecast-qmusicnl-cdp.triple-it.nl/Qmusic_nl_live.mp3" },
+    { n: "RADIO10",u: "https://25303.live.streamtheworld.com/RADIO10.mp3" },
+    { n: "VERONICA",u: "https://playerservices.streamtheworld.com/api/livestream-redirect/VERONICA.mp3" },
+    { n: "SLAM!", u: "https://25353.live.streamtheworld.com/SLAM_MP3_SC" },
+    { n: "Arrow", u: "https://stream.gal.io/arrow?1579873649949" },
+    { n: "538", u: "https://25593.live.streamtheworld.com/RADIO538.mp3" },
+    { n: "RADIONL", u: "https://stream.radionl.fm/radionl" },
+    { n: "Latin", u: "http://mediaserv33.live-streams.nl:8034" },
+    { n: "KINK", u: "https://playerservices.streamtheworld.com/api/livestream-redirect/KINK.mp3" },
+    { n: "Qdance",u: "https://playerservices.streamtheworld.com/api/livestream-redirect/Q_DANCE.mp3" }
+];
 
-    const radioBalk = document.getElementById('radio-balk');
+const radioBalk = document.getElementById('radio-balk');
+if (radioBalk) {
     radioZenders.forEach(z => {
         const knop = document.createElement('button');
         knop.className = 'radio-knop-smal';
         knop.innerHTML = z.n;
         knop.onclick = function() {
-            if (knop.classList.contains('spelend')) { player.pause(); player.src = ""; knop.classList.remove('spelend'); huidigeStream = ""; } else { document.querySelectorAll('.radio-knop-smal').forEach(k => k.classList.remove('spelend')); player.src = z.u; player.play(); knop.classList.add('spelend'); huidigeStream = player.src; }
+            if (typeof player !== 'undefined' && player) {
+                if (knop.classList.contains('spelend')) { 
+                    player.pause(); 
+                    player.src = ""; 
+                    knop.classList.remove('spelend'); 
+                    if (typeof huidigeStream !== 'undefined') huidigeStream = ""; 
+                } else { 
+                    document.querySelectorAll('.radio-knop-smal').forEach(k => k.classList.remove('spelend')); 
+                    player.src = z.u; 
+                    player.play(); 
+                    knop.classList.add('spelend'); 
+                    if (typeof huidigeStream !== 'undefined') huidigeStream = player.src; 
+                }
+            }
         };
         radioBalk.appendChild(knop);
     });
+}
+
+function schuifRadio(richting) {
+    const balk = document.getElementById('radio-balk');
+    if (balk) {
+        const stap = 120;
+        if (richting === 'links') {
+            balk.scrollBy({ left: -stap, behavior: 'smooth' });
+        } else {
+            balk.scrollBy({ left: stap, behavior: 'smooth' });
+        }
+    }
+}
 
     let gekozenFotoBestanden = [];
 let fotolijstWachtrij = [];
@@ -3194,37 +3338,6 @@ document.getElementById('presetSelect').addEventListener('change', function() {
   </div>
 </div>
 
-<!-- Start Pop-up -->
-<div id="start-popup" class="popup-overlay">
-    <div class="popup-inhoud" style="position: relative;">
-        
-        <!-- Kruisje rechtsboven om te sluiten -->
-        <span onclick="sluitStartPopup()" style="position: absolute; top: 12px; right: 16px; cursor: pointer; font-size: 22px; color: #fff; font-weight: bold;">&times;</span>
-
-        <!-- Taalknoppen bovenin -->
-        <div class="taal-schakelaar" style="display: flex; align-items: center; gap: 6px;">
-                    <button id="taal-nl" class="taal-knop actief" onclick="wisselTaal('nl')">NL</button>
-                    <button id="taal-en" class="taal-knop" onclick="wisselTaal('en')">EN</button>
-                    <button id="fullscreen-knop" class="small-icon-btn" onclick="schakelFullscreen()" title="Klik hier voor volledig scherm" style="background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="bi bi-arrows-fullscreen"></i></button>
-</div>
-
-
-        <h2>Welkom</h2>
-        
-        <div class="popup-knoppen">
-            <button onclick="openVerjaardagBeheer()">Verjaardagen beheren / Manage Birthdays</button>
-            <button onclick="openUitleg()">Info / Uitleg</button>
-        </div>
-    </div>
-</div>
-
-<div id="beheerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
-    <div style="background:#121212; color:#fff; padding:20px; border-radius:8px; width:95%; max-width:700px; max-height:90vh; overflow-y:auto; position:relative; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
-        <!-- Rode sluitknop strak in de rechterbovenhoek -->
-        <button onclick="window.sluitBeheerModal()" title="Sluiten" style="position: absolute; top: 15px; right: 15px; background: #dc3545; color: #fff; border: none; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10;">✖</button>
-        <div id="beheerModalContent"></div>
-    </div>
-</div>
 
 
 
@@ -3380,6 +3493,47 @@ spotifyClose.addEventListener('click', function(e) {
 });
 </script>
 
+<script>
+function scrollRadioBalk(richting) {
+    const balk = document.getElementById('radio-balk');
+    if (balk) {
+        balk.scrollBy({ left: richting * 150, behavior: 'smooth' });
+    }
+}
+</script>
+
+<!-- Start Pop-up -->
+<div id="start-popup" class="popup-overlay">
+<img src="logo.jpg" alt="Flex Dashboard Logo" id="start-logo">
+    <div class="popup-inhoud" style="position: relative;">
+        
+        <!-- Kruisje rechtsboven om te sluiten -->
+        <span onclick="sluitStartPopup()" style="position: absolute; top: 12px; right: 16px; cursor: pointer; font-size: 22px; color: #fff; font-weight: bold;">&times;</span>
+
+        <!-- Taalknoppen bovenin -->
+        <div class="taal-schakelaar" style="display: flex; align-items: center; gap: 6px;">
+                    <button id="taal-nl" class="taal-knop actief" onclick="wisselTaal('nl')">NL</button>
+                    <button id="taal-en" class="taal-knop" onclick="wisselTaal('en')">EN</button>
+                    <button id="fullscreen-knop" class="small-icon-btn" onclick="schakelFullscreen()" title="Klik hier voor volledig scherm" style="background: #222; color: #fff; border: 1px solid #555; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 16px;"><i class="bi bi-arrows-fullscreen"></i></button>
+</div>
+
+
+        <h2>Welkom</h2>
+        
+        <div class="popup-knoppen">
+            <button onclick="openVerjaardagBeheer()">Verjaardagen beheren / Manage Birthdays</button>
+            <button onclick="openUitleg()">Info / Uitleg</button>
+        </div>
+    </div>
+</div>
+
+<div id="beheerModal" style="display:none; position:fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.8); z-index:9999; justify-content:center; align-items:center;">
+    <div style="background:#121212; color:#fff; padding:20px; border-radius:8px; width:95%; max-width:700px; max-height:90vh; overflow-y:auto; position:relative; box-shadow: 0 4px 20px rgba(0,0,0,0.5);">
+        <!-- Rode sluitknop strak in de rechterbovenhoek -->
+        <button onclick="window.sluitBeheerModal()" title="Sluiten" style="position: absolute; top: 15px; right: 15px; background: #dc3545; color: #fff; border: none; width: 34px; height: 34px; border-radius: 4px; cursor: pointer; font-size: 16px; font-weight: bold; z-index: 10;">✖</button>
+        <div id="beheerModalContent"></div>
+    </div>
+</div>
 
 </body>
 </html>
