@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Schermgrootte & Fullscreen Meting</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 20px;
+            font-family: Arial, sans-serif;
+            background-color: #222;
+            color: #fff;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            box-sizing: border-box;
+            text-align: center;
+        }
+        h1 {
+            font-size: 20px;
+        }
+        p {
+            font-size: 14px;
+            color: #ccc;
+        }
+        .knop-fullscreen {
+            background: #00ff00;
+            color: #000;
+            border: none;
+            padding: 15px 25px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.5);
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Fullscreen Schermtester</h1>
+    <p>Tik op de knop om de browserbalken te verbergen en je ware schermgrootte te meten.</p>
+    
+    <button class="knop-fullscreen" onclick="zetFullscreen()">Zet op Fullscreen</button>
+
+    <!-- Debug scherm met de live meting (blijft altijd netjes linksboven staan) -->
+    <div id="debug-scherm" style="position: fixed; top: 10px; left: 10px; background: rgba(0,0,0,0.85); color: #00ff00; padding: 12px; font-size: 14px; z-index: 99999; border-radius: 5px; border: 1px solid #00ff00; font-family: monospace;">
+      Meten...
+    </div>
+
+    <script>
+      function meetScherm() {
+        var breedte = window.innerWidth;
+        var hoogte = window.innerHeight;
+        document.getElementById('debug-scherm').innerHTML = 
+          "Breedte: " + breedte + "px<br>Hoogte: " + hoogte + "px";
+      }
+      
+      function zetFullscreen() {
+        if (!document.fullscreenElement) {
+          document.documentElement.requestFullscreen().catch(err => {
+            console.log("Fullscreen mislukt: ", err);
+          });
+        } else {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          }
+        }
+      }
+
+      window.addEventListener('resize', meetScherm);
+      window.addEventListener('DOMContentLoaded', meetScherm);
+      
+      // Ook na het wisselen van fullscreen even meten
+      document.addEventListener('fullscreenchange', meetScherm);
+      
+      meetScherm();
+    </script>
+
+</body>
+</html>
