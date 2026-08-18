@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V8.4</title>
+<title>Flex Dashboard V8.6</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -1362,6 +1362,20 @@ canvas {
 <body>
 
 
+<script>
+// Automatische versie-check die kijkt naar je paginatitel
+fetch('version.txt?t=' + Date.now())
+    .then(response => response.text())
+    .then(onlineVersie => {
+        const versieOpServer = onlineVersie.trim(); // Bijv: "V8.5"
+        
+        // Als de paginatitel de versie van de server NIET bevat, dan is er een update
+        if (!document.title.includes(versieOpServer)) {
+            window.location.reload();
+        }
+    })
+    .catch(err => console.log('Versie check niet mogelijk'));
+</script>>
 
 
 <div id="visualisatie-container" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;">
@@ -3357,20 +3371,7 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 
 
 
-<script>
-// Automatische versie-controle (Huidige versie is V6.0)
-const huidigeVersie = "V6.0"; 
-const opgeslagenVersie = localStorage.getItem('dashboard_versie_check');
 
-if (opgeslagenVersie !== huidigeVersie) {
-    localStorage.setItem('dashboard_versie_check', huidigeVersie);
-    
-    // Voer alleen een herlading uit als er al een eerdere versie bekend was (zodat de eerste laadbeurt rustig blijft)
-    if (opgeslagenVersie !== null) {
-        window.location.reload();
-    }
-}
-</script>
 
 <script>
   document.addEventListener("DOMContentLoaded", function() {
