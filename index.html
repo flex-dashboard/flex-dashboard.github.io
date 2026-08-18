@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V8.2</title>
+<title>Flex Dashboard V8.3</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -291,21 +291,7 @@
 
 
     /* BASIS STIJL & LICHTGEWICHT LED BACKGROUNDS */
-body, html { 
-    margin: 0; 
-    padding: 0; 
-    height: 100dvh;                /* Aangepast: voorkomt het verspringen bij het draaien op de telefoon */
-    width: 100%; 
-    overflow: hidden; 
-    font-family: 'Segoe UI', Arial, sans-serif; 
-    color: white; 
-    background-color: #000; 
-    background-position: center; 
-    background-repeat: no-repeat; 
-    box-sizing: border-box; 
-    transition: border 0.3s ease, box-shadow 0.3s ease; 
-    border: 0 solid transparent;   /* De 'px' erachter weggehaald */
-}
+
     
     /* LED RAND REGENBOOG - 5PX */
     body.led-regenboog {
@@ -665,6 +651,7 @@ body, html {
   padding: 5px;
   border-radius: 4px;
   box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+  max-width: 260px;
 }
 
 #radio-hover-wrapper.open #radio-balk-container {  
@@ -673,13 +660,24 @@ body, html {
 
 #radio-balk {  
   display: flex !important;  
-  flex-direction: row;  
+  flex-direction: row !important;  
   align-items: flex-start;  
   max-width: 220px !important; /* Zet hem op bijv. 220px of 250px zodat hij lekker smal is */
   min-width: 0 !important;     /* DIT IS DE FIX: dwingt de balk om zich aan de max-breedte te houden */
-  overflow: hidden !important; 
+  overflow-x: auto !important;    
+  overflow-y: hidden !important;
   scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  white-space: nowrap; 
   gap: 2px;
+  scrollbar-width: none;
+  -webkit-user-select: none;
+  user-select: none;
+
+}
+
+#radio-balk::-webkit-scrollbar {
+  display: none;
 }
 
 
@@ -705,15 +703,20 @@ body, html {
   background-color: #1a1a1a;  
   color: white;  
   cursor: pointer;  
-  writing-mode: vertical-rl;  
+  writing-mode: vertical-rl !important;  
+  text-orientation: mixed !important;
+  -webkit-text-orientation: mixed !important;
   font-size: 11px;  
   text-transform: uppercase;  
   padding: 0;  
-  display: flex;  
-  align-items: center;  
-  justify-content: center;  
+  display: flex !important;  
+  align-items: center !important;  
+  justify-content: center !important;  
   transition: all 0.2s ease;  
   flex-shrink: 0;
+ -webkit-user-select: none;
+  user-select: none;
+
 }
 
 .radio-knop-smal:hover {  
@@ -1081,13 +1084,20 @@ body.schone-modus #muziek-rechts {
 
         
       
-html, body {
-    margin: 0;
-    padding: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow: hidden;
-    background-color: #000; /* Of de hoofdkleur van je achtergronden */
+html, body { 
+    margin: 0; 
+    padding: 0; 
+    height: 100dvh;            /* Deze houden we aan, want dit is beter voor mobiel (geen verspringen) */
+    width: 100%; 
+    overflow: hidden; 
+    font-family: 'Segoe UI', Arial, sans-serif; 
+    color: white; 
+    background-color: #000; 
+    background-position: center; 
+    background-repeat: no-repeat; 
+    box-sizing: border-box; 
+    transition: border 0.3s ease, box-shadow 0.3s ease; 
+    border: 0 solid transparent; 
 }
 
 * { 
@@ -3526,5 +3536,48 @@ function scrollRadioBalk(richting) {
     </div>
 </div>
 
+<script>
+const slider = document.getElementById('radio-balk');
+let isDown = false;
+let startX;
+let scrollLeft;
+
+// 1. Zodra je klikt (muisknop indrukken)
+slider.addEventListener('mousedown', (e) => {
+  isDown = true;
+  slider.style.cursor = 'grabbing';
+  startX = e.pageX - slider.offsetLeft;
+  scrollLeft = slider.scrollLeft;
+  e.preventDefault(); // DIT VOORKOMT HET SELECTEREN VAN TEKST
+});
+
+// 2. Als je de muis buiten de balk beweegt of loslaat
+slider.addEventListener('mouseleave', () => {
+  isDown = false;
+  slider.style.cursor = 'grab';
+});
+
+slider.addEventListener('mouseup', () => {
+  isDown = false;
+  slider.style.cursor = 'grab';
+});
+
+// 3. De actie: als je de muis beweegt TERWIJL je ingedrukt houdt
+slider.addEventListener('mousemove', (e) => {
+  if (!isDown) return; // Doe niks als de muis niet ingedrukt is
+  e.preventDefault();
+  const x = e.pageX - slider.offsetLeft;
+  const walk = (x - startX) * 2; // De snelheid van het scrollen
+  slider.scrollLeft = scrollLeft - walk;
+});
+
+// 4. Optioneel: Scrollwieltje ondersteuning (zoals je eerder wilde)
+slider.addEventListener('wheel', function(e) {
+    if (e.deltaY !== 0) {
+        e.preventDefault();
+        slider.scrollLeft += e.deltaY;
+    }
+});
+</script>
 </body>
 </html>
