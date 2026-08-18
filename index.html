@@ -931,10 +931,49 @@
     font-weight: bold; 
 }
 
-/* Dit is voor de telefoon-versie (direct eronder gekoppeld) */
-@media (max-width: 480px) {
+/* =========================================
+   APARTE MEDIA QUERIES VOOR PORTRAIT (KLEIN BEELD)
+   ========================================= */
+
+/* 1. Media query voor #flex-midden-container in portretstand */
+@media (max-height: 740px) {
     #flex-midden-container {
         top: 47%; 
+    }
+}
+
+/* 2. Media query voor #klok-container in portretstand */
+@media (max-height: 740px) {
+    #klok-container {
+        /* Laat dit leeg als er geen wijziging nodig is */
+    }
+}
+
+/* 3. Media query voor #klok-regel in portretstand */
+@media (max-height: 740px) {
+    #klok-regel {
+        font-size: 22vw !important;
+    }
+}
+
+/* 4. Media query voor #sec (seconden) in portretstand */
+@media (max-height: 740px) {
+    #sec {
+        font-size: 5vw !important;
+    }
+}
+
+/* 5. Media query voor #datum-container in portretstand */
+@media (max-height: 740px) {
+    #datum-container {
+        margin-top: 0.5vh;
+    }
+}
+
+/* 6. Media query voor #datum in portretstand */
+@media (max-height: 740px) {
+    #datum {
+        font-size: 3.8vw !important;
     }
 }
 
