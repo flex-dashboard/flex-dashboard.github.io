@@ -945,10 +945,9 @@
 /* 2. Media query voor #klok-container in portretstand */
 @media (max-height: 740px) {
     #klok-container {
-        /* Laat dit leeg als er geen wijziging nodig is */
+        margin-top: 5vh; /* Gebruikt vh in plaats van pixels */
     }
 }
-
 /* 3. Media query voor #klok-regel in portretstand */
 @media (max-height: 740px) {
     #klok-regel {
@@ -1146,7 +1145,7 @@ html, body {
 }
 
 /* Media query voor rechtopstaand (portrait), klein beeld (niet fullscreen) */
-@media screen and (orientation: portrait) and (max-height: 700px) {
+@media screen and (orientation: portrait) and (max-height: 740px) {
     body {
         margin: 0;
         padding: 0;
@@ -1414,7 +1413,7 @@ fetch('version.txt?t=' + Date.now())
         }
     })
     .catch(err => console.log('Versie check niet mogelijk'));
-</script>>
+</script>
 
 
 <div id="visualisatie-container" style="display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: -1; pointer-events: none;">
@@ -1733,9 +1732,9 @@ const radioZenders = [
     { n: "SKY", u: "https://29033.live.streamtheworld.com/SKYRADIO.mp3" },
     { n: "100%NL",u: "https://28503.live.streamtheworld.com/100PNL_MP3_SC" },
     { n: "Q-MUSIC",u: "https://icecast-qmusicnl-cdp.triple-it.nl/Qmusic_nl_live.mp3" },
-    { n: "RADIO10",u: "https://25303.live.streamtheworld.com/RADIO10.mp3" },
+    { n: "RADIO Continu",u: "https://stream.radiocontinu.nl/radiocontinu" },
     { n: "VERONICA",u: "https://playerservices.streamtheworld.com/api/livestream-redirect/VERONICA.mp3" },
-    { n: "SLAM!", u: "https://25353.live.streamtheworld.com/SLAM_MP3_SC" },
+    { n: "SLAM!", u: "https://stream.slam.nl/slam](https://stream.slam.nl/slam" },
     { n: "Arrow", u: "https://stream.gal.io/arrow?1579873649949" },
     { n: "538", u: "https://25593.live.streamtheworld.com/RADIO538.mp3" },
     { n: "RADIONL", u: "https://stream.radionl.fm/radionl" },
