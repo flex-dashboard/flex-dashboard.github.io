@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V8.9</title>
+<title>Flex Dashboard V9.0</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -625,6 +625,29 @@
 #spotify-container.open iframe { 
     opacity: 1; 
 }
+
+@media (max-height: 740px) {
+    #spotify-container {
+        position: fixed;
+        bottom: 7vh;
+        right: 2vw;
+        width: 7vh;
+        height: 7vh;
+        overflow: hidden;
+        transition: all 0.4s ease-in-out;
+        z-index: 9990;
+        background-color: #1db954;
+        border: none;
+        border-radius: 50%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-start;
+        align-items: center;
+        cursor: pointer;
+    }
+}
+
+
 
 /* === Mobiele query === */
 @media screen and (max-width: 480px) {
@@ -2043,10 +2066,11 @@ function toggleMuteVideo(event) {
         muteIcon.className = actieveMuteStatus ? "bi bi-volume-mute" : "bi bi-volume-up"; 
     }
 }
-let afspeellijst = [];
-let huidigeIndex = 0;
+let alleMappen = [];      // Bevat al je ingeladen mappen los van elkaar
+let huidigeMapIndex = 0; // Welke map er nu actief is
+let huidigeIndex = 0;    // Welk nummer in de huidige map
 
-function kiesMuziekMap(event) { 
+function kiesMuziekMap(event) {  
   if (event) event.stopPropagation();
   else if (window.event) window.event.stopPropagation();
 
@@ -2058,47 +2082,54 @@ function kiesMuziekMap(event) {
 
 function verwerkGekozenMap(event) {
   const bestanden = Array.from(event.target.files);
-
   const zijPlayer = document.getElementById('zijPlayer');
   
-  // 1. Kijk of er een hoesje/foto in de gekozen muziekmap zit
+  // 1. Zoek naar een hoesje/foto in de gekozen map
   const coverFoto = bestanden.find(file => /\.(jpg|jpeg|png|webp)$/i.test(file.name));
 
   if (zijPlayer) {
     let fotoUrl;
-
     if (coverFoto) {
-      // Als er wel een hoesje is gevonden, gebruik die!
       fotoUrl = URL.createObjectURL(coverFoto);
     } else {
-      // Zo niet, val dan terug op jouw vaste plaatje in de hoofdmap
-      fotoUrl = 'muziek-bg.jpg'; // (vervang dit eventueel met de echte bestandsnaam van je vaste plaatje)
+      fotoUrl = 'muziek-bg.jpg'; 
     }
 
-    // Pas de achtergrond toe
-    zijPlayer.style.backgroundImage = `linear-gradient(rgba(0,0,0,0.1), rgba(0,0,0,0.1)), url('${fotoUrl}')`;
-    zijPlayer.style.backgroundSize = "100% 100%";
+    zijPlayer.style.backgroundImage = `url('${fotoUrl}')`;
+    zijPlayer.style.backgroundSize = "100% 100%"; // Vult de hele player volledig uit
     zijPlayer.style.backgroundPosition = "center center";
     zijPlayer.style.backgroundRepeat = "no-repeat";
   }
 
-  afspeellijst = bestanden
+  // 2. Filter de muziekbestanden eruit
+  const nieuweTracks = bestanden
     .filter(file => file.type.startsWith('audio/') || file.name.endsWith('.mp3'))
     .map(file => ({
       naam: file.name.replace(/\.[^/.]+$/, ""),
       url: URL.createObjectURL(file)
     }));
 
-  if (afspeellijst.length > 0) {
-    huidigeIndex = Math.floor(Math.random() * afspeellijst.length);
+  // 3. Sla de map op en laat hem direct spelen (of het nou map 1, 2 of 3 is)
+  if (nieuweTracks.length > 0) {
+    alleMappen.push(nieuweTracks); 
+    console.log("Map " + alleMappen.length + " toegevoegd!");
+
+    huidigeMapIndex = alleMappen.length - 1; 
+    huidigeIndex = Math.floor(Math.random() * nieuweTracks.length);
     speelTrack(); 
   }
 }
 
-function speelTrack() { 
-  if (afspeellijst.length === 0) return;
+function speelTrack(index) {  
+  if (alleMappen.length === 0 || !alleMappen[huidigeMapIndex] || alleMappen[huidigeMapIndex].length === 0) return;
 
-  const track = afspeellijst[huidigeIndex];
+  if (index !== undefined) {
+    huidigeIndex = index;
+  }
+
+  const actieveMap = alleMappen[huidigeMapIndex];
+  const track = actieveMap[huidigeIndex];
+  
   player.src = track.url; 
   player.load(); 
   player.play(); 
@@ -2106,18 +2137,58 @@ function speelTrack() {
 
   const titelEl = document.getElementById('nummerTitel');
   if (titelEl) titelEl.innerText = track.naam;
+
+  const icon = document.getElementById('speelPauzeIcon');
+  if (icon) icon.className = "bi bi-pause-fill";
 }
 
-function volgendeTrack() { 
-  if (afspeellijst.length === 0) return;
-  huidigeIndex = Math.floor(Math.random() * afspeellijst.length); 
+function volgendeTrack() {  
+  if (alleMappen.length === 0 || !alleMappen[huidigeMapIndex]) return;
+  const actieveMap = alleMappen[huidigeMapIndex];
+  huidigeIndex = Math.floor(Math.random() * actieveMap.length); 
   speelTrack(); 
 }
 
-function vorigeTrack() { 
-  if (afspeellijst.length === 0) return;
-  huidigeIndex = Math.floor(Math.random() * afspeellijst.length); 
+function vorigeTrack() {  
+  if (alleMappen.length === 0 || !alleMappen[huidigeMapIndex]) return;
+  const actieveMap = alleMappen[huidigeMapIndex];
+  huidigeIndex = Math.floor(Math.random() * actieveMap.length); 
   speelTrack(); 
+}
+
+// Navigatie tussen mappen (volgende, vorige en specifieke map):
+function volgendeMap() {
+  if (alleMappen.length > 1) {
+    huidigeMapIndex = (huidigeMapIndex + 1) % alleMappen.length; 
+    huidigeIndex = 0; 
+    speelTrack();
+    console.log("Doorgeschakeld naar map " + (huidigeMapIndex + 1));
+  } else {
+    console.log("Er is maar 1 map geladen, er is geen volgende map.");
+  }
+}
+
+function vorigeMap() {
+  if (alleMappen.length > 1) {
+    huidigeMapIndex = (huidigeMapIndex - 1 + alleMappen.length) % alleMappen.length; 
+    huidigeIndex = 0; 
+    speelTrack();
+    console.log("Teruggeschakeld naar map " + (huidigeMapIndex + 1));
+  } else {
+    console.log("Er is maar 1 map geladen.");
+  }
+}
+
+function speelMap(mapNummer) {
+  const index = mapNummer - 1; // Map 1 is index 0, Map 2 is index 1, etc.
+  if (index >= 0 && index < alleMappen.length) {
+    huidigeMapIndex = index;
+    huidigeIndex = 0;
+    speelTrack();
+    console.log("Gewisseld naar map " + mapNummer);
+  } else {
+    console.log("Map " + mapNummer + " is nog niet geladen.");
+  }
 }
 
 function toggleZijPlayer(event) {
@@ -2141,6 +2212,7 @@ function speelPauzeMuziek(event) {
     }
   }
 }
+
 function stopMuziek() {
   if (typeof player !== 'undefined') {
     player.pause();
@@ -2162,6 +2234,7 @@ if (typeof player !== 'undefined') {
     }
   });
 }
+
 function toggleAfspeellijst(event) {
   if (event) event.stopPropagation();
   const container = document.getElementById('afspeellijstContainer');
@@ -2178,11 +2251,9 @@ function vernieuwAfspeellijstWeergave() {
   ul.innerHTML = '';
 
   let lijst = [];
-  if (typeof nummers !== 'undefined' && nummers.length) lijst = nummers;
-  else if (typeof playlist !== 'undefined' && playlist.length) lijst = playlist;
-  else if (typeof tracks !== 'undefined' && tracks.length) lijst = tracks;
-  else if (typeof afspeellijst !== 'undefined' && afspeellijst.length) lijst = afspeellijst;
-  else if (typeof muziekBestanden !== 'undefined' && muziekBestanden.length) lijst = muziekBestanden;
+  if (alleMappen.length > 0 && alleMappen[huidigeMapIndex]) {
+    lijst = alleMappen[huidigeMapIndex];
+  }
 
   if (lijst.length > 0) {
     lijst.forEach((file, index) => {
@@ -2196,35 +2267,136 @@ function vernieuwAfspeellijstWeergave() {
       
       li.textContent = `${index + 1}. ${naam.replace(/\.[^/.]+$/, "")}`;
       
-      if (typeof huidigeTrackIndex !== 'undefined' && index === huidigeTrackIndex) {
+      if (index === huidigeIndex) {
         li.classList.add('actief');
       }
 
       li.onclick = function(e) {
         e.stopPropagation();
-
-        // Werk alle bekende index-variabelen bij
-        if (typeof huidigeTrackIndex !== 'undefined') huidigeTrackIndex = index;
-        if (typeof trackIndex !== 'undefined') trackIndex = index;
-        if (typeof currentTrackIndex !== 'undefined') currentTrackIndex = index;
-        if (typeof huidigeIndex !== 'undefined') huidigeIndex = index;
-
-        // Roep de afspeelfunctie aan MÉT het gekozen nummer (index) als argument
-        if (typeof speelTrack === 'function') speelTrack(index);
-        else if (typeof playTrack === 'function') playTrack(index);
-        else if (typeof speelNummer === 'function') speelNummer(index);
-        else if (typeof loadTrack === 'function') loadTrack(index);
-        else if (typeof afspelen === 'function') afspelen(index);
-        
+        huidigeIndex = index;
+        speelTrack(index);
         vernieuwAfspeellijstWeergave();
       };
       ul.appendChild(li);
     });
   } else {
-    ul.innerHTML = '<li style="cursor:default;">Geen nummers geladen</li>';
+    ul.innerHTML = '<li style="cursor:default;">Geen nummers geladen in deze map</li>';
   }
 }
-    // Laad verjaardagen uit localStorage, of gebruik de 36 voorbeeldnamen als startpunt
+// ==========================================
+// STEMBESTURING (Met beveiliging tegen loop)
+// ==========================================
+window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+
+if (window.SpeechRecognition) {
+  const recognition = new SpeechRecognition();
+  recognition.continuous = true;
+  recognition.lang = 'nl-NL';
+  recognition.interimResults = false;
+
+  recognition.onresult = function(event) {
+    const transcript = event.results[event.results.length - 1][0].transcript.toLowerCase().trim();
+    console.log("Spraakherkenning gehoord: " + transcript);
+
+    // 1. Volgende map (SPECIFIEF - bovenaan zodat 'volgende' het niet overneemt)
+    if (transcript.includes('volgende map')) {
+      volgendeMap();
+    }
+    // 2. Vorige map (SPECIFIEF)
+    else if (transcript.includes('vorige map')) {
+      vorigeMap();
+    }
+    // 3. Specifieke map kiezen op nummer (werkt voor map 1, 2, 3, tot en met map 8 en verder)
+    else if (transcript.includes('map') || transcript.includes('lijst')) {
+      const match = transcript.match(/\d+/);
+      if (match) {
+        const gekozenMapNummer = parseInt(match[0], 10);
+        speelMap(gekozenMapNummer);
+      }
+    }
+    // 4. Specifiek nummer kiezen
+    else if (transcript.includes('nummer') || transcript.includes('nummertje') || transcript.includes('track')) {
+      const match = transcript.match(/\d+/);
+      if (match) {
+        const gekozenNummer = parseInt(match[0], 10);
+        const index = gekozenNummer - 1; 
+        if (alleMappen.length > 0 && alleMappen[huidigeMapIndex] && index >= 0 && index < alleMappen[huidigeMapIndex].length) {
+          huidigeIndex = index;
+          speelTrack();
+          console.log("Spring naar nummer: " + gekozenNummer);
+        }
+      }
+    } 
+    // 5. Volgende track
+    else if (transcript.includes('volgende') || transcript.includes('volgend') || transcript.includes('verder') || transcript.includes('skip')) {
+      volgendeTrack();
+    } 
+    // 6. Vorige track
+    else if (transcript.includes('vorige') || transcript.includes('terug')) {
+      vorigeTrack();
+    } 
+    // 7. Spelen / Pauzeren
+    else if (transcript.includes('pauze') || transcript.includes('speel') || transcript.includes('play') || transcript.includes('start') || transcript.includes('muziek aan')) {
+      speelPauzeMuziek();
+    } 
+    // 8. Stoppen
+    else if (transcript.includes('stop') || transcript.includes('stoppen') || transcript.includes('geluid af') || transcript.includes('geluid uit')) {
+      stopMuziek();
+    }
+    // 9. Volume harder
+    else if (transcript.includes('harder') || transcript.includes('luider') || transcript.includes('omhoog')) {
+      if (typeof player !== 'undefined') {
+        player.volume = Math.min(1, player.volume + 0.1);
+        const slider = document.getElementById('spelerVolume');
+        if (slider) slider.value = player.volume;
+      }
+    }
+    // 10. Volume zachter
+    else if (transcript.includes('zachter') || transcript.includes('omlaag') || transcript.includes('stiller')) {
+      if (typeof player !== 'undefined') {
+        player.volume = Math.max(0, player.volume - 0.1);
+        const slider = document.getElementById('spelerVolume');
+        if (slider) slider.value = player.volume;
+      }
+    }
+  };
+
+  // Beveiligd tegen oneindige lussen als de microfoon weigert of reset
+  let spraakActief = true;
+
+  recognition.onerror = function(event) {
+    console.log("Spraakherkenning fout: " + event.error);
+    if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+      spraakActief = false; 
+    }
+  };
+
+  recognition.onend = function() {
+    setTimeout(() => {
+      try {
+        recognition.start();
+      } catch (e) {
+        // Al actief
+      }
+    }, 2000); 
+  };
+
+  recognition.onerror = function(errorEvent) {
+    console.log("Spraakherkenning melding: " + errorEvent.error);
+  };
+
+  // Start direct bij je eerste muisklik op de pagina
+  window.addEventListener('click', function startVoiceOnce() {
+    try {
+      recognition.start();
+      console.log("Spraakherkenning is gestart!");
+      window.removeEventListener('click', startVoiceOnce);
+    } catch (e) {}
+  }, { once: true });
+}
+
+
+// Laad verjaardagen uit localStorage, of gebruik de 36 voorbeeldnamen als startpunt
 window.verjaardagen = JSON.parse(localStorage.getItem('mijnVerjaardagen')) || [
     // Januari (0)
     { d: 5, m: 0, n: "🎁 ANNA 🎁" }, { d: 18, m: 0, n: "† PETER †" }, { d: 27, m: 0, n: "🎁 SOPHIE 🎁" },
