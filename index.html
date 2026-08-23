@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V9.3</title>
+<title>Flex Dashboard V9.4</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -3837,5 +3837,31 @@ slider.addEventListener('wheel', function(e) {
     }
 });
 </script>
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    const container = document.getElementById('spotify-container');
+    const closeBtn = document.getElementById('spotify-close');
+
+    // Open de speler als je op de container klikt (en hij nog dicht is)
+    container.addEventListener('click', (e) => {
+        // Als er op het kruisje wordt geklikt, doen we hier niets (dat handelt de sluitknop af)
+        if (e.target === closeBtn) return;
+        
+        container.classList.add('open');
+    });
+
+    // Sluit de speler specifiek via het kruisje
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.stopPropagation(); // Voorkom dat de klik 'doorlekt' naar de container
+            container.classList.remove('open');
+        });
+    }
+});
+</script>
+
+
 </body>
 </html>
