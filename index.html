@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V9.0</title>
+<title>Flex Dashboard V9.2</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -2066,9 +2066,11 @@ function toggleMuteVideo(event) {
         muteIcon.className = actieveMuteStatus ? "bi bi-volume-mute" : "bi bi-volume-up"; 
     }
 }
-let alleMappen = [];      // Bevat al je ingeladen mappen los van elkaar
+
+let alleMappen = [];       // Bevat al je ingeladen mappen los van elkaar
 let huidigeMapIndex = 0; // Welke map er nu actief is
 let huidigeIndex = 0;    // Welk nummer in de huidige map
+let recognition = null;  // Globale variabele voor spraakherkenning
 
 function kiesMuziekMap(event) {  
   if (event) event.stopPropagation();
@@ -2116,7 +2118,17 @@ function verwerkGekozenMap(event) {
 
     huidigeMapIndex = alleMappen.length - 1; 
     huidigeIndex = Math.floor(Math.random() * nieuweTracks.length);
-    speelTrack(); 
+    speelTrack();
+
+    // Start de microfoon pas hier bij de eerste mappen-laadactie!
+    try {
+      if (recognition !== null) {
+        recognition.start();
+        console.log("Spraakherkenning gestart via mappen laden!");
+      }
+    } catch (e) {
+      // Al actief of genegeerd
+    }
   }
 }
 
@@ -2283,13 +2295,14 @@ function vernieuwAfspeellijstWeergave() {
     ul.innerHTML = '<li style="cursor:default;">Geen nummers geladen in deze map</li>';
   }
 }
+
 // ==========================================
 // STEMBESTURING (Met beveiliging tegen loop)
 // ==========================================
 window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
 
 if (window.SpeechRecognition) {
-  const recognition = new SpeechRecognition();
+  recognition = new SpeechRecognition();
   recognition.continuous = true;
   recognition.lang = 'nl-NL';
   recognition.interimResults = false;
@@ -2380,21 +2393,7 @@ if (window.SpeechRecognition) {
       }
     }, 2000); 
   };
-
-  recognition.onerror = function(errorEvent) {
-    console.log("Spraakherkenning melding: " + errorEvent.error);
-  };
-
-  // Start direct bij je eerste muisklik op de pagina
-  window.addEventListener('click', function startVoiceOnce() {
-    try {
-      recognition.start();
-      console.log("Spraakherkenning is gestart!");
-      window.removeEventListener('click', startVoiceOnce);
-    } catch (e) {}
-  }, { once: true });
 }
-
 
 // Laad verjaardagen uit localStorage, of gebruik de 36 voorbeeldnamen als startpunt
 window.verjaardagen = JSON.parse(localStorage.getItem('mijnVerjaardagen')) || [
