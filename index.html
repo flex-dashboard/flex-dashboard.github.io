@@ -4,13 +4,44 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V9.5</title>
+<title>Flex Dashboard V9.6</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
 <style>
 
 
+.menu-knop {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.4rem 0.5rem;
+    background-color: #000000;
+    transition: none;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    box-sizing: border-box;
+    border-radius: 6px;
+    text-align: center;
+    /* Schaalt automatisch mee tussen 0.7rem en 1.05rem afhankelijk van het scherm */
+    font-size: clamp(0.5rem, 1.2vw, 1.05rem);
+    font-weight: 500;
+    cursor: pointer;
+    /* Breekt lange woorden netjes af als ze echt te lang worden */
+    word-break: break-word;
+    transition: background-color 0.2s, transform 0.1s;
+}
+
+.menu-knop:hover {
+    background-color: #222222 !important; /* Of #222222 als je wilt dat hij heel subtiel oplicht, maar dan wel 100% dekkend */
+    opacity: 1 !important;
+    backdrop-filter: none !important;
+}
+
+.menu-knop:active {
+    background-color: #ff0000 !important; /* Volledig dekkend rood, geen doorschijnende rotzooi */
+    color: #ffffff !important;
+    transform: scale(0.98);
+}
 
 
 #afspeellijstContainer {
@@ -512,6 +543,104 @@
 #muziek-rechts.verborgen {
     display: none !important;
 }
+/* De uitschuifbare balk in flexibele eenheden */
+.side-menu-drawer {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 10rem;
+    height: 100vh;
+    background: rgba(15, 15, 15, 0.85);
+    backdrop-filter: blur(12px);
+    border-right: 0.1rem solid rgba(255, 255, 255, 0.12);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 1000 !important;
+    isolation: isolate; /* Dwingt het menu om altijd bovenop te renderen */
+    box-shadow: 0.3rem 0 1.2rem rgba(0, 0, 0, 0.5);
+    overflow: visible;
+}
+
+/* Wanneer het menu openklapt */
+.side-menu-drawer.open {
+    transform: translateX(0);
+}
+
+.vertical-menu-btn {
+    position: absolute;
+    left: 10rem; 
+    top: 76%; /* Verhoog dit getal (bijv. naar 91% of 92%) om hem naar beneden te laten zakken */
+    transform: translateY(-50%);
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    background: rgba(0, 0, 0, 0.75);
+    color: #ffffff;
+    border: 0.1rem solid rgba(255, 255, 255, 0.2);
+    border-left: none;
+    padding: 0.5rem 0.2rem;
+    border-radius: 0 0.6rem 0.6rem 0;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.75rem;
+    letter-spacing: 0.05rem;
+    z-index: 10000;
+    backdrop-filter: blur(8px);
+    box-shadow: 0.2rem 0 0.6rem rgba(0, 0, 0, 0.3);
+}
+
+.vertical-menu-btn:hover {
+    background: rgba(0, 0, 0, 0.9);
+}
+
+.side-menu-content {
+    min-height: 100vh; /* Lost direct dat grijze hoekje onderin op doordat de achtergrond nu de volle hoogte pakt */
+    background-image: url('muziek-bg.jpg');
+    background-size: 100% 100%;
+    background-repeat: no-repeat;
+    display: flex;
+    flex-direction: column;
+    padding: 0.5rem;
+    gap: 0.3rem;
+    box-sizing: border-box;
+}
+
+.menu-donatie-container {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-top: auto; /* Duwt de knoppen automatisch naar de onderkant van het menu */
+    padding: 0.8rem 0 0.4rem 0;
+}
+
+.menu-ronde-knop img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    border-radius: 50%;    width: 2.3rem;
+    height: 2.3rem;
+    border-radius: 50%;
+    background-color: #000000;
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    font-size: 0.95rem;
+}
+
+.menu-ronde-knop:hover {
+    background-color: #222222;
+    color: #ff0000; /* Wordt heel even rood/fel bij aanraken */
+}
+
+/* Telefoon en tablet versie */
+@media (max-width: 1024px) {
+    #side-menu, .side-menu-drawer {
+        z-index: 99999 !important;
+    }
+}
+
 
 @media (max-height: 740px) {
     #muziek-rechts {
@@ -939,7 +1068,7 @@
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important; 
     font-weight: bold; 
     line-height: 0.9; 
-    letter-spacing: -1vw; 
+    letter-spacing: 0vw; 
     cursor: pointer; 
     display: inline-flex; 
     align-items: baseline; 
@@ -1568,6 +1697,33 @@ fetch('version.txt?t=' + Date.now())
     </div>
 </div>
 
+<aside id="side-menu" class="side-menu-drawer">
+    <button id="menu-toggle-btn" class="vertical-menu-btn">MENU</button>
+    <div class="side-menu-content">
+        <button id="btn-achtergrond" class="menu-knop" onclick="setAchtergrond('achtergrond')" title="Verwisselt achtergrond foto">Achtergrond</button>
+        <button id="btn-vuurklok" class="menu-knop" onclick="setAchtergrond('vuur')" title="Toont vuur met klok">VUURKLOK</button>
+        <button id="btn-fullscreen" class="menu-knop" onclick="toggleMijnFullscreen()" title="Schakel volledig scherm in">FULLSCREEN</button>
+        <button id="btn-ledrand" class="menu-knop" onclick="wisselLEDModus()" title="Schakel de led-rand in of uit">LED RAND</button>
+        <button class="menu-knop">Test 5</button>
+        <button class="menu-knop">Test 6</button>
+        <button class="menu-knop">Test 7</button>
+        <button class="menu-knop">Test 8</button>
+        <button class="menu-knop">Test 9</button>
+        <button class="menu-knop">Test 10</button>
+        <button class="menu-knop">Test 11</button>
+        <button class="menu-knop">Test 12</button>
+        <button class="menu-knop">Test 13</button>
+        <button class="menu-knop">Test 14</button>
+        <button class="menu-knop">Test 15</button>
+        <button class="menu-knop" onclick="window.open('https://www.paypal.com/paypalme/fransrest', '_blank')" title="Donatie via PayPal">Steun via PayPal</button>
+            <a href="https://www.paypal.com/paypalme/fransrest" target="_blank" class="menu-ronde-knop" title="PayPal">
+                <img src="PayPal.png" alt="PayPal">
+            </a>
+        </div>
+    </div>
+</aside>
+
+
 <div id="muziek-rechts">
     <div style="display: flex; flex-direction: column; align-items: flex-end; gap: 8px;">
         <button id="showBtn" class="ronde-knop" onclick="toggleMenu()" title="Instellingen"><i class="bi bi-gear"></i></button>
@@ -1657,6 +1813,9 @@ function wisselTaal(taal) {
     if (typeof getFullWeather === 'function') {
         getFullWeather();
     }
+
+    // Roep hier direct je menu-vertaalfunctie aan
+    stelMenuTaalIn(taal);
 }
 
 // Functie om de start pop-up te sluiten
@@ -1775,6 +1934,8 @@ function verbergInterface(verberg) {
     document.getElementById('weer-sectie').style.display = d;
     document.getElementById('muziek-rechts').style.display = d;
     document.getElementById('knoppen-links').style.display = d;
+    document.getElementById('side-menu').style.display = dBlock;
+
     
     // Rechterknoppen met specifieke ID's
     document.getElementById('reload-knop').style.display = d;
@@ -3876,9 +4037,93 @@ document.addEventListener('DOMContentLoaded', () => {
             container.classList.remove('open');
         });
     }
+
+    // Sluit de speler als je ergens anders op het scherm klikt/tikt
+    document.addEventListener('click', (e) => {
+        if (container.classList.contains('open') && !container.contains(e.target)) {
+            container.classList.remove('open');
+        }
+    });
+});
+</script>
+<script>
+
+// JavaScript: Voeg dit toe aan je script om het open- en dichtklappen te activeren
+const menuBtn = document.getElementById('menu-toggle-btn');
+const sideMenu = document.getElementById('side-menu');
+
+menuBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    sideMenu.classList.toggle('open');
+});
+
+// Optioneel: sluit het menu als je ergens anders op het scherm klikt
+document.addEventListener('click', (e) => {
+    if (!sideMenu.contains(e.target) && !menuBtn.contains(e.target)) {
+        sideMenu.classList.remove('open');
+    }
 });
 </script>
 
+<script>
+    // Functie om de menuknoppen en tooltips aan te passen op basis van de gekozen taal ('nl' of 'en')
+    function stelMenuTaalIn(taal) {
+        if (taal === 'nl') {
+            // Nederlands
+            document.getElementById('btn-achtergrond').innerText = 'Achtergrond';
+            document.getElementById('btn-achtergrond').title = 'Verwisselt achtergrond foto';
 
+            document.getElementById('btn-vuurklok').innerText = 'VUURKLOK';
+            document.getElementById('btn-vuurklok').title = 'Toont vuur met klok';
+
+            document.getElementById('btn-fullscreen').innerText = 'FULLSCREEN';
+            document.getElementById('btn-fullscreen').title = 'Schakel volledig scherm in';
+
+            document.getElementById('btn-ledrand').innerText = 'LED RAND';
+            document.getElementById('btn-ledrand').title = 'Schakel de led-rand in of uit';
+        } else if (taal === 'en') {
+            // Engels
+            document.getElementById('btn-achtergrond').innerText = 'Background';
+            document.getElementById('btn-achtergrond').title = 'Switches background photo';
+
+            document.getElementById('btn-vuurklok').innerText = 'FIRE CLOCK';
+            document.getElementById('btn-vuurklok').title = 'Shows fire with clock';
+
+            document.getElementById('btn-fullscreen').innerText = 'FULLSCREEN';
+            document.getElementById('btn-fullscreen').title = 'Toggle fullscreen mode';
+
+            document.getElementById('btn-ledrand').innerText = 'LED BORDER';
+            document.getElementById('btn-ledrand').title = 'Toggle the LED border';
+        }
+    }
+</script>
+
+
+<script>
+document.addEventListener('click', (e) => {
+    const speler = document.getElementById('zijPlayer');
+
+    // Als de speler open is (klasse 'uitgeklapt') en je klikt ERBUITEN:
+    if (speler && speler.classList.contains('uitgeklapt')) {
+        if (!speler.contains(e.target)) {
+            speler.classList.remove('uitgeklapt');
+        }
+    }
+});
+</script>
+
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('.menu-knop').forEach(btn => {
+        let fontSize = 14;
+        btn.style.fontSize = fontSize + 'px';
+        btn.style.whiteSpace = 'nowrap';
+        while (btn.scrollWidth > btn.clientWidth && fontSize > 8) {
+            fontSize--;
+            btn.style.fontSize = fontSize + 'px';
+        }
+    });
+});
+</script>
 </body>
 </html>
