@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V9.6</title>
+<title>Flex Dashboard V9.7</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -463,12 +463,36 @@
     }
 }
 
-/* 3. Locatienaam op mobiel */
+/* PC-versie: netjes op maat met ronde hoeken en een normale lettergrootte */
+#locatie-naam {
+    position: absolute;
+    white-space: nowrap;
+    top: 48px;
+    left: 930px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 0.1rem solid rgba(255, 255, 255, 0.3);
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    display: inline-block;
+    width: fit-content;
+    color: #ffffff;
+    font-size: 1.1rem;
+    font-weight: 500;
+    cursor: pointer;
+    z-index: 10;
+}
+
+/* Mobiele versie: haalt dat harde zwarte vierkant weg zodat het weer strak en zonder kader staat */
 @media (max-width: 480px) {
     #locatie-naam {
+        position: static;
+        background: transparent;
+        border: none;
+        padding: 0;
+        border-radius: 0;
         transform: translateY(-3px);
+        font-size: inherit;
         display: inline-block;
-        font-size: 0.6em;
     }
 }
 
@@ -506,6 +530,93 @@
         height: 12.5vw !important;
         aspect-ratio: 1 / 1 !important;
     }
+}
+
+/* Specifieke aanpassingen voor telefoons in de liggende stand (landscape) */
+@media (max-width: 900px) and (orientation: landscape) {
+    /* Schaal het weerblok, de klok en andere elementen hier kleiner zodat het past op een kleine hoogte */
+    .weather-box, #temp-nu, .forecast-container {
+        transform: scale(0.7);
+        transform-origin: top left;
+    }
+
+    /* Flexibele instellingen voor de weersverwachting */
+    #voorspelling {
+        gap: 1.5vw !important;
+        padding: 1.5vw !important;
+        transform: translateX(-4vw); /* Maak dit getal negatiever (bijv. -5vw) om hem verder naar links te duwen */
+    
+    }
+
+    #voorspelling .dag-box {
+        font-size: 2vw !important;
+        padding: 0.5vw 1vw !important;
+    }
+
+    #locatie-naam {
+        position: absolute;
+        top: 5vw;
+        left: 100vw;
+        background: rgba(0, 0, 0, 0.6);
+        border: 0.1rem solid rgba(255, 255, 255, 0.3);
+        padding: 0.4rem 0.8rem;
+        border-radius: 20px;
+        font-size: 1rem;
+        color: #ffffff;
+        z-index: 10;
+    }
+     
+     .vertical-menu-btn {
+        top: 90% !important;
+        font-size: 0.65rem !important;
+        color: #ffffff !important;
+        letter-spacing: 0.03rem !important;
+        padding: 0.3rem 0.15rem !important;
+        -webkit-font-smoothing: antialiased !important;
+    }
+
+#start-logo {
+        width: 8vw !important;
+        bottom: 1rem !important;
+    }
+/* Verberg de menuknop zolang de start-popup open staat in landscape */
+    body:has(#start-popup:not([style*="display: none"])) .vertical-menu-btn {
+        display: none !important;
+    }
+
+#radio-balk-trigger {
+        position: relative !important;
+        left: 5.0rem !important;
+        color: #ffffff !important;
+        -webkit-font-smoothing: antialiased !important;
+    }
+
+ #radio-balk-container {
+        position: absolute !important;
+        right: 6.4rem !important;        /* Verhoog dit getal (bijv. naar 22 of 23) als hij nog verder naar links moet */
+        margin-top: 0.2rem !important;  /* Blijft exact op jouw hoogte */
+        padding: 0.3rem !important;     /* Blijft netjes behouden */
+        width: 17rem !important;
+        max-width: none !important;
+    }
+
+    #radio-balk {
+        width: 100% !important;
+        display: flex !important;
+        justify-content: space-between !important;
+    }
+
+    .radio-knop-smal {
+        flex: 1 !important;
+        height: 5.5rem !important;
+        font-size: 0.6rem !important;
+    }
+
+    .radio-knop-smal.spelend {
+        height: 4.2rem !important; 
+    }
+
+/* Voeg hieronder jouw specifieke elementen toe om ze passend te maken voor landscape */
 }
 
 
@@ -558,7 +669,7 @@
     z-index: 1000 !important;
     isolation: isolate; /* Dwingt het menu om altijd bovenop te renderen */
     box-shadow: 0.3rem 0 1.2rem rgba(0, 0, 0, 0.5);
-    overflow: visible;
+    overflow: visible; /* Automatische scrollbalk wanneer het menu te lang is */
 }
 
 /* Wanneer het menu openklapt */
@@ -593,7 +704,8 @@
 }
 
 .side-menu-content {
-    min-height: 100vh; /* Lost direct dat grijze hoekje onderin op doordat de achtergrond nu de volle hoogte pakt */
+    height: 100%;
+    overflow-y: auto; /* Hier komt de scrollbalk te zitten als het menu te lang wordt */
     background-image: url('muziek-bg.jpg');
     background-size: 100% 100%;
     background-repeat: no-repeat;
@@ -602,6 +714,21 @@
     padding: 0.5rem;
     gap: 0.3rem;
     box-sizing: border-box;
+}
+.side-menu-content::-webkit-scrollbar {
+    width: 12px; /* Maakt de onzichtbare klikzone lekker breed */
+}
+
+.side-menu-content::-webkit-scrollbar-track {
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+}
+
+.side-menu-content::-webkit-scrollbar-thumb {
+    background: #1db954; /* Dat heldere groen (Spotify-groen), pas de hex-code gerust aan naar jouw smaak */
+    border-radius: 6px;
+    border: 4px solid transparent; /* Houdt het zichtbare streepje smal, maar de grijpzone breed */
+    background-clip: padding-box;
 }
 
 .menu-donatie-container {
@@ -808,10 +935,10 @@
   position: fixed;  
   top: 5px;  
   right: 180px;  
-  z-index: 9999 !important; /* Aangepast: ligt nu hoog genoeg om niet meer geblokkeerd te worden */  
+  z-index: 9999 !important; 
   display: flex;  
   flex-direction: column;  
-  align-items: center;  
+  align-items: flex-end; /* Zorgt ervoor dat alles rechts gelijnd blijft en de knop niet verspringt bij het openen */
   pointer-events: auto !important;
 }
 
@@ -826,6 +953,7 @@
   cursor: pointer;  
   border-radius: 4px;  
   margin-bottom: 2px;  
+  -webkit-font-smoothing: antialiased; /* Lost direct de lichte wazigheid van de FM-tekst op */
 }
 
 /* De container waar de balk en pijltjes in zitten */
@@ -848,8 +976,8 @@
   display: flex !important;  
   flex-direction: row !important;  
   align-items: flex-start;  
-  max-width: 220px !important; /* Zet hem op bijv. 220px of 250px zodat hij lekker smal is */
-  min-width: 0 !important;     /* DIT IS DE FIX: dwingt de balk om zich aan de max-breedte te houden */
+  max-width: 220px !important; 
+  min-width: 0 !important;     
   overflow-x: auto !important;    
   overflow-y: hidden !important;
   scroll-behavior: smooth;
@@ -859,13 +987,11 @@
   scrollbar-width: none;
   -webkit-user-select: none;
   user-select: none;
-
 }
 
 #radio-balk::-webkit-scrollbar {
   display: none;
 }
-
 
 /* PC Pijltjesknoppen */
 .radio-pijl-pc {
@@ -900,9 +1026,8 @@
   justify-content: center !important;  
   transition: all 0.2s ease;  
   flex-shrink: 0;
- -webkit-user-select: none;
+  -webkit-user-select: none;
   user-select: none;
-
 }
 
 .radio-knop-smal:hover {  
@@ -1316,14 +1441,13 @@
 
 
 
-/* Wanneer de 'schone-modus' actief is: */
-body.schone-modus #muziek-rechts {
-    display: none; /* Verbergt het oude paneel */
-}
-
-
-
-        
+body.schone-modus #container,
+body.schone-modus #verjaardagen-container,
+body.schone-modus #flex-midden-container,
+body.schone-modus #muziek-rechts,
+body.schone-modus #spotify-container {
+    display: none !important;
+}        
       
 html, body { 
     margin: 0; 
@@ -2182,6 +2306,15 @@ function setAchtergrond(type) {
         youtubeVak.style.display = 'none';
         document.body.appendChild(youtubeVak);
     }
+
+if (typeof visualizerActive !== 'undefined' && visualizerActive) {
+        visualizerActive = false;
+        const visContainer = document.getElementById('visualisatie-container');
+        if (visContainer) visContainer.style.display = 'none';
+        const visIcon = document.querySelector('#visualisatie-start-knop i');
+        if (visIcon) visIcon.className = 'bi bi-play-fill';
+    }
+
 
     bgType = type;
     isFotolijstModus = false;
@@ -3794,32 +3927,70 @@ document.getElementById('presetSelect').addEventListener('change', function() {
 
 
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
-    // Controleer of het scherm kleiner is dan 480px (dus een telefoon/tablet)
-    if (window.innerWidth <= 480 && navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(function(position) {
-            const lat = position.coords.latitude;
-            const lon = position.coords.longitude;
-            
-            fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=nl`)
-                .then(response => response.json())
-                .then(data => {
-                    if (data && data.address) {
-                        const stad = data.address.city || data.address.town || data.address.village || data.address.municipality;
-                        if (stad) {
-                            document.getElementById('locatie-naam').innerText = stad;
-                        }
-                    }
-                })
-                .catch(error => {
-                    console.log("Kon locatie niet ophalen", error);
-                });
-        }, function(error) {
-            console.log("Geen locatietoegang of niet beschikbaar");
-        });
+document.addEventListener("DOMContentLoaded", function() {
+    const locatieElement = document.getElementById('locatie-naam');
+    if (!locatieElement) return;
+
+    // Hulpfunctie om altijd direct de juiste taal op te vragen
+    function getActieveTeksten() {
+        const isEngels = (typeof huidigeTaal !== 'undefined' && huidigeTaal === 'en');
+        return {
+            zoek: isEngels ? 'Searching...' : 'Zoeken...',
+            fallback: isEngels ? 'Location here' : 'Locatie hier',
+            taalCode: isEngels ? 'en' : 'nl'
+        };
     }
-});;
-    </script>
+
+    function vraagLocatieOp() {
+        locatieElement.innerText = getActieveTeksten().zoek;
+
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(function(position) {
+                const lat = position.coords.latitude;
+                const lon = position.coords.longitude;
+                const teksten = getActieveTeksten();
+                
+                fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lon}&accept-language=${teksten.taalCode}`)
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data && data.address) {
+                            const stad = data.address.city || data.address.town || data.address.village || data.address.municipality;
+                            if (stad) {
+                                locatieElement.innerText = stad;
+                            } else {
+                                locatieElement.innerText = getActieveTeksten().fallback;
+                            }
+                        } else {
+                            locatieElement.innerText = getActieveTeksten().fallback;
+                        }
+                    })
+                    .catch(error => {
+                        console.log("Kon locatie niet ophalen", error);
+                        locatieElement.innerText = getActieveTeksten().fallback;
+                    });
+            }, function(error) {
+                console.log("Geen locatietoegang of niet beschikbaar");
+                // Pakt nu direct de actieve taal op het moment dat de blokkering binnenkomt
+                locatieElement.innerText = getActieveTeksten().fallback;
+            });
+        } else {
+            locatieElement.innerText = getActieveTeksten().fallback;
+        }
+    }
+
+    // Maak het vakje visueel klikbaar met een cursor-handje
+    locatieElement.style.cursor = "pointer";
+
+    // Als iemand op het vakje klikt, wordt de locatiebepaling opnieuw gestart
+    locatieElement.addEventListener("click", function() {
+        vraagLocatieOp();
+    });
+
+    // Probeer direct bij het laden de locatie op te halen
+    vraagLocatieOp();
+});
+</script>
+
 
 <script>
 document.getElementById('radio-balk-trigger').addEventListener('click', function(e) {
@@ -3839,7 +4010,7 @@ document.addEventListener('click', function(e) {
 
 
 <!-- Definitieve onverwoestbare hoek-knop -->
-<button id="independent-gear-btn" title="Menu">
+<button id="independent-gear-btn" title="Menu" onclick="document.getElementById('menu').classList.toggle('hidden'); event.stopPropagation();" style="display: flex !important;">
     <i class="bi bi-gear" style="pointer-events: none;"></i>
 </button>
 
@@ -3849,26 +4020,25 @@ document.addEventListener('click', function(e) {
     position: fixed !important;
     top: 15px !important;
     right: 15px !important;
-    z-index: 2147483647 !important; /* Altijd boven het menu */
-    width: 65px !important;
-    height: 65px !important;
-    background: rgba(0, 0, 0, 0.6) !important;
-    border: 2px solid white !important;
-    border-radius: 50% !important;
+    z-index: 2147483647 !important;
+    width: auto !important;
+    height: auto !important;
+    background: none !important;
+    border: none !important;
+    border-radius: 0 !important;
     color: white !important;
-    align-items: center !important;
-    justify-content: center !important;
     cursor: pointer !important;
-    font-size: 24px !important;
+    font-size: 1.5rem !important; /* Flexibele schaling (pas 1.5 aan naar bijv. 1.2 of 1.8 voor groter/kleiner) */
+    padding: 0 !important;
     opacity: 1 !important;
+    box-shadow: none !important;
 }
 
-/* Voorkom dat de knop doorzichtig of vaag wordt bij indrukken of focus */
 #independent-gear-btn:hover,
 #independent-gear-btn:active, 
 #independent-gear-btn:focus {
     opacity: 1 !important;
-    background: rgba(0, 0, 0, 0.6) !important;
+    background: none !important;
     filter: none !important;
     transform: none !important;
     outline: none !important;
@@ -4066,39 +4236,53 @@ document.addEventListener('click', (e) => {
 </script>
 
 <script>
-    // Functie om de menuknoppen en tooltips aan te passen op basis van de gekozen taal ('nl' of 'en')
-    function stelMenuTaalIn(taal) {
-        if (taal === 'nl') {
-            // Nederlands
-            document.getElementById('btn-achtergrond').innerText = 'Achtergrond';
-            document.getElementById('btn-achtergrond').title = 'Verwisselt achtergrond foto';
+// Globale variabele om de actieve taal bij te houden
+let huidigeTaal = 'nl'; // Standaard Nederlands
 
-            document.getElementById('btn-vuurklok').innerText = 'VUURKLOK';
-            document.getElementById('btn-vuurklok').title = 'Toont vuur met klok';
+// Functie om de menuknoppen en tooltips aan te passen op basis van de gekozen taal ('nl' of 'en')
+function stelMenuTaalIn(taal) {
+    huidigeTaal = taal; // Sla de taal op zodat andere functies dit ook weten
 
-            document.getElementById('btn-fullscreen').innerText = 'FULLSCREEN';
-            document.getElementById('btn-fullscreen').title = 'Schakel volledig scherm in';
+    if (taal === 'nl') {
+        // Nederlands
+        document.getElementById('btn-achtergrond').innerText = 'Achtergrond';
+        document.getElementById('btn-achtergrond').title = 'Verwisselt achtergrond foto';
 
-            document.getElementById('btn-ledrand').innerText = 'LED RAND';
-            document.getElementById('btn-ledrand').title = 'Schakel de led-rand in of uit';
-        } else if (taal === 'en') {
-            // Engels
-            document.getElementById('btn-achtergrond').innerText = 'Background';
-            document.getElementById('btn-achtergrond').title = 'Switches background photo';
+        document.getElementById('btn-vuurklok').innerText = 'VUURKLOK';
+        document.getElementById('btn-vuurklok').title = 'Toont vuur met klok';
 
-            document.getElementById('btn-vuurklok').innerText = 'FIRE CLOCK';
-            document.getElementById('btn-vuurklok').title = 'Shows fire with clock';
+        document.getElementById('btn-fullscreen').innerText = 'FULLSCREEN';
+        document.getElementById('btn-fullscreen').title = 'Schakel volledig scherm in';
 
-            document.getElementById('btn-fullscreen').innerText = 'FULLSCREEN';
-            document.getElementById('btn-fullscreen').title = 'Toggle fullscreen mode';
+        document.getElementById('btn-ledrand').innerText = 'LED RAND';
+        document.getElementById('btn-ledrand').title = 'Schakel de led-rand in of uit';
+    } else if (taal === 'en') {
+        // Engels
+        document.getElementById('btn-achtergrond').innerText = 'Background';
+        document.getElementById('btn-achtergrond').title = 'Switches background photo';
 
-            document.getElementById('btn-ledrand').innerText = 'LED BORDER';
-            document.getElementById('btn-ledrand').title = 'Toggle the LED border';
+        document.getElementById('btn-vuurklok').innerText = 'FIRE CLOCK';
+        document.getElementById('btn-vuurklok').title = 'Shows fire with clock';
+
+        document.getElementById('btn-fullscreen').innerText = 'FULLSCREEN';
+        document.getElementById('btn-fullscreen').title = 'Toggle fullscreen mode';
+
+        document.getElementById('btn-ledrand').innerText = 'LED BORDER';
+        document.getElementById('btn-ledrand').title = 'Toggle the LED border';
+    }
+
+   // Vertaal het locatie-vakje direct mee als het nog de standaard- of zoektekst is
+    const locatieElement = document.getElementById('locatie-naam');
+    if (locatieElement) {
+        const huidigeTekst = locatieElement.innerText.trim();
+        if (huidigeTekst === 'Locatie hier' || huidigeTekst === 'Location here') {
+            locatieElement.innerText = (taal === 'en') ? 'Location here' : 'Locatie hier';
+        } else if (huidigeTekst === 'Zoeken...' || huidigeTekst === 'Searching...') {
+            locatieElement.innerText = (taal === 'en') ? 'Searching...' : 'Zoeken...';
         }
     }
+}
 </script>
-
-
 <script>
 document.addEventListener('click', (e) => {
     const speler = document.getElementById('zijPlayer');
@@ -4125,5 +4309,18 @@ window.addEventListener('DOMContentLoaded', () => {
     });
 });
 </script>
+
+<script>
+document.addEventListener('click', function(event) {
+  if (typeof klokVerborgen !== 'undefined' && klokVerborgen) {
+    if (event.target.closest('#menu') || event.target.closest('#showBtn') || event.target.closest('#showBtn-hoek') || event.target.closest('#terug-knop') || event.target.closest('#independent-gear-btn')) {
+      return;
+    }
+    toggleKlok();
+  }
+});
+</script>
+
+
 </body>
 </html>
