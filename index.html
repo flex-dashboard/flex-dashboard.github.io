@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V9.8</title>
+<title>Flex Dashboard V9.9</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -828,6 +828,13 @@
     justify-content: flex-start;
     align-items: center;
     cursor: pointer;
+}
+
+
+/* Zorg dat de hover op de pc-knop weer netjes reageert */
+#spotify-container:hover {
+    cursor: pointer;
+   /* Zet hier eventueel jouw eigen hover-effecten zoals scale of background-color */
 }
 
 #spotify-container::before {
@@ -1908,7 +1915,7 @@ if (!document.title.includes(versieOpServer)) {
 <script>
 
 // Standaard taal op Nederlands zetten
-let huidigeTaal = 'nl'; 
+huidigeTaal = 'nl'; 
 
 // Functie voor volledig scherm (fullscreen)
 function schakelFullscreen() {
@@ -4085,31 +4092,27 @@ document.addEventListener('click', function(e) {
 
 
 <script>
-document.getElementById('spotify-container').addEventListener('click', function(e) {
-    this.classList.toggle('open');
-});
-</script>
-
-<script>
 const spotifyContainer = document.getElementById('spotify-container');
 const spotifyClose = document.getElementById('spotify-close');
 
-// Openen wanneer je op de knop klikt (als hij nog dicht is)
-spotifyContainer.addEventListener('click', function(e) {
-    e.preventDefault(); // Voorkomt dat de telefoon naar een extern tabblad schiet
-    if (!spotifyContainer.classList.contains('open')) {
-        spotifyContainer.classList.add('open');
-    }
+// Openen zodra je met je muis over de container beweegt (hover op pc)
+spotifyContainer.addEventListener('mouseenter', function() {
+    this.classList.add('open');
 });
 
 // Sluiten wanneer je op het kruisje klikt
 spotifyClose.addEventListener('click', function(e) {
-    e.stopPropagation(); // Voorkomt dat de klik doorloopt naar de container
+    e.stopPropagation();
     spotifyContainer.classList.remove('open');
 });
-</script>
 
-<script>
+// Mobiele ondersteuning: tikken opent/sluit en blokkeert externe navigatie
+spotifyContainer.addEventListener('click', function(e) {
+    if (e.target === spotifyClose) return;
+    e.preventDefault();
+    this.classList.toggle('open');
+});
+</script><script>
 function scrollRadioBalk(richting) {
     const balk = document.getElementById('radio-balk');
     if (balk) {
