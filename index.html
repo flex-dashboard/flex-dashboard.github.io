@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V10.1</title>
+<title>Flex Dashboard V10.2</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -884,12 +884,12 @@
 /* Open status (puur op basis van klik/open klasse voor zowel PC als mobiel) */
 #spotify-container.open {
     width: 210px;
-    height: 380px;
+    height: 352px;
     border-radius: 12px;
     transform: scale(0.8);
     transform-origin: bottom right;
     background-color: #282828;
-    padding-top: 10px;
+    padding-top: 0px;
 }
 
 #spotify-container.open::before { 
@@ -898,6 +898,17 @@
 
 #spotify-container.open iframe { 
     opacity: 1; 
+}
+
+#spotify-container iframe {
+    opacity: 0;
+    pointer-events: none; /* Zorgt dat een dichte speler geen aanrakingen blokkeert */
+    transition: opacity 0.3s ease;
+}
+
+#spotify-container.open iframe {
+    opacity: 1;
+    pointer-events: auto; /* Pas als hij open is, mag je de speler bedienen */
 }
 
 @media (max-height: 740px) {
@@ -942,7 +953,7 @@
     #spotify-container.open {
         z-index: 99999 !important;
         width: 210px !important;
-        height: 380px !important;
+        height: 352px !important;
         transform: translateX(-50%) scale(1) !important;
         transform-origin: bottom center !important;
     }
