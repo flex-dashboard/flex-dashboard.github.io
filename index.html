@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V9.7</title>
+<title>Flex Dashboard V9.8</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -460,6 +460,14 @@
         padding: 8px 20px;
         font-size: 6vw !important;
         gap: 10px;
+    }
+}
+
+@media screen and (max-width: 480px) {
+    /* Verberg zowel de menu-knop als de FM-knop zolang de start-popup open staat */
+    body:has(#start-popup:not([style*="display: none"])) .vertical-menu-btn,
+    body:has(#start-popup:not([style*="display: none"])) #radio-balk-trigger {
+        display: none !important;
     }
 }
 
@@ -1734,10 +1742,10 @@ fetch('version.txt?t=' + Date.now())
     .then(onlineVersie => {
         const versieOpServer = onlineVersie.trim(); // Bijv: "V8.5"
         
-        // Als de paginatitel de versie van de server NIET bevat, dan is er een update
-        if (!document.title.includes(versieOpServer)) {
-            window.location.reload();
-        }
+        // Als de paginatitel de versie van de server NIET bevat, forceer dan een harde herlading
+if (!document.title.includes(versieOpServer)) {
+    window.location.href = window.location.pathname + '?v=' + serverVersion + '&t=' + Date.now();
+}
     })
     .catch(err => console.log('Versie check niet mogelijk'));
 </script>
@@ -4088,6 +4096,7 @@ const spotifyClose = document.getElementById('spotify-close');
 
 // Openen wanneer je op de knop klikt (als hij nog dicht is)
 spotifyContainer.addEventListener('click', function(e) {
+    e.preventDefault(); // Voorkomt dat de telefoon naar een extern tabblad schiet
     if (!spotifyContainer.classList.contains('open')) {
         spotifyContainer.classList.add('open');
     }
