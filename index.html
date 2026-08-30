@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V10.3</title>
+<title>Flex Dashboard V10.4</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -1762,6 +1762,8 @@ canvas {
 
 <body>
 
+<iframe id="youtubeVak" src="https://www.youtube.com/embed/flPiIc1jWoA?autoplay=1&controls=0&mute=1&loop=1&playlist=flPiIc1jWoA&rel=0&playsinline=1&disablekb=1&modestbranding=1&enablejsapi=1" style="display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; border: none; z-index: -1; pointer-events: none;" allow="autoplay"></iframe>
+
 
 <script>
 // Automatische versie-check die kijkt naar je paginatitel
@@ -2377,17 +2379,23 @@ if (typeof visualizerActive !== 'undefined' && visualizerActive) {
         document.body.style.backgroundSize = "cover";
         changeBg();
     } else if (type === 'vis') {
-        document.body.style.backgroundImage = "none";
-        video.pause();
-        video.style.display = 'none';
-        youtubeVak.style.display = 'block';
-        youtubeVak.style.pointerEvents = 'none';
+    document.body.style.backgroundImage = "none";
+    video.pause();
+    video.style.display = 'none';
+    youtubeVak.style.display = 'block';
+    youtubeVak.style.pointerEvents = 'none';
+    
+    if (!youtubeVak.src || youtubeVak.src === "" || youtubeVak.src.indexOf("flPiIc1jWoA") === -1) {
         youtubeVak.src = "https://www.youtube.com/embed/flPiIc1jWoA?autoplay=1&controls=0&mute=1&loop=1&playlist=flPiIc1jWoA&rel=0&playsinline=1&disablekb=1&modestbranding=1&enablejsapi=1";
-        isYoutubeMuted = true;
+    } else {
+        try { youtubeVak.contentWindow.postMessage('{"event":"command","func":"playVideo","args":""}', '*'); } catch(e){}
+    }
+    isYoutubeMuted = true;
     } else if (type === 'vuur') {
         document.body.style.backgroundImage = "none";
         youtubeVak.style.display = 'none';
-        youtubeVak.src = ""; 
+youtubeVak.style.pointerEvents = 'none';
+try { youtubeVak.contentWindow.postMessage('{"event":"command","func":"pauseVideo","args":""}', '*'); } catch(e) {}
         video.style.display = 'block';
         video.src = 'video/vuur.mp4'; 
         video.load();
