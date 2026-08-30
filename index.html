@@ -4,7 +4,7 @@
 <meta name="referrer" content="no-referrer">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>Flex Dashboard V9.9</title>
+<title>Flex Dashboard V10.1</title>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" onerror="this.onerror=null;this.href='bootstrap-icons.css';">
 
 
@@ -730,6 +730,9 @@
 .side-menu-content::-webkit-scrollbar-track {
     background: rgba(0, 0, 0, 0.1);
     border-radius: 6px;
+    overflow-y: scroll !important;
+    -webkit-overflow-scrolling: touch;
+    
 }
 
 .side-menu-content::-webkit-scrollbar-thumb {
@@ -2250,8 +2253,20 @@ function startSlideshow() {
         if (fotoWachtrij.length === 0) vulFotoWachtrij();
         const nr = fotoWachtrij.pop();
         document.body.style.animation = "none";
-        document.body.style.backgroundSize = "cover";
-        document.body.style.backgroundImage = "url('achtergrond/foto(" + nr + ").jpg')";
+        
+        if (window.innerWidth > window.innerHeight) {
+            // Liggend: rek de foto volledig uit over het scherm (geen zwarte balken, niet afsnijden)
+            document.body.style.backgroundSize = "100% 100%";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundRepeat = "no-repeat";
+            document.body.style.backgroundImage = "url('achtergrond/foto(" + nr + ").jpg')";
+        } else {
+            // Rechtop: telefoon-foto's
+            document.body.style.backgroundSize = "cover";
+            document.body.style.backgroundPosition = "center";
+            document.body.style.backgroundRepeat = "no-repeat";
+            document.body.style.backgroundImage = "url('phoneback/foto(" + nr + ").jpg')";
+        }
     }
 }
 
