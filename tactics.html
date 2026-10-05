@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spraakgestuurde Dartteller - Tactics</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 15px;
+        }
+        h1 { color: #f39c12; font-size: 24px; margin-bottom: 10px; }
+        .game-container {
+            max-width: 750px;
+            margin: 15px auto;
+            background: #1e1e1e;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.5);
+            text-align: center;
+        }
+
+        /* Strakke knoppenbalk */
+        .button-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            margin-top: 15px;
+            flex-wrap: wrap;
+        }
+        button {
+            height: 42px;
+            padding: 0 14px;
+            font-size: 14px;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin: 0;
+            color: white;
+            transition: opacity 0.2s;
+        }
+        button:hover { opacity: 0.9; }
+        .btn-start { background: #27ae60; }
+        .btn-undo { background: #e67e22; }
+        .btn-reset { background: #7f8c8d; }
+        .btn-toggle { background: #2980b9; }
+        .btn-fullscreen { background: #34495e; padding: 0 12px; font-size: 16px; }
+
+        /* Tactics Tabel / Bord Stijl met doorlopende lijnen */
+        .tactics-board {
+            width: 100%;
+            max-width: 580px;
+            margin: 15px auto;
+            border-collapse: collapse;
+            background: #181818;
+            border: 2px solid #444;
+            border-radius: 8px;
+            overflow: hidden;
+        }
+        .tactics-board th {
+            padding: 8px 0;
+            color: #f39c12;
+            font-size: 16px;
+            border-bottom: 2px solid #444;
+            background: #222;
+            width: 38%;
+        }
+        .tactics-board th.center-header {
+            width: 24%;
+            color: #888;
+            border-left: 2px solid #444;
+            border-right: 2px solid #444;
+        }
+        .tactics-board td {
+            height: 34px;
+            vertical-align: middle;
+            border-bottom: 1px solid #333; /* Lijn loopt nu helemáál door */
+            font-weight: bold;
+            font-size: 14px;
+        }
+        .tactics-board td.col-p1 { text-align: center; color: #fff; }
+        .tactics-board td.col-p2 { text-align: center; color: #fff; }
+        .tactics-board td.col-center {
+            text-align: center;
+            background: #111;
+            border-left: 2px solid #444;
+            border-right: 2px solid #444;
+            color: #f39c12;
+            font-size: 15px;
+        }
+        .tactics-board tr.bull-row td.col-center {
+            color: #e74c3c;
+        }
+        .tactics-board tr.pts-row td {
+            background: #222;
+            color: #f39c12;
+            font-size: 15px;
+            border-top: 2px solid #444;
+            border-bottom: none;
+        }
+
+        #status {
+            font-style: italic;
+            color: #bdc3c7;
+            margin-top: 10px;
+            font-size: 14px;
+        }
+        #transcript {
+            background: #252525;
+            padding: 10px;
+            border-radius: 6px;
+            margin-top: 8px;
+            min-height: 22px;
+            color: #3498db;
+            font-weight: bold;
+            font-size: 14px;
+        }
+
+        .tip-box {
+            background: #2c3e50;
+            color: #ecf0f1;
+            padding: 8px 12px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 13px;
+            display: inline-block;
+        }
+
+        /* Statistieken & Gesplitste Historie */
+        .stats-container {
+            display: flex;
+            justify-content: space-around;
+            background: #252525;
+            padding: 10px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 14px;
+            font-weight: bold;
+            color: #f1c40f;
+        }
+
+        .history-split {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+        .history-col {
+            flex: 1;
+            background: #252525;
+            padding: 10px;
+            border-radius: 8px;
+            text-align: left;
+            max-height: 130px;
+            overflow-y: auto;
+        }
+        .history-col h4 {
+            margin: 0 0 6px 0;
+            color: #f39c12;
+            font-size: 13px;
+            text-align: center;
+            border-bottom: 1px solid #444;
+            padding-bottom: 4px;
+        }
+        .history-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            font-size: 12px;
+            color: #dcdcdc;
+        }
+        .history-list li {
+            padding: 3px 0;
+            border-bottom: 1px solid #333;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Tactics / Cricket Modus</h1>
+
+    <div class="game-container">
+        <!-- Tactics Tabel met strakke doorlopende lijnen -->
+        <table class="tactics-board">
+            <thead>
+                <tr>
+                    <th id="tLabelP1">Frans</th>
+                    <th class="center-header">Vak</th>
+                    <th id="tLabelP2">Patrick</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td class="col-p1" id="p1_20">-</td><td class="col-center">20</td><td class="col-p2" id="p2_20">-</td></tr>
+                <tr><td class="col-p1" id="p1_19">-</td><td class="col-center">19</td><td class="col-p2" id="p2_19">-</td></tr>
+                <tr><td class="col-p1" id="p1_18">-</td><td class="col-center">18</td><td class="col-p2" id="p2_18">-</td></tr>
+                <tr><td class="col-p1" id="p1_17">-</td><td class="col-center">17</td><td class="col-p2" id="p2_17">-</td></tr>
+                <tr><td class="col-p1" id="p1_16">-</td><td class="col-center">16</td><td class="col-p2" id="p2_16">-</td></tr>
+                <tr><td class="col-p1" id="p1_15">-</td><td class="col-center">15</td><td class="col-p2" id="p2_15">-</td></tr>
+                <tr><td class="col-p1" id="p1_14">-</td><td class="col-center">14</td><td class="col-p2" id="p2_14">-</td></tr>
+                <tr><td class="col-p1" id="p1_13">-</td><td class="col-center">13</td><td class="col-p2" id="p2_13">-</td></tr>
+                <tr><td class="col-p1" id="p1_12">-</td><td class="col-center">12</td><td class="col-p2" id="p2_12">-</td></tr>
+                <tr><td class="col-p1" id="p1_11">-</td><td class="col-center">11</td><td class="col-p2" id="p2_11">-</td></tr>
+                <tr><td class="col-p1" id="p1_10">-</td><td class="col-center">10</td><td class="col-p2" id="p2_10">-</td></tr>
+                <tr class="bull-row"><td class="col-p1" id="p1_bull">-</td><td class="col-center">BULL</td><td class="col-p2" id="p2_bull">-</td></tr>
+                <tr class="pts-row">
+                    <td class="col-p1" id="p1_pts">Pt: 0</td>
+                    <td class="col-center" style="font-size:12px; color:#aaa;">PUNTEN</td>
+                    <td class="col-p2" id="p2_pts">Pt: 0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- Strakke Knoppenbalk -->
+        <div class="button-bar">
+            <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn">Start Luisteren 🎙️</button>
+            <button class="btn-undo" onclick="laatsteActieTerugdraaien()">Herstel / Terug ↩️</button>
+            <button class="btn-toggle" onclick="togglePuntenModus()" id="ptsToggleBtn">Modus: MET Punten</button>
+            <button class="btn-fullscreen" onclick="toggleFullscreen()" title="Volledig Scherm">⛶</button>
+            <button class="btn-reset" onclick="resetSpel()">Reset</button>
+        </div>
+
+        <div id="status">Microfoon staat uit. Klik op 'Start Luisteren'.</div>
+        <div id="transcript">Gehoord: (wacht op commando...)</div>
+
+        <div class="tip-box">
+            💡 <b>Tip:</b> Zeg bijv. <i>"Frans 20"</i>, <i>"Patrick 2 keer 19"</i>, <i>"Frans groene boel" (1x)</i> of <i>"Patrick rode boel" (2x)</i>
+        </div>
+
+        <!-- Statistiekenblok (Gewonnen Games + MPR) -->
+        <div class="stats-container">
+            <div>Frans: <span id="legsP1">0</span> Won | MPR: <span id="mprP1">0.00</span></div>
+            <div>Patrick: <span id="legsP2">0</span> Won | MPR: <span id="mprP2">0.00</span></div>
+        </div>
+
+        <!-- Gesplitste Historie per Speler -->
+        <div class="history-split">
+            <div class="history-col">
+                <h4>Historie Frans</h4>
+                <ul class="history-list" id="historyP1">
+                    <li style="color:#777;">Geen acties</li>
+                </ul>
+            </div>
+            <div class="history-col">
+                <h4>Historie Patrick</h4>
+                <ul class="history-list" id="historyP2">
+                    <li style="color:#777;">Geen acties</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let spelers = { name1: "frans", name2: "patrick" };
+        let actieveSpeler = 1;
+        let geschiedenisStappen = []; 
+        let isLuisteren = false;
+        let recognition;
+
+        let gewonnenLegs = { p1: 0, p2: 0 };
+
+        const getallenLijst = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 'bull'];
+        
+        let tacticsData = {
+            p1: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
+            p2: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
+        };
+        let tacticsPuntenAan = true;
+
+        function initSpraak() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+
+            recognition = new SpeechRecognition();
+            recognition.lang = 'nl-NL';
+            recognition.continuous = true;
+            recognition.interimResults = false;
+
+            recognition.onresult = function(event) {
+                const speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                document.getElementById('transcript').innerText = `Gehoord: "${speechResult}"`;
+                verwerkSpraakTactics(speechResult);
+            };
+
+            recognition.onend = function() {
+                if (isLuisteren) { try { recognition.start(); } catch (e) {} }
+            };
+        }
+
+        function toggleLuisteren() {
+            if (!recognition) initSpraak();
+            if (!isLuisteren) {
+                isLuisteren = true;
+                try { recognition.start(); } catch(e) {}
+                document.getElementById('listenBtn').innerText = "Stop Luisteren ⏹️";
+                document.getElementById('listenBtn').style.background = "#c0392b";
+                document.getElementById('status').innerText = "Luistert naar Tactics commando's...";
+            } else {
+                isLuisteren = false;
+                try { recognition.stop(); } catch(e) {}
+                document.getElementById('listenBtn').innerText = "Start Luisteren 🎙️";
+                document.getElementById('listenBtn').style.background = "#27ae60";
+                document.getElementById('status').innerText = "Microfoon uitgeschakeld.";
+            }
+        }
+
+        function togglePuntenModus() {
+            tacticsPuntenAan = !tacticsPuntenAan;
+            const btn = document.getElementById('ptsToggleBtn');
+            if (tacticsPuntenAan) {
+                btn.innerText = "Modus: MET Punten";
+                btn.style.background = "#2980b9";
+            } else {
+                btn.innerText = "Modus: ZONDER Punten";
+                btn.style.background = "#7f8c8d";
+            }
+            updateScherm();
+        }
+
+        function toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function verwerkSpraakTactics(zin) {
+            if (zin.includes("herstel") || zin.includes("fout") || zin.includes("terug") || zin.includes("ongedaan")) {
+                laatsteActieTerugdraaien();
+                return;
+            }
+
+            // FILTER: Reageert PAS als er Frans of Patrick genoemd wordt
+            const bevatNaam1 = zin.includes(spelers.name1);
+            const bevatNaam2 = zin.includes(spelers.name2);
+            if (!bevatNaam1 && !bevatNaam2) return;
+
+            let doelSpelerKey = bevatNaam1 ? 'p1' : 'p2';
+            let spelerNaamMooi = bevatNaam1 ? "Frans" : "Patrick";
+
+            // Bewaar voor Herstel
+            geschiedenisStappen.push({
+                tacticsData: JSON.parse(JSON.stringify(tacticsData)),
+                htmlHistP1: document.getElementById('historyP1').innerHTML,
+                htmlHistP2: document.getElementById('historyP2').innerHTML
+            });
+
+            let hitsAangepast = false;
+            let actieMelding = "";
+
+            // Bepaal aantal treffers (zowel getallen '2' als uitgeschreven 'twee')
+            let aantalHits = 1;
+            if (zin.includes("3") || zin.includes("drie") || zin.includes("triple") || zin.includes("trippel") || zin.includes("driemaal")) {
+                aantalHits = 3;
+            } else if (zin.includes("2") || zin.includes("twee") || zin.includes("dubbel") || zin.includes("tweemaal")) {
+                aantalHits = 2;
+            }
+
+            // Boel Herkenning (Groene = 1, Rode / Dubbel = 2)
+            let isBull = zin.includes("boel") || zin.includes("boule") || zin.includes("bull") || zin.includes("bullseye");
+
+            if (isBull) {
+                if (zin.includes("rode") || zin.includes("dubbel") || zin.includes("bullseye")) {
+                    aantalHits = 2;
+                    actieMelding = "Rode Boel (2x)";
+                } else if (zin.includes("groene")) {
+                    aantalHits = 1;
+                    actieMelding = "Groene Boel (1x)";
+                } else {
+                    actieMelding = `${aantalHits}x Bull`;
+                }
+
+                verwerkTreffers(doelSpelerKey, 'bull', aantalHits, 25);
+                hitsAangepast = true;
+            } else {
+                // Cijfers 10 t/m 20
+                getallenLijst.forEach(cijfer => {
+                    if (cijfer === 'bull') return;
+                    let regex = new RegExp(`\\b${cijfer}\\b`);
+                    if (regex.test(zin)) {
+                        verwerkTreffers(doelSpelerKey, cijfer, aantalHits, cijfer);
+                        hitsAangepast = true;
+                        actieMelding = `${aantalHits}x ${cijfer}`;
+                    }
+                });
+            }
+
+            if (!hitsAangepast) {
+                geschiedenisStappen.pop();
+                return;
+            }
+
+            tacticsData[doelSpelerKey].beurten += 1;
+            tacticsData[doelSpelerKey].totaalHits += aantalHits;
+
+            updateScherm();
+            voegToeAanHistorie(doelSpelerKey, actieMelding);
+            toonMelding(`✓ ${spelerNaamMooi}: ${actieMelding}`, "#2ecc71");
+            speakFeedback("Genoteerd");
+
+            controleerGewonnen(doelSpelerKey, spelerNaamMooi);
+        }
+
+        function verwerkTreffers(spelerKey, vakje, hits, puntWaarde) {
+            let huidigeHits = tacticsData[spelerKey][vakje];
+            let totaleNieuweHits = huidigeHits + hits;
+            let nieuweHits = Math.min(3, totaleNieuweHits);
+            let overigeHits = Math.max(0, totaleNieuweHits - 3);
+
+            tacticsData[spelerKey][vakje] = nieuweHits;
+
+            if (tacticsPuntenAan && overigeHits > 0) {
+                let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
+                // Punten alleen erbij als de tegenstander hem nog NIET dicht heeft
+                if (tacticsData[tegenstanderKey][vakje] < 3) {
+                    tacticsData[spelerKey].punten += (overigeHits * puntWaarde);
+                }
+            }
+        }
+
+        function controleerGewonnen(spelerKey, naam) {
+            let allesDicht = getallenLijst.every(v => tacticsData[spelerKey][v] >= 3);
+            if (!allesDicht) return;
+
+            let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
+            let heeftMeestePunten = true;
+
+            if (tacticsPuntenAan) {
+                heeftMeestePunten = tacticsData[spelerKey].punten >= tacticsData[tegenstanderKey].punten;
+            }
+
+            if (allesDicht && heeftMeestePunten) {
+                gewonnenLegs[spelerKey] += 1;
+                document.getElementById(`legs${spelerKey.toUpperCase()}`).innerText = gewonnenLegs[spelerKey];
+                alert(`🎉 GEWONNEN! ${naam} heeft het spel gewonnen!`);
+                speakFeedback(`${naam} heeft gewonnen!`);
+            }
+        }
+
+        function laatsteActieTerugdraaien() {
+            if (geschiedenisStappen.length === 0) {
+                toonMelding("Geen acties meer om te herstellen.", "#e74c3c");
+                return;
+            }
+            let vorigeStaat = geschiedenisStappen.pop();
+            tacticsData = JSON.parse(JSON.stringify(vorigeStaat.tacticsData));
+            document.getElementById('historyP1').innerHTML = vorigeStaat.htmlHistP1;
+            document.getElementById('historyP2').innerHTML = vorigeStaat.htmlHistP2;
+
+            updateScherm();
+            toonMelding("↩️ Vorige actie hersteld!", "#e67e22");
+            speakFeedback("Hersteld");
+        }
+
+        function updateScherm() {
+            getallenLijst.forEach(cijfer => {
+                document.getElementById(`p1_${cijfer}`).innerText = formatteerHits(tacticsData.p1[cijfer]);
+                document.getElementById(`p2_${cijfer}`).innerText = formatteerHits(tacticsData.p2[cijfer]);
+            });
+
+            document.getElementById('p1_pts').innerText = tacticsPuntenAan ? `Pt: ${tacticsData.p1.punten}` : "-";
+            document.getElementById('p2_pts').innerText = tacticsPuntenAan ? `Pt: ${tacticsData.p2.punten}` : "-";
+
+            // MPR Berekening
+            let mpr1 = tacticsData.p1.beurten > 0 ? (tacticsData.p1.totaalHits / tacticsData.p1.beurten).toFixed(2) : "0.00";
+            let mpr2 = tacticsData.p2.beurten > 0 ? (tacticsData.p2.totaalHits / tacticsData.p2.beurten).toFixed(2) : "0.00";
+            document.getElementById('mprP1').innerText = mpr1;
+            document.getElementById('mprP2').innerText = mpr2;
+        }
+
+        function formatteerHits(aantal) {
+            if (aantal === 1) return "X";
+            if (aantal === 2) return "XX";
+            if (aantal >= 3) return "XXX vol";
+            return "-";
+        }
+
+        function voegToeAanHistorie(spelerKey, tekst) {
+            const listEl = document.getElementById(spelerKey === 'p1' ? 'historyP1' : 'historyP2');
+            if (listEl.children.length === 1 && listEl.children[0].style.color === "rgb(119, 119, 119)") {
+                listEl.innerHTML = "";
+            }
+            const li = document.createElement('li');
+            li.innerText = tekst;
+            listEl.prepend(li);
+        }
+
+        function toonMelding(tekst, kleur) {
+            const transcriptEl = document.getElementById('transcript');
+            transcriptEl.style.color = kleur;
+            transcriptEl.innerText = tekst;
+            setTimeout(() => { transcriptEl.style.color = "#3498db"; }, 2500);
+        }
+
+        function speakFeedback(tekst) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(tekst);
+                utterance.lang = 'nl-NL';
+                utterance.rate = 1.1;
+                utterance.pitch = 1.2;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function resetSpel() {
+            tacticsData = {
+                p1: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
+                p2: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
+            };
+            geschiedenisStappen = [];
+            updateScherm();
+            document.getElementById('historyP1').innerHTML = '<li style="color:#777;">Geen acties</li>';
+            document.getElementById('historyP2').innerHTML = '<li style="color:#777;">Geen acties</li>';
+            document.getElementById('transcript').innerText = "Spel gereset!";
+        }
+
+        updateScherm();
+        initSpraak();
+    </script>
+</body>
+</html>
