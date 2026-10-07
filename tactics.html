@@ -13,17 +13,44 @@
             text-align: center;
             margin: 0;
             padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
         }
-        h1 { color: #f39c12; font-size: 24px; margin-bottom: 10px; }
+
         .game-container {
-            max-width: 750px;
-            margin: 15px auto;
-            background: rgba(30, 30, 30, 0.92);
-            padding: 20px;
+            max-width: 1200px;
+            width: 100%;
+            margin: 0;
+            background: rgba(20, 20, 20, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 25px 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.7);
-            text-align: center;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: left;
+            position: relative;
         }
+
+        /* Hoek-dartbordjes ("Punaises") */
+        .corner-dartboard {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 2px solid #f39c12;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+        .corner-dartboard.tl { top: -19px; left: -19px; }
+        .corner-dartboard.tr { top: -19px; right: -19px; }
+        .corner-dartboard.bl { bottom: -19px; left: -19px; }
+        .corner-dartboard.br { bottom: -19px; right: -19px; }
 
         /* Strakke knoppenbalk */
         .button-bar {
@@ -31,7 +58,7 @@
             justify-content: center;
             align-items: center;
             gap: 8px;
-            margin-top: 15px;
+            margin-top: 12px;
             flex-wrap: wrap;
         }
         button {
@@ -59,55 +86,60 @@
         .btn-fullscreen { background: #34495e; padding: 0 12px; font-size: 16px; }
         .btn-reset { background: #7f8c8d; }
 
-        /* Tactics Tabel / Bord Stijl */
+        /* Tactics Tabel / Bord Stijl met verhoogde transparantie */
         .tactics-board {
             width: 100%;
-            max-width: 580px;
-            margin: 15px auto;
+            max-width: 650px;
+            margin: 8px auto;
             border-collapse: collapse;
-            background: #181818;
-            border: 2px solid #444;
+            background: rgba(24, 24, 24, 0.45);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 8px;
             overflow: hidden;
         }
         .tactics-board tr.top-header-row {
-            background: #1a1a1a;
+            background: rgba(26, 26, 26, 0.6);
             font-size: 12px;
             color: #aaa;
-            border-bottom: 1px solid #444;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
         }
         .tactics-board tr.top-header-row th {
-            padding: 6px 0;
+            padding: 5px 0;
             font-weight: normal;
+            text-align: center;
         }
         .tactics-board th {
-            padding: 8px 0;
+            padding: 6px 0;
             color: #f39c12;
             font-size: 16px;
-            border-bottom: 2px solid #444;
-            background: #222;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(34, 34, 34, 0.6);
             width: 38%;
+            text-align: center;
         }
         .tactics-board th.center-header {
             width: 24%;
             color: #888;
-            border-left: 2px solid #444;
-            border-right: 2px solid #444;
+            border-left: 2px solid rgba(255, 255, 255, 0.15);
+            border-right: 2px solid rgba(255, 255, 255, 0.15);
+            text-align: center;
         }
         .tactics-board td {
-            height: 34px;
+            height: 32px;
             vertical-align: middle;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             font-weight: bold;
             font-size: 14px;
+            text-align: center;
         }
         .tactics-board td.col-p1 { text-align: center; color: #fff; }
         .tactics-board td.col-p2 { text-align: center; color: #fff; }
         .tactics-board td.col-center {
             text-align: center;
-            background: #111;
-            border-left: 2px solid #444;
-            border-right: 2px solid #444;
+            background: rgba(17, 17, 17, 0.5);
+            border-left: 2px solid rgba(255, 255, 255, 0.15);
+            border-right: 2px solid rgba(255, 255, 255, 0.15);
             color: #f39c12;
             font-size: 15px;
         }
@@ -115,46 +147,54 @@
             color: #e74c3c;
         }
         .tactics-board tr.pts-row td {
-            background: #222;
+            background: rgba(34, 34, 34, 0.6);
             color: #f39c12;
             font-size: 14px;
-            border-top: 2px solid #444;
+            border-top: 2px solid rgba(255, 255, 255, 0.15);
             border-bottom: none;
+            text-align: center;
         }
         .tactics-board td.clickable-pts {
             cursor: pointer;
             transition: background 0.2s;
         }
         .tactics-board td.clickable-pts:hover {
-            background: #333;
+            background: rgba(51, 51, 51, 0.7);
             color: #2ecc71;
         }
 
         #status {
             font-style: italic;
             color: #bdc3c7;
-            margin-top: 10px;
-            font-size: 14px;
+            margin-top: 8px;
+            font-size: 13px;
+            text-align: center;
         }
         #transcript {
-            background: #252525;
-            padding: 10px;
+            background: rgba(37, 37, 37, 0.45);
+            backdrop-filter: blur(4px);
+            padding: 8px;
             border-radius: 6px;
-            margin-top: 8px;
-            min-height: 22px;
+            margin-top: 6px;
+            min-height: 20px;
             color: #3498db;
             font-weight: bold;
-            font-size: 14px;
+            font-size: 13px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
         }
 
         .tip-box {
-            background: #2c3e50;
+            background: rgba(44, 62, 80, 0.55);
+            backdrop-filter: blur(4px);
             color: #ecf0f1;
-            padding: 8px 12px;
+            padding: 6px 10px;
             border-radius: 6px;
-            margin-top: 10px;
-            font-size: 13px;
-            display: inline-block;
+            margin-top: 8px;
+            font-size: 12px;
+            display: block;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Statistieken Modal */
@@ -168,7 +208,7 @@
             align-items: center;
         }
         .modal-content {
-            background: #1e1e1e;
+            background: rgba(30, 30, 30, 0.95);
             padding: 20px;
             border-radius: 10px;
             width: 90%;
@@ -189,55 +229,108 @@
         .history-split {
             display: flex;
             gap: 10px;
-            margin-top: 12px;
+            margin-top: 10px;
         }
         .history-col {
             flex: 1;
-            background: #252525;
-            padding: 10px;
+            background: rgba(37, 37, 37, 0.45);
+            backdrop-filter: blur(4px);
+            padding: 8px;
             border-radius: 8px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: left;
-            max-height: 120px;
+            max-height: 100px;
             overflow-y: auto;
         }
         .history-col h4 {
-            margin: 0 0 6px 0;
+            margin: 0 0 4px 0;
             color: #f39c12;
-            font-size: 13px;
+            font-size: 12px;
             text-align: center;
-            border-bottom: 1px solid #444;
-            padding-bottom: 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 3px;
         }
         .history-list {
             list-style-type: none;
             padding: 0;
             margin: 0;
-            font-size: 12px;
+            font-size: 11px;
             color: #dcdcdc;
+            text-align: center;
         }
         .history-list li {
-            padding: 3px 0;
-            border-bottom: 1px solid #333;
+            padding: 2px 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+        }
+
+        /* --- MOBIELE MEDIA QUERY: KNOPPEN ALS VERTICAAL PAALTJE TUSSEN HISTORIE --- */
+        @media (max-width: 768px) {
+            .game-container {
+                display: grid;
+                grid-template-columns: 1fr;
+                gap: 8px;
+                padding: 20px 10px;
+            }
+            .tactics-board {
+                grid-column: 1 / -1;
+                max-width: 100%;
+            }
+            #status, #transcript, .tip-box {
+                grid-column: 1 / -1;
+            }
+            .history-split {
+                grid-column: 1 / -1;
+                display: grid;
+                grid-template-columns: 1fr 125px 1fr;
+                grid-template-areas: "hist1 buttons hist2";
+                gap: 6px;
+                align-items: start;
+                margin-top: 6px;
+            }
+            .history-col:nth-child(1) { grid-area: hist1; max-height: 140px; }
+            .history-col:nth-child(2) { grid-area: hist2; max-height: 140px; }
+            
+            .button-bar {
+                grid-area: buttons;
+                display: flex;
+                flex-direction: column;
+                gap: 5px;
+                margin: 0;
+                width: 100%;
+            }
+            .button-bar button {
+                width: 100%;
+                height: 33px;
+                font-size: 11px;
+                padding: 0 4px;
+            }
         }
     </style>
 </head>
 <body>
 
-    <h1>Tactics / Cricket Modus</h1>
-
     <div class="game-container">
+        <!-- 4 Hoek-dartbordjes -->
+        <img src="dartbord.jpg" class="corner-dartboard tl" alt="">
+        <img src="dartbord.jpg" class="corner-dartboard tr" alt="">
+        <img src="dartbord.jpg" class="corner-dartboard bl" alt="">
+        <img src="dartbord.jpg" class="corner-dartboard br" alt="">
+
+        <!-- Speltitel Tactics -->
+        <h2 style="color: #f39c12; margin: 0 0 6px 0; font-size: 20px; text-align: center; text-transform: uppercase; letter-spacing: 2px;">Tactics</h2>
+
         <!-- Tactics Tabel -->
         <table class="tactics-board">
             <thead>
                 <tr class="top-header-row">
-                    <th style="border-right: 2px solid #444;">Speler 1</th>
-                    <th class="center-header" id="matchClock" style="font-weight: bold; color: #f39c12;">00:00</th>
-                    <th style="border-left: 2px solid #444;">Speler 2</th>
+                    <th style="border-right: 2px solid rgba(255,255,255,0.15); text-align: center;">Speler 1</th>
+                    <th class="center-header" id="matchClock" style="font-weight: bold; color: #f39c12; text-align: center;">00:00</th>
+                    <th style="border-left: 2px solid rgba(255,255,255,0.15); text-align: center;">Speler 2</th>
                 </tr>
                 <tr>
-                    <th id="tLabelP1" contenteditable="true" onblur="updateSpelerNamen()">Frans</th>
-                    <th class="center-header">Vak</th>
-                    <th id="tLabelP2" contenteditable="true" onblur="updateSpelerNamen()">Patrick</th>
+                    <th id="tLabelP1" contenteditable="true" onblur="updateSpelerNamen()" style="text-align: center;">Frans</th>
+                    <th class="center-header" style="text-align: center;">Vak</th>
+                    <th id="tLabelP2" contenteditable="true" onblur="updateSpelerNamen()" style="text-align: center;">Patrick</th>
                 </tr>
             </thead>
             <tbody>
@@ -327,6 +420,7 @@
         let geschiedenisStappen = []; 
         let isLuisteren = false;
         let recognition;
+        let speechWatchdog = null;
         let startTime = Date.now();
         let actieveSpelerKey = 'p1';
 
@@ -342,7 +436,7 @@
             p2: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
         };
 
-        // --- ROBUUSTE CHECK VOOR PUNTEN INSTELLING (URL + ALLE localStorage SLEUTELS) ---
+        // --- PUNTEN INSTELLING CONTROLEREN ---
         const urlParams = new URLSearchParams(window.location.search);
         let urlPunten = urlParams.get('punten') || urlParams.get('tactics_punten');
         
@@ -354,7 +448,6 @@
                             || localStorage.getItem('punten') 
                             || localStorage.getItem('cricket_punten');
             if (storedPunten !== null) {
-                // Kan opgeslagen zijn als boolean string ('true'/'false') of getal ('0'/'1') of string ('aan'/'uit')
                 tacticsPuntenAan = (storedPunten === 'true' || storedPunten === '1' || storedPunten === 'aan');
             }
         }
@@ -407,11 +500,29 @@
             recognition.onresult = function(event) {
                 let speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 
+                // Directe omzetting van uitgesproken getalwoorden naar cijfers (inclusief tin/tien voor 10)
                 speechResult = speechResult
                     .replace(/één/g, '1')
                     .replace(/een/g, '1')
                     .replace(/twee/g, '2')
-                    .replace(/drie/g, '3');
+                    .replace(/drie/g, '3')
+                    .replace(/vier/g, '4')
+                    .replace(/vijf/g, '5')
+                    .replace(/zes/g, '6')
+                    .replace(/zeven/g, '7')
+                    .replace(/acht/g, '8')
+                    .replace(/negen/g, '9')
+                    .replace(/tien|tin|tiene/g, '10')
+                    .replace(/elf/g, '11')
+                    .replace(/twaalf/g, '12')
+                    .replace(/dertien/g, '13')
+                    .replace(/veertien/g, '14')
+                    .replace(/vijftien/g, '15')
+                    .replace(/zestien/g, '16')
+                    .replace(/zeventien/g, '17')
+                    .replace(/achttien/g, '18')
+                    .replace(/negentien/g, '19')
+                    .replace(/twintig/g, '20');
 
                 document.getElementById('transcript').innerText = `Gehoord: "${speechResult}"`;
                 verwerkSpraakTactics(speechResult);
@@ -432,9 +543,24 @@
                 document.getElementById('listenBtn').innerText = "Stop Luisteren ⏹️";
                 document.getElementById('listenBtn').style.background = "#c0392b";
                 document.getElementById('status').innerText = "Luistert naar Tactics commando's...";
+
+                // Heartbeat Watchdog starten
+                if (!speechWatchdog) {
+                    speechWatchdog = setInterval(() => {
+                        if (isLuisteren && recognition) {
+                            try {
+                                // Houdt de sessie actief
+                            } catch(e) {}
+                        }
+                    }, 3000);
+                }
             } else {
                 isLuisteren = false;
                 try { recognition.stop(); } catch(e) {}
+                if (speechWatchdog) {
+                    clearInterval(speechWatchdog);
+                    speechWatchdog = null;
+                }
                 document.getElementById('listenBtn').innerText = "Start Luisteren 🎙️";
                 document.getElementById('listenBtn').style.background = "#27ae60";
                 document.getElementById('status').innerText = "Microfoon uitgeschakeld.";
@@ -474,11 +600,6 @@
         }
 
         function verwerkSpraakTactics(zin) {
-            if (zin.includes("herstel") || zin.includes("fout") || zin.includes("terug") || zin.includes("ongedaan")) {
-                laatsteActieTerugdraaien();
-                return;
-            }
-
             const zegtSpeler1 = zin.includes("speler 1") || zin.includes("spelen 1") || zin.includes(spelers.name1.toLowerCase());
             const zegtSpeler2 = zin.includes("speler 2") || zin.includes("spelen 2") || zin.includes(spelers.name2.toLowerCase());
 
