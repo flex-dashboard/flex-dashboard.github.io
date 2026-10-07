@@ -7,25 +7,48 @@
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(rgba(18,18,18,0.85), rgba(18,18,18,0.85)), url('dartsbg.jpg') no-repeat center center fixed;
+            background: linear-gradient(rgba(18,18,18,0.75), rgba(18,18,18,0.75)), url('dartsbg.jpg') no-repeat center center fixed;
             background-size: cover;
             color: #ffffff;
             text-align: center;
             margin: 0;
             padding: 15px;
         }
-        h1 { color: #f39c12; font-size: 26px; margin-bottom: 15px; }
+        h1 { color: #f39c12; font-size: 26px; margin-bottom: 15px; text-shadow: 0 2px 4px rgba(0,0,0,0.8); }
+        
+        /* Bredere containers zodat hoekdartbordjes ruim binnen de randen vallen */
         .setup-container, .game-container {
-            max-width: 680px;
+            max-width: 820px;
             margin: 15px auto;
-            background: rgba(30, 30, 30, 0.95);
-            padding: 20px;
+            background: rgba(20, 20, 20, 0.45);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 35px 30px;
             border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.8);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
             text-align: left;
             position: relative;
         }
-        .setup-container h2 { text-align: center; color: #f39c12; }
+        .setup-container h2 { text-align: center; color: #f39c12; margin-top: 0; }
+        
+        /* Hoek dartbordjes op BEIDE schermen - iets verder naar binnen zodat ze de hoeklijn niet snijden */
+        .corner-dart {
+            position: absolute;
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid #2ecc71;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.7);
+            pointer-events: none;
+            z-index: 10;
+        }
+        .corner-dart.top-left { top: 18px; left: 18px; }
+        .corner-dart.top-right { top: 18px; right: 18px; }
+        .corner-dart.bottom-left { bottom: 18px; left: 18px; }
+        .corner-dart.bottom-right { bottom: 18px; right: 18px; }
+
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; color: #ddd; }
         input, select, button {
             padding: 8px 12px;
@@ -36,7 +59,7 @@
             width: 100%;
             box-sizing: border-box;
         }
-        input, select { background: #2c2c2c; color: white; border: 1px solid #444; }
+        input, select { background: rgba(44, 44, 44, 0.75); color: white; border: 1px solid #555; }
         button { 
             background: #e74c3c; 
             color: white; 
@@ -53,7 +76,7 @@
             white-space: nowrap;
         }
         button:hover { opacity: 0.9; }
-        .btn-start { background: #27ae60; font-size: 14px; padding: 0 12px; }
+        .btn-start { background: #c0392b; font-size: 14px; padding: 0 12px; }
         .btn-undo { background: #e67e22; font-size: 14px; padding: 0 10px; }
 
         .btn-square {
@@ -83,38 +106,48 @@
         }
 
         .tv-board {
-            background: #111;
-            border: 2px solid #333;
+            background: rgba(17, 17, 17, 0.45);
+            backdrop-filter: blur(6px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
             border-radius: 8px;
             overflow: hidden;
             margin-top: 10px;
         }
         .tv-header-bar {
-            display: flex;
-            justify-content: space-between;
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
             align-items: center;
-            background: #252525;
+            background: rgba(37, 37, 37, 0.6);
             padding: 8px 12px;
-            border-bottom: 2px solid #333;
+            border-bottom: 2px solid rgba(51, 51, 51, 0.6);
+        }
+        #tvHeaderTitle {
+            grid-column: 2;
+            text-align: center;
+            color: #f39c12;
+            font-weight: bold;
+            font-size: 15px;
         }
         .match-timer {
+            grid-column: 3;
+            justify-self: end;
             font-size: 14px;
             color: #f39c12;
             font-weight: bold;
-            background: #1e1e1e;
+            background: rgba(30, 30, 30, 0.6);
             padding: 4px 10px;
             border-radius: 4px;
         }
         .tv-row-header {
             display: grid;
             grid-template-columns: 2fr 1fr 1fr 2fr;
-            background: #1a1a1a;
+            background: rgba(26, 26, 26, 0.5);
             padding: 6px 10px;
             font-weight: bold;
             font-size: 13px;
-            color: #888;
+            color: #aaa;
             text-align: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.6);
         }
         .tv-row-header div:first-child { text-align: left; padding-left: 10px; }
         
@@ -124,12 +157,12 @@
             padding: 12px 10px;
             align-items: center;
             text-align: center;
-            border-bottom: 1px solid #222;
-            background: #181818;
+            border-bottom: 1px solid rgba(34, 34, 34, 0.6);
+            background: rgba(24, 24, 24, 0.4);
             position: relative;
         }
         .player-row.active {
-            background: #242010;
+            background: rgba(56, 48, 20, 0.65);
             border-left: 5px solid #f39c12;
         }
         .p-name {
@@ -170,18 +203,20 @@
         }
         .history-box {
             flex: 1;
-            background: #252525;
+            background: rgba(37, 37, 37, 0.45);
+            backdrop-filter: blur(6px);
             padding: 10px;
             border-radius: 8px;
             max-height: 140px;
             overflow-y: auto;
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .history-box h4 {
             margin: 0 0 6px 0;
             color: #f39c12;
             font-size: 13px;
             text-align: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.6);
             padding-bottom: 4px;
         }
         .history-list {
@@ -192,43 +227,29 @@
         }
         .history-list li {
             padding: 3px 0;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid rgba(51, 51, 51, 0.4);
             text-align: center;
         }
 
-        .status-bar {
-            background: #c0392b;
-            color: #ffffff;
-            padding: 10px;
-            border-radius: 6px;
-            margin-top: 12px;
-            font-size: 14px;
-            font-weight: bold;
-            text-align: center;
-            transition: background 0.3s ease;
-        }
-        .status-bar.active-green {
-            background: #27ae60;
-        }
-
-        #transcript { background: #252525; padding: 8px; border-radius: 6px; margin-top: 8px; color: #3498db; font-weight: bold; font-size: 14px; text-align: center; }
-        #speechTip { background: #1e1e1e; padding: 6px; border-radius: 6px; margin-top: 6px; color: #f39c12; font-size: 13px; text-align: center; border: 1px dashed #444; }
+        #transcript { background: rgba(37, 37, 37, 0.55); padding: 8px; border-radius: 6px; margin-top: 12px; color: #3498db; font-weight: bold; font-size: 14px; text-align: center; border: 1px solid rgba(255,255,255,0.08); }
+        #speechTip { background: rgba(30, 30, 30, 0.55); padding: 6px; border-radius: 6px; margin-top: 6px; color: #f39c12; font-size: 13px; text-align: center; border: 1px dashed rgba(255,255,255,0.2); }
 
         #winnerBanner {
             display: none;
-            background: #f39c12;
+            background: linear-gradient(135deg, #f39c12, #e67e22);
             color: #000;
-            padding: 15px;
-            font-size: 22px;
+            padding: 18px;
+            font-size: 24px;
             font-weight: bold;
             border-radius: 8px;
             margin-bottom: 15px;
             text-align: center;
-            animation: pulse 1.5s infinite;
+            box-shadow: 0 0 20px rgba(243, 156, 18, 0.6);
+            animation: pulse 1.2s infinite;
         }
         @keyframes pulse {
             0% { transform: scale(1); }
-            50% { transform: scale(1.02); }
+            50% { transform: scale(1.03); }
             100% { transform: scale(1); }
         }
 
@@ -238,17 +259,18 @@
             z-index: 1000;
             left: 0; top: 0;
             width: 100%; height: 100%;
-            background-color: rgba(0,0,0,0.8);
+            background-color: rgba(0,0,0,0.85);
             align-items: center;
             justify-content: center;
         }
         .modal-content {
-            background-color: #1e1e1e;
+            background-color: rgba(30, 30, 30, 0.95);
+            backdrop-filter: blur(10px);
             padding: 20px;
             border-radius: 12px;
             width: 90%;
             max-width: 400px;
-            border: 1px solid #444;
+            border: 1px solid rgba(255,255,255,0.15);
             color: white;
             text-align: left;
         }
@@ -256,7 +278,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #444;
             padding-bottom: 8px;
             margin-bottom: 12px;
         }
@@ -280,11 +302,10 @@
         .stats-table th, .stats-table td {
             padding: 8px;
             text-align: center;
-            border-bottom: 1px solid #333;
+            border-bottom: 1px solid #444;
         }
-        .stats-table th { color: #888; }
+        .stats-table th { color: #aaa; }
 
-        /* Mobiele optimalisatie: Volledige breedte op telefoons */
         @media (max-width: 600px) {
             body { padding: 0 !important; }
             .setup-container, .game-container {
@@ -292,7 +313,7 @@
                 max-width: 100% !important;
                 margin: 0 !important;
                 border-radius: 0 !important;
-                padding: 10px !important;
+                padding: 15px !important;
                 box-sizing: border-box;
             }
         }
@@ -304,13 +325,12 @@
 
     <!-- Instellingen Menu -->
     <div id="setupDiv" class="setup-container">
-        <div style="display: flex; justify-content: space-between; align-items: center;">
-            <h2 style="margin: 0;">Spelinstellingen</h2>
-            <div style="display: flex; gap: 6px;">
-                <button class="btn-square btn-dashboard" onclick="window.location.href='https://flex-dashboard.github.io'" title="Naar Persoonlijk Dashboard">🏠</button>
-                <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" title="Volledig Scherm">⛶</button>
-            </div>
-        </div>
+        <img src="dartbord.jpg" class="corner-dart top-left" alt="">
+        <img src="dartbord.jpg" class="corner-dart top-right" alt="">
+        <img src="dartbord.jpg" class="corner-dart bottom-left" alt="">
+        <img src="dartbord.jpg" class="corner-dart bottom-right" alt="">
+
+        <h2>Spelinstellingen</h2>
         
         <label for="spelMode">Kies Spel:</label>
         <select id="spelMode" onchange="handleSpelModeChange()">
@@ -333,17 +353,33 @@
         <label for="player2Input">Naam Speler 2:</label>
         <input type="text" id="player2Input" value="Patrick">
 
-        <button class="btn-start" onclick="startSpel()" style="width:100%; font-size:16px; height:42px;">Start Wedstrijd</button>
+        <button class="btn-start" onclick="startSpel()" style="width:100%; font-size:16px; height:42px; margin-top: 12px; background: #27ae60;">Start Wedstrijd</button>
+
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+            <button class="btn-square btn-dashboard" onclick="window.location.href='https://flex-dashboard.github.io'" title="Naar Persoonlijk Dashboard">🏠</button>
+            <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" title="Volledig Scherm">⛶</button>
+        </div>
+
+        <div style="display: flex; justify-content: center; margin-top: 15px;">
+            <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid #f39c12; box-shadow: 0 4px 15px rgba(0,0,0,0.8);">
+                <img src="dartbord.jpg" alt="Dartbord" style="width: 100%; height: 100%; object-fit: cover;">
+            </div>
+        </div>
     </div>
 
     <!-- Scorebord -->
     <div id="gameDiv" class="game-container" style="display:none;">
+        <img src="dartbord.jpg" class="corner-dart top-left" alt="">
+        <img src="dartbord.jpg" class="corner-dart top-right" alt="">
+        <img src="dartbord.jpg" class="corner-dart bottom-left" alt="">
+        <img src="dartbord.jpg" class="corner-dart bottom-right" alt="">
         
         <div id="winnerBanner">🏆 <span id="winnerText"></span> GEWONNEN! 🏆</div>
 
         <div class="tv-board">
             <div class="tv-header-bar">
-                <span id="tvHeaderTitle" style="color: #f39c12; font-weight: bold; font-size: 15px;">First to 3 Sets</span>
+                <div></div>
+                <span id="tvHeaderTitle">First to 3 Sets</span>
                 <div class="match-timer">⏱️ <span id="matchTimerDisplay">00:00</span></div>
             </div>
             <div class="tv-row-header">
@@ -384,7 +420,7 @@
             </div>
         </div>
 
-        <!-- Knoppen balk (Alles op één enkele rij naast elkaar) -->
+        <!-- Knoppen balk -->
         <div class="button-bar">
             <button onclick="terugNaarInstellingen()" style="background: #34495e; font-size: 13px; padding: 0 10px;">Menu ⚙️</button>
             <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn">Start Luisteren 🎙️</button>
@@ -395,9 +431,8 @@
             <button onclick="resetSpel()" style="background: #7f8c8d; font-size: 13px; padding: 0 10px;">Reset Leg</button>
         </div>
 
-        <div id="statusBar" class="status-bar">Microfoon staat uit (Niet gereed)</div>
         <div id="transcript">Gehoord: (wacht op commando...)</div>
-        <div id="speechTip">💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">Frans</span> 60" of "<span id="tipName2">Patrick</span> 45"</div>
+        <div id="speechTip">💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">Frans</span> 60" of "<span id="tipName2">Patrick</span> dubbel 20 en 16"</div>
 
         <!-- Gesplitste Geschiedenis -->
         <div class="history-grid">
@@ -542,7 +577,6 @@
             document.getElementById('histTitleP1').innerText = spelers.name1Mooi;
             document.getElementById('histTitleP2').innerText = spelers.name2Mooi;
             
-            // Dynamische tips bijwerken met de ingevulde spelersnamen
             document.getElementById('tipName1').innerText = spelers.name1Mooi;
             document.getElementById('tipName2').innerText = spelers.name2Mooi;
             
@@ -563,6 +597,7 @@
             updateScherm();
             startMatchTimer();
             initSpraak();
+            updateStatusUI(false);
         }
 
         function startMatchTimer() {
@@ -601,7 +636,6 @@
 
             recognition.onresult = function(event) {
                 const speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
-                document.getElementById('transcript').innerText = `Gehoord: "${speechResult}"`;
                 verwerkSpraak(speechResult);
             };
 
@@ -610,14 +644,20 @@
                     microphoneError = true;
                     isLuisteren = false;
                     updateStatusUI(false);
-                    document.getElementById('listenBtn').innerText = "Start Luisteren 🎙";
-                    document.getElementById('listenBtn').style.background = "#27ae60";
                 }
             };
 
             recognition.onend = function() {
                 if (isLuisteren && !microphoneError) { 
-                    try { recognition.start(); } catch (e) {}
+                    const btn = document.getElementById('listenBtn');
+                    btn.style.background = "#c0392b";
+                    btn.innerText = "Herstart... ⏳";
+                    
+                    setTimeout(() => {
+                        if (isLuisteren && !microphoneError) {
+                            try { recognition.start(); } catch (e) {}
+                        }
+                    }, 2000);
                 } else {
                     updateStatusUI(false);
                 }
@@ -634,26 +674,32 @@
                     isLuisteren = false;
                     updateStatusUI(false);
                 }
-                document.getElementById('listenBtn').innerText = "Stop Luisteren ⏹️";
-                document.getElementById('listenBtn').style.background = "#c0392b";
             } else {
                 isLuisteren = false;
                 try { recognition.stop(); } catch(e) {}
-                document.getElementById('listenBtn').innerText = "Start Luisteren 🎙";
-                document.getElementById('listenBtn').style.background = "#27ae60";
                 updateStatusUI(false);
             }
         }
 
         function updateStatusUI(aktief) {
-            const bar = document.getElementById('statusBar');
+            const btn = document.getElementById('listenBtn');
             if (aktief) {
-                bar.className = "status-bar active-green";
-                bar.innerText = `Microfoon Gereed - Luistert... (${spelers.name1Mooi} / ${spelers.name2Mooi})`;
+                btn.style.background = "#27ae60";
+                btn.innerText = `Luistert... 🎙️`;
             } else {
-                bar.className = "status-bar";
-                bar.innerText = "Microfoon staat uit (Niet gereed)";
+                btn.style.background = "#c0392b";
+                btn.innerText = "Start Luisteren 🎙️";
             }
+        }
+
+        function vervangWoordenDoorCijfers(tekst) {
+            return tekst
+                .replace(/\belf\b/g, '11').replace(/\btwaalf\b/g, '12').replace(/\bdertien\b/g, '13').replace(/\bveertien\b/g, '14').replace(/\bvijftien\b/g, '15')
+                .replace(/\bzestien\b/g, '16').replace(/\bzeventien\b/g, '17').replace(/\bachttien\b/g, '18').replace(/\bnegentien\b/g, '19')
+                .replace(/\btwintig\b/g, '20').replace(/\bdertig\b/g, '30').replace(/\bveertig\b/g, '40').replace(/\bvijftig\b/g, '50')
+                .replace(/\bzestig\b/g, '60').replace(/\bzeventig\b/g, '70').replace(/\btachtig\b/g, '80').replace(/\bnegentig\b/g, '90')
+                .replace(/\been\b/g, '1').replace(/\btwee\b/g, '2').replace(/\bdrie\b/g, '3').replace(/\bvier\b/g, '4').replace(/\bvijf\b/g, '5')
+                .replace(/\bzes\b/g, '6').replace(/\bzeven\b/g, '7').replace(/\bacht\b/g, '8').replace(/\bnegen\b/g, '9').replace(/\btien\b/g, '10');
         }
 
         function verwerkSpraak(zin) {
@@ -671,27 +717,63 @@
             let spelerNaamMooi = (doelSpeler === 1) ? spelers.name1Mooi : spelers.name2Mooi;
             actieveSpeler = doelSpeler;
 
-            let gegooideScore = 0;
+            let gewijzigdeZin = vervangWoordenDoorCijfers(zin);
 
-            if (zin.includes("rode boel") || zin.includes("bullseye") || (zin.includes("bull") && !zin.includes("groene") && !zin.includes("single"))) {
+            let gegooideScore = 0;
+            let uitlegBerekening = "";
+
+            if (gewijzigdeZin.includes("rode boel") || gewijzigdeZin.includes("bullseye") || (gewijzigdeZin.includes("bull") && !gewijzigdeZin.includes("groene"))) {
                 gegooideScore = 50;
-            } else if (zin.includes("groene boel") || zin.includes("single bull")) {
+                uitlegBerekening = "Bullseye (50)";
+            } else if (gewijzigdeZin.includes("groene boel") || gewijzigdeZin.includes("single bull")) {
                 gegooideScore = 25;
+                uitlegBerekening = "Single Bull (25)";
             } else {
-                let vermenigvuldiger = 1;
-                if (zin.includes("dubbel") || zin.includes("double") || zin.includes("2 keer") || zin.includes("2 maal") || zin.includes("2x")) {
-                    vermenigvuldiger = 2;
-                } else if (zin.includes("trippel") || zin.includes("triple") || zin.includes("3 keer") || zin.includes("3 maal") || zin.includes("3x")) {
-                    vermenigvuldiger = 3;
+                let scoreTekst = gewijzigdeZin
+                    .replace(new RegExp(spelers.name1, 'g'), '')
+                    .replace(new RegExp(spelers.name2, 'g'), '')
+                    .replace(/france|frankrijk|franz|speler 1|speler 2/g, '')
+                    .trim();
+
+                let tokens = scoreTekst.replace(/,/g, ' ').replace(/\ben\b/g, ' ').trim().split(/\s+/).filter(t => t.length > 0);
+                let totaalScore = 0;
+                let uitlegDelen = [];
+                let pendingMultiplier = 1;
+
+                for (let token of tokens) {
+                    if (token === "dubbel" || token === "double" || token.includes("dubbel") || token.includes("double")) {
+                        pendingMultiplier = 2;
+                        continue;
+                    }
+                    if (token === "trippel" || token === "triple" || token.includes("trippel") || token.includes("triple")) {
+                        pendingMultiplier = 3;
+                        continue;
+                    }
+                    if (token === "keer" || token === "x") {
+                        continue;
+                    }
+
+                    let matchNum = token.match(/\d+/);
+                    if (matchNum) {
+                        let basisGetal = parseInt(matchNum[0], 10);
+                        let deelScore = basisGetal * pendingMultiplier;
+                        totaalScore += deelScore;
+
+                        if (pendingMultiplier === 2) uitlegDelen.push(`Dubbel ${basisGetal} (${deelScore})`);
+                        else if (pendingMultiplier === 3) uitlegDelen.push(`Trippel ${basisGetal} (${deelScore})`);
+                        else uitlegDelen.push(`${deelScore}`);
+
+                        pendingMultiplier = 1;
+                    }
                 }
 
-                const getallenMatch = zin.match(/\d+/g);
-                if (!getallenMatch) return;
-                let basisGetal = parseInt(getallenMatch[getallenMatch.length - 1], 10);
-                gegooideScore = basisGetal * vermenigvuldiger;
+                gegooideScore = totaalScore;
+                uitlegBerekening = uitlegDelen.length > 0 ? uitlegDelen.join(" + ") + ` = ${gegooideScore}` : "0";
             }
 
-            if (gegooideScore > 180) return;
+            document.getElementById('transcript').innerText = `Gehoord: "${zin}" ➔ ${uitlegBerekening}`;
+
+            if (gegooideScore > 180 || gegooideScore <= 0) return;
 
             geschiedenisStappen.push({
                 scores: { ...scores },
@@ -707,7 +789,7 @@
 
             if (nieuweScore < 0 || nieuweScore === 1) {
                 speakFeedback("Kapot!");
-                toonMelding("Kapot! Score hersteld.", "#e74c3c");
+                toonMelding(`Kapot! (${uitlegBerekening}) - Score hersteld.`);
                 voegToeAanHistorie(doelSpeler, `${gegooideScore} - KAPOT`);
                 updateScherm();
                 return;
@@ -737,12 +819,9 @@
                     document.getElementById('winnerText').innerText = spelerNaamMooi.toUpperCase();
                     document.getElementById('winnerBanner').style.display = 'block';
                     speakFeedback(`${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
-                    toonMelding(`🏆 ${spelerNaamMooi} wint de wedstrijd!`, "#f39c12");
                     
                     if (timerInterval) clearInterval(timerInterval);
-
-                    let verliezer = (doelSpeler === 1) ? spelers.name2Mooi : spelers.name1Mooi;
-                    registreerWinst(spelerNaamMooi, verliezer);
+                    registreerWinst(spelerNaamMooi, (doelSpeler === 1) ? spelers.name2Mooi : spelers.name1Mooi);
 
                     wisseGeschiedenis();
                     updateScherm();
@@ -757,13 +836,10 @@
 
                 if (setGewonnen) {
                     speakFeedback(`${spelerNaamMooi} wint de set!`);
-                    toonMelding(`🏆 ${spelerNaamMooi} wint de set! Geschiedenis gewist.`, "#f39c12");
                 } else {
                     speakFeedback(`${spelerNaamMooi} wint de leg!`);
-                    toonMelding(`🎯 ${spelerNaamMooi} wint de leg! Geschiedenis gewist.`, "#2ecc71");
                 }
             } else {
-                toonMelding(`✓ ${gegooideScore} verwerkt voor ${spelerNaamMooi}`, "#2ecc71");
                 if (gegooideScore === 180) speak180();
                 else speakFeedback(gegooideScore.toString());
             }
@@ -773,7 +849,7 @@
 
         function laatsteActieTerugdraaien() {
             if (geschiedenisStappen.length === 0) {
-                toonMelding("Kan niet verder terug.", "#e74c3c");
+                document.getElementById('transcript').innerText = "Kan niet verder terug.";
                 speakFeedback("Kan niet terug");
                 return;
             }
@@ -788,7 +864,7 @@
             document.getElementById('winnerBanner').style.display = 'none';
 
             updateScherm();
-            toonMelding("↩️ Vorige actie hersteld!", "#e67e22");
+            document.getElementById('transcript').innerText = "↩️ Vorige actie hersteld!";
             speakFeedback("Hersteld");
         }
 
