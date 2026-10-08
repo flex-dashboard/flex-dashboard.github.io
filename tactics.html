@@ -1,3 +1,4 @@
+english
 <!DOCTYPE html>
 <html lang="nl">
 <head>
@@ -327,21 +328,41 @@
         .stats-table th, .stats-table td { padding: 8px; border-bottom: 1px solid #444; text-align: center; font-size: 13px; }
         .stats-table th { color: #f39c12; background: #252525; }
 
-        /* Fullscreen vulling voor mobiel */
         @media (max-width: 768px) {
-            body {
-                padding: 0;
-                margin: 0;
-            }
-            .game-container {
-                width: 100%;
-                max-width: 100%;
-                min-height: 100vh;
-                border-radius: 0;
-                border: none;
-                padding: 8px 6px;
-            }
-        }
+
+    body {
+        padding: 0;
+        margin: 0;
+    }
+
+    .game-container {
+        width: 100%;
+        max-width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        border: none;
+        padding: 8px 6px;
+    }
+
+    /* HUIDIGE TACTICS-MOBIEL */
+
+    .button-bar-vertical {
+    *   display: flex;
+        flex-dir*ction: column;
+        gap: 4px;
+ *      width: 68px;
+        flex-sh*ink: 0;
+        justify-content: s*ace-between;
+    }
+
+    .button-ba*-vertical button {
+        width: *00%;
+        height: 25px;
+       *padding: 0 2px;
+        font-size:*8.5px;
+    }
+
+}
     </style>
 </head>
 <body>
