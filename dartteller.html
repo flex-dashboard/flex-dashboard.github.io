@@ -74,84 +74,93 @@
 
         label { display: block; margin-top: 10px; font-weight: bold; font-size: 14px; color: #ddd; }
         input, select, button {
-    padding: 8px 12px;
-    font-size: 14px;
-    margin: 6px 0;
-    border-radius: 6px;
-    border: none;
-    width: 100%;
-    box-sizing: border-box;
-}
+            padding: 8px 12px;
+            font-size: 14px;
+            margin: 6px 0;
+            border-radius: 6px;
+            border: none;
+            width: 100%;
+            box-sizing: border-box;
+        }
 
-input, select {
-    background: rgba(44, 44, 44, 0.75);
-    color: white;
-    border: 1px solid #555;
-}
+        input, select {
+            background: rgba(44, 44, 44, 0.75);
+            color: white;
+            border: 1px solid #555;
+        }
 
-button {
-    background: #e74c3c;
-    color: white;
-    cursor: pointer;
-    font-weight: bold;
-    width: auto;
-    height: 38px;
-    box-sizing: border-box;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    vertical-align: middle;
-    margin: 0;
-    white-space: nowrap;
-}
+        button {
+            background: #e74c3c;
+            color: white;
+            cursor: pointer;
+            font-weight: bold;
+            width: auto;
+            height: 38px;
+            box-sizing: border-box;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            vertical-align: middle;
+            margin: 0;
+            white-space: nowrap;
+        }
 
-button:hover {
-    opacity: 0.9;
-}
+        button:hover {
+            opacity: 0.9;
+        }
 
-.btn-start {
-    background: #c0392b;
-    font-size: 14px;
-    padding: 0 12px;
-}
+        .btn-start {
+            background: #c0392b;
+            font-size: 14px;
+            padding: 0 12px;
+        }
 
-.btn-undo {
-    background: #e67e22;
-    font-size: 14px;
-    padding: 0 10px;
-}
+        .btn-undo {
+            background: #e67e22;
+            font-size: 14px;
+            padding: 0 10px;
+        }
 
-.btn-square {
-    min-width: 90px;
-    height: 38px;
-    padding: 0 12px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 14px;
-    background: #8e44ad;
-    border-radius: 6px;
-    white-space: nowrap;
-}
+        .btn-square {
+            min-width: 42px;
+            height: 38px;
+            padding: 0 10px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+            background: #8e44ad;
+            border-radius: 6px;
+            white-space: nowrap;
+        }
 
-.btn-fullscreen {
-    background: #2980b9;
-}
+        .btn-fullscreen {
+            background: #2980b9;
+        }
 
-.btn-dashboard {
-    background: #d35400;
-}
+        .btn-dashboard {
+            background: #d35400;
+        }
 
-.button-bar {
-    margin-top: 15px;
-    display: flex;
-    flex-wrap: wrap;
-    gap: 5px;
-    justify-content: center;
-    align-items: center;
-    width: 100%;
-    padding-bottom: 5px;
-}
+        .button-bar {
+            margin-top: 15px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
+            padding-bottom: 5px;
+        }
+
+        .setup-btn-bar {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 3px; /* Strak bij elkaar gezet (1-2 mm ruimte) */
+            margin-top: 12px;
+            flex-wrap: wrap;
+        }
 
         .tv-board {
             background: rgba(17, 17, 17, 0.45);
@@ -317,7 +326,7 @@ button:hover {
             padding: 20px;
             border-radius: 12px;
             width: 90%;
-            max-width: 400px;
+            max-width: 420px;
             border: 1px solid rgba(255,255,255,0.15);
             color: white;
             text-align: left;
@@ -360,58 +369,84 @@ button:hover {
                 margin: 0 !important;
                 overflow-x: hidden !important;
             }
-            .setup-container, .game-container {
+
+            .setup-container {
+                width: 90% !important;
+                max-width: 380px !important;
+                margin: 20px auto !important;
+                border-radius: 12px !important;
+                padding: 20px !important;
+                box-sizing: border-box !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+            }
+
+            .setup-btn-bar {
+                display: grid !important;
+                grid-template-columns: repeat(3, 1fr) !important;
+                gap: 4px !important;
+            }
+
+            .setup-btn-bar button {
                 width: 100% !important;
-                max-width: 100% !important;
-                margin: 0 !important;
-                border-radius: 0 !important;
+                font-size: 11px !important;
+                padding: 4px 2px !important;
+                height: 35px !important;
+            }
+
+            .game-container {
+                width: calc(100vw - 38px) !important;
+                height: calc(100vh - 38px) !important;
+                margin: 19px auto !important;
+                position: relative !important;
+                border-radius: 12px !important;
                 padding: 10px !important;
                 box-sizing: border-box !important;
+                backdrop-filter: blur(8px) !important;
+                -webkit-backdrop-filter: blur(8px) !important;
+                overflow: visible !important;
             }
-            /* 1. Vier hoek-dartborden in de echte schermcorners (Full Screen) */
-            .corner-dart.top-left { top: 2px !important; left: 2px !important; width: 28px !important; height: 28px !important; }
-            .corner-dart.top-right { top: 2px !important; right: 2px !important; width: 28px !important; height: 28px !important; }
-            .corner-dart.bottom-left { bottom: 2px !important; left: 2px !important; width: 28px !important; height: 28px !important; }
-            .corner-dart.bottom-right { bottom: 2px !important; right: 2px !important; width: 28px !important; height: 28px !important; }
 
-            /* 2, 3, 4 & 5. Exacte schermbreedte, strikt op 1 rij (geen wrap), gelijke maat en uitlijning menu-knop */
-    .button-bar {
-    display: grid !important;
-    grid-template-columns: repeat(4, 1fr) !important;
-    gap: 3px !important;
-    width: 100% !important;
-    box-sizing: border-box !important;
-    padding: 5px 0 !important;
-}
+            .corner-dart.top-left { top: -19px; left: -19px; }
+            .corner-dart.top-right { top: -19px; right: -19px; }
+            .corner-dart.bottom-left { bottom: -19px; left: -19px; }
+            .corner-dart.bottom-right { bottom: -19px; right: -19px; }
 
-.button-bar button {
-    min-width: 0 !important;
-    width: 100% !important;
-    font-size: 9px !important;
-    padding: 4px 2px !important;
-    height: 35px !important;
-    white-space: nowrap !important;
-    overflow: hidden !important;
-    text-overflow: ellipsis !important;
-    box-sizing: border-box !important;
-}
+            .button-bar {
+                display: grid !important;
+                grid-template-columns: repeat(4, 1fr) !important;
+                gap: 3px !important;
+                width: 100% !important;
+                box-sizing: border-box !important;
+                padding: 5px 0 !important;
+            }
 
-.button-bar .btn-square {
-    width: 100% !important;
-    height: 35px !important;
-    padding: 0 !important;
-}
+            .button-bar button {
+                min-width: 0 !important;
+                width: 100% !important;
+                font-size: 9px !important;
+                padding: 4px 2px !important;
+                height: 35px !important;
+                white-space: nowrap !important;
+                overflow: hidden !important;
+                text-overflow: ellipsis !important;
+                box-sizing: border-box !important;
+            }
 
-/* Start Luisteren groot maken */
-.button-bar #listenBtn {
-    grid-column: span 2 !important;
-}
+            .button-bar .btn-square {
+                width: 100% !important;
+                height: 35px !important;
+                padding: 0 !important;
+            }
+
+            .button-bar #listenBtn {
+                grid-column: span 2 !important;
+            }
         }
     </style>
 </head>
 <body>
 
-   
     <!-- Instellingen Menu -->
     <div id="setupDiv" class="setup-container">
         <img src="dartbord.jpg" class="corner-dart top-left" alt="">
@@ -419,35 +454,41 @@ button:hover {
         <img src="dartbord.jpg" class="corner-dart bottom-left" alt="">
         <img src="dartbord.jpg" class="corner-dart bottom-right" alt="">
 
-        <h2>Spelinstellingen</h2>
+        <h2 id="setupTitle">Spelinstellingen</h2>
         
-        <label for="spelMode">Kies Spel:</label>
+        <label for="spelMode" id="lblChooseGame">Kies Spel:</label>
         <select id="spelMode" onchange="handleSpelModeChange()">
-            <option value="501">501</option>
-            <option value="301">301</option>
-            <option value="tactics">Tactics</option>
+            <option value="501">501 (Spel 1 / Game 1)</option>
+            <option value="301">301 (Spel 2 / Game 2)</option>
+            <option value="tactics">Tactics (Spel 3 / Game 3)</option>
         </select>
 
         <label id="labelSetsMode" for="setsMode">Wedstrijdlengte (Sets):</label>
         <select id="setsMode">
-            <option value="3">First to 3 Sets (3 Legs = 1 Set)</option>
-            <option value="5">First to 5 Sets (3 Legs = 1 Set)</option>
-            <option value="7">First to 7 Sets (3 Legs = 1 Set)</option>
-            <option value="1">1 Set (First to 3 Legs)</option>
+            <option value="3">First to 3 Sets (Optie 1 / Option 1)</option>
+            <option value="5">First to 5 Sets (Optie 2 / Option 2)</option>
+            <option value="7">First to 7 Sets (Optie 3 / Option 3)</option>
+            <option value="1">1 Set (Optie 4 / Option 4)</option>
         </select>
 
-        <label for="player1Input">Naam Speler 1:</label>
+        <label for="player1Input" id="lblPlayer1">Naam Speler 1:</label>
         <input type="text" id="player1Input" value="Frans">
 
-        <label for="player2Input">Naam Speler 2:</label>
+        <label for="player2Input" id="lblPlayer2">Naam Speler 2:</label>
         <input type="text" id="player2Input" value="Patrick">
 
-        <button class="btn-start" onclick="startSpel()" style="width:100%; font-size:16px; height:42px; margin-top: 12px; background: #27ae60;">Start Wedstrijd</button>
+        <button class="btn-start" id="startBtn" onclick="startSpel()" style="width:100%; font-size:16px; height:42px; margin-top: 12px; background: #27ae60;">Start Wedstrijd</button>
 
-        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 10px;">
+        <!-- Setup Knoppenbalk compact bij elkaar (1-2 mm ruimte) -->
+        <div class="setup-btn-bar">
             <button class="btn-square btn-dashboard" onclick="window.location.href='https://flex-dashboard.github.io'" title="Naar Persoonlijk Dashboard">🏠</button>
             <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" title="Volledig Scherm">⛶</button>
+            <button class="btn-square" id="langBtn" onclick="toggleLanguage()" style="background: #e67e22;" title="Taal / Language">ENG</button>
+            <button class="btn-square" onclick="openSetupTipsModal()" style="background: #e74c3c;" title="Tips & Commando's">💡 Tips</button>
+            <button class="btn-start" onclick="toggleSetupLuisteren()" id="setupListenBtn" style="font-size: 13px; height: 38px; padding: 0 10px; background: #c0392b;">Mic Off 🎙️</button>
         </div>
+
+        <div id="setupTranscript" style="background: rgba(37, 37, 37, 0.55); padding: 6px; border-radius: 6px; margin-top: 10px; color: #3498db; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid rgba(255,255,255,0.08); display: none;">Gehoord: (wacht op commando...)</div>
 
         <div style="display: flex; justify-content: center; margin-top: 15px;">
             <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid #f39c12; box-shadow: 0 4px 15px rgba(0,0,0,0.8);">
@@ -472,9 +513,9 @@ button:hover {
                 <div class="match-timer">⏱️ <span id="matchTimerDisplay">00:00</span></div>
             </div>
             <div class="tv-row-header">
-                <div>Darter</div>
-                <div>Sets</div>
-                <div>Legs</div>
+                <div id="thPlayer">Darter</div>
+                <div id="thSets">Sets</div>
+                <div id="thLegs">Legs</div>
                 <div>Score</div>
             </div>
 
@@ -483,7 +524,7 @@ button:hover {
                 <div class="p-name">
                     <span class="active-dot"></span>
                     <div>
-                        <div style="font-size: 10px; color: #f39c12; text-transform: uppercase; letter-spacing: 0.5px;">Speler 1</div>
+                        <div id="lblP1Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase; letter-spacing: 0.5px;">Speler 1</div>
                         <span id="nameP1">Frans</span>
                     </div>
                 </div>
@@ -498,7 +539,7 @@ button:hover {
                 <div class="p-name">
                     <span class="active-dot"></span>
                     <div>
-                        <div style="font-size: 10px; color: #f39c12; text-transform: uppercase; letter-spacing: 0.5px;">Speler 2</div>
+                        <div id="lblP2Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase; letter-spacing: 0.5px;">Speler 2</div>
                         <span id="nameP2">Patrick</span>
                     </div>
                 </div>
@@ -512,12 +553,13 @@ button:hover {
         <!-- Knoppen balk -->
         <div class="button-bar">
             <button onclick="terugNaarInstellingen()" style="background: #34495e; font-size: 13px; padding: 0 10px;">Menu ⚙️</button>
-            <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn">Start Luisteren 🎙️</button>
-            <button class="btn-undo" onclick="laatsteActieTerugdraaien()">Herstel ↩️</button>
+            <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn" style="background: #c0392b;">Mic Off 🎙️</button>
+            <button class="btn-undo" id="undoBtn" onclick="laatsteActieTerugdraaien()">Herstel ↩️</button>
             <button class="btn-square" onclick="openStatsModal()" title="Onderlinge Stand (Head-to-Head)">Stats⚡</button>
             <button class="btn-square btn-dashboard" onclick="window.location.href='https://flex-dashboard.github.io'" title="Naar Persoonlijk Dashboard">Home🏠</button>
             <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" title="Volledig Scherm">Fullscreen</button>
-            <button onclick="resetSpel()" style="background: #7f8c8d; font-size: 13px; padding: 0 10px;">Reset Leg</button>
+            <button class="btn-square" id="langBtnGame" onclick="toggleLanguage()" style="background: #e67e22;" title="Taal / Language">ENG</button>
+            <button id="resetLegBtn" onclick="resetSpel()" style="background: #7f8c8d; font-size: 13px; padding: 0 10px;">Reset Leg</button>
         </div>
 
         <div id="transcript">Gehoord: (wacht op commando...)</div>
@@ -528,13 +570,13 @@ button:hover {
             <div class="history-box">
                 <h4 id="histTitleP1">Frans</h4>
                 <ul id="historyListP1" class="history-list">
-                    <li style="color: #666;">Nog niks gegooid</li>
+                    <li id="histEmpty1" style="color: #666;">Nog niks gegooid</li>
                 </ul>
             </div>
             <div class="history-box">
                 <h4 id="histTitleP2">Patrick</h4>
                 <ul id="historyListP2" class="history-list">
-                    <li style="color: #666;">Nog niks gegooid</li>
+                    <li id="histEmpty2" style="color: #666;">Nog niks gegooid</li>
                 </ul>
             </div>
         </div>
@@ -544,10 +586,26 @@ button:hover {
     <div id="statsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
-                <h3>Onderlinge Stand ⚡</h3>
+                <h3 id="statsModalTitle">Onderlinge Stand ⚡</h3>
                 <button class="close-btn" onclick="closeStatsModal()">✖</button>
             </div>
             <div id="statsBody"></div>
+        </div>
+    </div>
+
+    <!-- Modal voor Spraak Tips & Hints in Setup -->
+    <div id="setupTipsModalEl" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="tipsModalHeader">Spraakcommando's Tips 💡</h3>
+                <button class="close-btn" onclick="closeSetupTipsModal()">✖</button>
+            </div>
+            <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
+                <button id="tipsLangBtn" onclick="toggleTipsLanguage()" style="background: #e67e22; width: auto; font-size: 11px; padding: 3px 8px; height: 28px;">ENG / NL</button>
+            </div>
+            <div id="tipsModalBody" style="font-size: 13px; color: #ddd; line-height: 1.6; max-height: 350px; overflow-y: auto;">
+                <!-- Dynamisch ingevuld -->
+            </div>
         </div>
     </div>
 
@@ -567,6 +625,11 @@ button:hover {
         let secondsElapsed = 0;
         let watchdogTimer = null;
         let lastRecognitionEventTime = Date.now();
+        
+        let currentLang = 'nl';
+        let setupRecognition = null;
+        let isSetupLuisteren = false;
+        let tipsModalLang = 'nl';
 
         const checkouts = {
             170: "T20, T20, Bull", 167: "T20, T19, Bull", 164: "T20, T20, D22", 161: "T20, T17, Bull",
@@ -616,28 +679,354 @@ button:hover {
             }
         }
 
-        function handleSpelModeChange() {
-            let mode = document.getElementById('spelMode').value;
-            let label = document.getElementById('labelSetsMode');
-            let select = document.getElementById('setsMode');
-            if (mode === 'tactics') {
-                label.innerText = "Tactics Spelopties:";
-                select.innerHTML = `
-                    <option value="met_punten">Met Punten (Standard Tactics)</option>
-                    <option value="zonder_punten">Zonder Punten / Cut-Throat</option>
+        function openSetupTipsModal() {
+            tipsModalLang = currentLang;
+            updateTipsModalContent();
+            document.getElementById('setupTipsModalEl').style.display = 'flex';
+        }
+
+        function closeSetupTipsModal() {
+            document.getElementById('setupTipsModalEl').style.display = 'none';
+        }
+
+        function toggleTipsLanguage() {
+            tipsModalLang = (tipsModalLang === 'nl') ? 'eng' : 'nl';
+            updateTipsModalContent();
+        }
+
+        function updateTipsModalContent() {
+            let headerEl = document.getElementById('tipsModalHeader');
+            let bodyEl = document.getElementById('tipsModalBody');
+            let btnEl = document.getElementById('tipsLangBtn');
+
+            if (tipsModalLang === 'eng') {
+                if(headerEl) headerEl.innerText = 'Voice Commands Tips 💡';
+                if(btnEl) btnEl.innerText = 'Nederlands (NL)';
+                if(bodyEl) bodyEl.innerHTML = `
+                    <p style="margin: 4px 0;"><strong>Game & Sets (One-Shot):</strong><br>• "Choose 501 three sets"<br>• "Choose 301 five sets"<br>• "Choose tactics with points"</p>
+                    <p style="margin: 8px 0;"><strong>Browse Games:</strong><br>• "Choose other game" / "Choose next game"</p>
+                    <p style="margin: 8px 0;"><strong>Global Commands (Everywhere):</strong><br>• "Menu" / "Go to menu"<br>• "Undo"<br>• "Reset sound" / "Restart sound"<br>• "Fullscreen"<br>• "Open stats"</p>
+                    <p style="margin: 8px 0;"><strong>During Match:</strong><br>• "[Player Name] 60" or "[Player Name] double 20 and 16"</p>
                 `;
             } else {
-                label.innerText = "Wedstrijdlengte (Sets):";
-                select.innerHTML = `
-                    <option value="3">First to 3 Sets (3 Legs = 1 Set)</option>
-                    <option value="5">First to 5 Sets (3 Legs = 1 Set)</option>
-                    <option value="7">First to 7 Sets (3 Legs = 1 Set)</option>
-                    <option value="1">1 Set (First to 3 Legs)</option>
+                if(headerEl) headerEl.innerText = 'Spraakcommando\'s Tips 💡';
+                if(btnEl) btnEl.innerText = 'English (ENG)';
+                if(bodyEl) bodyEl.innerHTML = `
+                    <p style="margin: 4px 0;"><strong>Spel & Sets in één zin (One-Shot):</strong><br>• "Kies 501 drie sets"<br>• "Kies 301 vijf sets"<br>• "Kies tactics met punten"</p>
+                    <p style="margin: 8px 0;"><strong>Ander spel kiezen:</strong><br>• "Kies ander spel" / "Kies volgende spel"</p>
+                    <p style="margin: 8px 0;"><strong>Globale commando's (Werkt overal):</strong><br>• "Menu" / "Ga naar menu"<br>• "Herstel"<br>• "Reset geluid" / "Restart sound"<br>• "Fullscreen" / "Volledig scherm"<br>• "Open stats"</p>
+                    <p style="margin: 8px 0;"><strong>Tijdens de wedstrijd:</strong><br>• "[Naam] 60" of "[Naam] dubbel 20 en 16"</p>
                 `;
             }
         }
 
+        function toggleLanguage() {
+            currentLang = (currentLang === 'nl') ? 'eng' : 'nl';
+            let langBtn = document.getElementById('langBtn');
+            let langBtnGame = document.getElementById('langBtnGame');
+            if(langBtn) langBtn.innerText = currentLang === 'eng' ? 'NL' : 'ENG';
+            if(langBtnGame) langBtnGame.innerText = currentLang === 'eng' ? 'NL' : 'ENG';
+
+            let titleEl = document.getElementById('setupTitle');
+            let lblChoose = document.getElementById('lblChooseGame');
+            let lblP1 = document.getElementById('lblPlayer1');
+            let lblP2 = document.getElementById('lblPlayer2');
+            let startBtn = document.getElementById('startBtn');
+            let spelModeSelect = document.getElementById('spelMode');
+
+            if (currentLang === 'eng') {
+                if(titleEl) titleEl.innerText = 'Game Settings';
+                if(lblChoose) lblChoose.innerText = 'Choose Game:';
+                if(lblP1) lblP1.innerText = 'Player 1 Name:';
+                if(lblP2) lblP2.innerText = 'Player 2 Name:';
+                if(startBtn) startBtn.innerText = 'Start Game';
+                spelModeSelect.innerHTML = `
+                    <option value="501">501 (Game 1)</option>
+                    <option value="301">301 (Game 2)</option>
+                    <option value="tactics">Tactics (Game 3)</option>
+                `;
+            } else {
+                if(titleEl) titleEl.innerText = 'Spelinstellingen';
+                if(lblChoose) lblChoose.innerText = 'Kies Spel:';
+                if(lblP1) lblP1.innerText = 'Naam Speler 1:';
+                if(lblP2) lblP2.innerText = 'Naam Speler 2:';
+                if(startBtn) startBtn.innerText = 'Start Wedstrijd';
+                spelModeSelect.innerHTML = `
+                    <option value="501">501 (Spel 1)</option>
+                    <option value="301">301 (Spel 2)</option>
+                    <option value="tactics">Tactics (Spel 3)</option>
+                `;
+            }
+            updateSetsDropdownLabels();
+            updateSetupListenUI(isSetupLuisteren);
+            updateGameLanguageUI();
+
+            if (recognition) {
+                recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
+            }
+            if (setupRecognition) {
+                setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
+            }
+        }
+
+        function updateSetsDropdownLabels() {
+            let mode = document.getElementById('spelMode').value;
+            let label = document.getElementById('labelSetsMode');
+            let select = document.getElementById('setsMode');
+            if (mode === 'tactics') {
+                label.innerText = (currentLang === 'eng') ? 'Tactics Game Options:' : 'Tactics Spelopties:';
+                select.innerHTML = currentLang === 'eng' ? `
+                    <option value="met_punten">With Points (Option 1)</option>
+                    <option value="zonder_punten">Without Points / Cut-Throat (Option 2)</option>
+                ` : `
+                    <option value="met_punten">Met Punten (Optie 1)</option>
+                    <option value="zonder_punten">Zonder Punten / Cut-Throat (Optie 2)</option>
+                `;
+            } else {
+                label.innerText = (currentLang === 'eng') ? 'Match Length (Sets):' : 'Wedstrijdlengte (Sets):';
+                select.innerHTML = currentLang === 'eng' ? `
+                    <option value="3">First to 3 Sets (Option 1)</option>
+                    <option value="5">First to 5 Sets (Option 2)</option>
+                    <option value="7">First to 7 Sets (Option 3)</option>
+                    <option value="1">1 Set (Option 4)</option>
+                ` : `
+                    <option value="3">First to 3 Sets (Optie 1)</option>
+                    <option value="5">First to 5 Sets (Optie 2)</option>
+                    <option value="7">First to 7 Sets (Optie 3)</option>
+                    <option value="1">1 Set (Optie 4)</option>
+                `;
+            }
+        }
+
+        function handleSpelModeChange() {
+            updateSetsDropdownLabels();
+        }
+
+        function updateGameLanguageUI() {
+            let lblP1Role = document.getElementById('lblP1Role');
+            let lblP2Role = document.getElementById('lblP2Role');
+            if(lblP1Role) lblP1Role.innerText = currentLang === 'eng' ? 'Player 1' : 'Speler 1';
+            if(lblP2Role) lblP2Role.innerText = currentLang === 'eng' ? 'Player 2' : 'Speler 2';
+
+            let thPlayer = document.getElementById('thPlayer');
+            let thSets = document.getElementById('thSets');
+            let thLegs = document.getElementById('thLegs');
+            if(thPlayer) thPlayer.innerText = currentLang === 'eng' ? 'Player' : 'Darter';
+            if(thSets) thSets.innerText = currentLang === 'eng' ? 'Sets' : 'Sets';
+            if(thLegs) thLegs.innerText = currentLang === 'eng' ? 'Legs' : 'Legs';
+
+            let speechTip = document.getElementById('speechTip');
+            if(speechTip) {
+                let p1 = spelers.name1Mooi || "Frans";
+                let p2 = spelers.name2Mooi || "Patrick";
+                speechTip.innerHTML = currentLang === 'eng' ? 
+                    `💡 Tip: Say for example "<span id="tipName1">${p1}</span> 60" or "<span id="tipName2">${p2}</span> double 20 and 16"` :
+                    `💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">${p1}</span> 60" of "<span id="tipName2">${p2}</span> dubbel 20 en 16"`;
+            }
+
+            let undoBtn = document.getElementById('undoBtn');
+            if(undoBtn) undoBtn.innerHTML = currentLang === 'eng' ? 'Undo ↩️' : 'Herstel ↩️';
+
+            let resetLegBtn = document.getElementById('resetLegBtn');
+            if(resetLegBtn) resetLegBtn.innerText = currentLang === 'eng' ? 'Reset Leg' : 'Reset Leg';
+
+            let tvHeaderTitle = document.getElementById('tvHeaderTitle');
+            if(tvHeaderTitle && tvHeaderTitle.innerText.includes('First to')) {
+                tvHeaderTitle.innerText = `First to ${targetSets} Sets`;
+            }
+
+            let histEmpty1 = document.getElementById('histEmpty1');
+            let histEmpty2 = document.getElementById('histEmpty2');
+            if(histEmpty1 && histEmpty1.innerText.includes('niks')) histEmpty1.innerText = currentLang === 'eng' ? 'No throws yet' : 'Nog niks gegooid';
+            if(histEmpty2 && histEmpty2.innerText.includes('niks')) histEmpty2.innerText = currentLang === 'eng' ? 'No throws yet' : 'Nog niks gegooid';
+        }
+
+        // Globale commando's die overal werken (in NL en ENG)
+        function handleGlobalCommando(cmd) {
+            let text = vervangWoordenDoorCijfers(cmd);
+            if (text.includes("menu") || text.includes("ga naar menu") || text.includes("ga menu") || text.includes("kies menu") || text.includes("go to menu") || text.includes("choose menu")) {
+                if (document.getElementById('gameDiv').style.display !== 'none') {
+                    terugNaarInstellingen();
+                }
+                speakFeedback(currentLang === 'eng' ? "Menu" : "Menu");
+                return true;
+            }
+            if (text.includes("herstel") || text.includes("undo") || text.includes("restore")) {
+                if (document.getElementById('gameDiv').style.display !== 'none') {
+                    laatsteActieTerugdraaien();
+                }
+                return true;
+            }
+            if (text.includes("reset geluid") || text.includes("restart sound") || text.includes("herstel geluid") || text.includes("sound reset")) {
+                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+                speakFeedback(currentLang === 'eng' ? "Sound reset" : "Geluid gereset");
+                return true;
+            }
+            if (text.includes("fullscreen") || text.includes("volledig scherm") || text.includes("full screen")) {
+                toggleFullscreen();
+                return true;
+            }
+            if (text.includes("open stats") || text.includes("statistieken") || text.includes("open statistics") || text.includes("stats")) {
+                if (document.getElementById('gameDiv').style.display !== 'none') {
+                    openStatsModal();
+                    speakFeedback("Stats");
+                }
+                return true;
+            }
+            if (text.includes("sluit stats") || text.includes("close stats") || text.includes("sluit statistieken")) {
+                if (document.getElementById('statsModal').style.display === 'flex') {
+                    closeStatsModal();
+                    speakFeedback("Closed");
+                }
+                return true;
+            }
+            return false;
+        }
+
+        // Setup spraakherkenning
+        function initSetupSpraak() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+
+            setupRecognition = new SpeechRecognition();
+            setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
+            setupRecognition.continuous = true;
+            setupRecognition.interimResults = false;
+
+            setupRecognition.onstart = function() {
+                isSetupLuisteren = true;
+                updateSetupListenUI(true);
+            };
+
+            setupRecognition.onresult = function(event) {
+                const speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                let trans = document.getElementById('setupTranscript');
+                if(trans) {
+                    trans.style.display = 'block';
+                    trans.innerText = `Gehoord: "${speechResult}"`;
+                }
+                verwerkSetupCommando(speechResult);
+            };
+
+            setupRecognition.onerror = function(event) {
+                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                    isSetupLuisteren = false;
+                    updateSetupListenUI(false);
+                }
+            };
+
+            setupRecognition.onend = function() {
+                if (isSetupLuisteren) {
+                    try { setupRecognition.start(); } catch(e) {}
+                } else {
+                    updateSetupListenUI(false);
+                }
+            };
+        }
+
+        function toggleSetupLuisteren() {
+            if (!setupRecognition) initSetupSpraak();
+            if (!isSetupLuisteren) {
+                isSetupLuisteren = true;
+                setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
+                try { setupRecognition.start(); } catch(e) { isSetupLuisteren = false; }
+            } else {
+                isSetupLuisteren = false;
+                try { setupRecognition.stop(); } catch(e) {}
+                updateSetupListenUI(false);
+            }
+        }
+
+        function updateSetupListenUI(aktief) {
+            let btn = document.getElementById('setupListenBtn');
+            if(!btn) return;
+            if (aktief) {
+                btn.style.background = "#27ae60";
+                btn.innerText = currentLang === 'eng' ? "Mic On 🎙️" : "Mic On 🎙️";
+                let trans = document.getElementById('setupTranscript');
+                if(trans) trans.style.display = 'block';
+            } else {
+                btn.style.background = "#c0392b";
+                btn.innerText = currentLang === 'eng' ? "Mic Off 🎙️" : "Mic Off 🎙️";
+            }
+        }
+
+        function verwerkSetupCommando(rawCmd) {
+            let cmd = vervangWoordenDoorCijfers(rawCmd.toLowerCase());
+            
+            if (handleGlobalCommando(cmd)) return;
+
+            // Blader-commando's (ander spel / next game)
+            if (cmd.includes("ander spel") || cmd.includes("volgende spel") || cmd.includes("other game") || cmd.includes("next game")) {
+                let spelSelect = document.getElementById('spelMode');
+                if (spelSelect.value === "501") {
+                    spelSelect.value = "301";
+                    speakFeedback(currentLang === 'eng' ? "301 selected" : "301 gekozen");
+                } else if (spelSelect.value === "301") {
+                    spelSelect.value = "tactics";
+                    speakFeedback(currentLang === 'eng' ? "Tactics selected" : "Tactics gekozen");
+                } else {
+                    spelSelect.value = "501";
+                    speakFeedback(currentLang === 'eng' ? "501 selected" : "501 gekozen");
+                }
+                handleSpelModeChange();
+                return;
+            }
+
+            if (cmd.includes("501") || cmd.includes("spel 1") || cmd.includes("game 1") || cmd.includes("five o one")) {
+                document.getElementById('spelMode').value = "501";
+                handleSpelModeChange();
+                speakFeedback("501 selected");
+            } else if (cmd.includes("301") || cmd.includes("spel 2") || cmd.includes("game 2") || cmd.includes("three o one")) {
+                document.getElementById('spelMode').value = "301";
+                handleSpelModeChange();
+                speakFeedback("301 selected");
+            } else if (cmd.includes("tactics") || cmd.includes("tectics") || cmd.includes("tectix") || cmd.includes("taktics") || cmd.includes("spel 3") || cmd.includes("game 3")) {
+                document.getElementById('spelMode').value = "tactics";
+                handleSpelModeChange();
+                speakFeedback("Tactics selected");
+            } 
+
+            let setsSelect = document.getElementById('setsMode');
+            if (document.getElementById('spelMode').value === 'tactics') {
+                if (cmd.includes("met punten") || cmd.includes("with points")) {
+                    setsSelect.value = "met_punten";
+                    speakFeedback("Met punten");
+                } else if (cmd.includes("zonder punten") || cmd.includes("without points") || cmd.includes("cut throat")) {
+                    setsSelect.value = "zonder_punten";
+                    speakFeedback("Zonder punten");
+                }
+            } else {
+                if (cmd.includes("3") || cmd.includes("optie 1") || cmd.includes("option 1")) {
+                    setsSelect.value = "3";
+                    speakFeedback("3 sets");
+                } else if (cmd.includes("5") || cmd.includes("optie 2") || cmd.includes("option 2")) {
+                    setsSelect.value = "5";
+                    speakFeedback("5 sets");
+                } else if (cmd.includes("7") || cmd.includes("optie 3") || cmd.includes("option 3")) {
+                    setsSelect.value = "7";
+                    speakFeedback("7 sets");
+                } else if (cmd.includes("1") || cmd.includes("optie 4") || cmd.includes("option 4")) {
+                    setsSelect.value = "1";
+                    speakFeedback("1 set");
+                }
+            }
+
+            if (cmd.includes("start wedstrijd") || cmd.includes("start game") || cmd.includes("start") || cmd.includes("begin")) {
+                if (isSetupLuisteren) {
+                    isSetupLuisteren = false;
+                    try { setupRecognition.stop(); } catch(e) {}
+                }
+                startSpel();
+            }
+        }
+
         function startSpel() {
+            if (isSetupLuisteren) {
+                isSetupLuisteren = false;
+                try { setupRecognition.stop(); } catch(e) {}
+            }
+
             huidigSpel = document.getElementById('spelMode').value;
             
             if (huidigSpel === 'tactics') {
@@ -668,9 +1057,6 @@ button:hover {
             document.getElementById('histTitleP1').innerText = spelers.name1Mooi;
             document.getElementById('histTitleP2').innerText = spelers.name2Mooi;
             
-            document.getElementById('tipName1').innerText = spelers.name1Mooi;
-            document.getElementById('tipName2').innerText = spelers.name2Mooi;
-            
             document.getElementById('tvHeaderTitle').innerText = `First to ${targetSets} Sets`;
 
             let startScore = parseInt(huidigSpel, 10);
@@ -686,6 +1072,7 @@ button:hover {
             document.getElementById('winnerBanner').style.display = 'none';
 
             updateScherm();
+            updateGameLanguageUI();
             startMatchTimer();
             initSpraak();
             updateStatusUI(false);
@@ -718,7 +1105,7 @@ button:hover {
             }
 
             recognition = new SpeechRecognition();
-            recognition.lang = 'nl-NL';
+            recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
             recognition.continuous = true;
             recognition.interimResults = false;
 
@@ -746,7 +1133,7 @@ button:hover {
                 if (isLuisteren && !microphoneError) { 
                     const btn = document.getElementById('listenBtn');
                     btn.style.background = "#c0392b";
-                    btn.innerText = "Herstart... ⏳";
+                    btn.innerText = "Mic Off 🎙️";
                     
                     setTimeout(() => {
                         if (isLuisteren && !microphoneError) {
@@ -758,12 +1145,10 @@ button:hover {
                 }
             };
 
-            // Slimme Watchdog / Heartbeat om te voorkomen dat de spraakherkenning stilvalt na langere stilte
             if (watchdogTimer) clearInterval(watchdogTimer);
             watchdogTimer = setInterval(() => {
                 if (isLuisteren && !microphoneError) {
                     let now = Date.now();
-                    // Als er gedurende 12 seconden geen event is geweest, even veilige ping/restart forceren
                     if (now - lastRecognitionEventTime > 12000) {
                         lastRecognitionEventTime = now;
                         try {
@@ -779,6 +1164,7 @@ button:hover {
                 microphoneError = false;
                 isLuisteren = true;
                 lastRecognitionEventTime = Date.now();
+                recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
                 try { 
                     recognition.start(); 
                 } catch(e) {
@@ -797,10 +1183,10 @@ button:hover {
             const btn = document.getElementById('listenBtn');
             if (aktief) {
                 btn.style.background = "#27ae60";
-                btn.innerText = `Luistert... 🎙️`;
+                btn.innerText = "Mic On 🎙️";
             } else {
                 btn.style.background = "#c0392b";
-                btn.innerText = "Start Luisteren 🎙️";
+                btn.innerText = "Mic Off 🎙️";
             }
         }
 
@@ -811,14 +1197,26 @@ button:hover {
                 .replace(/\btwintig\b/g, '20').replace(/\bdertig\b/g, '30').replace(/\bveertig\b/g, '40').replace(/\bvijftig\b/g, '50')
                 .replace(/\bzestig\b/g, '60').replace(/\bzeventig\b/g, '70').replace(/\btachtig\b/g, '80').replace(/\bnegentig\b/g, '90')
                 .replace(/\been\b/g, '1').replace(/\btwee\b/g, '2').replace(/\bdrie\b/g, '3').replace(/\bvier\b/g, '4').replace(/\bvijf\b/g, '5')
-                .replace(/\bzes\b/g, '6').replace(/\bzeven\b/g, '7').replace(/\bacht\b/g, '8').replace(/\bnegen\b/g, '9').replace(/\btien\b/g, '10');
+                .replace(/\bzes\b/g, '6').replace(/\bzeven\b/g, '7').replace(/\bacht\b/g, '8').replace(/\bnegen\b/g, '9').replace(/\btien\b/g, '10')
+                .replace(/\beleven\b/g, '11').replace(/\btwelve\b/g, '12').replace(/\bthirteen\b/g, '13').replace(/\bfourteen\b/g, '14').replace(/\bfifteen\b/g, '15')
+                .replace(/\bsixteen\b/g, '16').replace(/\bseventeen\b/g, '17').replace(/\beighteen\b/g, '18').replace(/\bnineteen\b/g, '19')
+                .replace(/\btwenty\b/g, '20').replace(/\bthirty\b/g, '30').replace(/\bfourty\b/g, '40').replace(/\bfifty\b/g, '50')
+                .replace(/\bsixty\b/g, '60').replace(/\bseventy\b/g, '70').replace(/\beighty\b/g, '80').replace(/\bninety\b/g, '90')
+                .replace(/\bone\b/g, '1').replace(/\btwo\b/g, '2').replace(/\bthree\b/g, '3').replace(/\bfour\b/g, '4').replace(/\bfive\b/g, '5')
+                .replace(/\bsix\b/g, '6').replace(/\bseven\b/g, '7').replace(/\beight\b/g, '8').replace(/\bnine\b/g, '9').replace(/\bten\b/g, '10');
         }
 
         function verwerkSpraak(zin) {
             lastRecognitionEventTime = Date.now();
+            let gewijzigdeZin = vervangWoordenDoorCijfers(zin);
 
-            const isSpeler1 = zin.includes(spelers.name1) || zin.includes("france") || zin.includes("frankrijk") || zin.includes("franz") || zin.includes("speler 1");
-            const isSpeler2 = zin.includes(spelers.name2) || zin.includes("speler 2");
+            if (handleGlobalCommando(gewijzigdeZin)) {
+                document.getElementById('transcript').innerText = `Gehoord: "${zin}" ➔ Actie uitgevoerd`;
+                return;
+            }
+
+            const isSpeler1 = gewijzigdeZin.includes(spelers.name1) || gewijzigdeZin.includes("france") || gewijzigdeZin.includes("frankrijk") || gewijzigdeZin.includes("franz") || gewijzigdeZin.includes("speler 1") || gewijzigdeZin.includes("player 1") || gewijzigdeZin.includes("player one");
+            const isSpeler2 = gewijzigdeZin.includes(spelers.name2) || gewijzigdeZin.includes("speler 2") || gewijzigdeZin.includes("player 2") || gewijzigdeZin.includes("player two");
 
             if (!isSpeler1 && !isSpeler2) return;
 
@@ -826,12 +1224,10 @@ button:hover {
             let spelerNaamMooi = (doelSpeler === 1) ? spelers.name1Mooi : spelers.name2Mooi;
             actieveSpeler = doelSpeler;
 
-            let gewijzigdeZin = vervangWoordenDoorCijfers(zin);
-
             let gegooideScore = 0;
             let uitlegBerekening = "";
 
-            if (gewijzigdeZin.includes("rode boel") || gewijzigdeZin.includes("bullseye") || (gewijzigdeZin.includes("bull") && !gewijzigdeZin.includes("groene"))) {
+            if (gewijzigdeZin.includes("rode boel") || gewijzigdeZin.includes("bullseye") || (gewijzigdeZin.includes("bull") && !gewijzigdeZin.includes("groene") && !gewijzigdeZin.includes("single"))) {
                 gegooideScore = 50;
                 uitlegBerekening = "Bullseye (50)";
             } else if (gewijzigdeZin.includes("groene boel") || gewijzigdeZin.includes("single bull")) {
@@ -841,10 +1237,10 @@ button:hover {
                 let scoreTekst = gewijzigdeZin
                     .replace(new RegExp(spelers.name1, 'g'), '')
                     .replace(new RegExp(spelers.name2, 'g'), '')
-                    .replace(/france|frankrijk|franz|speler 1|speler 2/g, '')
+                    .replace(/france|frankrijk|franz|speler 1|speler 2|player 1|player one|player 2|player two/g, '')
                     .trim();
 
-                let tokens = scoreTekst.replace(/,/g, ' ').replace(/\ben\b/g, ' ').trim().split(/\s+/).filter(t => t.length > 0);
+                let tokens = scoreTekst.replace(/,/g, ' ').replace(/\ben\b/g, ' ').replace(/\band\b/g, ' ').trim().split(/\s+/).filter(t => t.length > 0);
                 let totaalScore = 0;
                 let uitlegDelen = [];
                 let pendingMultiplier = 1;
@@ -858,7 +1254,7 @@ button:hover {
                         pendingMultiplier = 3;
                         continue;
                     }
-                    if (token === "keer" || token === "x") {
+                    if (token === "keer" || token === "x" || token === "times") {
                         continue;
                     }
 
@@ -897,9 +1293,9 @@ button:hover {
             let nieuweScore = huidigeScore - gegooideScore;
 
             if (nieuweScore < 0 || nieuweScore === 1) {
-                speakFeedback("Kapot!");
-                toonMelding(`Kapot! (${uitlegBerekening}) - Score hersteld.`);
-                voegToeAanHistorie(doelSpeler, `${gegooideScore} - KAPOT`);
+                speakFeedback(currentLang === 'eng' ? "Bust!" : "Kapot!");
+                toonMelding(currentLang === 'eng' ? `Bust! (${uitlegBerekening}) - Score restored.` : `Kapot! (${uitlegBerekening}) - Score hersteld.`);
+                voegToeAanHistorie(doelSpeler, `${gegooideScore} - ${currentLang === 'eng' ? 'BUST' : 'KAPOT'}`);
                 updateScherm();
                 return;
             }
@@ -907,7 +1303,7 @@ button:hover {
             if (doelSpeler === 1) scores.score1 = nieuweScore;
             else scores.score2 = nieuweScore;
 
-            voegToeAanHistorie(doelSpeler, `-${gegooideScore} (over: ${nieuweScore})`);
+            voegToeAanHistorie(doelSpeler, `-${gegooideScore} (${currentLang === 'eng' ? 'left' : 'over'}: ${nieuweScore})`);
 
             if (nieuweScore === 0) {
                 if (doelSpeler === 1) legs.leg1++;
@@ -927,7 +1323,7 @@ button:hover {
                 if (sets.set1 >= targetSets || sets.set2 >= targetSets) {
                     document.getElementById('winnerText').innerText = spelerNaamMooi.toUpperCase();
                     document.getElementById('winnerBanner').style.display = 'block';
-                    speakFeedback(`${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
+                    speakFeedback(currentLang === 'eng' ? `${spelerNaamMooi} has won the match!` : `${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
                     
                     if (timerInterval) clearInterval(timerInterval);
                     if (watchdogTimer) clearInterval(watchdogTimer);
@@ -945,9 +1341,9 @@ button:hover {
                 wisseGeschiedenis();
 
                 if (setGewonnen) {
-                    speakFeedback(`${spelerNaamMooi} wint de set!`);
+                    speakFeedback(currentLang === 'eng' ? `${spelerNaamMooi} wins the set!` : `${spelerNaamMooi} wint de set!`);
                 } else {
-                    speakFeedback(`${spelerNaamMooi} wint de leg!`);
+                    speakFeedback(currentLang === 'eng' ? `${spelerNaamMooi} wins the leg!` : `${spelerNaamMooi} wint de leg!`);
                 }
             } else {
                 if (gegooideScore === 180) speak180();
@@ -959,8 +1355,8 @@ button:hover {
 
         function laatsteActieTerugdraaien() {
             if (geschiedenisStappen.length === 0) {
-                document.getElementById('transcript').innerText = "Kan niet verder terug.";
-                speakFeedback("Kan niet terug");
+                document.getElementById('transcript').innerText = currentLang === 'eng' ? "Cannot undo further." : "Kan niet verder terug.";
+                speakFeedback(currentLang === 'eng' ? "Cannot undo" : "Kan niet terug");
                 return;
             }
 
@@ -974,13 +1370,14 @@ button:hover {
             document.getElementById('winnerBanner').style.display = 'none';
 
             updateScherm();
-            document.getElementById('transcript').innerText = "↩️ Vorige actie hersteld!";
-            speakFeedback("Hersteld");
+            document.getElementById('transcript').innerText = currentLang === 'eng' ? "↩️ Previous action restored!" : "↩️ Vorige actie hersteld!";
+            speakFeedback(currentLang === 'eng' ? "Restored" : "Hersteld");
         }
 
         function wisseGeschiedenis() {
-            document.getElementById('historyListP1').innerHTML = '<li style="color: #666;">Nog niks gegooid</li>';
-            document.getElementById('historyListP2').innerHTML = '<li style="color: #666;">Nog niks gegooid</li>';
+            let emptyText = currentLang === 'eng' ? 'No throws yet' : 'Nog niks gegooid';
+            document.getElementById('historyListP1').innerHTML = `<li id="histEmpty1" style="color: #666;">${emptyText}</li>`;
+            document.getElementById('historyListP2').innerHTML = `<li id="histEmpty2" style="color: #666;">${emptyText}</li>`;
         }
 
         function updateScherm() {
@@ -1005,7 +1402,7 @@ button:hover {
         function voegToeAanHistorie(spelerNummer, tekst) {
             const listId = spelerNummer === 1 ? 'historyListP1' : 'historyListP2';
             const list = document.getElementById(listId);
-            if (list.children.length === 1 && list.children[0].innerText.includes("Nog niks")) {
+            if (list.children.length === 1 && (list.children[0].innerText.includes("Nog niks") || list.children[0].innerText.includes("No throws"))) {
                 list.innerHTML = "";
             }
             const li = document.createElement('li');
@@ -1017,7 +1414,7 @@ button:hover {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 const utterance = new SpeechSynthesisUtterance(tekst);
-                utterance.lang = 'nl-NL';
+                utterance.lang = currentLang === 'eng' ? 'en-GB' : 'nl-NL';
                 window.speechSynthesis.speak(utterance);
             }
         }
@@ -1039,7 +1436,7 @@ button:hover {
             wisseGeschiedenis();
             startMatchTimer();
             updateScherm();
-            document.getElementById('transcript').innerText = "Leg gereset!";
+            document.getElementById('transcript').innerText = currentLang === 'eng' ? "Leg reset!" : "Leg gereset!";
         }
 
         function registreerWinst(winnaar, verliezer) {
@@ -1061,25 +1458,34 @@ button:hover {
         function openStatsModal() {
             let stats = JSON.parse(localStorage.getItem('dart_head_to_head') || '{}');
             let bodyEl = document.getElementById('statsBody');
+            let titleEl = document.getElementById('statsModalTitle');
+            if(titleEl) titleEl.innerText = currentLang === 'eng' ? 'Head-to-Head Statistics ⚡' : 'Onderlinge Stand ⚡';
             
             let p1 = spelers.name1Mooi;
             let p2 = spelers.name2Mooi;
             let matchKey = [spelers.name1, spelers.name2].sort().join(" vs ");
 
-            let html = `<p style="font-size: 14px; color: #ddd; margin-bottom: 10px;">Onderlinge balans voor: <strong>${p1} vs ${p2}</strong></p>`;
+            let html = currentLang === 'eng' ? 
+                `<p style="font-size: 14px; color: #ddd; margin-bottom: 10px;">Head-to-head record for: <strong>${p1} vs ${p2}</strong></p>` :
+                `<p style="font-size: 14px; color: #ddd; margin-bottom: 10px;">Onderlinge balans voor: <strong>${p1} vs ${p2}</strong></p>`;
 
             if (stats[matchKey]) {
                 let p1Wins = stats[matchKey][spelers.name1] || 0;
                 let p2Wins = stats[matchKey][spelers.name2] || 0;
                 let totaal = stats[matchKey].gespeeld || (p1Wins + p2Wins);
 
+                let thPlayer = currentLang === 'eng' ? 'Player' : 'Speler';
+                let thWon = currentLang === 'eng' ? 'Won' : 'Gewonnen';
+                let thLost = currentLang === 'eng' ? 'Lost' : 'Verloren';
+                let totalPlayed = currentLang === 'eng' ? `Total matches played: ${totaal}` : `Totaal gespeeld: ${totaal} wedstrijd(en)`;
+
                 html += `
                     <table class="stats-table">
                         <thead>
                             <tr>
-                                <th>Speler</th>
-                                <th>Gewonnen</th>
-                                <th>Verloren</th>
+                                <th>${thPlayer}</th>
+                                <th>${thWon}</th>
+                                <th>${thLost}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -1095,13 +1501,16 @@ button:hover {
                             </tr>
                         </tbody>
                     </table>
-                    <p style="font-size: 12px; color: #888; margin-top: 12px; text-align: center;">Totaal gespeeld: ${totaal} wedstrijd(en)</p>
+                    <p style="font-size: 12px; color: #888; margin-top: 12px; text-align: center;">${totalPlayed}</p>
                 `;
             } else {
-                html += `<p style="color: #aaa; font-style: italic; font-size: 13px;">Nog geen eerdere wedstrijden opgeslagen tussen ${p1} en ${p2}.</p>`;
+                html += currentLang === 'eng' ? 
+                    `<p style="color: #aaa; font-style: italic; font-size: 13px;">No previous matches recorded between ${p1} and ${p2}.</p>` :
+                    `<p style="color: #aaa; font-style: italic; font-size: 13px;">Nog geen eerdere wedstrijden opgeslagen tussen ${p1} en ${p2}.</p>`;
             }
 
-            html += `<button onclick="resetH2H('${matchKey}')" style="background:#c0392b; font-size:12px; margin-top:15px; width:100%;">Stand Wissen voor deze spelers 🗑️</button>`;
+            let resetBtnText = currentLang === 'eng' ? 'Clear Record for these players 🗑️' : 'Stand Wissen voor deze spelers 🗑️';
+            html += `<button onclick="resetH2H('${matchKey}')" style="background:#c0392b; font-size:12px; margin-top:15px; width:100%;">${resetBtnText}</button>`;
 
             bodyEl.innerHTML = html;
             document.getElementById('statsModal').style.display = 'flex';
@@ -1112,7 +1521,8 @@ button:hover {
         }
 
         function resetH2H(key) {
-            if (confirm("Weet je zeker dat je de onderlinge stand voor deze spelers wilt wissen?")) {
+            let msg = currentLang === 'eng' ? "Are you sure you want to clear the head-to-head record for these players?" : "Weet je zeker dat je de onderlinge stand voor deze spelers wilt wissen?";
+            if (confirm(msg)) {
                 let stats = JSON.parse(localStorage.getItem('dart_head_to_head') || '{}');
                 delete stats[key];
                 localStorage.setItem('dart_head_to_head', JSON.stringify(stats));
