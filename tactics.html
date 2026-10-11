@@ -327,6 +327,46 @@
         .stats-table th, .stats-table td { padding: 8px; border-bottom: 1px solid #444; text-align: center; font-size: 13px; }
         .stats-table th { color: #f39c12; background: #252525; }
 
+
+@media (min-width: 900px) {
+
+    .game-container::before{
+        content:"";
+        position:absolute;
+
+        top:clamp(50px, 8vw, 100px);
+        left:clamp(10px, 1vw, 20px);
+
+        width:740px;
+        height:740px;
+
+        background-image:url('dartpijl.png');
+        background-size:contain;
+        background-repeat:no-repeat;
+
+        z-index:10;
+        pointer-events:none;
+    }
+
+    .game-container::after{
+        content:"";
+        position:absolute;
+
+        top:clamp(50px, 8vw, 100px);
+        right:clamp(-650px, -25vw, -485px);
+
+        width:740px;
+        height:740px;
+
+        background-image:url('dartpijl.png');
+        background-size:contain;
+        background-repeat:no-repeat;
+
+        z-index:10;
+        pointer-events:none;
+    }
+
+}
         @media (max-width: 768px) {
 
     body {
