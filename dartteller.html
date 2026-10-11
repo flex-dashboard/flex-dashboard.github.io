@@ -4,6 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Spraakgestuurde Dartteller</title>
+    
+    <!-- ========================================== -->
+    <!-- CSS-GEDEELTE: Opmaak, Stijlen & Media Queries -->
+    <!-- ========================================== -->
     <style>
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -102,24 +106,10 @@
             white-space: nowrap;
         }
 
-        button:hover {
-            opacity: 0.9;
-        }
+        button:hover { opacity: 0.9; }
 
-        .btn-start {
-            background: #c0392b;
-            font-size: 14px;
-            padding: 0 12px;
-            height: 38px !important;
-        }
-
-        .btn-undo {
-            background: #e67e22;
-            font-size: 14px;
-            padding: 0 10px;
-            height: 38px !important;
-        }
-
+        .btn-start { background: #c0392b; font-size: 14px; padding: 0 12px; height: 38px !important; }
+        .btn-undo { background: #e67e22; font-size: 14px; padding: 0 10px; height: 38px !important; }
         .btn-square {
             min-width: 42px;
             height: 38px !important;
@@ -132,16 +122,8 @@
             border-radius: 6px;
             white-space: nowrap;
         }
-
-        .btn-fullscreen {
-            background: #2980b9;
-            height: 38px !important;
-        }
-
-        .btn-dashboard {
-            background: #d35400;
-            height: 38px !important;
-        }
+        .btn-fullscreen { background: #2980b9; height: 38px !important; }
+        .btn-dashboard { background: #d35400; height: 38px !important; }
 
         .button-bar {
             margin-top: 15px;
@@ -365,13 +347,15 @@
         }
         .stats-table th { color: #aaa; }
 
-        /* PC On-Screen Virtual Keyboard (>900px) - Floating Overlay */
+        /* PC On-Screen Virtual Keyboard (>900px) - Gecentreerd in het midden */
         #pcVirtualKeyboard {
             display: none;
             position: absolute;
-            left: 30px;
-            right: 30px;
-            bottom: 20px;
+            left: 50%;
+            top: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            max-width: 450px;
             z-index: 100;
             background: rgba(30, 30, 30, 0.98);
             padding: 12px;
@@ -409,95 +393,39 @@
         .vk-row button:hover { background: #f39c12; color: #000; }
 
         @media (max-width: 600px) {
-            body { 
-                padding: 0 !important; 
-                margin: 0 !important;
-                overflow-x: hidden !important;
-            }
-
+            body { padding: 0 !important; margin: 0 !important; overflow-x: hidden !important; }
             .setup-container {
-                width: 90% !important;
-                max-width: 380px !important;
-                margin: 20px auto !important;
-                border-radius: 12px !important;
-                padding: 20px !important;
-                box-sizing: border-box !important;
-                backdrop-filter: blur(8px) !important;
-                -webkit-backdrop-filter: blur(8px) !important;
+                width: 90% !important; max-width: 380px !important; margin: 20px auto !important;
+                border-radius: 12px !important; padding: 20px !important; box-sizing: border-box !important;
             }
-
             .setup-btn-bar {
-                display: grid !important;
-                grid-template-columns: repeat(3, 1fr) !important;
-                gap: 4px !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
+                display: grid !important; grid-template-columns: repeat(3, 1fr) !important;
+                gap: 4px !important; width: 100% !important; box-sizing: border-box !important;
             }
-
             .setup-btn-bar button {
-                width: 100% !important;
-                font-size: 11px !important;
-                padding: 4px 2px !important;
-                height: 35px !important;
-                box-sizing: border-box !important;
+                width: 100% !important; font-size: 11px !important; padding: 4px 2px !important; height: 35px !important;
             }
-            
             .game-container {
-                width: calc(100vw - 38px) !important;
-                height: calc(100vh - 38px) !important;
-                margin: 19px auto !important;
-                position: relative !important;
-                border-radius: 12px !important;
-                padding: 10px !important;
-                box-sizing: border-box !important;
-                backdrop-filter: blur(8px) !important;
-                -webkit-backdrop-filter: blur(8px) !important;
-                overflow: visible !important;
+                width: calc(100vw - 38px) !important; height: calc(100vh - 38px) !important;
+                margin: 19px auto !important; border-radius: 12px !important; padding: 10px !important;
             }
-
-            .corner-dart.top-left { top: -19px; left: -19px; }
-            .corner-dart.top-right { top: -19px; right: -19px; }
-            .corner-dart.bottom-left { bottom: -19px; left: -19px; }
-            .corner-dart.bottom-right { bottom: -19px; right: -19px; }
-
             .button-bar {
-                display: grid !important;
-                grid-template-columns: repeat(4, 1fr) !important;
-                gap: 3px !important;
-                width: 100% !important;
-                box-sizing: border-box !important;
-                padding: 5px 0 !important;
+                display: grid !important; grid-template-columns: repeat(4, 1fr) !important;
+                gap: 3px !important; width: 100% !important; box-sizing: border-box !important;
             }
-
             .button-bar button {
-                min-width: 0 !important;
-                width: 100% !important;
-                font-size: 9px !important;
-                padding: 4px 2px !important;
-                height: 35px !important;
-                white-space: nowrap !important;
-                overflow: hidden !important;
-                text-overflow: ellipsis !important;
-                box-sizing: border-box !important;
+                width: 100% !important; font-size: 9px !important; padding: 4px 2px !important; height: 35px !important;
             }
-
-            .button-bar .btn-square {
-                width: 100% !important;
-                height: 35px !important;
-                padding: 0 !important;
-            }
-
-            .button-bar #listenBtn {
-                grid-column: span 2 !important;
-            }
-            
+            .button-bar #listenBtn { grid-column: span 2 !important; }
             #pcVirtualKeyboard { display: none !important; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Instellingen Menu -->
+    <!-- ========================================== -->
+    <!-- HTML-GEDEELTE: Instellingen Menu & Structuur -->
+    <!-- ========================================== -->
     <div id="setupDiv" class="setup-container">
         <img src="dartbord.jpg" class="corner-dart top-left" alt="">
         <img src="dartbord.jpg" class="corner-dart top-right" alt="">
@@ -515,10 +443,10 @@
 
         <label id="labelSetsMode" for="setsMode">Wedstrijdlengte (Sets):</label>
         <select id="setsMode">
-            <option value="3">First to 3 Sets (Optie 1 / Option 1)</option>
-            <option value="5">First to 5 Sets (Optie 2 / Option 2)</option>
-            <option value="7">First to 7 Sets (Optie 3 / Option 3)</option>
-            <option value="1">1 Set (Optie 4 / Option 4)</option>
+            <option value="3">First to 3 Sets (Optie 1)</option>
+            <option value="5">First to 5 Sets (Optie 2)</option>
+            <option value="7">First to 7 Sets (Optie 3)</option>
+            <option value="1">1 Set (Optie 4)</option>
         </select>
 
         <label for="player1Input" id="lblPlayer1">Naam Speler 1:</label>
@@ -527,7 +455,7 @@
         <label for="player2Input" id="lblPlayer2">Naam Speler 2:</label>
         <input type="text" id="player2Input" value="Patrick" onclick="setActiveInput(this); toggleVirtualKeyboardOnFocus(this);" onfocus="setActiveInput(this); toggleVirtualKeyboardOnFocus(this);" onkeydown="handleInputKey(event, this)">
 
-        <!-- PC On-Screen Virtual Keyboard (>900px) -->
+        <!-- PC On-Screen Virtual Keyboard -->
         <div id="pcVirtualKeyboard">
             <div style="font-size:11px; color:#f39c12; margin-bottom:4px; text-align:center;">PC On-Screen Keyboard ⌨️ <button type="button" onclick="toggleVirtualKeyboard()" style="background:#c0392b; font-size:10px; padding:1px 5px; height:20px !important; margin-left:10px;">Sluit ✖</button></div>
             <div class="vk-row">
@@ -543,25 +471,21 @@
 
         <!-- Setup Knoppenbalk -->
         <div class="setup-btn-bar">
-            <button class="btn-start" onclick="toggleSetupLuisteren()" id="setupListenBtn" style="background: #c0392b;" title="Spraakherkenning Aan/Uit">Mic Off 🎙️</button>
-            <button class="btn-start" id="startBtn" onclick="startSpel()" style="background: #16a085;" title="Start Wedstrijd">Start Wedstrijd</button>
-            <button class="btn-square btn-dashboard" onclick="window.location.href='https://flex-dashboard.github.io'" title="Naar Persoonlijk Dashboard">HOME🏠</button>
-            <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" title="Volledig Scherm">Fullscreen</button>
-            <button class="btn-square" id="langBtn" onclick="toggleLanguage()" style="background: #e67e22;" title="Taal / Language">ENG</button>
-            <button class="btn-square" onclick="openSetupTipsModal()" style="background: #e74c3c;" title="Tips & Commando's">💡 Tips</button>
+            <button class="btn-start" onclick="toggleSetupLuisteren()" id="setupListenBtn" style="background: #c0392b;">Mic Off 🎙️</button>
+            <button class="btn-start" id="startBtn" onclick="startSpel()" style="background: #16a085;">Start Wedstrijd</button>
+            <button class="btn-square btn-dashboard" onclick="window.location.href='https://flex-dashboard.github.io'" title="Persoonlijk Dashboard">HOME🏠</button>
+            <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()">Fullscreen</button>
+            <button class="btn-square" id="langBtn" onclick="toggleLanguage()" style="background: #e67e22;">ENG</button>
+            <button class="btn-square" onclick="openSetupTipsModal()" style="background: #e74c3c;">💡 Tips</button>
         </div>
 
         <div id="setupSpeechTip" style="background: rgba(30, 30, 30, 0.55); padding: 6px; border-radius: 6px; margin-top: 10px; color: #f39c12; font-size: 13px; text-align: center; border: 1px dashed rgba(255,255,255,0.2);">💡 Tip: Klik op "Mic Off" om te starten met spraakherkenning</div>
         <div id="setupTranscript" style="background: rgba(37, 37, 37, 0.55); padding: 6px; border-radius: 6px; margin-top: 6px; color: #3498db; font-weight: bold; font-size: 13px; text-align: center; border: 1px solid rgba(255,255,255,0.08); display: none;">Gehoord: (wacht op commando...)</div>
-
-        <div style="display: flex; justify-content: center; margin-top: 15px;">
-            <div style="width: 120px; height: 120px; border-radius: 50%; overflow: hidden; border: 3px solid #f39c12; box-shadow: 0 4px 15px rgba(0,0,0,0.8);">
-                <img src="dartbord.jpg" alt="Dartbord" style="width: 100%; height: 100%; object-fit: cover;">
-            </div>
-        </div>
     </div>
 
-    <!-- Scorebord -->
+    <!-- ========================================== -->
+    <!-- HTML-GEDEELTE: Scorebord Scherm            -->
+    <!-- ========================================== -->
     <div id="gameDiv" class="game-container" style="display:none;">
         <img src="dartbord.jpg" class="corner-dart top-left" alt="">
         <img src="dartbord.jpg" class="corner-dart top-right" alt="">
@@ -587,7 +511,7 @@
                 <div class="p-name">
                     <span class="active-dot"></span>
                     <div>
-                        <div id="lblP1Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase; letter-spacing: 0.5px;">Speler 1</div>
+                        <div id="lblP1Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 1</div>
                         <span id="nameP1">Frans</span>
                     </div>
                 </div>
@@ -602,7 +526,7 @@
                 <div class="p-name">
                     <span class="active-dot"></span>
                     <div>
-                        <div id="lblP2Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase; letter-spacing: 0.5px;">Speler 2</div>
+                        <div id="lblP2Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 2</div>
                         <span id="nameP2">Patrick</span>
                     </div>
                 </div>
@@ -613,22 +537,21 @@
             </div>
         </div>
 
-        <!-- Knoppen balk -->
+        <!-- In-Game Knoppenbalk -->
         <div class="button-bar">
             <button onclick="terugNaarInstellingen()" style="background: #34495e; font-size: 13px; padding: 0 10px;">Menu ⚙️</button>
             <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn" style="background: #c0392b;">Mic Off 🎙️</button>
             <button class="btn-undo" id="undoBtn" onclick="laatsteActieTerugdraaien()" style="background: #e67e22;">Herstel ↩️</button>
-            <button class="btn-square" onclick="openStatsModal()" style="background: #8e44ad;" title="Onderlinge Stand (Head-to-Head)">Stats⚡</button>
-            
-            <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" style="background: #f39c12;" title="Volledig Scherm">Fullscreen</button>
-            <button class="btn-square" id="langBtnGame" onclick="toggleLanguage()" style="background: #2563eb;" title="Taal / Language">ENG</button>
+            <button class="btn-square" onclick="openStatsModal()" style="background: #8e44ad;">Stats⚡</button>
+            <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" style="background: #f39c12;">Fullscreen</button>
+            <button class="btn-square" id="langBtnGame" onclick="toggleLanguage()" style="background: #2563eb;">ENG</button>
             <button id="resetLegBtn" onclick="resetSpel()" style="background: #7f8c8d; font-size: 13px; padding: 0 10px;">Reset Leg</button>
         </div>
 
         <div id="transcript">Gehoord: (wacht op commando...)</div>
         <div id="speechTip">💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">Frans</span> 60" of "<span id="tipName2">Patrick</span> dubbel 20 en 16"</div>
 
-        <!-- Gesplitste Geschiedenis -->
+        <!-- Geschiedenis -->
         <div class="history-grid">
             <div class="history-box">
                 <h4 id="histTitleP1">Frans</h4>
@@ -645,7 +568,7 @@
         </div>
     </div>
 
-    <!-- Modal voor Head-to-Head Statistieken -->
+    <!-- Modals -->
     <div id="statsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -656,7 +579,6 @@
         </div>
     </div>
 
-    <!-- Modal voor Spraak Tips & Hints in Setup -->
     <div id="setupTipsModalEl" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -666,12 +588,13 @@
             <div style="display: flex; justify-content: flex-end; margin-bottom: 8px;">
                 <button id="tipsLangBtn" onclick="toggleTipsLanguage()" style="background: #e67e22; width: auto; font-size: 11px; padding: 3px 8px; height: 28px;">ENG / NL</button>
             </div>
-            <div id="tipsModalBody" style="font-size: 13px; color: #ddd; line-height: 1.6; max-height: 350px; overflow-y: auto;">
-                <!-- Dynamisch ingevuld -->
-            </div>
+            <div id="tipsModalBody" style="font-size: 13px; color: #ddd; line-height: 1.6; max-height: 350px; overflow-y: auto;"></div>
         </div>
     </div>
 
+    <!-- ========================================== -->
+    <!-- JAVASCRIPT-GEDEELTE: De Centrale Motor     -->
+    <!-- ========================================== -->
     <script>
         let huidigSpel = "501";
         let targetSets = 3;
@@ -703,10 +626,7 @@
         function toggleVirtualKeyboardOnFocus(el) {
             setActiveInput(el);
             let vk = document.getElementById('pcVirtualKeyboard');
-            if (vk) {
-                vk.style.display = 'block';
-                vk.classList.add('active');
-            }
+            if (vk) { vk.style.display = 'block'; vk.classList.add('active'); }
         }
 
         function handleInputKey(event, el) {
@@ -726,9 +646,7 @@
                 } else {
                     vk.style.display = 'block';
                     vk.classList.add('active');
-                    if (!activeInputEl) {
-                        activeInputEl = document.getElementById('player1Input');
-                    }
+                    if (!activeInputEl) activeInputEl = document.getElementById('player1Input');
                     activeInputEl.focus();
                     activeInputEl.select();
                 }
@@ -800,13 +718,9 @@
 
         function toggleFullscreen() {
             if (!document.fullscreenElement) {
-                document.documentElement.requestFullscreen().catch(err => {
-                    alert(`Kan niet naar volledig scherm schakelen: ${err.message}`);
-                });
+                document.documentElement.requestFullscreen().catch(err => {});
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
@@ -834,21 +748,17 @@
                 if(headerEl) headerEl.innerText = 'Voice Commands Tips 💡';
                 if(btnEl) btnEl.innerText = 'Nederlands (NL)';
                 if(bodyEl) bodyEl.innerHTML = `
-                    <p style="margin: 4px 0;"><strong>Game & Sets (One-Shot):</strong><br>• "Choose 501 three sets"<br>• "Choose 301 five sets"<br>• "Choose tactics with points"</p>
-                    <p style="margin: 8px 0;"><strong>Browse Games / Options:</strong><br>• "Choose other game" / "Choose next game"<br>• "Choose 1", "Select 2", "Choose one", "Select two"</p>
-                    <p style="margin: 8px 0;"><strong>Dynamic Name Changes:</strong><br>• "Change player 1 to John"<br>• "Change player one to John"<br>• "Change Frans to Johan"</p>
-                    <p style="margin: 8px 0;"><strong>Global Commands (Everywhere):</strong><br>• "Menu" / "Open home" / "Go home"<br>• "Open tips" / "Instructions"<br>• "Undo"<br>• "Reset" / "Reset leg"<br>• "Restart sound" / "Restart microphone"<br>• "Fullscreen" / "Full screen"<br>• "Open stats" / "Stand"</p>
-                    <p style="margin: 8px 0;"><strong>During Match:</strong><br>• "[Player Name] 60" or "Player 1 60" or "[Player Name] double 20 and 16"</p>
+                    <p style="margin: 4px 0;"><strong>Game & Sets (One-Shot):</strong><br>• "Choose 501 three sets"<br>• "Choose 301 five sets"<br>• "Choose tactics"</p>
+                    <p style="margin: 8px 0;"><strong>Global Commands (Everywhere):</strong><br>• "Menu" / "Open home"<br>• "Open tips"<br>• "Undo"<br>• "Reset"<br>• "Fullscreen"<br>• "Open stats"</p>
+                    <p style="margin: 8px 0;"><strong>During Match:</strong><br>• "[Player Name] 60" or "Player 1 60"</p>
                 `;
             } else {
                 if(headerEl) headerEl.innerText = 'Spraakcommando\'s Tips 💡';
                 if(btnEl) btnEl.innerText = 'English (ENG)';
                 if(bodyEl) bodyEl.innerHTML = `
-                    <p style="margin: 4px 0;"><strong>Spel & Sets in één zin (One-Shot):</strong><br>• "Kies 501 drie sets"<br>• "Kies 301 vijf sets"<br>• "Kies tactics met punten"</p>
-                    <p style="margin: 8px 0;"><strong>Ander spel of optie kiezen:</strong><br>• "Kies ander spel" / "Kies volgende spel"<br>• "Kies 1", "Kies 2", "Kies één", "Kies twee"</p>
-                    <p style="margin: 8px 0;"><strong>Dynamisch namen veranderen:</strong><br>• "Verander speler 1 in Johan"<br>• "Verander speler één in Johan"<br>• "Verander Frans in Johan"</p>
-                    <p style="margin: 8px 0;"><strong>Globale commando's (Werkt overal):</strong><br>• "Menu" / "Open home" / "Ga naar home"<br>• "Open tips" / "Tips" / "Ga naar uitleg"<br>• "Herstel"<br>• "Reset" / "Reset leg"<br>• "Herstart geluid" / "Herstart microfoon"<br>• "Fullscreen" / "Volledig scherm"<br>• "Open stats" / "Statistieken" / "Stand"</p>
-                    <p style="margin: 8px 0;"><strong>Tijdens de wedstrijd:</strong><br>• "[Naam] 60" of "Speler 1 60" of "[Naam] dubbel 20 en 16"</p>
+                    <p style="margin: 4px 0;"><strong>Spel & Sets in één zin:</strong><br>• "Kies 501 drie sets"<br>• "Kies 301 vijf sets"<br>• "Kies tactics" / "Ga naar tactics"</p>
+                    <p style="margin: 8px 0;"><strong>Globale commando's (Werkt overal):</strong><br>• "Menu" / "Home"<br>• "Tips"<br>• "Herstel"<br>• "Reset"<br>• "Fullscreen"<br>• "Open stats" / "Stand"</p>
+                    <p style="margin: 8px 0;"><strong>Tijdens de wedstrijd:</strong><br>• "[Naam] 60" of "Speler 1 60" of "Dubbel 20 en 16"</p>
                 `;
             }
         }
@@ -875,11 +785,7 @@
                 if(lblP2) lblP2.innerText = 'Player 2 Name:';
                 if(startBtn) startBtn.innerText = 'Start Game';
                 if(setupSpeechTip) setupSpeechTip.innerHTML = '💡 Tip: Click "Mic Off" to start voice recognition';
-                spelModeSelect.innerHTML = `
-                    <option value="501">501 (Game 1)</option>
-                    <option value="301">301 (Game 2)</option>
-                    <option value="tactics">Tactics (Game 3)</option>
-                `;
+                spelModeSelect.innerHTML = `<option value="501">501 (Game 1)</option><option value="301">301 (Game 2)</option><option value="tactics">Tactics (Game 3)</option>`;
             } else {
                 if(titleEl) titleEl.innerText = 'Spelinstellingen';
                 if(lblChoose) lblChoose.innerText = 'Kies Spel:';
@@ -887,47 +793,40 @@
                 if(lblP2) lblP2.innerText = 'Naam Speler 2:';
                 if(startBtn) startBtn.innerText = 'Start Wedstrijd';
                 if(setupSpeechTip) setupSpeechTip.innerHTML = '💡 Tip: Klik op "Mic Off" om te starten met spraakherkenning';
-                spelModeSelect.innerHTML = `
-                    <option value="501">501 (Spel 1)</option>
-                    <option value="301">301 (Spel 2)</option>
-                    <option value="tactics">Tactics (Spel 3)</option>
-                `;
+                spelModeSelect.innerHTML = `<option value="501">501 (Spel 1)</option><option value="301">301 (Spel 2)</option><option value="tactics">Tactics (Spel 3)</option>`;
             }
             updateSetsDropdownLabels();
             updateSetupListenUI(isSetupLuisteren);
             updateGameLanguageUI();
 
-            if (recognition) {
-                recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
-            }
-            if (setupRecognition) {
-                setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
-            }
+            if (recognition) recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
+            if (setupRecognition) setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
         }
 
         function updateSetsDropdownLabels() {
-            let mode = document.getElementById('spelMode').value;
             let label = document.getElementById('labelSetsMode');
             let select = document.getElementById('setsMode');
-            if (mode === 'tactics') {
-                label.innerText = (currentLang === 'eng') ? 'Tactics Game Options:' : 'Tactics Spelopties:';
+            let spelModeVal = document.getElementById('spelMode').value;
+
+            if (spelModeVal === 'tactics') {
+                label.innerText = (currentLang === 'eng') ? 'Tactics Options:' : 'Tactics Spelopties:';
                 select.innerHTML = currentLang === 'eng' ? `
-                    <option value="met_punten">With Points (Option 1 / One)</option>
-                    <option value="zonder_punten">Without Points / Cut-Throat (Option 2 / Two)</option>
+                    <option value="met_punten">With Points (Option 1)</option>
+                    <option value="zonder_punten">Without Points / Cut-Throat (Option 2)</option>
                 ` : `
-                    <option value="met_punten">Met Punten (Optie 1 / Eén)</option>
-                    <option value="zonder_punten">Zonder Punten / Cut-Throat (Optie 2 / Twee)</option>
+                    <option value="met_punten">Met Punten (Optie 1)</option>
+                    <option value="zonder_punten">Zonder Punten / Cut-Throat (Optie 2)</option>
                 `;
             } else {
                 label.innerText = (currentLang === 'eng') ? 'Match Length (Sets):' : 'Wedstrijdlengte (Sets):';
                 select.innerHTML = currentLang === 'eng' ? `
-                    <option value="3">First to 3 Sets (Option 1 / One)</option>
-                    <option value="5">First to 5 Sets (Option 2 / Two)</option>
+                    <option value="3">First to 3 Sets (Option 1)</option>
+                    <option value="5">First to 5 Sets (Option 2)</option>
                     <option value="7">First to 7 Sets (Option 3)</option>
                     <option value="1">1 Set (Option 4)</option>
                 ` : `
-                    <option value="3">First to 3 Sets (Optie 1 / Eén)</option>
-                    <option value="5">First to 5 Sets (Optie 2 / Twee)</option>
+                    <option value="3">First to 3 Sets (Optie 1)</option>
+                    <option value="5">First to 5 Sets (Optie 2)</option>
                     <option value="7">First to 7 Sets (Optie 3)</option>
                     <option value="1">1 Set (Optie 4)</option>
                 `;
@@ -938,9 +837,7 @@
             updateSetsDropdownLabels();
             let spelSelect = document.getElementById('spelMode');
             let displayEl = document.getElementById('matchGameTypeDisplay');
-            if (spelSelect && displayEl) {
-                displayEl.innerText = spelSelect.value;
-            }
+            if (spelSelect && displayEl) displayEl.innerText = spelSelect.value.toUpperCase();
         }
 
         function updateGameLanguageUI() {
@@ -961,7 +858,7 @@
                 let p1 = spelers.name1Mooi || "Frans";
                 let p2 = spelers.name2Mooi || "Patrick";
                 speechTip.innerHTML = currentLang === 'eng' ? 
-                    `💡 Tip: Say for example "<span id="tipName1">${p1}</span> 60" or "Player 1 60"` :
+                    `💡 Tip: Say for example "<span id="tipName1">${p1}</span> 60"` :
                     `💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">${p1}</span> 60" of "Speler 1 60"`;
             }
 
@@ -975,73 +872,51 @@
             if(tvHeaderTitle && tvHeaderTitle.innerText.includes('First to')) {
                 tvHeaderTitle.innerText = `First to ${targetSets} Sets`;
             }
-
-            let histEmpty1 = document.getElementById('histEmpty1');
-            let histEmpty2 = document.getElementById('histEmpty2');
-            if(histEmpty1 && histEmpty1.innerText.includes('niks')) histEmpty1.innerText = currentLang === 'eng' ? 'No throws yet' : 'Nog niks gegooid';
-            if(histEmpty2 && histEmpty2.innerText.includes('niks')) histEmpty2.innerText = currentLang === 'eng' ? 'No throws yet' : 'Nog niks gegooid';
         }
 
-        // Hulpfunctie om spraak te normaliseren (verwijdert leestekens/spaties tussen cijfers en corrigeert fonetische honderdtallen)
         function normaliseerSpraak(tekst) {
-            let clean = tekst.toLowerCase().replace(/[.,\/#!$%\^&\*;:{}=\-_`~()?]/g, " ");
+            let clean = tekst.toLowerCase().replace(/[.,\/\/#!$%\^&\*;:{}=\-_`~()?]/g, " ");
             let t = vervangWoordenDoorCijfers(clean);
             t = t.replace(/\b5\s*0\s*1\b/g, '501');
             t = t.replace(/\b3\s*0\s*1\b/g, '301');
-            t = t.replace(/\bhondurt\b/g, '100');
-            t = t.replace(/\bhonderd\b/g, '100');
-            t = t.replace(/\bhundred\b/g, '100');
-            t = t.replace(/\bhonderdt\b/g, '100');
+            t = t.replace(/\bhondurt\b/g, '100').replace(/\bhonderd\b/g, '100').replace(/\bhundred\b/g, '100');
             return t.replace(/\s+/g, ' ').trim();
         }
 
-        // ABSOLUTE FILTERING & BUFFER-STOP: Filter ruis / achtergrondgesprekken weg
         function isGeldigCommando(text) {
             let t = text.toLowerCase();
-            if (t.includes("menu") || t.includes("herstel") || t.includes("undo") || t.includes("fullscreen") || t.includes("stats") || t.includes("reset") || t.includes("start") || t.includes("kies") || t.includes("choose") || t.includes("select") || t.includes("verander") || t.includes("change") || t.includes("tips") || t.includes("uitleg") || t.includes("home") || t.includes("instellingen") || t.includes("501") || t.includes("301") || t.includes("tactics") || t.includes("speler 1") || t.includes("speler 2") || t.includes("speler één") || t.includes("speler twee") || t.includes("player 1") || t.includes("player 2") || t.includes("player one") || t.includes("player two") || t.includes(spelers.name1) || t.includes(spelers.name2) || t.includes("dubbel") || t.includes("trippel") || t.includes("bull") || /\d+/.test(t)) {
-                return true;
-            }
-            return false;
+            return (t.includes("menu") || t.includes("herstel") || t.includes("undo") || t.includes("fullscreen") || t.includes("stats") || t.includes("reset") || t.includes("start") || t.includes("kies") || t.includes("choose") || t.includes("select") || t.includes("verander") || t.includes("change") || t.includes("tips") || t.includes("uitleg") || t.includes("home") || t.includes("instellingen") || t.includes("tactics") || t.includes("tectics") || t.includes("501") || t.includes("301") || t.includes("speler 1") || t.includes("speler 2") || t.includes("player 1") || t.includes("player 2") || t.includes(spelers.name1) || t.includes(spelers.name2) || t.includes("dubbel") || t.includes("trippel") || t.includes("bull") || /\d+/.test(t));
         }
 
-        // Globale commando's die overal werken
+        // Globale commando's (Altijd actief)
         function handleGlobalCommando(cmd) {
             let text = normaliseerSpraak(cmd);
-            if (text.includes("menu") || text.includes("open home") || text.includes("ga naar home") || text.includes("home") || text.includes("instellingen") || text.includes("go home") || text.includes("choose menu")) {
-                if (document.getElementById('gameDiv').style.display !== 'none') {
-                    terugNaarInstellingen();
-                }
-                speakFeedback(currentLang === 'eng' ? "Menu" : "Menu");
+            if (text.includes("menu") || text.includes("open home") || text.includes("ga naar home") || text.includes("home") || text.includes("instellingen") || text.includes("go home")) {
+                if (document.getElementById('gameDiv').style.display !== 'none') terugNaarInstellingen();
+                speakFeedback("Menu");
                 return true;
             }
-            if (text.includes("open tips") || text.includes("tips") || text.includes("ga naar tips") || text.includes("ga naar uitleg") || text.includes("uitleg") || text.includes("instructions")) {
+            if (text.includes("open tips") || text.includes("tips") || text.includes("uitleg") || text.includes("instructions")) {
                 openSetupTipsModal();
-                speakFeedback(currentLang === 'eng' ? "Tips" : "Tips");
+                speakFeedback("Tips");
                 return true;
             }
             if (text.includes("herstel") || text.includes("undo") || text.includes("restore")) {
-                if (document.getElementById('gameDiv').style.display !== 'none') {
-                    laatsteActieTerugdraaien();
-                }
+                if (document.getElementById('gameDiv').style.display !== 'none') laatsteActieTerugdraaien();
                 return true;
             }
-            if (text === "reset" || text.includes("reset leg") || text.includes("reset de leg") || text.includes("leg reset") || (text.includes("reset") && !text.includes("geluid") && !text.includes("sound") && !text.includes("microfoon") && !text.includes("mic"))) {
+            if (text === "reset" || text.includes("reset leg") || text.includes("reset de leg") || text.includes("leg reset")) {
                 if (document.getElementById('gameDiv').style.display !== 'none') {
                     resetSpel();
-                    speakFeedback(currentLang === 'eng' ? "Leg reset" : "Leg gereset");
+                    speakFeedback("Leg gereset");
                 }
-                return true;
-            }
-            if (text.includes("herstart geluid") || text.includes("restart sound") || text.includes("herstel geluid") || text.includes("sound reset") || text.includes("herstart microfoon") || text.includes("restart microphone") || text.includes("microfoon aan")) {
-                if ('speechSynthesis' in window) window.speechSynthesis.cancel();
-                speakFeedback(currentLang === 'eng' ? "Restarted" : "Herstart");
                 return true;
             }
             if (text.includes("fullscreen") || text.includes("volledig scherm") || text.includes("full screen")) {
                 toggleFullscreen();
                 return true;
             }
-            if (text.includes("open stats") || text.includes("statistieken") || text.includes("open statistics") || text.includes("stats") || text.includes("stand")) {
+            if (text.includes("open stats") || text.includes("statistieken") || text.includes("stats") || text.includes("stand")) {
                 if (document.getElementById('gameDiv').style.display !== 'none') {
                     openStatsModal();
                     speakFeedback("Stats");
@@ -1051,14 +926,13 @@
             if (text.includes("sluit stats") || text.includes("close stats") || text.includes("sluit statistieken")) {
                 if (document.getElementById('statsModal').style.display === 'flex') {
                     closeStatsModal();
-                    speakFeedback("Closed");
+                    speakFeedback("Gesloten");
                 }
                 return true;
             }
             return false;
         }
 
-        // Dynamisch namen veranderen via spraak
         function probeerNaamTeVeranderen(cmd) {
             let matchNL = cmd.match(/verander\s+(.+?)\s+in\s+(.+)/);
             let matchENG = cmd.match(/change\s+(.+?)\s+to\s+(.+)/);
@@ -1074,20 +948,20 @@
                 let curP1 = p1Input.value.trim().toLowerCase();
                 let curP2 = p2Input.value.trim().toLowerCase();
 
-                if (doel.includes("speler 1") || doel.includes("speler één") || doel.includes("player 1") || doel.includes("player one") || doel === "1" || doel === "één" || doel === "one" || doel === curP1) {
+                if (doel.includes("speler 1") || doel.includes("player 1") || doel === "1" || doel === "één" || doel === curP1) {
                     p1Input.value = nieuweNaam;
-                    speakFeedback(currentLang === 'eng' ? `Player 1 changed to ${nieuweNaam}` : `Speler 1 veranderd in ${nieuweNaam}`);
+                    speakFeedback(`Speler 1 veranderd in ${nieuweNaam}`);
                     return true;
-                } else if (doel.includes("speler 2") || doel.includes("speler twee") || doel.includes("player 2") || doel.includes("player two") || doel === "2" || doel === "twee" || doel === "two" || doel === curP2) {
+                } else if (doel.includes("speler 2") || doel.includes("player 2") || doel === "2" || doel === "twee" || doel === curP2) {
                     p2Input.value = nieuweNaam;
-                    speakFeedback(currentLang === 'eng' ? `Player 2 changed to ${nieuweNaam}` : `Speler 2 veranderd in ${nieuweNaam}`);
+                    speakFeedback(`Speler 2 veranderd in ${nieuweNaam}`);
                     return true;
                 }
             }
             return false;
         }
 
-        // Setup spraakherkenning
+        // Setup spraakherkenning met Crash-Recovery & Luister-loop
         function initSetupSpraak() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) return;
@@ -1104,9 +978,7 @@
 
             setupRecognition.onresult = function(event) {
                 const rawResult = event.results[event.results.length - 1][0].transcript.trim();
-                if (!isGeldigCommando(rawResult)) {
-                    return; 
-                }
+                if (!isGeldigCommando(rawResult)) return;
 
                 let trans = document.getElementById('setupTranscript');
                 if(trans) {
@@ -1118,9 +990,7 @@
 
             setupRecognition.onerror = function(event) {
                 updateSetupListenUI(false);
-                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
-                    isSetupLuisteren = false;
-                }
+                if (event.error === 'not-allowed' || event.error === 'service-not-allowed') isSetupLuisteren = false;
             };
 
             setupRecognition.onend = function() {
@@ -1142,12 +1012,7 @@
                 updateSetupListenUI(false, true);
                 isSetupLuisteren = true;
                 setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
-                try { 
-                    setupRecognition.start(); 
-                } catch(e) { 
-                    isSetupLuisteren = false; 
-                    updateSetupListenUI(false);
-                }
+                try { setupRecognition.start(); } catch(e) { isSetupLuisteren = false; updateSetupListenUI(false); }
             } else {
                 isSetupLuisteren = false;
                 try { setupRecognition.stop(); } catch(e) {}
@@ -1160,15 +1025,15 @@
             if(!btn) return;
             if (isResetting) {
                 btn.style.background = "#c0392b";
-                btn.innerText = currentLang === 'eng' ? "Resetting..." : "Resetten...";
+                btn.innerText = "Resetten...";
             } else if (aktief) {
                 btn.style.background = "#27ae60";
-                btn.innerText = currentLang === 'eng' ? "Mic On 🎙️" : "Mic On 🎙️";
+                btn.innerText = "Mic On 🎙️";
                 let trans = document.getElementById('setupTranscript');
                 if(trans) trans.style.display = 'block';
             } else {
                 btn.style.background = "#c0392b";
-                btn.innerText = currentLang === 'eng' ? "Mic Off 🎙️" : "Mic Off 🎙️";
+                btn.innerText = "Mic Off 🎙️";
             }
         }
 
@@ -1178,57 +1043,40 @@
             if (handleGlobalCommando(cmd)) return;
             if (probeerNaamTeVeranderen(cmd)) return;
 
-            if (cmd.includes("ander spel") || cmd.includes("volgende spel") || cmd.includes("other game") || cmd.includes("next game")) {
-                let spelSelect = document.getElementById('spelMode');
-                if (spelSelect.value === "501") {
-                    spelSelect.value = "301";
-                    speakFeedback(currentLang === 'eng' ? "301 selected" : "301 gekozen");
-                } else if (spelSelect.value === "301") {
-                    spelSelect.value = "tactics";
-                    speakFeedback(currentLang === 'eng' ? "Tactics selected" : "Tactics gekozen");
-                } else {
-                    spelSelect.value = "501";
-                    speakFeedback(currentLang === 'eng' ? "501 selected" : "501 gekozen");
-                }
+            // Spelkeuze via spraak ("kies tactics", "ga naar tactics", "tectics", "spel 3")
+            if (cmd.includes("tactics") || cmd.includes("tectics") || cmd.includes("spel 3") || cmd.includes("game 3")) {
+                document.getElementById('spelMode').value = "tactics";
                 handleSpelModeChange();
+                speakFeedback("Tactics gekozen");
+                return;
+            } else if (cmd.includes("301") || cmd.includes("three o one") || cmd.includes("spel 2") || cmd.includes("game 2")) {
+                document.getElementById('spelMode').value = "301";
+                handleSpelModeChange();
+                speakFeedback("301 gekozen");
+                return;
+            } else if (cmd.includes("501") || cmd.includes("five o one") || cmd.includes("spel 1") || cmd.includes("game 1")) {
+                document.getElementById('spelMode').value = "501";
+                handleSpelModeChange();
+                speakFeedback("501 gekozen");
                 return;
             }
 
-            if (cmd.includes("301") || cmd.includes("three o one") || cmd.includes("spel 2") || cmd.includes("game 2")) {
-                document.getElementById('spelMode').value = "301";
-            } else if (cmd.includes("501") || cmd.includes("five o one") || cmd.includes("spel 1") || cmd.includes("game 1")) {
-                document.getElementById('spelMode').value = "501";
-            } else if (cmd.includes("tactics") || cmd.includes("tectics") || cmd.includes("tectix") || cmd.includes("taktics") || cmd.includes("spel 3") || cmd.includes("game 3")) {
-                document.getElementById('spelMode').value = "tactics";
-            }
-            handleSpelModeChange();
-
             let setsSelect = document.getElementById('setsMode');
-            if (document.getElementById('spelMode').value === 'tactics') {
-                if (cmd.includes("met punten") || cmd.includes("with points") || cmd.includes("1") || cmd.includes("één") || cmd.includes("one")) {
-                    setsSelect.value = "met_punten";
-                    speakFeedback("Met punten");
-                } else if (cmd.includes("zonder punten") || cmd.includes("without points") || cmd.includes("cut throat") || cmd.includes("2") || cmd.includes("twee") || cmd.includes("two")) {
-                    setsSelect.value = "zonder_punten";
-                    speakFeedback("Zonder punten");
-                }
-            } else {
-                if (cmd.includes("3 sets") || cmd.includes("drie sets") || cmd.includes("optie 1") || cmd.includes("option 1") || cmd.includes("choose 1") || cmd.includes("select 1") || cmd.includes("choose one") || cmd.includes("select one") || (cmd.includes("3") && (cmd.includes("set") || cmd.includes("sets")))) {
-                    setsSelect.value = "3";
-                    speakFeedback("3 sets");
-                } else if (cmd.includes("5 sets") || cmd.includes("vijf sets") || cmd.includes("optie 2") || cmd.includes("option 2") || cmd.includes("choose 2") || cmd.includes("select 2") || cmd.includes("choose two") || cmd.includes("select two") || (cmd.includes("5") && (cmd.includes("set") || cmd.includes("sets")))) {
-                    setsSelect.value = "5";
-                    speakFeedback("5 sets");
-                } else if (cmd.includes("7 sets") || cmd.includes("zeven sets") || cmd.includes("optie 3") || cmd.includes("option 3") || cmd.includes("choose 3") || cmd.includes("select 3") || (cmd.includes("7") && (cmd.includes("set") || cmd.includes("sets")))) {
-                    setsSelect.value = "7";
-                    speakFeedback("7 sets");
-                } else if (cmd.includes("1 set") || cmd.includes("een set") || cmd.includes("één set") || cmd.includes("optie 4") || cmd.includes("option 4") || cmd.includes("choose 4") || cmd.includes("select 4") || (cmd.includes("1") && (cmd.includes("set") || cmd.includes("sets")))) {
-                    setsSelect.value = "1";
-                    speakFeedback("1 set");
-                }
+            if (cmd.includes("optie 1") || cmd.includes("option 1") || cmd.includes("3 sets") || cmd.includes("drie sets") || (cmd.includes("3") && (cmd.includes("set") || cmd.includes("sets")))) {
+                if(setsSelect.options.length > 0) setsSelect.selectedIndex = 0;
+                speakFeedback("Optie 1 gekozen");
+            } else if (cmd.includes("optie 2") || cmd.includes("option 2") || cmd.includes("5 sets") || cmd.includes("vijf sets") || (cmd.includes("5") && (cmd.includes("set") || cmd.includes("sets")))) {
+                if(setsSelect.options.length > 1) setsSelect.selectedIndex = 1;
+                speakFeedback("Optie 2 gekozen");
+            } else if (cmd.includes("7 sets") || cmd.includes("zeven sets") || (cmd.includes("7") && (cmd.includes("set") || cmd.includes("sets")))) {
+                if(setsSelect.options.length > 2) setsSelect.selectedIndex = 2;
+                speakFeedback("7 sets");
+            } else if (cmd.includes("1 set") || cmd.includes("een set") || cmd.includes("één set") || (cmd.includes("1") && (cmd.includes("set") || cmd.includes("sets")))) {
+                if(setsSelect.options.length > 3) setsSelect.selectedIndex = 3;
+                speakFeedback("1 set");
             }
 
-            if (cmd.includes("start wedstrijd") || cmd.includes("start game") || cmd.includes("start") || cmd.includes("begin")) {
+            if (cmd.includes("start wedstrijd") || cmd.includes("start game") || cmd.includes("start")) {
                 if (isSetupLuisteren) {
                     isSetupLuisteren = false;
                     try { setupRecognition.stop(); } catch(e) {}
@@ -1246,24 +1094,17 @@
             }
 
             huidigSpel = document.getElementById('spelMode').value;
-            
+            let p1Input = document.getElementById('player1Input').value.trim() || "Speler 1";
+            let p2Input = document.getElementById('player2Input').value.trim() || "Speler 2";
+            let setsModeVal = document.getElementById('setsMode').value;
+
+            // Als Tactics gekozen is, doorsturen naar tactics.html met de opties
             if (huidigSpel === 'tactics') {
-                let tacticsMode = document.getElementById('setsMode').value;
-                let p1Input = document.getElementById('player1Input').value.trim() || "Frans";
-                let p2Input = document.getElementById('player2Input').value.trim() || "Patrick";
-                
-                localStorage.setItem('tactics_mode', tacticsMode);
-                localStorage.setItem('tactics_p1', p1Input);
-                localStorage.setItem('tactics_p2', p2Input);
-                
-                window.location.href = 'tactics.html';
+                window.location.href = `tactics.html?p1=${encodeURIComponent(p1Input)}&p2=${encodeURIComponent(p2Input)}&mode=${setsModeVal}`;
                 return;
             }
 
-            targetSets = parseInt(document.getElementById('setsMode').value, 10);
-
-            let p1Input = document.getElementById('player1Input').value.trim() || "Speler 1";
-            let p2Input = document.getElementById('player2Input').value.trim() || "Speler 2";
+            targetSets = parseInt(setsModeVal, 10);
 
             spelers.name1 = p1Input.toLowerCase();
             spelers.name2 = p2Input.toLowerCase();
@@ -1274,7 +1115,6 @@
             document.getElementById('nameP2').innerText = spelers.name2Mooi;
             document.getElementById('histTitleP1').innerText = spelers.name1Mooi;
             document.getElementById('histTitleP2').innerText = spelers.name2Mooi;
-            
             document.getElementById('tvHeaderTitle').innerText = `First to ${targetSets} Sets`;
 
             let startScore = parseInt(huidigSpel, 10);
@@ -1296,11 +1136,7 @@
             initSpraak();
             if (wasSetupListening) {
                 isLuisteren = true;
-                try {
-                    recognition.start();
-                } catch(e) {
-                    isLuisteren = false;
-                }
+                try { recognition.start(); } catch(e) { isLuisteren = false; }
                 updateStatusUI(isLuisteren);
             } else {
                 updateStatusUI(false);
@@ -1333,14 +1169,9 @@
 
         function initSpraak() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-            if (!SpeechRecognition) {
-                alert("Je browser ondersteunt geen spraakherkenning. Gebruik Google Chrome of Microsoft Edge.");
-                return;
-            }
+            if (!SpeechRecognition) return;
 
-            if (recognition) {
-                try { recognition.stop(); } catch(e) {}
-            }
+            if (recognition) { try { recognition.stop(); } catch(e) {} }
 
             recognition = new SpeechRecognition();
             recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
@@ -1384,12 +1215,9 @@
             if (watchdogTimer) clearInterval(watchdogTimer);
             watchdogTimer = setInterval(() => {
                 if (isLuisteren && !microphoneError) {
-                    let now = Date.now();
-                    if (now - lastRecognitionEventTime > 12000) {
-                        lastRecognitionEventTime = now;
-                        try {
-                            recognition.stop();
-                        } catch (e) {}
+                    if (Date.now() - lastRecognitionEventTime > 12000) {
+                        lastRecognitionEventTime = Date.now();
+                        try { recognition.stop(); } catch (e) {}
                     }
                 }
             }, 4000);
@@ -1403,12 +1231,7 @@
                 isLuisteren = true;
                 lastRecognitionEventTime = Date.now();
                 recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
-                try { 
-                    recognition.start(); 
-                } catch(e) {
-                    isLuisteren = false;
-                    updateStatusUI(false);
-                }
+                try { recognition.start(); } catch(e) { isLuisteren = false; updateStatusUI(false); }
             } else {
                 isLuisteren = false;
                 if (watchdogTimer) clearInterval(watchdogTimer);
@@ -1422,7 +1245,7 @@
             if(!btn) return;
             if (isResetting) {
                 btn.style.background = "#c0392b";
-                btn.innerText = currentLang === 'eng' ? "Resetting..." : "Resetten...";
+                btn.innerText = "Resetten...";
             } else if (aktief) {
                 btn.style.background = "#27ae60";
                 btn.innerText = "Mic On 🎙️";
@@ -1439,13 +1262,7 @@
                 .replace(/\btwintig\b/g, '20').replace(/\bdertig\b/g, '30').replace(/\bveertig\b/g, '40').replace(/\bvijftig\b/g, '50')
                 .replace(/\bzestig\b/g, '60').replace(/\bzeventig\b/g, '70').replace(/\btachtig\b/g, '80').replace(/\bnegentig\b/g, '90')
                 .replace(/\been\b/g, '1').replace(/\btwee\b/g, '2').replace(/\bdrie\b/g, '3').replace(/\bvier\b/g, '4').replace(/\bvijf\b/g, '5')
-                .replace(/\bzes\b/g, '6').replace(/\bzeven\b/g, '7').replace(/\bacht\b/g, '8').replace(/\bnegen\b/g, '9').replace(/\btien\b/g, '10')
-                .replace(/\beleven\b/g, '11').replace(/\btwelve\b/g, '12').replace(/\bthirteen\b/g, '13').replace(/\bfourteen\b/g, '14').replace(/\bfifteen\b/g, '15')
-                .replace(/\bsixteen\b/g, '16').replace(/\bseventeen\b/g, '17').replace(/\beighteen\b/g, '18').replace(/\bnineteen\b/g, '19')
-                .replace(/\btwenty\b/g, '20').replace(/\bthirty\b/g, '30').replace(/\bfourty\b/g, '40').replace(/\bfifty\b/g, '50')
-                .replace(/\bsixty\b/g, '60').replace(/\bseventy\b/g, '70').replace(/\beighty\b/g, '80').replace(/\bninety\b/g, '90')
-                .replace(/\bone\b/g, '1').replace(/\btwo\b/g, '2').replace(/\bthree\b/g, '3').replace(/\bfour\b/g, '4').replace(/\bfive\b/g, '5')
-                .replace(/\bsix\b/g, '6').replace(/\bseven\b/g, '7').replace(/\beight\b/g, '8').replace(/\bnine\b/g, '9').replace(/\bten\b/g, '10');
+                .replace(/\bzes\b/g, '6').replace(/\bzeven\b/g, '7').replace(/\bacht\b/g, '8').replace(/\bnegen\b/g, '9').replace(/\btien\b/g, '10');
         }
 
         function verwerkSpraak(zin) {
@@ -1461,8 +1278,8 @@
                 return;
             }
 
-            const isSpeler1 = gewijzigdeZin.includes(spelers.name1) || gewijzigdeZin.includes("france") || gewijzigdeZin.includes("frankrijk") || gewijzigdeZin.includes("franz") || gewijzigdeZin.includes("speler 1") || gewijzigdeZin.includes("speler één") || gewijzigdeZin.includes("player 1") || gewijzigdeZin.includes("player one");
-            const isSpeler2 = gewijzigdeZin.includes(spelers.name2) || gewijzigdeZin.includes("speler 2") || gewijzigdeZin.includes("speler twee") || gewijzigdeZin.includes("player 2") || gewijzigdeZin.includes("player two");
+            const isSpeler1 = gewijzigdeZin.includes(spelers.name1) || gewijzigdeZin.includes("speler 1") || gewijzigdeZin.includes("player 1");
+            const isSpeler2 = gewijzigdeZin.includes(spelers.name2) || gewijzigdeZin.includes("speler 2") || gewijzigdeZin.includes("player 2");
 
             if (!isSpeler1 && !isSpeler2) return;
 
@@ -1473,7 +1290,7 @@
             let gegooideScore = 0;
             let uitlegBerekening = "";
 
-            if (gewijzigdeZin.includes("rode boel") || gewijzigdeZin.includes("bullseye") || (gewijzigdeZin.includes("bull") && !gewijzigdeZin.includes("groene") && !gewijzigdeZin.includes("single"))) {
+            if (gewijzigdeZin.includes("rode boel") || gewijzigdeZin.includes("bullseye") || (gewijzigdeZin.includes("bull") && !gewijzigdeZin.includes("groene"))) {
                 gegooideScore = 50;
                 uitlegBerekening = "Bullseye (50)";
             } else if (gewijzigdeZin.includes("groene boel") || gewijzigdeZin.includes("single bull")) {
@@ -1483,26 +1300,18 @@
                 let scoreTekst = gewijzigdeZin
                     .replace(new RegExp(spelers.name1, 'g'), '')
                     .replace(new RegExp(spelers.name2, 'g'), '')
-                    .replace(/france|frankrijk|franz|speler 1|speler één|speler 2|speler twee|player 1|player one|player 2|player two/g, '')
+                    .replace(/speler 1|speler 2|player 1|player 2/g, '')
                     .trim();
 
-                let tokens = scoreTekst.replace(/,/g, ' ').replace(/\ben\b/g, ' ').replace(/\band\b/g, ' ').trim().split(/\s+/).filter(t => t.length > 0);
+                let tokens = scoreTekst.replace(/,/g, ' ').replace(/\ben\b/g, ' ').trim().split(/\s+/).filter(t => t.length > 0);
                 let totaalScore = 0;
                 let uitlegDelen = [];
                 let pendingMultiplier = 1;
 
                 for (let token of tokens) {
-                    if (token === "dubbel" || token === "double" || token.includes("dubbel") || token.includes("double")) {
-                        pendingMultiplier = 2;
-                        continue;
-                    }
-                    if (token === "trippel" || token === "triple" || token.includes("trippel") || token.includes("triple")) {
-                        pendingMultiplier = 3;
-                        continue;
-                    }
-                    if (token === "keer" || token === "x" || token === "times") {
-                        continue;
-                    }
+                    if (token === "dubbel" || token === "double") { pendingMultiplier = 2; continue; }
+                    if (token === "trippel" || token === "triple") { pendingMultiplier = 3; continue; }
+                    if (token === "keer" || token === "x") continue;
 
                     let matchNum = token.match(/\d+/);
                     if (matchNum) {
@@ -1539,9 +1348,9 @@
             let nieuweScore = huidigeScore - gegooideScore;
 
             if (nieuweScore < 0 || nieuweScore === 1) {
-                speakFeedback(currentLang === 'eng' ? "Bust!" : "Kapot!");
-                toonMelding(currentLang === 'eng' ? `Bust! (${uitlegBerekening}) - Score restored.` : `Kapot! (${uitlegBerekening}) - Score hersteld.`);
-                voegToeAanHistorie(doelSpeler, `${gegooideScore} - ${currentLang === 'eng' ? 'BUST' : 'KAPOT'}`);
+                speakFeedback("Kapot!");
+                toonMelding(`Kapot! (${uitlegBerekening}) - Score hersteld.`);
+                voegToeAanHistorie(doelSpeler, `${gegooideScore} - KAPOT`);
                 updateScherm();
                 return;
             }
@@ -1549,27 +1358,20 @@
             if (doelSpeler === 1) scores.score1 = nieuweScore;
             else scores.score2 = nieuweScore;
 
-            voegToeAanHistorie(doelSpeler, `-${gegooideScore} (${currentLang === 'eng' ? 'left' : 'over'}: ${nieuweScore})`);
+            voegToeAanHistorie(doelSpeler, `-${gegooideScore} (over: ${nieuweScore})`);
 
             if (nieuweScore === 0) {
                 if (doelSpeler === 1) legs.leg1++;
                 else legs.leg2++;
 
                 let setGewonnen = false;
-                if (legs.leg1 >= 3) {
-                    sets.set1++;
-                    legs.leg1 = 0; legs.leg2 = 0;
-                    setGewonnen = true;
-                } else if (legs.leg2 >= 3) {
-                    sets.set2++;
-                    legs.leg1 = 0; legs.leg2 = 0;
-                    setGewonnen = true;
-                }
+                if (legs.leg1 >= 3) { sets.set1++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
+                else if (legs.leg2 >= 3) { sets.set2++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
 
                 if (sets.set1 >= targetSets || sets.set2 >= targetSets) {
                     document.getElementById('winnerText').innerText = spelerNaamMooi.toUpperCase();
                     document.getElementById('winnerBanner').style.display = 'block';
-                    speakFeedback(currentLang === 'eng' ? `${spelerNaamMooi} has won the match!` : `${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
+                    speakFeedback(`${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
                     
                     if (timerInterval) clearInterval(timerInterval);
                     if (watchdogTimer) clearInterval(watchdogTimer);
@@ -1580,17 +1382,12 @@
                     return;
                 }
 
-                let startScore = parseInt(huidigSpel, 10);
-                scores.score1 = startScore;
-                scores.score2 = startScore;
-
+                scores.score1 = parseInt(huidigSpel, 10);
+                scores.score2 = parseInt(huidigSpel, 10);
                 wisseGeschiedenis();
 
-                if (setGewonnen) {
-                    speakFeedback(currentLang === 'eng' ? `${spelerNaamMooi} wins the set!` : `${spelerNaamMooi} wint de set!`);
-                } else {
-                    speakFeedback(currentLang === 'eng' ? `${spelerNaamMooi} wins the leg!` : `${spelerNaamMooi} wint de leg!`);
-                }
+                if (setGewonnen) speakFeedback(`${spelerNaamMooi} wint de set!`);
+                else speakFeedback(`${spelerNaamMooi} wint de leg!`);
             } else {
                 if (gegooideScore === 180) speak180();
                 else speakFeedback(gegooideScore.toString());
@@ -1601,11 +1398,9 @@
 
         function laatsteActieTerugdraaien() {
             if (geschiedenisStappen.length === 0) {
-                document.getElementById('transcript').innerText = currentLang === 'eng' ? "Cannot undo further." : "Kan niet verder terug.";
-                speakFeedback(currentLang === 'eng' ? "Cannot undo" : "Kan niet terug");
+                speakFeedback("Kan niet terug");
                 return;
             }
-
             let vorigeStaat = geschiedenisStappen.pop();
             scores = { ...vorigeStaat.scores };
             legs = { ...vorigeStaat.legs };
@@ -1616,14 +1411,12 @@
             document.getElementById('winnerBanner').style.display = 'none';
 
             updateScherm();
-            document.getElementById('transcript').innerText = currentLang === 'eng' ? "↩️ Previous action restored!" : "↩️ Vorige actie hersteld!";
-            speakFeedback(currentLang === 'eng' ? "Restored" : "Hersteld");
+            speakFeedback("Hersteld");
         }
 
         function wisseGeschiedenis() {
-            let emptyText = currentLang === 'eng' ? 'No throws yet' : 'Nog niks gegooid';
-            document.getElementById('historyListP1').innerHTML = `<li id="histEmpty1" style="color: #666;">${emptyText}</li>`;
-            document.getElementById('historyListP2').innerHTML = `<li id="histEmpty2" style="color: #666;">${emptyText}</li>`;
+            document.getElementById('historyListP1').innerHTML = `<li id="histEmpty1" style="color: #666;">Nog niks gegooid</li>`;
+            document.getElementById('historyListP2').innerHTML = `<li id="histEmpty2" style="color: #666;">Nog niks gegooid</li>`;
         }
 
         function updateScherm() {
@@ -1641,16 +1434,12 @@
             document.getElementById('rowP2').classList.toggle('active', actieveSpeler === 2);
         }
 
-        function toonMelding(tekst) {
-            document.getElementById('transcript').innerText = tekst;
-        }
+        function toonMelding(tekst) { document.getElementById('transcript').innerText = tekst; }
 
         function voegToeAanHistorie(spelerNummer, tekst) {
             const listId = spelerNummer === 1 ? 'historyListP1' : 'historyListP2';
             const list = document.getElementById(listId);
-            if (list.children.length === 1 && (list.children[0].innerText.includes("Nog niks") || list.children[0].innerText.includes("No throws"))) {
-                list.innerHTML = "";
-            }
+            if (list.children.length === 1 && list.children[0].innerText.includes("Nog niks")) list.innerHTML = "";
             const li = document.createElement('li');
             li.innerHTML = tekst;
             list.insertBefore(li, list.firstChild);
@@ -1666,16 +1455,12 @@
         }
 
         function speak180() {
-            if ('speechSynthesis' in window) {
-                window.speechSynthesis.cancel();
-            }
+            if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             let audio = new Audio('180.mp3');
             audio.play().catch(e => {
                 if ('speechSynthesis' in window) {
                     const utterance = new SpeechSynthesisUtterance("One hundred and eighty!!!");
                     utterance.lang = 'en-GB';
-                    utterance.rate = 1.1;
-                    utterance.pitch = 1.2;
                     window.speechSynthesis.speak(utterance);
                 }
             });
@@ -1688,7 +1473,7 @@
             wisseGeschiedenis();
             startMatchTimer();
             updateScherm();
-            document.getElementById('transcript').innerText = currentLang === 'eng' ? "Leg reset!" : "Leg gereset!";
+            document.getElementById('transcript').innerText = "Leg gereset!";
         }
 
         function registreerWinst(winnaar, verliezer) {
@@ -1697,10 +1482,7 @@
             let spelerB = verliezer.toLowerCase();
             let matchKey = [spelerA, spelerB].sort().join(" vs ");
 
-            if (!stats[matchKey]) {
-                stats[matchKey] = { [spelerA]: 0, [spelerB]: 0, gespeeld: 0 };
-            }
-
+            if (!stats[matchKey]) stats[matchKey] = { [spelerA]: 0, [spelerB]: 0, gespeeld: 0 };
             stats[matchKey][spelerA] = (stats[matchKey][spelerA] || 0) + 1;
             stats[matchKey].gespeeld = (stats[matchKey].gespeeld || 0) + 1;
 
@@ -1710,71 +1492,40 @@
         function openStatsModal() {
             let stats = JSON.parse(localStorage.getItem('dart_head_to_head') || '{}');
             let bodyEl = document.getElementById('statsBody');
-            let titleEl = document.getElementById('statsModalTitle');
-            if(titleEl) titleEl.innerText = currentLang === 'eng' ? 'Head-to-Head Statistics ⚡' : 'Onderlinge Stand ⚡';
-            
             let p1 = spelers.name1Mooi;
             let p2 = spelers.name2Mooi;
             let matchKey = [spelers.name1, spelers.name2].sort().join(" vs ");
 
-            let html = currentLang === 'eng' ? 
-                `<p style="font-size: 14px; color: #ddd; margin-bottom: 10px;">Head-to-head record for: <strong>${p1} vs ${p2}</strong></p>` :
-                `<p style="font-size: 14px; color: #ddd; margin-bottom: 10px;">Onderlinge balans voor: <strong>${p1} vs ${p2}</strong></p>`;
+            let html = `<p style="font-size: 14px; color: #ddd; margin-bottom: 10px;">Onderlinge balans voor: <strong>${p1} vs ${p2}</strong></p>`;
 
             if (stats[matchKey]) {
                 let p1Wins = stats[matchKey][spelers.name1] || 0;
                 let p2Wins = stats[matchKey][spelers.name2] || 0;
                 let totaal = stats[matchKey].gespeeld || (p1Wins + p2Wins);
 
-                let thPlayer = currentLang === 'eng' ? 'Player' : 'Speler';
-                let thWon = currentLang === 'eng' ? 'Won' : 'Gewonnen';
-                let thLost = currentLang === 'eng' ? 'Lost' : 'Verloren';
-                let totalPlayed = currentLang === 'eng' ? `Total matches played: ${totaal}` : `Totaal gespeeld: ${totaal} wedstrijd(en)`;
-
                 html += `
                     <table class="stats-table">
-                        <thead>
-                            <tr>
-                                <th>${thPlayer}</th>
-                                <th>${thWon}</th>
-                                <th>${thLost}</th>
-                            </tr>
-                        </thead>
+                        <thead><tr><th>Speler</th><th>Gewonnen</th><th>Verloren</th></tr></thead>
                         <tbody>
-                            <tr>
-                                <td style="text-align:left; font-weight:bold; color:#f39c12;">${p1}</td>
-                                <td>${p1Wins}</td>
-                                <td>${p2Wins}</td>
-                            </tr>
-                            <tr>
-                                <td style="text-align:left; font-weight:bold; color:#f39c12;">${p2}</td>
-                                <td>${p2Wins}</td>
-                                <td>${p1Wins}</td>
-                            </tr>
+                            <tr><td style="text-align:left; font-weight:bold; color:#f39c12;">${p1}</td><td>${p1Wins}</td><td>${p2Wins}</td></tr>
+                            <tr><td style="text-align:left; font-weight:bold; color:#f39c12;">${p2}</td><td>${p2Wins}</td><td>${p1Wins}</td></tr>
                         </tbody>
                     </table>
-                    <p style="font-size: 12px; color: #888; margin-top: 12px; text-align: center;">${totalPlayed}</p>
+                    <p style="font-size: 12px; color: #888; margin-top: 12px; text-align: center;">Totaal gespeeld: ${totaal} wedstrijd(en)</p>
                 `;
             } else {
-                html += currentLang === 'eng' ? 
-                    `<p style="color: #aaa; font-style: italic; font-size: 13px;">No previous matches recorded between ${p1} and ${p2}.</p>` :
-                    `<p style="color: #aaa; font-style: italic; font-size: 13px;">Nog geen eerdere wedstrijden opgeslagen tussen ${p1} en ${p2}.</p>`;
+                html += `<p style="color: #aaa; font-style: italic; font-size: 13px;">Nog geen eerdere wedstrijden opgeslagen.</p>`;
             }
 
-            let resetBtnText = currentLang === 'eng' ? 'Clear Record for these players 🗑️' : 'Stand Wissen voor deze spelers 🗑️';
-            html += `<button onclick="resetH2H('${matchKey}')" style="background:#c0392b; font-size:12px; margin-top:15px; width:100%;">${resetBtnText}</button>`;
-
+            html += `<button onclick="resetH2H('${matchKey}')" style="background:#c0392b; font-size:12px; margin-top:15px; width:100%;">Stand Wissen 🗑️</button>`;
             bodyEl.innerHTML = html;
             document.getElementById('statsModal').style.display = 'flex';
         }
 
-        function closeStatsModal() {
-            document.getElementById('statsModal').style.display = 'none';
-        }
+        function closeStatsModal() { document.getElementById('statsModal').style.display = 'none'; }
 
         function resetH2H(key) {
-            let msg = currentLang === 'eng' ? "Are you sure you want to clear the head-to-head record for these players?" : "Weet je zeker dat je de onderlinge stand voor deze spelers wilt wissen?";
-            if (confirm(msg)) {
+            if (confirm("Weet je zeker dat je de onderlinge stand wilt wissen?")) {
                 let stats = JSON.parse(localStorage.getItem('dart_head_to_head') || '{}');
                 delete stats[key];
                 localStorage.setItem('dart_head_to_head', JSON.stringify(stats));
