@@ -21,7 +21,7 @@
             box-sizing: border-box;
         }
 
-        .game-container {
+        .tactics-game-container {
             max-width: 1200px;
             width: 100%;
             margin: 0;
@@ -125,7 +125,6 @@
             text-align: center;
         }
         
-        /* Solide knop-styling voor de puntenschakelaar */
         .tactics-board td.clickable-pts {
             cursor: pointer;
             transition: all 0.2s;
@@ -144,7 +143,7 @@
             transform: scale(1.02);
         }
 
-        /* 3-Koloms Sectie (Links Historie, Midden Smalle Knoppen, Rechts Historie) */
+        /* 3-Koloms Sectie (Vaste geschiedeniscontainer met top-start en eigen scrollbar) */
         .bottom-layout {
             display: flex;
             gap: 6px;
@@ -166,6 +165,7 @@
             flex-direction: column;
             box-sizing: border-box;
             position: relative;
+            height: 150px;
             overflow: hidden;
         }
         .history-col h4 {
@@ -177,9 +177,9 @@
             padding-bottom: 2px;
             position: relative;
             z-index: 2;
+            flex-shrink: 0;
         }
 
-        /* Dartbord in de historie-kolommen */
         .history-dartboard-container {
             position: relative;
             flex: 1;
@@ -187,8 +187,8 @@
             align-items: center;
             justify-content: center;
             overflow: hidden;
-            min-height: 90px;
         }
+
         .history-dartboard-img {
             position: absolute;
             width: 85px;
@@ -198,16 +198,13 @@
             border: 2px solid rgba(243, 156, 18, 0.5);
             box-shadow: 0 4px 12px rgba(0,0,0,0.7);
             opacity: 0.85;
-            filter: blur(0px);
-            transition: all 0.3s ease;
+            transition: opacity 0.3s ease, filter 0.3s ease;
             pointer-events: none;
             z-index: 1;
         }
-        /* Zodra er acties/tekst is, wordt het dartbord waziger en transparanter */
         .history-col.has-history .history-dartboard-img {
-            filter: blur(5px);
-            opacity: 0.22;
-            transform: scale(0.95);
+            filter: blur(2px);
+            opacity: 0.35;
         }
 
         .history-list {
@@ -221,16 +218,20 @@
             flex: 1;
             position: relative;
             z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Geschiedenis begint strak bovenaan */
+            align-items: stretch;
         }
         .history-list li {
-            padding: 2px 0;
+            padding: 2px 4px;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            background: rgba(20, 20, 20, 0.3);
+            background: rgba(20, 20, 20, 0.55);
             border-radius: 3px;
             margin-bottom: 2px;
+            flex-shrink: 0;
         }
 
-        /* Middelste kolom smal gehouden (68px) */
         .button-bar-vertical {
             display: flex;
             flex-direction: column;
@@ -257,21 +258,21 @@
         }
         .button-bar-vertical button:hover { opacity: 0.9; }
         .btn-menu { background: #d35400; }
-        .btn-start { background: #e74c3c; } /* Standaard Rood (Mic Uit) */
+        .btn-start { background: #e74c3c; }
         .btn-undo { background: #e67e22; }
         .btn-stats { background: #8e44ad; }
         .btn-fullscreen { background: #34495e; font-size: 8px !important; }
-        .btn-lang { background: #16a085; } /* Unieke kleur voor taalwissel */
+        .btn-lang { background: #16a085; }
         .btn-reset { background: #7f8c8d; }
 
-        #status {
+        #tactics_status {
             font-style: italic;
             color: #bdc3c7;
             margin-top: 6px;
             font-size: 11px;
             text-align: center;
         }
-        #transcript {
+        #tactics_transcript {
             background: rgba(37, 37, 37, 0.45);
             backdrop-filter: blur(4px);
             padding: 5px;
@@ -298,7 +299,7 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Statistieken Modal */
+        /* Responsief Stats Modal voor mobiele en kleinere schermen */
         .modal {
             display: none;
             position: fixed;
@@ -307,106 +308,72 @@
             background-color: rgba(0,0,0,0.8);
             justify-content: center;
             align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
         }
         .modal-content {
             background: rgba(30, 30, 30, 0.95);
-            padding: 20px;
+            padding: 15px;
             border-radius: 10px;
-            width: 90%;
+            width: 100%;
             max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
             border: 2px solid #f39c12;
             text-align: left;
             box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            position: relative;
+            box-sizing: border-box;
         }
         .modal-content h3 { margin-top: 0; color: #f39c12; text-align: center; }
         .close-btn {
             background: #c0392b; color: white; border: none; padding: 6px 12px;
             border-radius: 4px; cursor: pointer; float: right; font-weight: bold;
         }
-        .stats-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+        .clear-stats-btn {
+            background: #c0392b; color: white; border: none; padding: 5px 10px;
+            border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px;
+            position: absolute; top: 15px; left: 15px;
+        }
+        .clear-stats-btn:hover { opacity: 0.9; }
+
+        .stats-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
         .stats-table th, .stats-table td { padding: 8px; border-bottom: 1px solid #444; text-align: center; font-size: 13px; }
         .stats-table th { color: #f39c12; background: #252525; }
 
+        #tactics_winModal .modal-content {
+            text-align: center;
+            border: 2px solid #2ecc71;
+        }
+        #tactics_winModal h3 {
+            color: #2ecc71;
+            font-size: 22px;
+        }
 
-@media (min-width: 900px) {
+        @media (min-width: 900px) {
+            .tactics-game-container::before{
+                content:""; position:absolute; top:clamp(50px, 8vw, 100px); left:clamp(10px, 1vw, 20px);
+                width:740px; height:740px; background-image:url('dartpijl.png'); background-size:contain; background-repeat:no-repeat; z-index:10; pointer-events:none;
+            }
+            .tactics-game-container::after{
+                content:""; position:absolute; top:clamp(50px, 8vw, 100px); right:clamp(-650px, -25vw, -485px);
+                width:740px; height:740px; background-image:url('dartpijl.png'); background-size:contain; background-repeat:no-repeat; z-index:10; pointer-events:none;
+            }
+        }
 
-    .game-container::before{
-        content:"";
-        position:absolute;
-
-        top:clamp(50px, 8vw, 100px);
-        left:clamp(10px, 1vw, 20px);
-
-        width:740px;
-        height:740px;
-
-        background-image:url('dartpijl.png');
-        background-size:contain;
-        background-repeat:no-repeat;
-
-        z-index:10;
-        pointer-events:none;
-    }
-
-    .game-container::after{
-        content:"";
-        position:absolute;
-
-        top:clamp(50px, 8vw, 100px);
-        right:clamp(-650px, -25vw, -485px);
-
-        width:740px;
-        height:740px;
-
-        background-image:url('dartpijl.png');
-        background-size:contain;
-        background-repeat:no-repeat;
-
-        z-index:10;
-        pointer-events:none;
-    }
-
-}
         @media (max-width: 768px) {
-
-    body {
-        padding: 0;
-        margin: 0;
-    }
-
-    .game-container {
-        width: 100%;
-        max-width: 100%;
-        min-height: 100vh;
-        border-radius: 0;
-        border: none;
-        padding: 8px 6px;
-    }
-
-    /* HUIDIGE TACTICS-MOBIEL */
-
-    .button-bar-vertical {
-    *   display: flex;
-        flex-dir*ction: column;
-        gap: 4px;
- *      width: 68px;
-        flex-sh*ink: 0;
-        justify-content: s*ace-between;
-    }
-
-    .button-ba*-vertical button {
-        width: *00%;
-        height: 25px;
-       *padding: 0 2px;
-        font-size:*8.5px;
-    }
-
-}
+            body { padding: 0; margin: 0; }
+            .tactics-game-container { width: 100%; max-width: 100%; min-height: 100vh; border-radius: 0; border: none; padding: 8px 6px; }
+            .history-col.has-history .history-dartboard-img {
+                filter: blur(2px);
+                opacity: 0.25;
+            }
+        }
     </style>
 </head>
 <body>
 
-    <div class="game-container">
+    <div class="tactics-game-container">
         <!-- 4 Hoek-dartbordjes -->
         <img src="dartbord.jpg" class="corner-dartboard tl" alt="">
         <img src="dartbord.jpg" class="corner-dartboard tr" alt="">
@@ -420,35 +387,35 @@
         <table class="tactics-board">
             <thead>
                 <tr class="top-header-row">
-                    <th style="border-right: 2px solid rgba(255,255,255,0.15); text-align: center;" id="headerSpeler1">Speler 1</th>
-                    <th class="center-header" id="matchClock" style="font-weight: bold; color: #f39c12; text-align: center;">00:00</th>
-                    <th style="border-left: 2px solid rgba(255,255,255,0.15); text-align: center;" id="headerSpeler2">Speler 2</th>
+                    <th style="border-right: 2px solid rgba(255,255,255,0.15); text-align: center;" id="tactics_headerSpeler1">Speler 1</th>
+                    <th class="center-header" id="tactics_matchClock" style="font-weight: bold; color: #f39c12; text-align: center;">00:00</th>
+                    <th style="border-left: 2px solid rgba(255,255,255,0.15); text-align: center;" id="tactics_headerSpeler2">Speler 2</th>
                 </tr>
                 <tr>
-                    <th id="tLabelP1" contenteditable="true" onblur="updateSpelerNamen()" style="text-align: center;">Frans</th>
-                    <th class="center-header" id="tLabelVak" style="text-align: center;">Vak</th>
-                    <th id="tLabelP2" contenteditable="true" onblur="updateSpelerNamen()" style="text-align: center;">Patrick</th>
+                    <th id="tactics_tLabelP1" contenteditable="true" onblur="tactics_updateSpelerNamen()" style="text-align: center;">Frans</th>
+                    <th class="center-header" id="tactics_tLabelVak" style="text-align: center;">Vak</th>
+                    <th id="tactics_tLabelP2" contenteditable="true" onblur="tactics_updateSpelerNamen()" style="text-align: center;">Patrick</th>
                 </tr>
             </thead>
             <tbody>
-                <tr><td class="col-p1" id="p1_20">-</td><td class="col-center">20</td><td class="col-p2" id="p2_20">-</td></tr>
-                <tr><td class="col-p1" id="p1_19">-</td><td class="col-center">19</td><td class="col-p2" id="p2_19">-</td></tr>
-                <tr><td class="col-p1" id="p1_18">-</td><td class="col-center">18</td><td class="col-p2" id="p2_18">-</td></tr>
-                <tr><td class="col-p1" id="p1_17">-</td><td class="col-center">17</td><td class="col-p2" id="p2_17">-</td></tr>
-                <tr><td class="col-p1" id="p1_16">-</td><td class="col-center">16</td><td class="col-p2" id="p2_16">-</td></tr>
-                <tr><td class="col-p1" id="p1_15">-</td><td class="col-center">15</td><td class="col-p2" id="p2_15">-</td></tr>
-                <tr><td class="col-p1" id="p1_14">-</td><td class="col-center">14</td><td class="col-p2" id="p2_14">-</td></tr>
-                <tr><td class="col-p1" id="p1_13">-</td><td class="col-center">13</td><td class="col-p2" id="p2_13">-</td></tr>
-                <tr><td class="col-p1" id="p1_12">-</td><td class="col-center">12</td><td class="col-p2" id="p2_12">-</td></tr>
-                <tr><td class="col-p1" id="p1_11">-</td><td class="col-center">11</td><td class="col-p2" id="p2_11">-</td></tr>
-                <tr><td class="col-p1" id="p1_10">-</td><td class="col-center">10</td><td class="col-p2" id="p2_10">-</td></tr>
-                <tr class="bull-row"><td class="col-p1" id="p1_bull">-</td><td class="col-center">BULL</td><td class="col-p2" id="p2_bull">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_20">-</td><td class="col-center">20</td><td class="col-p2" id="tactics_p2_20">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_19">-</td><td class="col-center">19</td><td class="col-p2" id="tactics_p2_19">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_18">-</td><td class="col-center">18</td><td class="col-p2" id="tactics_p2_18">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_17">-</td><td class="col-center">17</td><td class="col-p2" id="tactics_p2_17">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_16">-</td><td class="col-center">16</td><td class="col-p2" id="tactics_p2_16">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_15">-</td><td class="col-center">15</td><td class="col-p2" id="tactics_p2_15">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_14">-</td><td class="col-center">14</td><td class="col-p2" id="tactics_p2_14">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_13">-</td><td class="col-center">13</td><td class="col-p2" id="tactics_p2_13">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_12">-</td><td class="col-center">12</td><td class="col-p2" id="tactics_p2_12">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_11">-</td><td class="col-center">11</td><td class="col-p2" id="tactics_p2_11">-</td></tr>
+                <tr><td class="col-p1" id="tactics_p1_10">-</td><td class="col-center">10</td><td class="col-p2" id="tactics_p2_10">-</td></tr>
+                <tr class="bull-row"><td class="col-p1" id="tactics_p1_bull">-</td><td class="col-center">BULL</td><td class="col-p2" id="tactics_p2_bull">-</td></tr>
                 <tr class="pts-row">
-                    <td class="col-p1" id="p1_pts">Pt: 0</td>
+                    <td class="col-p1" id="tactics_p1_pts">Pt: 0</td>
                     <td class="col-center">
-                        <button class="clickable-pts" id="ptsToggleCell" onclick="togglePuntenModus()" title="Klik om punten aan/uit te zetten">PUNTEN</button>
+                        <button class="clickable-pts" id="tactics_ptsToggleCell" onclick="tactics_togglePuntenModus()" title="Klik om punten aan/uit te zetten">PUNTEN</button>
                     </td>
-                    <td class="col-p2" id="p2_pts">Pt: 0</td>
+                    <td class="col-p2" id="tactics_p2_pts">Pt: 0</td>
                 </tr>
             </tbody>
         </table>
@@ -456,68 +423,78 @@
         <!-- 3-Koloms Sectie -->
         <div class="bottom-layout">
             <!-- Linker Historie (Frans) -->
-            <div class="history-col" id="colHistP1">
-                <h4 id="histHeaderP1">Historie Frans</h4>
+            <div class="history-col" id="tactics_colHistP1">
+                <h4 id="tactics_histHeaderP1">Historie Frans</h4>
                 <div class="history-dartboard-container">
                     <img src="dartbord.jpg" class="history-dartboard-img" alt="">
-                    <ul class="history-list" id="historyP1">
-                        <li style="color:#777;" id="histEmpty1">Geen acties</li>
+                    <ul class="history-list" id="tactics_historyP1">
+                        <li style="color:#777;" id="tactics_histEmpty1">Geen acties</li>
                     </ul>
                 </div>
             </div>
 
-            <!-- Middelste Kolom met Smalle Verticale Knoppen -->
+            <!-- Middelste Kolom met Knoppen -->
             <div class="button-bar-vertical">
-                <button class="btn-menu" onclick="window.location.href='dartteller.html'" id="btnMenuEl" title="Terug naar Menu">🏠 Menu</button>
-                <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn">🔴 Mic Uit</button>
-                <button class="btn-undo" onclick="laatsteActieTerugdraaien()" id="btnUndoEl" title="Herstel">↩️ Terug</button>
-                <button class="btn-stats" onclick="openStatsModal()" id="btnStatsEl" title="Statistieken">📊 Stats</button>
-                <button class="btn-fullscreen" onclick="toggleFullscreen()" title="Volledig Scherm">Full Screen</button>
-                <button class="btn-lang" onclick="toggleTaal()" id="langBtn" title="Wissel Taal / Switch Language">English</button>
-                <button class="btn-reset" onclick="resetSpel()" id="btnResetEl">Reset</button>
+                <button class="btn-menu" onclick="window.location.href='dartteller.html'" id="tactics_btnMenuEl" title="Terug naar Menu">🏠 Menu</button>
+                <button class="btn-start" onclick="tactics_toggleLuisteren()" id="tactics_listenBtn">🔴 Mic Uit</button>
+                <button class="btn-undo" onclick="tactics_laatsteActieTerugdraaien()" id="tactics_btnUndoEl" title="Herstel">↩️ Terug</button>
+                <button class="btn-stats" onclick="tactics_openStatsModal()" id="tactics_btnStatsEl" title="Statistieken">📊 Stats</button>
+                <button class="btn-fullscreen" onclick="tactics_toggleFullscreen()" title="Volledig Scherm">Full Screen</button>
+                <button class="btn-lang" onclick="tactics_toggleTaal()" id="tactics_langBtn" title="Wissel Taal">English</button>
+                <button class="btn-reset" onclick="tactics_resetSpel()" id="tactics_btnResetEl">Reset</button>
             </div>
 
             <!-- Rechter Historie (Patrick) -->
-            <div class="history-col" id="colHistP2">
-                <h4 id="histHeaderP2">Historie Patrick</h4>
+            <div class="history-col" id="tactics_colHistP2">
+                <h4 id="tactics_histHeaderP2">Historie Patrick</h4>
                 <div class="history-dartboard-container">
                     <img src="dartbord.jpg" class="history-dartboard-img" alt="">
-                    <ul class="history-list" id="historyP2">
-                        <li style="color:#777;" id="histEmpty2">Geen acties</li>
+                    <ul class="history-list" id="tactics_historyP2">
+                        <li style="color:#777;" id="tactics_histEmpty2">Geen acties</li>
                     </ul>
                 </div>
             </div>
         </div>
 
-        <div id="status">Microfoon staat uit. Klik op 'Mic Uit'.</div>
-        <div id="transcript">Gehoord: (wacht op commando...)</div>
+        <div id="tactics_status">Microfoon staat uit. Klik op 'Mic Uit'.</div>
+        <div id="tactics_transcript">Gehoord: (wacht op commando...)</div>
 
-        <div class="tip-box" id="tipBoxText">
-            💡 <b>Tip:</b> Zeg bijv. <i>"Speler één"</i> en daarna <i>"2 keer 16"</i> of in één zin.
+        <div class="tip-box" id="tactics_tipBoxText">
+            💡 <b>Tip:</b> Zeg bijv. <i>"Speler één"</i> en daarna <i>"2 keer 16"</i> of in één zin. Spreek ook commando's als <i>"Reset"</i>, <i>"Herstel"</i> of <i>"Stats"</i>.
         </div>
     </div>
 
     <!-- Statistieken Modal -->
-    <div id="statsModal" class="modal">
+    <div id="tactics_statsModal" class="modal">
         <div class="modal-content">
-            <button class="close-btn" onclick="closeStatsModal()">✕</button>
-            <h3 id="statsModalTitle">Speler Statistieken</h3>
+            <button class="clear-stats-btn" onclick="tactics_vraagWisStats()" id="tactics_clearStatsBtn">Wissen</button>
+            <button class="close-btn" onclick="tactics_closeStatsModal()">✕</button>
+            <h3 id="tactics_statsModalTitle">Speler Statistieken</h3>
             <table class="stats-table">
                 <thead>
                     <tr>
-                        <th id="thPlayer">Speler</th>
-                        <th id="thWins">Gewonnen Legs</th>
-                        <th id="thMpr">Gem. MPR</th>
+                        <th id="tactics_thPair">Spelerspaar</th>
+                        <th id="tactics_thWins">Gewonnen Spellen</th>
                     </tr>
                 </thead>
-                <tbody id="statsTableBody"></tbody>
+                <tbody id="tactics_statsTableBody"></tbody>
             </table>
+        </div>
+    </div>
+
+    <!-- Eigen Winst-Pop-up -->
+    <div id="tactics_winModal" class="modal">
+        <div class="modal-content">
+            <h3 id="tactics_winTitle">🎉 GEWONNEN!</h3>
+            <p id="tactics_winText" style="font-size: 16px; margin: 15px 0;">Speler heeft het spel gewonnen!</p>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Standen en geschiedenis blijven zichtbaar om te controleren. Gebruik 'Herstel' indien nodig, of 'Reset' voor een nieuw spel.</p>
+            <button class="close-btn" style="float: none; padding: 8px 20px;" onclick="tactics_sluitWinstModal()">OK</button>
         </div>
     </div>
 
     <script>
         // --- VERTALINGEN / DICTIONARY ---
-        const translations = {
+        const tactics_translations = {
             nl: {
                 headerSpeler1: "Speler 1",
                 headerSpeler2: "Speler 2",
@@ -538,9 +515,8 @@
                 transcriptWait: "Gehoord: (wacht op commando...)",
                 tip: "💡 <b>Tip:</b> Zeg bijv. <i>\"Speler één\"</i> en daarna <i>\"2 keer 16\"</i> of in één zin.",
                 statsTitle: "Speler Statistieken",
-                thPlayer: "Speler",
-                thWins: "Gewonnen Legs",
-                thMpr: "Gem. MPR",
+                thPair: "Spelerspaar",
+                thWins: "Gewonnen Spellen",
                 noted: "Genoteerd",
                 restored: "Hersteld",
                 gameReset: "Spel gereset!",
@@ -548,7 +524,8 @@
                 fullMsg: "⚠️ {name} is al vol!",
                 fullSpeech: "Die is vol",
                 undoRestored: "↩️ Vorige actie hersteld!",
-                noActionsLeft: "Geen acties meer om te herstellen."
+                noActionsLeft: "Geen acties meer om te herstellen.",
+                confirmClear: "Weet je zeker dat je alle statistieken wilt wissen?"
             },
             en: {
                 headerSpeler1: "Player 1",
@@ -570,9 +547,8 @@
                 transcriptWait: "Heard: (waiting for command...)",
                 tip: "💡 <b>Tip:</b> Say e.g. <i>\"Player one\"</i> and then <i>\"2 times 16\"</i> or in one sentence.",
                 statsTitle: "Player Statistics",
-                thPlayer: "Player",
-                thWins: "Won Legs",
-                thMpr: "Avg MPR",
+                thPair: "Player Pair",
+                thWins: "Won Games",
                 noted: "Noted",
                 restored: "Restored",
                 gameReset: "Game reset!",
@@ -580,79 +556,74 @@
                 fullMsg: "⚠️ {name} is already full!",
                 fullSpeech: "That is full",
                 undoRestored: "↩️ Previous action restored!",
-                noActionsLeft: "No more actions to restore."
+                noActionsLeft: "No more actions to restore.",
+                confirmClear: "Are you sure you want to clear all statistics?"
             }
         };
 
-        // --- TAAL INSTELLING (Standaard altijd Nederlands bij opstarten) ---
-        let currentLang = 'nl';
+        let tactics_currentLang = 'nl';
 
-        function applyLanguage() {
-            const t = translations[currentLang];
-            document.getElementById('headerSpeler1').innerText = t.headerSpeler1;
-            document.getElementById('headerSpeler2').innerText = t.headerSpeler2;
-            document.getElementById('tLabelVak').innerText = t.vak;
-            document.getElementById('btnMenuEl').innerText = t.menu;
-            document.getElementById('btnUndoEl').innerText = t.undo;
-            document.getElementById('btnStatsEl').innerText = t.stats;
-            document.getElementById('btnResetEl').innerText = t.reset;
-            document.getElementById('langBtn').innerText = t.langBtnText;
+        function tactics_applyLanguage() {
+            const t = tactics_translations[tactics_currentLang];
+            document.getElementById('tactics_headerSpeler1').innerText = t.headerSpeler1;
+            document.getElementById('tactics_headerSpeler2').innerText = t.headerSpeler2;
+            document.getElementById('tactics_tLabelVak').innerText = t.vak;
+            document.getElementById('tactics_btnMenuEl').innerText = t.menu;
+            document.getElementById('tactics_btnUndoEl').innerText = t.undo;
+            document.getElementById('tactics_btnStatsEl').innerText = t.stats;
+            document.getElementById('tactics_btnResetEl').innerText = t.reset;
+            document.getElementById('tactics_langBtn').innerText = t.langBtnText;
+            document.getElementById('tactics_clearStatsBtn').innerText = (tactics_currentLang === 'en' ? 'Clear' : 'Wissen');
             
-            const micBtn = document.getElementById('listenBtn');
-            if (isLuisteren) {
+            const micBtn = document.getElementById('tactics_listenBtn');
+            if (tactics_isLuisteren) {
                 micBtn.innerText = t.micAan;
-                document.getElementById('status').innerText = t.statusAan;
+                document.getElementById('tactics_status').innerText = t.statusAan;
             } else {
                 micBtn.innerText = t.micUit;
-                document.getElementById('status').innerText = t.statusUit;
+                document.getElementById('tactics_status').innerText = t.statusUit;
             }
 
-            document.getElementById('tipBoxText').innerHTML = t.tip;
-            document.getElementById('statsModalTitle').innerText = t.statsTitle;
-            document.getElementById('thPlayer').innerText = t.thPlayer;
-            document.getElementById('thWins').innerText = t.thWins;
-            document.getElementById('thMpr').innerText = t.thMpr;
+            document.getElementById('tactics_tipBoxText').innerHTML = t.tip;
+            document.getElementById('tactics_statsModalTitle').innerText = t.statsTitle;
+            document.getElementById('tactics_thPair').innerText = t.thPair;
+            document.getElementById('tactics_thWins').innerText = t.thWins;
 
-            updateSpelerNamen();
-            pasPuntenWeergaveToe();
+            tactics_updateSpelerNamen();
+            tactics_pasPuntenWeergaveToe();
         }
 
-        function toggleTaal() {
-            currentLang = currentLang === 'nl' ? 'en' : 'nl';
-            applyLanguage();
+        function tactics_toggleTaal() {
+            tactics_currentLang = tactics_currentLang === 'nl' ? 'en' : 'nl';
+            tactics_applyLanguage();
 
-            if (isLuisteren && recognition) {
-                try { recognition.stop(); } catch(e) {}
-                initSpraak();
-                try { recognition.start(); } catch(e) {}
+            if (tactics_isLuisteren && tactics_recognition) {
+                try { tactics_recognition.stop(); } catch(e) {}
+                tactics_initSpraak();
+                try { tactics_recognition.start(); } catch(e) {}
             }
         }
 
-        let spelers = { 
-            name1: localStorage.getItem('tactics_p1') || localStorage.getItem('p1_name') || "Frans", 
-            name2: localStorage.getItem('tactics_p2') || localStorage.getItem('p2_name') || "Patrick" 
+        let tactics_spelers = { 
+            name1: localStorage.getItem('tactics_p1') || "Frans", 
+            name2: localStorage.getItem('tactics_p2') || "Patrick" 
         };
 
-        let geschiedenisStappen = []; 
-        let isLuisteren = false;
-        let recognition;
-        let speechWatchdog = null;
-        let startTime = Date.now();
-        let actieveSpelerKey = 'p1';
+        let tactics_geschiedenisStappen = []; 
+        let tactics_isLuisteren = false;
+        let tactics_recognition;
+        let tactics_startTime = Date.now();
+        let tactics_actieveSpelerKey = 'p1';
 
-        let playerStats = JSON.parse(localStorage.getItem('tactics_player_stats')) || {
-            [spelers.name1]: { wins: 0, totalHits: 0, turns: 0 },
-            [spelers.name2]: { wins: 0, totalHits: 0, turns: 0 }
-        };
+        let tactics_playerStats = JSON.parse(localStorage.getItem('tactics_player_stats')) || {};
 
-        const getallenLijst = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 'bull'];
+        const tactics_getallenLijst = [20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 'bull'];
         
         let tacticsData = {
             p1: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
             p2: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
         };
 
-        // --- PUNTEN INSTELLING CONTROLEREN ---
         const urlParams = new URLSearchParams(window.location.search);
         let urlPunten = urlParams.get('punten') || urlParams.get('tactics_punten');
         
@@ -661,21 +632,14 @@
             tacticsPuntenAan = (urlPunten === 'true' || urlPunten === '1' || urlPunten === 'aan');
         } else {
             let storedPunten = localStorage.getItem('tactics_punten');
-            if (storedPunten === null) {
-                storedPunten = localStorage.getItem('punten') || localStorage.getItem('cricket_punten');
-            }
             if (storedPunten !== null) {
-                if (storedPunten === 'false' || storedPunten === '0' || storedPunten === 'nee' || storedPunten === 'off' || storedPunten === false) {
-                    tacticsPuntenAan = false;
-                } else if (storedPunten === 'true' || storedPunten === '1' || storedPunten === 'aan' || storedPunten === 'yes' || storedPunten === true) {
-                    tacticsPuntenAan = true;
-                }
+                tacticsPuntenAan = (storedPunten !== 'false' && storedPunten !== '0' && storedPunten !== 'nee' && storedPunten !== 'off');
             }
         }
 
-        function pasPuntenWeergaveToe() {
-            const ptsCell = document.getElementById('ptsToggleCell');
-            const t = translations[currentLang];
+        function tactics_pasPuntenWeergaveToe() {
+            const ptsCell = document.getElementById('tactics_ptsToggleCell');
+            const t = tactics_translations[tactics_currentLang];
             if (tacticsPuntenAan) {
                 ptsCell.innerText = t.pointsWith;
                 ptsCell.style.background = "#2ecc71";
@@ -683,47 +647,43 @@
                 ptsCell.innerText = t.pointsWithout;
                 ptsCell.style.background = "#e74c3c";
             }
-            updateScherm();
+            tactics_updateScherm();
         }
 
         // Klok bijwerken
         setInterval(() => {
-            let diff = Math.floor((Date.now() - startTime) / 1000);
+            let diff = Math.floor((Date.now() - tactics_startTime) / 1000);
             let mins = String(Math.floor(diff / 60)).padStart(2, '0');
             let secs = String(diff % 60).padStart(2, '0');
-            document.getElementById('matchClock').innerText = `${mins}:${secs}`;
+            document.getElementById('tactics_matchClock').innerText = `${mins}:${secs}`;
         }, 1000);
 
-        function updateSpelerNamen() {
-            let n1 = document.getElementById('tLabelP1').innerText.trim() || "Speler 1";
-            let n2 = document.getElementById('tLabelP2').innerText.trim() || "Speler 2";
-            spelers.name1 = n1;
-            spelers.name2 = n2;
+        function tactics_updateSpelerNamen() {
+            let n1 = document.getElementById('tactics_tLabelP1').innerText.trim() || "Speler 1";
+            let n2 = document.getElementById('tactics_tLabelP2').innerText.trim() || "Speler 2";
+            tactics_spelers.name1 = n1;
+            tactics_spelers.name2 = n2;
             localStorage.setItem('tactics_p1', n1);
             localStorage.setItem('tactics_p2', n2);
             
-            const t = translations[currentLang];
-            document.getElementById('histHeaderP1').innerText = t.histPrefix + n1;
-            document.getElementById('histHeaderP2').innerText = t.histPrefix + n2;
-
-            if (!playerStats[n1]) playerStats[n1] = { wins: 0, totalHits: 0, turns: 0 };
-            if (!playerStats[n2]) playerStats[n2] = { wins: 0, totalHits: 0, turns: 0 };
-            localStorage.setItem('tactics_player_stats', JSON.stringify(playerStats));
+            const t = tactics_translations[tactics_currentLang];
+            document.getElementById('tactics_histHeaderP1').innerText = t.histPrefix + n1;
+            document.getElementById('tactics_histHeaderP2').innerText = t.histPrefix + n2;
         }
 
-        function initSpraak() {
+        function tactics_initSpraak() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) return;
 
-            recognition = new SpeechRecognition();
-            recognition.lang = currentLang === 'en' ? 'en-US' : 'nl-NL';
-            recognition.continuous = true;
-            recognition.interimResults = false;
+            tactics_recognition = new SpeechRecognition();
+            tactics_recognition.lang = tactics_currentLang === 'en' ? 'en-US' : 'nl-NL';
+            tactics_recognition.continuous = true;
+            tactics_recognition.interimResults = false;
 
-            recognition.onresult = function(event) {
+            tactics_recognition.onresult = function(event) {
                 let speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 
-                if (currentLang === 'nl') {
+                if (tactics_currentLang === 'nl') {
                     speechResult = speechResult
                         .replace(/één/g, '1').replace(/een/g, '1')
                         .replace(/twee/g, '2').replace(/drie/g, '3')
@@ -731,7 +691,7 @@
                         .replace(/zes/g, '6').replace(/zeven/g, '7')
                         .replace(/acht/g, '8').replace(/negen/g, '9')
                         .replace(/tien|tin|tiene/g, '10').replace(/elf/g, '11')
-                        .replace(/twaalf/g, '12').replace(/dertien/g, '13')
+                        .replace(/twaalf/g, '12').replace(/dertien|deertien/g, '13')
                         .replace(/veertien/g, '14').replace(/vijftien/g, '15')
                         .replace(/zestien/g, '16').replace(/zeventien/g, '17')
                         .replace(/achttien/g, '18').replace(/negentien/g, '19')
@@ -750,43 +710,42 @@
                         .replace(/nineteen/g, '19').replace(/twenty/g, '20');
                 }
 
-                verwerkSpraakTactics(speechResult);
+                tactics_verwerkSpraakTactics(speechResult);
             };
 
-            recognition.onend = function() {
-                if (isLuisteren) { 
-                    try { recognition.start(); } catch (e) {} 
+            tactics_recognition.onend = function() {
+                if (tactics_isLuisteren) { 
+                    try { tactics_recognition.start(); } catch (e) {} 
                 }
             };
         }
 
-        function toggleLuisteren() {
-            if (!recognition) initSpraak();
-            const btn = document.getElementById('listenBtn');
-            const t = translations[currentLang];
-            if (!isLuisteren) {
-                isLuisteren = true;
-                try { recognition.start(); } catch(e) {}
+        function tactics_toggleLuisteren() {
+            if (!tactics_recognition) tactics_initSpraak();
+            const btn = document.getElementById('tactics_listenBtn');
+            const t = tactics_translations[tactics_currentLang];
+            if (!tactics_isLuisteren) {
+                tactics_isLuisteren = true;
+                try { tactics_recognition.start(); } catch(e) {}
                 btn.innerText = t.micAan;
                 btn.style.background = "#2ecc71";
-                document.getElementById('status').innerText = t.statusAan;
+                document.getElementById('tactics_status').innerText = t.statusAan;
             } else {
-                isLuisteren = false;
-                try { recognition.stop(); } catch(e) {}
+                tactics_isLuisteren = false;
+                try { tactics_recognition.stop(); } catch(e) {}
                 btn.innerText = t.micUit;
                 btn.style.background = "#e74c3c";
-                document.getElementById('status').innerText = t.statusUit;
+                document.getElementById('tactics_status').innerText = t.statusUit;
             }
         }
 
-        function togglePuntenModus() {
+        function tactics_togglePuntenModus() {
             tacticsPuntenAan = !tacticsPuntenAan;
             localStorage.setItem('tactics_punten', tacticsPuntenAan);
-            localStorage.setItem('punten', tacticsPuntenAan);
-            pasPuntenWeergaveToe();
+            tactics_pasPuntenWeergaveToe();
         }
 
-        function toggleFullscreen() {
+        function tactics_toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {});
             } else {
@@ -796,25 +755,76 @@
             }
         }
 
-        function openStatsModal() {
-            const tbody = document.getElementById('statsTableBody');
+        // --- STATISTIEKEN & SPELERPAAR BEHEER ---
+        function tactics_openStatsModal() {
+            const tbody = document.getElementById('tactics_statsTableBody');
             tbody.innerHTML = "";
-            for (let [naam, data] of Object.entries(playerStats)) {
-                let mpr = data.turns > 0 ? (data.totalHits / data.turns).toFixed(2) : "0.00";
+            
+            let p1Name = tactics_spelers.name1 || "Speler 1";
+            let p2Name = tactics_spelers.name2 || "Speler 2";
+            let currentPairKey = `${p1Name} vs ${p2Name}`;
+
+            if (!tactics_playerStats[currentPairKey]) {
+                tactics_playerStats[currentPairKey] = 0;
+            }
+
+            for (let [pairName, winsCount] of Object.entries(tactics_playerStats)) {
                 let tr = document.createElement('tr');
-                tr.innerHTML = `<td><b>${naam}</b></td><td>${data.wins}</td><td>${mpr}</td>`;
+                let displayWins = typeof winsCount === 'number' ? winsCount : 0;
+                tr.innerHTML = `<td><b>${pairName}</b></td><td>${displayWins}</td>`;
                 tbody.appendChild(tr);
             }
-            document.getElementById('statsModal').style.display = 'flex';
+            
+            document.getElementById('tactics_statsModal').style.display = 'flex';
         }
 
-        function closeStatsModal() {
-            document.getElementById('statsModal').style.display = 'none';
+        function tactics_closeStatsModal() {
+            document.getElementById('tactics_statsModal').style.display = 'none';
         }
 
-        function verwerkSpraakTactics(zin) {
-            const n1 = spelers.name1.toLowerCase();
-            const n2 = spelers.name2.toLowerCase();
+        function tactics_vraagWisStats() {
+            const t = tactics_translations[tactics_currentLang];
+            if (confirm(t.confirmClear)) {
+                tactics_playerStats = {};
+                localStorage.removeItem('tactics_player_stats');
+                tactics_openStatsModal();
+            }
+        }
+
+        // --- SPRAAKVERWERKING MET HOOGSTE PRIORITEIT VOOR SYSTEEMCOMMANDO'S ---
+        function tactics_verwerkSpraakTactics(zin) {
+            // 1. SSTEEMCOMMANDO'S ALTIJD ALS ALLEREERSTE AFVANGEN
+            if (zin.includes("volledig scherm") || zin.includes("heel het scherm") || zin.includes("full screen") || zin.includes("fullscreen")) {
+                tactics_toggleFullscreen();
+                return;
+            }
+            if (zin.includes("menu") || zin.includes("hoofdmenu") || zin.includes("main menu")) {
+                window.location.href = 'dartteller.html';
+                return;
+            }
+            if (zin.includes("reset") || zin.includes("nieuw spel") || zin.includes("new game")) {
+                tactics_resetSpel();
+                return;
+            }
+            if (zin.includes("terug") || zin.includes("undo") || zin.includes("herstel")) {
+                tactics_laatsteActieTerugdraaien();
+                return;
+            }
+            if (zin.includes("stats") || zin.includes("statistieken")) {
+                tactics_openStatsModal();
+                return;
+            }
+
+            // Sluiten stats modal via voice
+            if (document.getElementById('tactics_statsModal').style.display === 'flex') {
+                if (zin.includes("sluiten") || zin.includes("close") || zin.includes("terug") || zin.includes("back")) {
+                    tactics_closeStatsModal();
+                    return;
+                }
+            }
+
+            const n1 = tactics_spelers.name1.toLowerCase();
+            const n2 = tactics_spelers.name2.toLowerCase();
             const zegtSpeler1 = zin.includes("speler 1") || zin.includes("player 1") || zin.includes(n1);
             const zegtSpeler2 = zin.includes("speler 2") || zin.includes("player 2") || zin.includes(n2);
 
@@ -822,13 +832,13 @@
                 return;
             }
 
-            if (zegtSpeler1) actieveSpelerKey = 'p1';
-            if (zegtSpeler2) actieveSpelerKey = 'p2';
+            if (zegtSpeler1) tactics_actieveSpelerKey = 'p1';
+            if (zegtSpeler2) tactics_actieveSpelerKey = 'p2';
 
-            let doelSpelerKey = actieveSpelerKey;
-            let actieveNaam = (doelSpelerKey === 'p1') ? spelers.name1 : spelers.name2;
+            let doelSpelerKey = tactics_actieveSpelerKey;
+            let actieveNaam = (doelSpelerKey === 'p1') ? tactics_spelers.name1 : tactics_spelers.name2;
 
-            document.getElementById('transcript').innerText = (currentLang === 'en' ? 'Heard: ' : 'Gehoord: ') + `"${zin}"`;
+            document.getElementById('tactics_transcript').innerText = (tactics_currentLang === 'en' ? 'Heard: ' : 'Gehoord: ') + `"${zin}"`;
 
             let aantalHits = 1;
             if (zin.includes("triple") || zin.includes("trippel") || zin.includes("driemaal") || zin.includes("3 keer") || zin.includes("3 maal") || zin.includes("3 times")) {
@@ -845,78 +855,52 @@
             let isBull = zin.includes("boel") || zin.includes("boule") || zin.includes("bull") || zin.includes("bullseye");
             let hitsAangepast = false;
             let actieMelding = "";
-            let alVolGeraakt = false;
-            let volNaam = "";
+
+            // 2. STATUS EXACT OPSLAAN VÓÓR DE ACTIE VOOR 100% SYNCHROON HERSTEL
+            let stateBeforeAction = {
+                tacticsData: JSON.parse(JSON.stringify(tacticsData)),
+                htmlHistP1: document.getElementById('tactics_historyP1').innerHTML,
+                htmlHistP2: document.getElementById('tactics_historyP2').innerHTML
+            };
 
             if (isBull) {
-                if (zin.includes("rode") || zin.includes("dubbel") || zin.includes("double") || zin.includes("bullseye")) {
-                    aantalHits = 2;
-                    actieMelding = currentLang === 'en' ? "Red Bull (2x)" : "Rode Bull (2x)";
-                } else if (zin.includes("groene") || zin.includes("green")) {
-                    aantalHits = 1;
-                    actieMelding = currentLang === 'en' ? "Green Bull (1x)" : "Groene Bull (1x)";
-                } else {
-                    actieMelding = `${aantalHits}x Bull`;
-                }
+                let isRodeBull = zin.includes("rode") || zin.includes("dubbel") || zin.includes("double") || zin.includes("bullseye");
+                let hitsGewenst = isRodeBull ? 2 : 1;
+                actieMelding = isRodeBull ? (tactics_currentLang === 'en' ? "Red Bull (2x)" : "Rode Bull (2x)") : (tactics_currentLang === 'en' ? "Green Bull (1x)" : "Groene Bull (1x)");
 
-                if (!tacticsPuntenAan && tacticsData[doelSpelerKey]['bull'] >= 3) {
-                    alVolGeraakt = true;
-                    volNaam = "Bull";
-                } else {
-                    verwerkTreffers(doelSpelerKey, 'bull', aantalHits, 25);
-                    hitsAangepast = true;
-                }
+                tactics_verwerkBullTreffers(doelSpelerKey, hitsGewenst);
+                hitsAangepast = true;
             } else {
-                getallenLijst.forEach(cijfer => {
+                tactics_getallenLijst.forEach(cijfer => {
                     if (cijfer === 'bull') return;
                     let regex = new RegExp(`\\b${cijfer}\\b`);
                     if (regex.test(zin)) {
-                        if (!tacticsPuntenAan && tacticsData[doelSpelerKey][cijfer] >= 3) {
-                            alVolGeraakt = true;
-                            volNaam = String(cijfer);
-                        } else {
-                            verwerkTreffers(doelSpelerKey, cijfer, aantalHits, cijfer);
-                            hitsAangepast = true;
-                            actieMelding = `${aantalHits}x ${cijfer}`;
-                        }
+                        tactics_verwerkCijferTreffers(doelSpelerKey, cijfer, aantalHits);
+                        hitsAangepast = true;
+                        actieMelding = `${aantalHits}x ${cijfer}`;
                     }
                 });
-            }
-
-            const t = translations[currentLang];
-            if (alVolGeraakt && !hitsAangepast) {
-                toonMelding(t.fullMsg.replace('{name}', volNaam), "#e74c3c");
-                speakFeedback(t.fullSpeech);
-                return;
             }
 
             if (!hitsAangepast) {
                 return;
             }
 
-            geschiedenisStappen.push({
-                tacticsData: JSON.parse(JSON.stringify(tacticsData)),
-                htmlHistP1: document.getElementById('historyP1').innerHTML,
-                htmlHistP2: document.getElementById('historyP2').innerHTML
-            });
+            // Voeg opgeslagen status toe aan undo stack
+            tactics_geschiedenisStappen.push(stateBeforeAction);
 
             tacticsData[doelSpelerKey].beurten += 1;
             tacticsData[doelSpelerKey].totaalHits += aantalHits;
 
-            if (!playerStats[actieveNaam]) playerStats[actieveNaam] = { wins: 0, totalHits: 0, turns: 0 };
-            playerStats[actieveNaam].totalHits += aantalHits;
-            playerStats[actieveNaam].turns += 1;
-            localStorage.setItem('tactics_player_stats', JSON.stringify(playerStats));
+            tactics_updateScherm();
+            tactics_voegToeAanHistorie(doelSpelerKey, actieMelding);
+            tactics_toonMelding(`✓ ${actieveNaam}: ${actieMelding}`, "#2ecc71");
+            tactics_speakFeedback(tactics_currentLang === 'en' ? "Noted" : "Genoteerd");
 
-            updateScherm();
-            voegToeAanHistorie(doelSpelerKey, actieMelding);
-            toonMelding(`✓ ${actieveNaam}: ${actieMelding}`, "#2ecc71");
-            speakFeedback(currentLang === 'en' ? "Noted" : "Genoteerd");
-
-            controleerGewonnen(doelSpelerKey, actieveNaam);
+            tactics_controleerGewonnen(doelSpelerKey, actieveNaam);
         }
 
-        function verwerkTreffers(spelerKey, vakje, hits, puntWaarde) {
+        function tactics_verwerkCijferTreffers(spelerKey, vakje, hits) {
             let huidigeHits = tacticsData[spelerKey][vakje];
             let totaleNieuweHits = huidigeHits + hits;
             let nieuweHits = Math.min(3, totaleNieuweHits);
@@ -927,13 +911,38 @@
             if (tacticsPuntenAan && overigeHits > 0) {
                 let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
                 if (tacticsData[tegenstanderKey][vakje] < 3) {
-                    tacticsData[spelerKey].punten += (overigeHits * puntWaarde);
+                    tacticsData[spelerKey].punten += (overigeHits * vakje);
                 }
             }
         }
 
-        function controleerGewonnen(spelerKey, naam) {
-            let allesDicht = getallenLijst.every(v => tacticsData[spelerKey][v] >= 3);
+        // 3. NAUWKEURIGE BULL / BOULE LOGICA (RODE BULL = 50 PT, GROENE BULL = 25 PT)
+        function tactics_verwerkBullTreffers(spelerKey, hitsGewenst) {
+            let huidigeHits = tacticsData[spelerKey]['bull'];
+            let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
+            let puntenErby = 0;
+
+            for (let i = 0; i < hitsGewenst; i++) {
+                if (tacticsData[spelerKey]['bull'] < 3) {
+                    tacticsData[spelerKey]['bull'] += 1;
+                } else {
+                    // Al vol: Punten toekennen per overige hit
+                    if (tacticsPuntenAan && tacticsData[tegenstanderKey]['bull'] < 3) {
+                        // Bepaal of deze specifieke hit groen (25) of rood (50) is
+                        // Als hitsGewenst == 2 (Rode Bull) en we gooien hem vol, krijgt de 2e hit 25 pt, of als hij al vol was krijgt ie direct 50.
+                        let waardeHit = (hitsGewenst === 2 && i === 1) ? 25 : 50; 
+                        puntenErby += waardeHit;
+                    }
+                }
+            }
+
+            if (tacticsPuntenAan && puntenErby > 0 && tacticsData[tegenstanderKey]['bull'] < 3) {
+                tacticsData[spelerKey].punten += puntenErby;
+            }
+        }
+
+        function tactics_controleerGewonnen(spelerKey, naam) {
+            let allesDicht = tactics_getallenLijst.every(v => tacticsData[spelerKey][v] >= 3);
             if (!allesDicht) return;
 
             let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
@@ -944,67 +953,75 @@
             }
 
             if (allesDicht && heeftMeestePunten) {
-                if (!playerStats[naam]) playerStats[naam] = { wins: 0, totalHits: 0, turns: 0 };
-                playerStats[naam].wins += 1;
-                localStorage.setItem('tactics_player_stats', JSON.stringify(playerStats));
+                let tegenstanderNaam = (spelerKey === 'p1') ? tactics_spelers.name2 : tactics_spelers.name1;
+                let pairKey = `${naam} vs ${tegenstanderNaam}`;
+                
+                tactics_playerStats[pairKey] = (tactics_playerStats[pairKey] || 0) + 1;
+                localStorage.setItem('tactics_player_stats', JSON.stringify(tactics_playerStats));
 
-                const t = translations[currentLang];
+                const t = tactics_translations[tactics_currentLang];
                 let msg = t.winMsg.replace('{name}', naam);
-                alert(msg);
-                speakFeedback(msg);
+                
+                document.getElementById('tactics_winText').innerText = msg;
+                document.getElementById('tactics_winModal').style.display = 'flex';
+                tactics_speakFeedback(msg);
             }
         }
 
-        function laatsteActieTerugdraaien() {
-            const t = translations[currentLang];
-            if (geschiedenisStappen.length === 0) {
-                toonMelding(t.noActionsLeft, "#e74c3c");
+        function tactics_sluitWinstModal() {
+            document.getElementById('tactics_winModal').style.display = 'none';
+        }
+
+        function tactics_laatsteActieTerugdraaien() {
+            const t = tactics_translations[tactics_currentLang];
+            if (tactics_geschiedenisStappen.length === 0) {
+                tactics_toonMelding(t.noActionsLeft, "#e74c3c");
                 return;
             }
-            let vorigeStaat = geschiedenisStappen.pop();
+            let vorigeStaat = tactics_geschiedenisStappen.pop();
             tacticsData = JSON.parse(JSON.stringify(vorigeStaat.tacticsData));
-            document.getElementById('historyP1').innerHTML = vorigeStaat.htmlHistP1;
-            document.getElementById('historyP2').innerHTML = vorigeStaat.htmlHistP2;
+            document.getElementById('tactics_historyP1').innerHTML = vorigeStaat.htmlHistP1;
+            document.getElementById('tactics_historyP2').innerHTML = vorigeStaat.htmlHistP2;
 
-            updateScherm();
-            updateHistoryState('p1');
-            updateHistoryState('p2');
-            toonMelding(t.undoRestored, "#e67e22");
-            speakFeedback(t.restored);
+            tactics_updateScherm();
+            tactics_updateHistoryState('p1');
+            tactics_updateHistoryState('p2');
+            tactics_toonMelding(t.undoRestored, "#e67e22");
+            tactics_speakFeedback(t.restored);
         }
 
-        function updateScherm() {
-            getallenLijst.forEach(cijfer => {
-                document.getElementById(`p1_${cijfer}`).innerText = formatteerHits(tacticsData.p1[cijfer]);
-                document.getElementById(`p2_${cijfer}`).innerText = formatteerHits(tacticsData.p2[cijfer]);
+        function tactics_updateScherm() {
+            tactics_getallenLijst.forEach(cijfer => {
+                document.getElementById(`tactics_p1_${cijfer}`).innerText = tactics_formatteerHits(tacticsData.p1[cijfer]);
+                document.getElementById(`tactics_p2_${cijfer}`).innerText = tactics_formatteerHits(tacticsData.p2[cijfer]);
             });
 
-            document.getElementById('p1_pts').innerText = tacticsPuntenAan ? `Pt: ${tacticsData.p1.punten}` : "-";
-            document.getElementById('p2_pts').innerText = tacticsPuntenAan ? `Pt: ${tacticsData.p2.punten}` : "-";
+            document.getElementById('tactics_p1_pts').innerText = tacticsPuntenAan ? `Pt: ${tacticsData.p1.punten}` : "-";
+            document.getElementById('tactics_p2_pts').innerText = tacticsPuntenAan ? `Pt: ${tacticsData.p2.punten}` : "-";
         }
 
-        function formatteerHits(aantal) {
+        function tactics_formatteerHits(aantal) {
             if (aantal === 1) return "X";
             if (aantal === 2) return "XX";
-            if (aantal >= 3) return currentLang === 'en' ? "XXX full" : "XXX vol";
+            if (aantal >= 3) return tactics_currentLang === 'en' ? "XXX full" : "XXX vol";
             return "-";
         }
 
-        function voegToeAanHistorie(spelerKey, tekst) {
-            const listEl = document.getElementById(spelerKey === 'p1' ? 'historyP1' : 'historyP2');
-            const t = translations[currentLang];
+        function tactics_voegToeAanHistorie(spelerKey, tekst) {
+            const listEl = document.getElementById(spelerKey === 'p1' ? 'tactics_historyP1' : 'tactics_historyP2');
+            const t = tactics_translations[tactics_currentLang];
             if (listEl.children.length === 1 && (listEl.children[0].innerText === "Geen acties" || listEl.children[0].innerText === "No actions")) {
                 listEl.innerHTML = "";
             }
             const li = document.createElement('li');
             li.innerText = tekst;
             listEl.prepend(li);
-            updateHistoryState(spelerKey);
+            tactics_updateHistoryState(spelerKey);
         }
 
-        function updateHistoryState(spelerKey) {
-            const listEl = document.getElementById(spelerKey === 'p1' ? 'historyP1' : 'historyP2');
-            const colEl = document.getElementById(spelerKey === 'p1' ? 'colHistP1' : 'colHistP2');
+        function tactics_updateHistoryState(spelerKey) {
+            const listEl = document.getElementById(spelerKey === 'p1' ? 'tactics_historyP1' : 'tactics_historyP2');
+            const colEl = document.getElementById(spelerKey === 'p1' ? 'tactics_colHistP1' : 'tactics_colHistP2');
             const hasRealActions = Array.from(listEl.children).some(li => 
                 li.innerText !== "Geen acties" && li.innerText !== "No actions"
             );
@@ -1015,41 +1032,41 @@
             }
         }
 
-        function toonMelding(tekst, kleur) {
-            const transcriptEl = document.getElementById('transcript');
+        function tactics_toonMelding(tekst, kleur) {
+            const transcriptEl = document.getElementById('tactics_transcript');
             transcriptEl.style.color = kleur;
             transcriptEl.innerText = tekst;
             setTimeout(() => { transcriptEl.style.color = "#3498db"; }, 2500);
         }
 
-        function speakFeedback(tekst) {
+        function tactics_speakFeedback(tekst) {
             if ('speechSynthesis' in window) {
                 const utterance = new SpeechSynthesisUtterance(tekst);
-                utterance.lang = currentLang === 'en' ? 'en-US' : 'nl-NL';
+                utterance.lang = tactics_currentLang === 'en' ? 'en-US' : 'nl-NL';
                 utterance.rate = 1.1;
                 utterance.pitch = 1.2;
                 window.speechSynthesis.speak(utterance);
             }
         }
 
-        function resetSpel() {
+        function tactics_resetSpel() {
             tacticsData = {
                 p1: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
                 p2: { 20: 0, 19: 0, 18: 0, 17: 0, 16: 0, 15: 0, 14: 0, 13: 0, 12: 0, 11: 0, 10: 0, 'bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
             };
-            geschiedenisStappen = [];
-            startTime = Date.now();
-            updateScherm();
-            const t = translations[currentLang];
-            document.getElementById('historyP1').innerHTML = `<li style="color:#777;">${t.noActions}</li>`;
-            document.getElementById('historyP2').innerHTML = `<li style="color:#777;">${t.noActions}</li>`;
-            updateHistoryState('p1');
-            updateHistoryState('p2');
-            document.getElementById('transcript').innerText = t.gameReset;
+            tactics_geschiedenisStappen = [];
+            tactics_startTime = Date.now();
+            tactics_updateScherm();
+            const t = tactics_translations[tactics_currentLang];
+            document.getElementById('tactics_historyP1').innerHTML = `<li style="color:#777;">${t.noActions}</li>`;
+            document.getElementById('tactics_historyP2').innerHTML = `<li style="color:#777;">${t.noActions}</li>`;
+            tactics_updateHistoryState('p1');
+            tactics_updateHistoryState('p2');
+            document.getElementById('tactics_transcript').innerText = t.gameReset;
         }
 
-        applyLanguage();
-        initSpraak();
+        tactics_applyLanguage();
+        tactics_initSpraak();
     </script>
 </body>
 </html>
