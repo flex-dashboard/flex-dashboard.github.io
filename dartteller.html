@@ -124,6 +124,7 @@
         }
         .btn-fullscreen { background: #2980b9; height: 38px !important; }
         .btn-dashboard { background: #d35400; height: 38px !important; }
+        .btn-manual { background: #16a085; font-size: 12px; padding: 2px 8px; height: 32px !important; margin-left: 8px; }
 
         .button-bar {
             margin-top: 15px;
@@ -180,7 +181,7 @@
         }
         .tv-row-header {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 2fr;
+            grid-template-columns: 2fr 1fr 60px 1fr 2fr;
             background: rgba(26, 26, 26, 0.5);
             padding: 6px 10px;
             font-weight: bold;
@@ -193,7 +194,7 @@
         
         .player-row {
             display: grid;
-            grid-template-columns: 2fr 1fr 1fr 2fr;
+            grid-template-columns: 2fr 1fr 60px 1fr 2fr;
             padding: 12px 10px;
             align-items: center;
             text-align: center;
@@ -225,15 +226,16 @@
         .player-row.active .active-dot { visibility: visible; }
         .p-stat { font-size: 22px; font-weight: bold; color: #2ecc71; }
         .p-score { font-size: 32px; font-weight: bold; color: #f39c12; }
-        
+
         .checkout-bar {
-            grid-column: span 4;
-            text-align: right;
+            grid-column: 2 / 5;
+            text-align: center;
             font-size: 12px;
             color: #2ecc71;
-            padding: 2px 10px 0 0;
+            padding: 2px 0 0 0;
             font-weight: bold;
             min-height: 16px;
+            white-space: nowrap;
         }
 
         .history-grid {
@@ -347,7 +349,24 @@
         }
         .stats-table th { color: #aaa; }
 
-        /* PC On-Screen Virtual Keyboard (>900px) - Gecentreerd in het midden */
+        /* Handmatig Score Toetsenbord Modal */
+        #manualKeypadGrid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+            margin-top: 10px;
+        }
+        #manualKeypadGrid button {
+            background: #444;
+            color: #fff;
+            font-size: 16px;
+            height: 44px !important;
+            width: 100% !important;
+            border-radius: 6px;
+        }
+        #manualKeypadGrid button:hover { background: #f39c12; color: #000; }
+
+        /* PC On-Screen Virtual Keyboard (>900px) */
         #pcVirtualKeyboard {
             display: none;
             position: absolute;
@@ -418,7 +437,41 @@
             }
             .button-bar #listenBtn { grid-column: span 2 !important; }
             #pcVirtualKeyboard { display: none !important; }
-        }
+
+.game-container {
+    position: relative !important;
+}
+
+/* Een net, klein, rond dartbordje precies onder de geschiedenis */
+.game-container::after {
+    content: "" !important;
+    position: absolute !important;
+    /* Positionering en Centrering */
+    bottom: 23px !important;       /* Iets hoger gezet voor een perfecte positionering */
+    left: 50% !important;
+    transform: translateX(-50%) !important;
+    
+    /* Grootte: Perfect vierkant voor een perfecte cirkel */
+    width: 80px !important;        /* Een nette grootte, niet te groot of te klein */
+    height: 80px !important;       /* Gelijk aan width! Belangrijk voor een cirkel */
+    
+    /* Achtergrondafbeelding */
+    background-image: url('dartbord.jpg') !important;
+    background-position: center !important;
+    background-repeat: no-repeat !important;
+    background-size: cover !important; /* 'cover' om de volledige cirkel te vullen */
+    
+    /* Vorm en Randen */
+    border-radius: 50% !important; /* Maakt het perfect rond */
+    border: none !important;        /* Verwijdert elke onbedoelde rand */
+    box-shadow: none !important;   /* Verwijdert elke onbedoelde schaduw */
+    
+    /* Zichtbaarheid en Interactie */
+    opacity: 1 !important;         /* Haarscherp en scherp (geen waas) */
+    z-index: 1 !important;
+    pointer-events: none !important;
+}
+}
     </style>
 </head>
 <body>
@@ -450,10 +503,10 @@
         </select>
 
         <label for="player1Input" id="lblPlayer1">Naam Speler 1:</label>
-        <input type="text" id="player1Input" value="Frans" onclick="setActiveInput(this); toggleVirtualKeyboardOnFocus(this);" onfocus="setActiveInput(this); toggleVirtualKeyboardOnFocus(this);" onkeydown="handleInputKey(event, this)">
+        <input type="text" id="player1Input" value="Frans" autocomplete="off" onclick="clearAndFocusInput(this); toggleVirtualKeyboardOnFocus(this);" onfocus="clearAndFocusInput(this); toggleVirtualKeyboardOnFocus(this);" onkeydown="handleInputKey(event, this)">
 
         <label for="player2Input" id="lblPlayer2">Naam Speler 2:</label>
-        <input type="text" id="player2Input" value="Patrick" onclick="setActiveInput(this); toggleVirtualKeyboardOnFocus(this);" onfocus="setActiveInput(this); toggleVirtualKeyboardOnFocus(this);" onkeydown="handleInputKey(event, this)">
+        <input type="text" id="player2Input" value="Patrick" autocomplete="off" onclick="clearAndFocusInput(this); toggleVirtualKeyboardOnFocus(this);" onfocus="clearAndFocusInput(this); toggleVirtualKeyboardOnFocus(this);" onkeydown="handleInputKey(event, this)">
 
         <!-- PC On-Screen Virtual Keyboard -->
         <div id="pcVirtualKeyboard">
@@ -501,42 +554,45 @@
                 <div class="match-timer"><span id="matchTimerDisplay">00:00</span></div>
             </div>
             <div class="tv-row-header">
-                <div id="thPlayer">Darter</div>
-                <div id="thSets">Sets</div>
-                <div id="thLegs">Legs</div>
-                <div>Score</div>
-            </div>
-            <!-- Speler 1 Rij -->
-            <div id="rowP1" class="player-row active">
-                <div class="p-name">
-                    <span class="active-dot"></span>
-                    <div>
-                        <div id="lblP1Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 1</div>
-                        <span id="nameP1">Frans</span>
-                    </div>
-                </div>
-                <div id="setsP1" class="p-stat">0</div>
-                <div id="legsP1" class="p-stat">0</div>
-                <div id="scoreP1" class="p-score">501</div>
-                <div id="checkoutP1" class="checkout-bar">-</div>
-            </div>
+    <div id="thPlayer">Darter</div>
+    <div id="thSets">Sets</div>
+    <div></div>
+    <div id="thLegs">Legs</div>
+    <div>Score</div>
+</div>
 
-            <!-- Speler 2 Rij -->
-            <div id="rowP2" class="player-row">
-                <div class="p-name">
-                    <span class="active-dot"></span>
-                    <div>
-                        <div id="lblP2Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 2</div>
-                        <span id="nameP2">Patrick</span>
-                    </div>
-                </div>
-                <div id="setsP2" class="p-stat">0</div>
-                <div id="legsP2" class="p-stat">0</div>
-                <div id="scoreP2" class="p-score">501</div>
-                <div id="checkoutP2" class="checkout-bar">-</div>
-            </div>
+<!-- Speler 1 Rij -->
+<div id="rowP1" class="player-row active">
+    <div class="p-name">
+        <span class="active-dot"></span>
+        <div>
+            <div id="lblP1Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 1</div>
+            <span id="nameP1">Frans</span>
         </div>
+    </div>
+    <div id="setsP1" class="p-stat">0</div>
+    <button class="btn-manual" onclick="openManualKeypad(1)" title="Handmatig invoeren">🔢</button>
+    <div id="legsP1" class="p-stat">0</div>
+    <div id="scoreP1" class="p-score">501</div>
+    <div id="checkoutP1" class="checkout-bar"></div>
+</div>
 
+<!-- Speler 2 Rij -->
+<div id="rowP2" class="player-row">
+    <div class="p-name">
+        <span class="active-dot"></span>
+        <div>
+            <div id="lblP2Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 2</div>
+            <span id="nameP2">Patrick</span>
+        </div>
+    </div>
+    <div id="setsP2" class="p-stat">0</div>
+    <button class="btn-manual" onclick="openManualKeypad(2)" title="Handmatig invoeren">🔢</button>
+    <div id="legsP2" class="p-stat">0</div>
+    <div id="scoreP2" class="p-score">501</div>
+    <div id="checkoutP2" class="checkout-bar"></div>
+</div>
+</div>
         <!-- In-Game Knoppenbalk -->
         <div class="button-bar">
             <button onclick="terugNaarInstellingen()" style="background: #34495e; font-size: 13px; padding: 0 10px;">Menu ⚙️</button>
@@ -579,6 +635,36 @@
         </div>
     </div>
 
+    <!-- Handmatige Invoer Modal (Toetsenbord) -->
+    <div id="manualKeypadModal" class="modal">
+        <div class="modal-content" style="max-width: 320px; text-align: center;">
+            <div class="modal-header">
+                <h3 id="manualKeypadTitle">Score Invoeren</h3>
+                <button class="close-btn" onclick="closeManualKeypad()">✖</button>
+            </div>
+            <div id="manualDisplay" style="background:#222; color:#f39c12; font-size:24px; font-weight:bold; padding:10px; border-radius:6px; margin-bottom:10px; min-height:45px; display:flex; align-items:center; justify-content:center;">0</div>
+            <div id="manualKeypadGrid">
+                <button onclick="mkPress('7')">7</button>
+                <button onclick="mkPress('8')">8</button>
+                <button onclick="mkPress('9')">9</button>
+                <button onclick="mkPress('4')">4</button>
+                <button onclick="mkPress('5')">5</button>
+                <button onclick="mkPress('6')">6</button>
+                <button onclick="mkPress('1')">1</button>
+                <button onclick="mkPress('2')">2</button>
+                <button onclick="mkPress('3')">3</button>
+                <button onclick="mkPress('0')">0</button>
+                <button onclick="mkPress('D')" style="background:#d35400; font-size:12px;">Dubbel (2x)</button>
+                <button onclick="mkPress('T')" style="background:#c0392b; font-size:12px;">Triple (3x)</button>
+                <button onclick="mkPress('GB')" style="background:#27ae60; font-size:11px;" title="Groene Boel (25)">Groene Bull</button>
+                <button onclick="mkPress('RB')" style="background:#e74c3c; font-size:11px;" title="Rode Boel (50)">Rode Bull</button>
+                <button onclick="mkPress('C')" style="background:#7f8c8d;">C</button>
+                <button onclick="mkPress('BKSP')" style="background:#7f8c8d;">⌫</button>
+                <button onclick="mkPress('ENTER')" style="background:#2ecc71; grid-column: span 2; font-weight:bold;">ENTER ↵</button>
+            </div>
+        </div>
+    </div>
+
     <div id="setupTipsModalEl" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -618,23 +704,54 @@
         let tipsModalLang = 'nl';
         let activeInputEl = null;
 
-        function setActiveInput(el) {
+        // Handmatige Invoer Toetsenbord State
+        let manualTargetPlayer = 1;
+        let manualInputBuffer = "0";
+        let manualMultiplier = 1;
+
+        // Bij opstarten localStorage laden indien aanwezig
+        window.addEventListener('DOMContentLoaded', () => {
+            let savedP1 = localStorage.getItem('dart_p1');
+            let savedP2 = localStorage.getItem('dart_p2');
+            if (savedP1) {
+                document.getElementById('player1Input').value = savedP1;
+                spelers.name1 = savedP1.toLowerCase();
+                spelers.name1Mooi = savedP1;
+            }
+            if (savedP2) {
+                document.getElementById('player2Input').value = savedP2;
+                spelers.name2 = savedP2.toLowerCase();
+                spelers.name2Mooi = savedP2;
+            }
+        });
+
+        function clearAndFocusInput(el) {
             activeInputEl = el;
-            if (el) el.select();
+            if (el) {
+                el.value = ""; // Veld direct leegmaken zodat je meteen kunt typen zonder selectie/kopieermenu
+            }
         }
 
         function toggleVirtualKeyboardOnFocus(el) {
-            setActiveInput(el);
+            clearAndFocusInput(el);
             let vk = document.getElementById('pcVirtualKeyboard');
             if (vk) { vk.style.display = 'block'; vk.classList.add('active'); }
         }
 
         function handleInputKey(event, el) {
+            saveNamesToLocalStorage();
             if (event.key === 'Enter') {
                 el.blur();
                 let vk = document.getElementById('pcVirtualKeyboard');
                 if (vk) vk.style.display = 'none';
             }
+        }
+
+        function saveNamesToLocalStorage() {
+            let p1 = document.getElementById('player1Input').value.trim() || "Frans";
+            let p2 = document.getElementById('player2Input').value.trim() || "Patrick";
+            localStorage.setItem('dart_p1', p1);
+            localStorage.setItem('dart_p2', p2);
         }
 
         function toggleVirtualKeyboard() {
@@ -648,7 +765,6 @@
                     vk.classList.add('active');
                     if (!activeInputEl) activeInputEl = document.getElementById('player1Input');
                     activeInputEl.focus();
-                    activeInputEl.select();
                 }
             }
         }
@@ -658,26 +774,141 @@
                 activeInputEl = document.getElementById('player1Input');
                 activeInputEl.focus();
             }
-            let start = activeInputEl.selectionStart;
-            let end = activeInputEl.selectionEnd;
             let val = activeInputEl.value;
 
             if (char === 'BKSP') {
-                if (start !== end) {
-                    activeInputEl.value = val.substring(0, start) + val.substring(end);
-                    activeInputEl.selectionStart = activeInputEl.selectionEnd = start;
-                } else if (start > 0) {
-                    activeInputEl.value = val.substring(0, start - 1) + val.substring(start);
-                    activeInputEl.selectionStart = activeInputEl.selectionEnd = start - 1;
-                }
+                activeInputEl.value = val.slice(0, -1);
             } else if (char === 'OK') {
                 activeInputEl.blur();
+                saveNamesToLocalStorage();
                 let vk = document.getElementById('pcVirtualKeyboard');
                 if (vk) vk.style.display = 'none';
             } else {
-                activeInputEl.value = val.substring(0, start) + char + val.substring(end);
-                activeInputEl.selectionStart = activeInputEl.selectionEnd = start + 1;
+                activeInputEl.value = val + char;
             }
+            saveNamesToLocalStorage();
+        }
+
+        // Handmatige Score Invoer Functies
+        function openManualKeypad(playerNum) {
+            manualTargetPlayer = playerNum;
+            manualInputBuffer = "0";
+            manualMultiplier = 1;
+            updateManualDisplay();
+            document.getElementById('manualKeypadModal').style.display = 'flex';
+        }
+
+        function closeManualKeypad() {
+            document.getElementById('manualKeypadModal').style.display = 'none';
+        }
+
+        function updateManualDisplay() {
+            let text = manualInputBuffer;
+            if (manualMultiplier === 2) text = "Dubbel " + text;
+            if (manualMultiplier === 3) text = "Triple " + text;
+            document.getElementById('manualDisplay').innerText = text;
+        }
+
+        function mkPress(val) {
+            if (val === 'C') {
+                manualInputBuffer = "0";
+                manualMultiplier = 1;
+            } else if (val === 'BKSP') {
+                if (manualInputBuffer.length > 1) {
+                    manualInputBuffer = manualInputBuffer.slice(0, -1);
+                } else {
+                    manualInputBuffer = "0";
+                }
+            } else if (val === 'D') {
+                manualMultiplier = 2;
+            } else if (val === 'T') {
+                manualMultiplier = 3;
+            } else if (val === 'GB') {
+                manualInputBuffer = "25";
+                manualMultiplier = 1;
+            } else if (val === 'RB') {
+                manualInputBuffer = "50";
+                manualMultiplier = 1;
+            } else if (val === 'ENTER') {
+                let scoreVal = parseInt(manualInputBuffer, 10) * manualMultiplier;
+                closeManualKeypad();
+                verwerkHandmatigeScore(manualTargetPlayer, scoreVal, document.getElementById('manualDisplay').innerText);
+                return;
+            } else {
+                if (manualInputBuffer === "0") {
+                    manualInputBuffer = val;
+                } else {
+                    manualInputBuffer += val;
+                }
+            }
+            updateManualDisplay();
+        }
+
+        function verwerkHandmatigeScore(spelerNummer, gegooideScore, beschrijving) {
+            actieveSpeler = spelerNummer;
+            let spelerNaamMooi = (spelerNummer === 1) ? spelers.name1Mooi : spelers.name2Mooi;
+
+            if (gegooideScore > 180 || gegooideScore <= 0) return;
+
+            geschiedenisStappen.push({
+                scores: { ...scores },
+                legs: { ...legs },
+                sets: { ...sets },
+                actieveSpeler: actieveSpeler,
+                htmlP1: document.getElementById('historyListP1').innerHTML,
+                htmlP2: document.getElementById('historyListP2').innerHTML
+            });
+
+            let huidigeScore = (spelerNummer === 1) ? scores.score1 : scores.score2;
+            let nieuweScore = huidigeScore - gegooideScore;
+
+            if (nieuweScore < 0 || nieuweScore === 1) {
+                speakFeedback("Kapot!");
+                toonMelding(`Kapot! (${beschrijving}) - Score hersteld.`);
+                voegToeAanHistorie(spelerNummer, `${gegooideScore} - KAPOT`);
+                updateScherm();
+                return;
+            }
+
+            if (spelerNummer === 1) scores.score1 = nieuweScore;
+            else scores.score2 = nieuweScore;
+
+            voegToeAanHistorie(spelerNummer, `-${gegooideScore} (over:${nieuweScore})`);
+
+            if (nieuweScore === 0) {
+                if (spelerNummer === 1) legs.leg1++;
+                else legs.leg2++;
+
+                let setGewonnen = false;
+                if (legs.leg1 >= 3) { sets.set1++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
+                else if (legs.leg2 >= 3) { sets.set2++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
+
+                if (sets.set1 >= targetSets || sets.set2 >= targetSets) {
+                    document.getElementById('winnerText').innerText = spelerNaamMooi.toUpperCase();
+                    document.getElementById('winnerBanner').style.display = 'block';
+                    speakFeedback(`${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
+                    
+                    if (timerInterval) clearInterval(timerInterval);
+                    if (watchdogTimer) clearInterval(watchdogTimer);
+                    registreerWinst(spelerNaamMooi, (spelerNummer === 1) ? spelers.name2Mooi : spelers.name1Mooi);
+
+                    wisseGeschiedenis();
+                    updateScherm();
+                    return;
+                }
+
+                scores.score1 = parseInt(huidigSpel, 10);
+                scores.score2 = parseInt(huidigSpel, 10);
+                wisseGeschiedenis();
+
+                if (setGewonnen) speakFeedback(`${spelerNaamMooi} wint de set!`);
+                else speakFeedback(`${spelerNaamMooi} wint de leg!`);
+            } else {
+                if (gegooideScore === 180) speak180();
+                else speakFeedback(gegooideScore.toString());
+            }
+
+            updateScherm();
         }
 
         const checkouts = {
@@ -888,7 +1119,6 @@
             return (t.includes("menu") || t.includes("herstel") || t.includes("undo") || t.includes("fullscreen") || t.includes("stats") || t.includes("reset") || t.includes("start") || t.includes("kies") || t.includes("choose") || t.includes("select") || t.includes("verander") || t.includes("change") || t.includes("tips") || t.includes("uitleg") || t.includes("home") || t.includes("instellingen") || t.includes("tactics") || t.includes("tectics") || t.includes("501") || t.includes("301") || t.includes("speler 1") || t.includes("speler 2") || t.includes("player 1") || t.includes("player 2") || t.includes(spelers.name1) || t.includes(spelers.name2) || t.includes("dubbel") || t.includes("trippel") || t.includes("bull") || /\d+/.test(t));
         }
 
-        // Globale commando's (Altijd actief)
         function handleGlobalCommando(cmd) {
             let text = normaliseerSpraak(cmd);
             if (text.includes("menu") || text.includes("open home") || text.includes("ga naar home") || text.includes("home") || text.includes("instellingen") || text.includes("go home")) {
@@ -950,10 +1180,12 @@
 
                 if (doel.includes("speler 1") || doel.includes("player 1") || doel === "1" || doel === "één" || doel === curP1) {
                     p1Input.value = nieuweNaam;
+                    saveNamesToLocalStorage();
                     speakFeedback(`Speler 1 veranderd in ${nieuweNaam}`);
                     return true;
                 } else if (doel.includes("speler 2") || doel.includes("player 2") || doel === "2" || doel === "twee" || doel === curP2) {
                     p2Input.value = nieuweNaam;
+                    saveNamesToLocalStorage();
                     speakFeedback(`Speler 2 veranderd in ${nieuweNaam}`);
                     return true;
                 }
@@ -961,7 +1193,6 @@
             return false;
         }
 
-        // Setup spraakherkenning met Crash-Recovery & Luister-loop
         function initSetupSpraak() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) return;
@@ -1043,7 +1274,6 @@
             if (handleGlobalCommando(cmd)) return;
             if (probeerNaamTeVeranderen(cmd)) return;
 
-            // Spelkeuze via spraak ("kies tactics", "ga naar tactics", "tectics", "spel 3")
             if (cmd.includes("tactics") || cmd.includes("tectics") || cmd.includes("spel 3") || cmd.includes("game 3")) {
                 document.getElementById('spelMode').value = "tactics";
                 handleSpelModeChange();
@@ -1094,11 +1324,11 @@
             }
 
             huidigSpel = document.getElementById('spelMode').value;
-            let p1Input = document.getElementById('player1Input').value.trim() || "Speler 1";
-            let p2Input = document.getElementById('player2Input').value.trim() || "Speler 2";
+            let p1Input = document.getElementById('player1Input').value.trim() || "Frans";
+            let p2Input = document.getElementById('player2Input').value.trim() || "Patrick";
             let setsModeVal = document.getElementById('setsMode').value;
+            saveNamesToLocalStorage();
 
-            // Als Tactics gekozen is, doorsturen naar tactics.html met de opties
             if (huidigSpel === 'tactics') {
                 window.location.href = `tactics.html?p1=${encodeURIComponent(p1Input)}&p2=${encodeURIComponent(p2Input)}&mode=${setsModeVal}`;
                 return;
@@ -1108,8 +1338,8 @@
 
             spelers.name1 = p1Input.toLowerCase();
             spelers.name2 = p2Input.toLowerCase();
-            spelers.name1Mooi = p1Input.charAt(0).toUpperCase() + p1Input.slice(1);
-            spelers.name2Mooi = p2Input.charAt(0).toUpperCase() + p2Input.slice(1);
+            spelers.name1Mooi = p1Input;
+            spelers.name2Mooi = p2Input;
 
             document.getElementById('nameP1').innerText = spelers.name1Mooi;
             document.getElementById('nameP2').innerText = spelers.name2Mooi;
@@ -1427,8 +1657,8 @@
             document.getElementById('setsP1').innerText = sets.set1;
             document.getElementById('setsP2').innerText = sets.set2;
 
-            document.getElementById('checkoutP1').innerText = checkouts[scores.score1] || "-";
-            document.getElementById('checkoutP2').innerText = checkouts[scores.score2] || "-";
+            document.getElementById('checkoutP1').innerText = checkouts[scores.score1] || "";
+            document.getElementById('checkoutP2').innerText = checkouts[scores.score2] || "";
 
             document.getElementById('rowP1').classList.toggle('active', actieveSpeler === 1);
             document.getElementById('rowP2').classList.toggle('active', actieveSpeler === 2);
@@ -1445,23 +1675,47 @@
             list.insertBefore(li, list.firstChild);
         }
 
+        // Audio & Luisterknop beveiliging (Rood = Niet luisteren tijdens audio/MP3)
+        function setLuisterKnopRoodTijdensAudio() {
+            const btn = document.getElementById('listenBtn');
+            if (btn) btn.style.background = "#c0392b";
+        }
+
+        function setLuisterKnopGroenAlsActief() {
+            const btn = document.getElementById('listenBtn');
+            if (btn && isLuisteren) btn.style.background = "#27ae60";
+        }
+
         function speakFeedback(tekst) {
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
+                setLuisterKnopRoodTijdensAudio();
                 const utterance = new SpeechSynthesisUtterance(tekst);
                 utterance.lang = currentLang === 'eng' ? 'en-GB' : 'nl-NL';
+                utterance.onend = () => {
+                    setLuisterKnopGroenAlsActief();
+                };
                 window.speechSynthesis.speak(utterance);
             }
         }
 
         function speak180() {
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
+            setLuisterKnopRoodTijdensAudio();
             let audio = new Audio('180.mp3');
+            audio.onended = () => {
+                setLuisterKnopGroenAlsActief();
+            };
             audio.play().catch(e => {
                 if ('speechSynthesis' in window) {
                     const utterance = new SpeechSynthesisUtterance("One hundred and eighty!!!");
                     utterance.lang = 'en-GB';
+                    utterance.onend = () => {
+                        setLuisterKnopGroenAlsActief();
+                    };
                     window.speechSynthesis.speak(utterance);
+                } else {
+                    setLuisterKnopGroenAlsActief();
                 }
             });
         }
