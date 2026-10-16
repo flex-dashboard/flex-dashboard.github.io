@@ -205,8 +205,6 @@
         .player-row.active {
             background: rgba(56, 48, 20, 0.65);
             border-left: 5px solid #f39c12;
-           
-
         }
         .p-name {
             text-align: left;
@@ -220,7 +218,6 @@
         .p-score { font-size: 32px; font-weight: bold; color: #f39c12; }
 
         .checkout-bar {
-            grid-column: 2 / 5;
             text-align: center;
             font-size: 12px;
             color: #2ecc71;
@@ -241,10 +238,17 @@
             backdrop-filter: blur(6px);
             padding: 10px;
             border-radius: 8px;
-            max-height: 160px;
+            height: 220px;
+            max-height: 250px;
             overflow-y: auto;
             border: 1px solid rgba(255, 255, 255, 0.08);
+            -webkit-mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            mask-image: linear-gradient(to bottom, black 85%, transparent 100%);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
         }
+        .history-box::-webkit-scrollbar { display: none; }
+
         .history-box h4 {
             margin: 0 0 6px 0;
             color: #f39c12;
@@ -341,7 +345,6 @@
         }
         .stats-table th { color: #aaa; }
 
-        /* Handmatig Score Toetsenbord Modal */
         #manualKeypadGrid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -358,7 +361,6 @@
         }
         #manualKeypadGrid button:hover { background: #f39c12; color: #000; }
 
-        /* PC On-Screen Virtual Keyboard (>900px) */
         #pcVirtualKeyboard {
             display: none;
             position: absolute;
@@ -419,6 +421,7 @@
             .game-container {
                 width: calc(100vw - 38px) !important; height: calc(100vh - 38px) !important;
                 margin: 19px auto !important; border-radius: 12px !important; padding: 10px !important;
+                position: relative !important;
             }
             .button-bar {
                 display: grid !important; grid-template-columns: repeat(4, 1fr) !important;
@@ -429,46 +432,27 @@
             }
             .button-bar #listenBtn { grid-column: span 2 !important; }
             #pcVirtualKeyboard { display: none !important; }
-
-            .game-container {
-    position: relative !important;
-}
-.history-box {
-    flex: 1;
-    background: rgba(37, 37, 37, 0.45);
-    backdrop-filter: blur(6px);
-    padding: 10px;
-    border-radius: 8px;
-    max-height: 160px;
-    overflow-y: auto;
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    scrollbar-width: none; /* Verbergt scrollbalk in Firefox */
-    -ms-overflow-style: none; /* Verbergt scrollbalk in IE/Edge */
-}
-
-.history-box::-webkit-scrollbar {
-    display: none; /* Verbergt scrollbalk in Chrome, Safari en mobiel */
-}
-.game-container::after {
-    content: "" !important;
-    position: absolute !important;
-    bottom: 20px !important;
-    left: 50% !important;
-    transform: translateX(-50%) !important;
-    width: 80px !important;
-    height: 80px !important;
-    background-image: url('dartbord.jpg') !important;
-    background-position: center !important;
-    background-repeat: no-repeat !important;
-    background-size: cover !important;
-    border-radius: 50% !important;
-    border: none !important;
-    box-shadow: none !important;
-    opacity: 0.9 !important;        /* Weer mooi scherp bij de start! */
-    z-index: 0 !important;          /* Achter de tekst geplaatst */
-    pointer-events: none !important;
-}       
- }
+            
+            .game-container::after {
+                content: "" !important;
+                position: absolute !important;
+                bottom: 20px !important;
+                left: 50% !important;
+                transform: translateX(-50%) !important;
+                width: 80px !important;
+                height: 80px !important;
+                background-image: url('dartbord.jpg') !important;
+                background-position: center !important;
+                background-repeat: no-repeat !important;
+                background-size: cover !important;
+                border-radius: 50% !important;
+                border: none !important;
+                box-shadow: none !important;
+                opacity: 0.9 !important;
+                z-index: 0 !important;
+                pointer-events: none !important;
+            }       
+        }
     </style>
 </head>
 <body>
@@ -493,18 +477,34 @@
             <option value="tactics">Tactics (Spel 5 / Game 5)</option>
         </select>
 
-        <label id="labelSetsMode" for="setsMode">Wedstrijdlengte (Sets):</label>
+        <label id="labelSetsMode" for="setsMode">Wedstrijdlengte (Sets / Legs):</label>
         <select id="setsMode">
-            <option value="3">First to 3 Sets (Optie 1)</option>
-            <option value="5">First to 5 Sets (Optie 2)</option>
-            <option value="7">First to 7 Sets (Optie 3)</option>
-            <option value="1">1 Set (Optie 4)</option>
+            <option value="3_sets">First to 3 Sets (Optie 1)</option>
+            <option value="5_sets">First to 5 Sets (Optie 2)</option>
+            <option value="7_sets">First to 7 Sets (Optie 3)</option>
+            <option value="1_set">1 Set (Optie 4)</option>
+            <option value="3_legs">First to 3 Legs (Optie 5)</option>
+            <option value="5_legs">First to 5 Legs (Optie 6)</option>
+            <option value="7_legs">First to 7 Legs (Optie 7)</option>
+            <option value="10_legs">First to 10 Legs (Optie 8)</option>
         </select>
+
+        <!-- Around the Clock Order Checkbox Container -->
+        <div id="aroundOrderContainer" style="margin: 12px 0; display: none; align-items: center; gap: 10px;">
+            <input type="checkbox" id="aroundOrderCheckbox" checked style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
+            <label for="aroundOrderCheckbox" id="lblAroundOrder" style="margin: 0; display: inline; cursor: pointer; font-weight: normal; color: #ddd;">Op volgorde (ingeschakeld = volgorde, uitgeschakeld = random)</label>
+        </div>
 
         <!-- Checkout Toggle / Uitgooisuggesties Vinkje -->
         <div id="checkoutToggleContainer" style="margin: 12px 0; display: flex; align-items: center; gap: 10px;">
             <input type="checkbox" id="checkoutToggle" checked style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
             <label for="checkoutToggle" id="lblCheckoutToggle" style="margin: 0; display: inline; cursor: pointer; font-weight: normal; color: #ddd;">Toon Uitgooisuggesties (Checkouts)</label>
+        </div>
+
+        <!-- Geluid Toggle (Menu ⇄ Game Synchronisatie) -->
+        <div id="soundToggleContainer" style="margin: 12px 0; display: flex; align-items: center; gap: 10px;">
+            <input type="checkbox" id="soundToggle" checked style="width: 18px; height: 18px; margin: 0; cursor: pointer;" onchange="syncSoundSetting()">
+            <label for="soundToggle" id="lblSoundToggle" style="margin: 0; display: inline; cursor: pointer; font-weight: normal; color: #ddd;">Geluid Ingeschakeld (Spraak & Audio)</label>
         </div>
 
         <label for="player1Input" id="lblPlayer1">Naam Speler 1:</label>
@@ -544,89 +544,93 @@
     <!-- ========================================== -->
     <!-- HTML-GEDEELTE: Scorebord Scherm            -->
     <!-- ========================================== -->
-    <div id="gameDiv" class="game-container" style="display:none;">
-        <img src="dartbord.jpg" class="corner-dart top-left" alt="">
-        <img src="dartbord.jpg" class="corner-dart top-right" alt="">
-        <img src="dartbord.jpg" class="corner-dart bottom-left" alt="">
-        <img src="dartbord.jpg" class="corner-dart bottom-right" alt="">
-        
-        <div id="winnerBanner">🏆 <span id="winnerText"></span> GEWONNEN! 🏆</div>
+   <div id="gameDiv" class="game-container" style="display:none;">
+    <img src="dartbord.jpg" class="corner-dart top-left" alt="">
+    <img src="dartbord.jpg" class="corner-dart top-right" alt="">
+    <img src="dartbord.jpg" class="corner-dart bottom-left" alt="">
+    <img src="dartbord.jpg" class="corner-dart bottom-right" alt="">
+    
+    <div id="winnerBanner">🏆 <span id="winnerText"></span> GEWONNEN! 🏆</div>
 
-        <div class="tv-board">
-            <div class="tv-header-bar">
-                <div class="match-gametype" id="matchGameTypeDisplay" style="color: #f39c12; font-weight: bold;">501</div>
-                <span id="tvHeaderTitle">First to 3 Sets</span>
-                <div class="match-timer"><span id="matchTimerDisplay">00:00</span></div>
-            </div>
-            <div class="tv-row-header">
-                <div id="thPlayer">Darter</div>
-                <div id="thSets">Sets</div>
-                <div></div>
-                <div id="thLegs">Legs</div>
-                <div>Score</div>
-            </div>
+    <div class="tv-board">
+        <div class="tv-header-bar">
+            <div class="match-gametype" id="matchGameTypeDisplay" style="color: #f39c12; font-weight: bold;">501</div>
+            <span id="tvHeaderTitle">First to 3 Sets</span>
+            <div class="match-timer"><span id="matchTimerDisplay">00:00</span></div>
+        </div>
+        <div class="tv-row-header">
+            <div id="thPlayer">Darter</div>
+            <div id="thSets">Sets</div>
+            <div></div>
+            <div id="thLegs">Legs</div>
+            <div>Score</div>
+        </div>
 
-            <!-- Speler 1 Rij -->
-            <div id="rowP1" class="player-row active">
-                <div class="p-name">
-                    <div>
-                        <div id="lblP1Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 1</div>
-                        <span id="nameP1">Frans</span>
-                    </div>
+        <!-- Speler 1 Rij -->
+        <div id="rowP1" class="player-row active">
+            <div class="p-name">
+                <div>
+                    <div id="lblP1Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 1</div>
+                    <span id="nameP1">Frans</span>
                 </div>
-                <div id="setsP1" class="p-stat">0</div>
+            </div>
+            <div id="setsP1" class="p-stat">0</div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
                 <button class="btn-manual" onclick="openManualKeypad(1)" title="Handmatig invoeren">🔢</button>
-                <div id="legsP1" class="p-stat">0</div>
-                <div id="scoreP1" class="p-score">501</div>
                 <div id="checkoutP1" class="checkout-bar"></div>
             </div>
+            <div id="legsP1" class="p-stat">0</div>
+            <div id="scoreP1" class="p-score">501</div>
+        </div>
 
-            <!-- Speler 2 Rij -->
-            <div id="rowP2" class="player-row">
-                <div class="p-name">
-                    <div>
-                        <div id="lblP2Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 2</div>
-                        <span id="nameP2">Patrick</span>
-                    </div>
+        <!-- Speler 2 Rij -->
+        <div id="rowP2" class="player-row">
+            <div class="p-name">
+                <div>
+                    <div id="lblP2Role" style="font-size: 10px; color: #f39c12; text-transform: uppercase;">Speler 2</div>
+                    <span id="nameP2">Patrick</span>
                 </div>
-                <div id="setsP2" class="p-stat">0</div>
+            </div>
+            <div id="setsP2" class="p-stat">0</div>
+            <div style="display: flex; flex-direction: column; align-items: center;">
                 <button class="btn-manual" onclick="openManualKeypad(2)" title="Handmatig invoeren">🔢</button>
-                <div id="legsP2" class="p-stat">0</div>
-                <div id="scoreP2" class="p-score">501</div>
                 <div id="checkoutP2" class="checkout-bar"></div>
             </div>
-        </div>
-
-        <!-- In-Game Knoppenbalk -->
-        <div class="button-bar">
-            <button onclick="terugNaarInstellingen()" style="background: #34495e; font-size: 13px; padding: 0 10px; height: 38px !important;">Menu ⚙️</button>
-            <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn" style="background: #c0392b; height: 38px !important;">Mic Off 🎙️</button>
-            <button class="btn-undo" id="undoBtn" onclick="laatsteActieTerugdraaien()" style="background: #e67e22; height: 38px !important;">Herstel ↩️</button>
-            <button class="btn-square" onclick="openStatsModal()" style="background: #8e44ad; height: 38px !important;">Stats⚡</button>
-            <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" style="background: #f39c12; height: 38px !important;">Fullscreen</button>
-            <button class="btn-square" id="langBtnGame" onclick="toggleLanguage()" style="background: #2563eb; height: 38px !important;">ENG</button>
-            <button id="resetLegBtn" onclick="resetSpel()" style="background: #7f8c8d; font-size: 13px; padding: 0 10px; height: 38px !important;">Reset Leg</button>
-        </div>
-
-        <div id="transcript">Gehoord: (wacht op commando...)</div>
-        <div id="speechTip">💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">Frans</span> 60" of "<span id="tipName2">Patrick</span> dubbel 20 en 16"</div>
-
-        <!-- Geschiedenis -->
-        <div class="history-grid">
-            <div class="history-box">
-                <h4 id="histTitleP1">Frans</h4>
-                <ul id="historyListP1" class="history-list">
-                    <li id="histEmpty1" style="color: #666;">Nog niks gegooid</li>
-                </ul>
-            </div>
-            <div class="history-box">
-                <h4 id="histTitleP2">Patrick</h4>
-                <ul id="historyListP2" class="history-list">
-                    <li id="histEmpty2" style="color: #666;">Nog niks gegooid</li>
-                </ul>
-            </div>
+            <div id="legsP2" class="p-stat">0</div>
+            <div id="scoreP2" class="p-score">501</div>
         </div>
     </div>
+
+    <!-- In-Game Knoppenbalk -->
+    <div class="button-bar">
+        <button onclick="terugNaarInstellingen()" style="background: #34495e; font-size: 13px; padding: 0 10px; height: 38px !important;">Menu ⚙️</button>
+        <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn" style="background: #c0392b; height: 38px !important;">Mic Off 🎙️</button>
+        <button class="btn-undo" id="undoBtn" onclick="laatsteActieTerugdraaien()" style="background: #e67e22; height: 38px !important;">Herstel ↩</button>
+        <button class="btn-square" onclick="openStatsModal()" style="background: #8e44ad; height: 38px !important;">Stats⚡</button>
+        <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" style="background: #f39c12; height: 38px !important;">Fullscreen</button>
+        <button class="btn-square" id="langBtnGame" onclick="toggleLanguage()" style="background: #2563eb; height: 38px !important;">ENG</button>
+        <button id="resetLegBtn" onclick="resetSpel()" style="background: #7f8c8d; font-size: 13px; padding: 0 10px; height: 38px !important;">Reset Leg</button>
+    </div>
+
+    <div id="transcript">Gehoord: (wacht op commando...)</div>
+    <div id="speechTip">💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">Frans</span> 60" of "<span id="tipName2">Patrick</span> dubbel 20 en 16"</div>
+
+    <!-- Geschiedenis -->
+    <div class="history-grid">
+        <div class="history-box">
+            <h4 id="histTitleP1">Frans</h4>
+            <ul id="historyListP1" class="history-list">
+                <li id="histEmpty1" style="color: #666;">Nog niks gegooid</li>
+            </ul>
+        </div>
+        <div class="history-box">
+            <h4 id="histTitleP2">Patrick</h4>
+            <ul id="historyListP2" class="history-list">
+                <li id="histEmpty2" style="color: #666;">Nog niks gegooid</li>
+            </ul>
+        </div>
+    </div>
+</div>
 
     <!-- Modals -->
     <div id="statsModal" class="modal">
@@ -679,7 +683,6 @@
                 <button id="tipsLangBtn" onclick="toggleTipsLanguage()" style="background: #e67e22; width: auto; font-size: 11px; padding: 3px 8px; height: 28px;">ENG / NL</button>
             </div>
             <div id="tipsModalBody" style="font-size: 13px; color: #ddd; line-height: 1.6; max-height: 350px; overflow-y: auto;"></div>
-            <!-- PayPal Donatie Link (Punt 6) -->
             <div style="margin-top: 15px; text-align: center; border-top: 1px solid #444; padding-top: 12px;">
                 <a href="https://paypal.me" target="_blank" style="background: #0070ba; color: white; padding: 6px 14px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 12px; display: inline-block;">☕ Support via PayPal Donatie</a>
             </div>
@@ -692,6 +695,8 @@
     <script>
         let huidigSpel = "501";
         let targetSets = 3;
+        let targetLegs = 3;
+        let matchMode = "sets"; // 'sets' of 'legs'
         let spelers = { name1: "frans", name2: "patrick", name1Mooi: "Frans", name2Mooi: "Patrick" };
         let scores = { score1: 501, score2: 501 };
         let legs = { leg1: 0, leg2: 0 };
@@ -704,13 +709,16 @@
         let timerInterval = null;
         let secondsElapsed = 0;
         let watchdogTimer = null;
+        let setupWatchdogTimer = null;
         let lastRecognitionEventTime = Date.now();
+        let lastSetupEventTime = Date.now();
         
         let currentLang = 'nl';
         let setupRecognition = null;
         let isSetupLuisteren = false;
         let tipsModalLang = 'nl';
         let activeInputEl = null;
+        let soundEnabled = true;
 
         // Handmatige Invoer Toetsenbord State
         let manualTargetPlayer = 1;
@@ -721,6 +729,7 @@
         window.addEventListener('DOMContentLoaded', () => {
             let savedP1 = localStorage.getItem('dart_p1');
             let savedP2 = localStorage.getItem('dart_p2');
+            let savedSound = localStorage.getItem('dart_sound');
             if (savedP1) {
                 document.getElementById('player1Input').value = savedP1;
                 spelers.name1 = savedP1.toLowerCase();
@@ -731,14 +740,25 @@
                 spelers.name2 = savedP2.toLowerCase();
                 spelers.name2Mooi = savedP2;
             }
+            if (savedSound !== null) {
+                soundEnabled = (savedSound === 'true');
+                let sToggle = document.getElementById('soundToggle');
+                if (sToggle) sToggle.checked = soundEnabled;
+            }
             handleSpelModeChange();
         });
 
+        function syncSoundSetting() {
+            let sToggle = document.getElementById('soundToggle');
+            if (sToggle) {
+                soundEnabled = sToggle.checked;
+                localStorage.setItem('dart_sound', soundEnabled);
+            }
+        }
+
         function clearAndFocusInput(el) {
             activeInputEl = el;
-            if (el) {
-                el.value = "";
-            }
+            if (el) el.value = "";
         }
 
         function toggleVirtualKeyboardOnFocus(el) {
@@ -885,38 +905,59 @@
             voegToeAanHistorie(spelerNummer, `-${gegooideScore} (over:${nieuweScore})`);
 
             if (nieuweScore === 0) {
-                if (spelerNummer === 1) legs.leg1++;
-                else legs.leg2++;
+                if (matchMode === 'sets') {
+                    if (spelerNummer === 1) legs.leg1++;
+                    else legs.leg2++;
 
-                let setGewonnen = false;
-                if (legs.leg1 >= 3) { sets.set1++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
-                else if (legs.leg2 >= 3) { sets.set2++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
+                    let setGewonnen = false;
+                    if (legs.leg1 >= 3) { sets.set1++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
+                    else if (legs.leg2 >= 3) { sets.set2++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
 
-                if (sets.set1 >= targetSets || sets.set2 >= targetSets) {
-                    document.getElementById('winnerText').innerText = spelerNaamMooi.toUpperCase();
-                    document.getElementById('winnerBanner').style.display = 'block';
-                    speakFeedback(`${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
-                    
-                    if (timerInterval) clearInterval(timerInterval);
-                    if (watchdogTimer) clearInterval(watchdogTimer);
-                    registreerWinst(spelerNaamMooi, (spelerNummer === 1) ? spelers.name2Mooi : spelers.name1Mooi);
+                    if (sets.set1 >= targetSets || sets.set2 >= targetSets) {
+                        eindigWedstrijd(spelerNummer, spelerNaamMooi);
+                        return;
+                    }
 
+                    scores.score1 = parseInt(huidigSpel, 10);
+                    scores.score2 = parseInt(huidigSpel, 10);
                     wisseGeschiedenis();
-                    updateScherm();
-                    return;
+
+                    if (setGewonnen) speakFeedback(`${spelerNaamMooi} wint de set!`);
+                    else speakFeedback(`${spelerNaamMooi} wint de leg!`);
+                } else {
+                    // Legs mode
+                    if (spelerNummer === 1) legs.leg1++;
+                    else legs.leg2++;
+
+                    if (legs.leg1 >= targetLegs || legs.leg2 >= targetLegs) {
+                        eindigWedstrijd(spelerNummer, spelerNaamMooi);
+                        return;
+                    }
+
+                    scores.score1 = parseInt(huidigSpel, 10);
+                    scores.score2 = parseInt(huidigSpel, 10);
+                    wisseGeschiedenis();
+                    speakFeedback(`${spelerNaamMooi} wint de leg!`);
                 }
-
-                scores.score1 = parseInt(huidigSpel, 10);
-                scores.score2 = parseInt(huidigSpel, 10);
-                wisseGeschiedenis();
-
-                if (setGewonnen) speakFeedback(`${spelerNaamMooi} wint de set!`);
-                else speakFeedback(`${spelerNaamMooi} wint de leg!`);
             } else {
                 if (gegooideScore === 180) speak180();
                 else speakFeedback(gegooideScore.toString());
             }
 
+            updateScherm();
+        }
+
+        function eindigWedstrijd(spelerNummer, spelerNaamMooi) {
+            document.getElementById('winnerText').innerText = spelerNaamMooi.toUpperCase();
+            document.getElementById('winnerBanner').style.display = 'block';
+            speakFeedback(`${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
+            
+            if (timerInterval) clearInterval(timerInterval);
+            if (watchdogTimer) clearInterval(watchdogTimer);
+            if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
+            registreerWinst(spelerNaamMooi, (spelerNummer === 1) ? spelers.name2Mooi : spelers.name1Mooi);
+
+            wisseGeschiedenis();
             updateScherm();
         }
 
@@ -988,7 +1029,7 @@
                 if(headerEl) headerEl.innerText = 'Voice Commands Tips 💡';
                 if(btnEl) btnEl.innerText = 'Nederlands (NL)';
                 if(bodyEl) bodyEl.innerHTML = `
-                    <p style="margin: 4px 0;"><strong>Game & Sets (One-Shot):</strong><br>• "Choose 501 three sets"<br>• "Choose 301 five sets"<br>• "Choose tactics"</p>
+                    <p style="margin: 4px 0;"><strong>Game & Length (One-Shot):</strong><br>• "Choose 501 three sets / three legs"<br>• "Choose 301 five sets"<br>• "Choose tactics"<br>• "Choose around the clock"</p>
                     <p style="margin: 8px 0;"><strong>Global Commands (Everywhere):</strong><br>• "Menu" / "Open home"<br>• "Open tips"<br>• "Undo"<br>• "Reset"<br>• "Fullscreen"<br>• "Open stats"</p>
                     <p style="margin: 8px 0;"><strong>During Match:</strong><br>• "[Player Name] 60" or "Player 1 60"</p>
                 `;
@@ -996,7 +1037,7 @@
                 if(headerEl) headerEl.innerText = 'Spraakcommando\'s Tips 💡';
                 if(btnEl) btnEl.innerText = 'English (ENG)';
                 if(bodyEl) bodyEl.innerHTML = `
-                    <p style="margin: 4px 0;"><strong>Spel & Sets in één zin:</strong><br>• "Kies 501 drie sets"<br>• "Kies 301 vijf sets"<br>• "Kies tactics" / "Ga naar tactics"</p>
+                    <p style="margin: 4px 0;"><strong>Spel & Sets/Legs in één zin:</strong><br>• "Kies 501 drie sets" / "kiespel 501 drie legs"<br>• "Kies 301 vijf sets"<br>• "Kies tactics"<br>• "Kies around the clock" / "kiespel 4"</p>
                     <p style="margin: 8px 0;"><strong>Globale commando's (Werkt overal):</strong><br>• "Menu" / "Home"<br>• "Tips"<br>• "Herstel"<br>• "Reset"<br>• "Fullscreen"<br>• "Open stats" / "Stand"</p>
                     <p style="margin: 8px 0;"><strong>Tijdens de wedstrijd:</strong><br>• "[Naam] 60" of "Speler 1 60" of "Dubbel 20 en 16"</p>
                 `;
@@ -1017,6 +1058,8 @@
             let startBtn = document.getElementById('startBtn');
             let setupSpeechTip = document.getElementById('setupSpeechTip');
             let lblCheckoutToggle = document.getElementById('lblCheckoutToggle');
+            let lblSoundToggle = document.getElementById('lblSoundToggle');
+            let lblAroundOrder = document.getElementById('lblAroundOrder');
 
             if (currentLang === 'eng') {
                 if(titleEl) titleEl.innerText = 'Game Settings';
@@ -1025,6 +1068,8 @@
                 if(lblP2) lblP2.innerText = 'Player 2 Name:';
                 if(startBtn) startBtn.innerText = 'Start Game';
                 if(lblCheckoutToggle) lblCheckoutToggle.innerText = 'Show Checkout Suggestions';
+                if(lblSoundToggle) lblSoundToggle.innerText = 'Sound Enabled (Speech & Audio)';
+                if(lblAroundOrder) lblAroundOrder.innerText = 'In Order (checked = order, unchecked = random)';
                 if(setupSpeechTip) setupSpeechTip.innerHTML = '💡 Tip: Click "Mic Off" to start voice recognition';
             } else {
                 if(titleEl) titleEl.innerText = 'Spelinstellingen';
@@ -1033,6 +1078,8 @@
                 if(lblP2) lblP2.innerText = 'Naam Speler 2:';
                 if(startBtn) startBtn.innerText = 'Start Wedstrijd';
                 if(lblCheckoutToggle) lblCheckoutToggle.innerText = 'Toon Uitgooisuggesties (Checkouts)';
+                if(lblSoundToggle) lblSoundToggle.innerText = 'Geluid Ingeschakeld (Spraak & Audio)';
+                if(lblAroundOrder) lblAroundOrder.innerText = 'Op volgorde (ingeschakeld = volgorde, uitgeschakeld = random)';
                 if(setupSpeechTip) setupSpeechTip.innerHTML = '💡 Tip: Klik op "Mic Off" om te starten met spraakherkenning';
             }
             updateGameDropdownOptions();
@@ -1071,6 +1118,9 @@
             let label = document.getElementById('labelSetsMode');
             let select = document.getElementById('setsMode');
             let spelModeVal = document.getElementById('spelMode').value;
+            let aroundContainer = document.getElementById('aroundOrderContainer');
+
+            if (aroundContainer) aroundContainer.style.display = 'none';
 
             if (spelModeVal === 'tactics') {
                 label.innerText = (currentLang === 'eng') ? 'Tactics Options:' : 'Tactics Spelopties:';
@@ -1083,36 +1133,65 @@
                 `;
             } else if (spelModeVal === 'around_clock') {
                 label.innerText = (currentLang === 'eng') ? 'Around the Clock Options:' : 'Around the Clock Opties:';
+                if (aroundContainer) aroundContainer.style.display = 'flex';
                 select.innerHTML = currentLang === 'eng' ? `
-                    <option value="standard">Standard (1 to 20 & Bull)</option>
-                    <option value="singles">Singles Only (1 to 20)</option>
-                    <option value="doubles">Doubles Only (D1 to D20)</option>
-                    <option value="triples">Triples Only (T1 to T20)</option>
-                    <option value="random">Random Order</option>
-                    <option value="quick">Quick Round (1 to 10)</option>
+                    <option value="standard">Standard (1 to 20 & Red/Green Bull) (Option 1)</option>
+                    <option value="singles">Singles Only (1 to 20) (Option 2)</option>
+                    <option value="doubles">Doubles Only (D1 to D20 + Green Bull) (Option 3)</option>
+                    <option value="triples">Triples Only (T1 to T20 + Red Bull) (Option 4)</option>
+                    <option value="random">Random / Willekeurig (+ Both Bulls) (Option 5)</option>
+                    <option value="quick">Count Down (Red Bull first + 20 to 1) (Option 6)</option>
                 ` : `
-                    <option value="standard">Standaard (1 t/m 20 & Bull)</option>
-                    <option value="singles">Alleen Singles (1 t/m 20)</option>
-                    <option value="doubles">Alleen Doubles (D1 t/m D20)</option>
-                    <option value="triples">Alleen Triples (T1 t/m T20)</option>
-                    <option value="random">Willekeurig / Random</option>
-                    <option value="quick">Snelle Ronde (1 t/m 10)</option>
+                    <option value="standard">Standaard (1 t/m 20 & Rode en Groene Bull) (Optie 1)</option>
+                    <option value="singles">Alleen Singles (1 t/m 20) (Optie 2)</option>
+                    <option value="doubles">Alleen Doubles (D1 t/m D20 + Groene Bull) (Optie 3)</option>
+                    <option value="triples">Alleen Triples (T1 t/m T20 + Rode Bull) (Optie 4)</option>
+                    <option value="random">Willekeurig / Random (+ Beide Bulls) (Optie 5)</option>
+                    <option value="quick">Terug Tellend (Rode Bull eerst + 20 t/m 1) (Optie 6)</option>
                 `;
+                checkAroundOrderCheckboxState();
             } else {
-                label.innerText = (currentLang === 'eng') ? 'Match Length (Sets):' : 'Wedstrijdlengte (Sets):';
+                label.innerText = (currentLang === 'eng') ? 'Match Length (Sets / Legs):' : 'Wedstrijdlengte (Sets / Legs):';
                 select.innerHTML = currentLang === 'eng' ? `
-                    <option value="3">First to 3 Sets (Option 1)</option>
-                    <option value="5">First to 5 Sets (Option 2)</option>
-                    <option value="7">First to 7 Sets (Option 3)</option>
-                    <option value="1">1 Set (Option 4)</option>
+                    <option value="3_sets">First to 3 Sets (Option 1)</option>
+                    <option value="5_sets">First to 5 Sets (Option 2)</option>
+                    <option value="7_sets">First to 7 Sets (Option 3)</option>
+                    <option value="1_set">1 Set (Option 4)</option>
+                    <option value="3_legs">First to 3 Legs (Option 5)</option>
+                    <option value="5_legs">First to 5 Legs (Option 6)</option>
+                    <option value="7_legs">First to 7 Legs (Option 7)</option>
+                    <option value="10_legs">First to 10 Legs (Option 8)</option>
                 ` : `
-                    <option value="3">First to 3 Sets (Optie 1)</option>
-                    <option value="5">First to 5 Sets (Optie 2)</option>
-                    <option value="7">First to 7 Sets (Optie 3)</option>
-                    <option value="1">1 Set (Optie 4)</option>
+                    <option value="3_sets">First to 3 Sets (Optie 1)</option>
+                    <option value="5_sets">First to 5 Sets (Optie 2)</option>
+                    <option value="7_sets">First to 7 Sets (Optie 3)</option>
+                    <option value="1_set">1 Set (Optie 4)</option>
+                    <option value="3_legs">First to 3 Legs (Optie 5)</option>
+                    <option value="5_legs">First to 5 Legs (Optie 6)</option>
+                    <option value="7_legs">First to 7 Legs (Optie 7)</option>
+                    <option value="10_legs">First to 10 Legs (Optie 8)</option>
                 `;
             }
         }
+
+        function checkAroundOrderCheckboxState() {
+            let select = document.getElementById('setsMode');
+            let cb = document.getElementById('aroundOrderCheckbox');
+            if (!select || !cb) return;
+            let val = select.value;
+            if (val === 'random' || val === 'quick') {
+                cb.checked = false;
+                cb.disabled = true;
+            } else {
+                cb.disabled = false;
+            }
+        }
+
+        document.getElementById('setsMode').addEventListener('change', () => {
+            if (document.getElementById('spelMode').value === 'around_clock') {
+                checkAroundOrderCheckboxState();
+            }
+        });
 
         function handleSpelModeChange() {
             updateSetsDropdownLabels();
@@ -1122,7 +1201,6 @@
             
             if (spelSelect && displayEl) displayEl.innerText = spelSelect.value.toUpperCase();
 
-            // Uitgooi-vinkje automatisch verbergen bij Tactics of Around the Clock (Punt 3)
             if (checkoutContainer) {
                 if (spelSelect.value === 'tactics' || spelSelect.value === 'around_clock') {
                     checkoutContainer.style.display = 'none';
@@ -1161,8 +1239,12 @@
             if(resetLegBtn) resetLegBtn.innerText = currentLang === 'eng' ? 'Reset Leg' : 'Reset Leg';
 
             let tvHeaderTitle = document.getElementById('tvHeaderTitle');
-            if(tvHeaderTitle && tvHeaderTitle.innerText.includes('First to')) {
-                tvHeaderTitle.innerText = `First to ${targetSets} Sets`;
+            if(tvHeaderTitle) {
+                if (matchMode === 'sets') {
+                    tvHeaderTitle.innerText = `First to ${targetSets} Sets`;
+                } else {
+                    tvHeaderTitle.innerText = `First to ${targetLegs} Legs`;
+                }
             }
         }
 
@@ -1178,7 +1260,7 @@
 
         function isGeldigCommando(text) {
             let t = text.toLowerCase();
-            return (t.includes("menu") || t.includes("herstel") || t.includes("undo") || t.includes("fullscreen") || t.includes("stats") || t.includes("reset") || t.includes("start") || t.includes("kies") || t.includes("choose") || t.includes("select") || t.includes("verander") || t.includes("change") || t.includes("tips") || t.includes("uitleg") || t.includes("home") || t.includes("instellingen") || t.includes("tactics") || t.includes("tectics") || t.includes("501") || t.includes("301") || t.includes("701") || t.includes("around the clock") || t.includes("speler 1") || t.includes("speler 2") || t.includes("player 1") || t.includes("player 2") || t.includes(spelers.name1) || t.includes(spelers.name2) || t.includes("dubbel") || t.includes("trippel") || t.includes("bull") || /\d+/.test(t));
+            return (t.includes("menu") || t.includes("herstel") || t.includes("undo") || t.includes("fullscreen") || t.includes("stats") || t.includes("reset") || t.includes("start") || t.includes("kies") || t.includes("kiespel") || t.includes("choose") || t.includes("select") || t.includes("verander") || t.includes("change") || t.includes("tips") || t.includes("uitleg") || t.includes("home") || t.includes("instellingen") || t.includes("tactics") || t.includes("tectics") || t.includes("501") || t.includes("301") || t.includes("701") || t.includes("around the clock") || t.includes("spel 4") || t.includes("speler 1") || t.includes("speler 2") || t.includes("player 1") || t.includes("player 2") || t.includes(spelers.name1) || t.includes(spelers.name2) || t.includes("dubbel") || t.includes("trippel") || t.includes("bull") || /\d+/.test(t));
         }
 
         function handleGlobalCommando(cmd) {
@@ -1226,12 +1308,12 @@
         }
 
         function probeerNaamTeVeranderen(cmd) {
-            let matchNL = cmd.match(/verander\s+(.+?)\s+in\s+(.+)/);
-            let matchENG = cmd.match(/change\s+(.+?)\s+to\s+(.+)/);
+            let matchNL = cmd.match(/(?:verander\s+)?(?:de\s+)?(speler\s+[12]|player\s+[12]|frans|patrick)\s+(?:in\s+)?(.+)/i);
+            let matchENG = cmd.match(/(?:change\s+)?(?:the\s+)?(player\s+[12]|speler\s+[12]|frans|patrick)\s+(?:to\s+)?(.+)/i);
             let match = matchNL || matchENG;
 
             if (match) {
-                let doel = match[1].trim();
+                let doel = match[1].trim().toLowerCase();
                 let nieuweNaam = match[2].trim();
                 nieuweNaam = nieuweNaam.charAt(0).toUpperCase() + nieuweNaam.slice(1);
 
@@ -1240,12 +1322,12 @@
                 let curP1 = p1Input.value.trim().toLowerCase();
                 let curP2 = p2Input.value.trim().toLowerCase();
 
-                if (doel.includes("speler 1") || doel.includes("player 1") || doel === "1" || doel === "één" || doel === curP1) {
+                if (doel.includes("1") || doel.includes("één") || doel.includes("een") || doel === curP1) {
                     p1Input.value = nieuweNaam;
                     saveNamesToLocalStorage();
                     speakFeedback(`Speler 1 veranderd in ${nieuweNaam}`);
                     return true;
-                } else if (doel.includes("speler 2") || doel.includes("player 2") || doel === "2" || doel === "twee" || doel === curP2) {
+                } else if (doel.includes("2") || doel.includes("twee") || doel === curP2) {
                     p2Input.value = nieuweNaam;
                     saveNamesToLocalStorage();
                     speakFeedback(`Speler 2 veranderd in ${nieuweNaam}`);
@@ -1255,9 +1337,14 @@
             return false;
         }
 
+        // ==========================================
+        // MENU RESET LOGICA (Met automatische uitschakeling bij spelstart)
+        // ==========================================
         function initSetupSpraak() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
             if (!SpeechRecognition) return;
+
+            if (setupRecognition) { try { setupRecognition.stop(); } catch(e) {} }
 
             setupRecognition = new SpeechRecognition();
             setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
@@ -1265,11 +1352,13 @@
             setupRecognition.interimResults = false;
 
             setupRecognition.onstart = function() {
+                lastSetupEventTime = Date.now();
                 isSetupLuisteren = true;
                 updateSetupListenUI(true);
             };
 
             setupRecognition.onresult = function(event) {
+                lastSetupEventTime = Date.now();
                 const rawResult = event.results[event.results.length - 1][0].transcript.trim();
                 if (!isGeldigCommando(rawResult)) return;
 
@@ -1282,6 +1371,7 @@
             };
 
             setupRecognition.onerror = function(event) {
+                lastSetupEventTime = Date.now();
                 updateSetupListenUI(false);
                 if (event.error === 'not-allowed' || event.error === 'service-not-allowed') isSetupLuisteren = false;
             };
@@ -1297,6 +1387,16 @@
                     updateSetupListenUI(false);
                 }
             };
+
+            if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
+            setupWatchdogTimer = setInterval(() => {
+                if (isSetupLuisteren) {
+                    if (Date.now() - lastSetupEventTime > 15000) {
+                        lastSetupEventTime = Date.now();
+                        try { setupRecognition.stop(); } catch (e) {}
+                    }
+                }
+            }, 5000);
         }
 
         function toggleSetupLuisteren() {
@@ -1304,10 +1404,12 @@
             if (!isSetupLuisteren) {
                 updateSetupListenUI(false, true);
                 isSetupLuisteren = true;
+                lastSetupEventTime = Date.now();
                 setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
                 try { setupRecognition.start(); } catch(e) { isSetupLuisteren = false; updateSetupListenUI(false); }
             } else {
                 isSetupLuisteren = false;
+                if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
                 try { setupRecognition.stop(); } catch(e) {}
                 updateSetupListenUI(false);
             }
@@ -1341,7 +1443,7 @@
                 handleSpelModeChange();
                 speakFeedback("Tactics gekozen");
                 return;
-            } else if (cmd.includes("around the clock")) {
+            } else if (cmd.includes("around the clock") || cmd.includes("spel 4") || cmd.includes("game 4") || cmd.includes("kiespel 4")) {
                 document.getElementById('spelMode').value = "around_clock";
                 handleSpelModeChange();
                 speakFeedback("Around the Clock gekozen");
@@ -1370,28 +1472,46 @@
             } else if (cmd.includes("optie 2") || cmd.includes("option 2") || cmd.includes("5 sets") || cmd.includes("vijf sets") || (cmd.includes("5") && (cmd.includes("set") || cmd.includes("sets")))) {
                 if(setsSelect.options.length > 1) setsSelect.selectedIndex = 1;
                 speakFeedback("Optie 2 gekozen");
-            } else if (cmd.includes("7 sets") || cmd.includes("zeven sets") || (cmd.includes("7") && (cmd.includes("set") || cmd.includes("sets")))) {
+            } else if (cmd.includes("optie 3") || cmd.includes("option 3") || cmd.includes("7 sets") || cmd.includes("zeven sets") || (cmd.includes("7") && (cmd.includes("set") || cmd.includes("sets")))) {
                 if(setsSelect.options.length > 2) setsSelect.selectedIndex = 2;
-                speakFeedback("7 sets");
-            } else if (cmd.includes("1 set") || cmd.includes("een set") || cmd.includes("één set") || (cmd.includes("1") && (cmd.includes("set") || cmd.includes("sets")))) {
+                speakFeedback("Optie 3 gekozen");
+            } else if (cmd.includes("optie 4") || cmd.includes("option 4") || cmd.includes("1 set") || cmd.includes("een set") || cmd.includes("één set") || (cmd.includes("1") && (cmd.includes("set") || cmd.includes("sets")))) {
                 if(setsSelect.options.length > 3) setsSelect.selectedIndex = 3;
-                speakFeedback("1 set");
+                speakFeedback("Optie 4 gekozen");
+            } else if (cmd.includes("optie 5") || cmd.includes("option 5") || cmd.includes("3 legs") || cmd.includes("drie legs")) {
+                if(setsSelect.options.length > 4) setsSelect.selectedIndex = 4;
+                speakFeedback("Optie 5 gekozen");
+            } else if (cmd.includes("optie 6") || cmd.includes("option 6") || cmd.includes("5 legs") || cmd.includes("vijf legs")) {
+                if(setsSelect.options.length > 5) setsSelect.selectedIndex = 5;
+                speakFeedback("Optie 6 gekozen");
+            } else if (cmd.includes("optie 7") || cmd.includes("option 7") || cmd.includes("7 legs") || cmd.includes("zeven legs")) {
+                if(setsSelect.options.length > 6) setsSelect.selectedIndex = 6;
+                speakFeedback("Optie 7 gekozen");
+            } else if (cmd.includes("optie 8") || cmd.includes("option 8") || cmd.includes("10 legs") || cmd.includes("tien legs")) {
+                if(setsSelect.options.length > 7) setsSelect.selectedIndex = 7;
+                speakFeedback("Optie 8 gekozen");
             }
 
             if (cmd.includes("start wedstrijd") || cmd.includes("start game") || cmd.includes("start")) {
                 if (isSetupLuisteren) {
                     isSetupLuisteren = false;
+                    if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
                     try { setupRecognition.stop(); } catch(e) {}
                 }
                 startSpel();
             }
         }
 
+        // ==========================================
+        // 501 SPEL & START LOGICA (Uitschakelen Menureset)
+        // ==========================================
         function startSpel() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             let wasSetupListening = isSetupLuisteren;
+            
             if (isSetupLuisteren) {
                 isSetupLuisteren = false;
+                if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
                 try { setupRecognition.stop(); } catch(e) {}
             }
 
@@ -1401,13 +1521,10 @@
             let setsModeVal = document.getElementById('setsMode').value;
             saveNamesToLocalStorage();
 
-            // Around the Clock WIP Pop-up (Punt 4)
             if (huidigSpel === 'around_clock') {
-                alert(currentLang === 'eng' ? "Work in progress / update coming soon" : "Work in progress / update volgt");
-                if (wasSetupListening) {
-                    isSetupLuisteren = true;
-                    try { setupRecognition.start(); } catch(e) {}
-                }
+                let aroundVariant = setsModeVal;
+                let aroundOrder = document.getElementById('aroundOrderCheckbox').checked ? 'order' : 'random';
+                window.location.href = `around.html?p1=${encodeURIComponent(p1Input)}&p2=${encodeURIComponent(p2Input)}&variant=${aroundVariant}&order=${aroundOrder}`;
                 return;
             }
 
@@ -1416,7 +1533,16 @@
                 return;
             }
 
-            targetSets = parseInt(setsModeVal, 10);
+            if (setsModeVal.includes('_sets')) {
+                matchMode = 'sets';
+                targetSets = parseInt(setsModeVal, 10);
+            } else if (setsModeVal.includes('_legs')) {
+                matchMode = 'legs';
+                targetLegs = parseInt(setsModeVal, 10);
+            } else {
+                matchMode = 'sets';
+                targetSets = parseInt(setsModeVal, 10) || 3;
+            }
 
             spelers.name1 = p1Input.toLowerCase();
             spelers.name2 = p2Input.toLowerCase();
@@ -1427,7 +1553,12 @@
             document.getElementById('nameP2').innerText = spelers.name2Mooi;
             document.getElementById('histTitleP1').innerText = spelers.name1Mooi;
             document.getElementById('histTitleP2').innerText = spelers.name2Mooi;
-            document.getElementById('tvHeaderTitle').innerText = `First to ${targetSets} Sets`;
+            
+            if (matchMode === 'sets') {
+                document.getElementById('tvHeaderTitle').innerText = `First to ${targetSets} Sets`;
+            } else {
+                document.getElementById('tvHeaderTitle').innerText = `First to ${targetLegs} Legs`;
+            }
 
             let startScore = parseInt(huidigSpel, 10);
             scores.score1 = startScore;
@@ -1470,6 +1601,7 @@
             window.scrollTo({ top: 0, behavior: 'smooth' });
             if (isLuisteren) { 
                 isLuisteren = false;
+                if (watchdogTimer) clearInterval(watchdogTimer);
                 try { recognition.stop(); } catch(e) {}
                 updateStatusUI(false);
             }
@@ -1585,10 +1717,6 @@
                 document.getElementById('transcript').innerText = `Gehoord: "${zin}" ➔ Actie uitgevoerd`;
                 return;
             }
-            if (probeerNaamTeVeranderen(gewijzigdeZin)) {
-                document.getElementById('transcript').innerText = `Gehoord: "${zin}" ➔ Naam gewijzigd`;
-                return;
-            }
 
             const isSpeler1 = gewijzigdeZin.includes(spelers.name1) || gewijzigdeZin.includes("speler 1") || gewijzigdeZin.includes("player 1");
             const isSpeler2 = gewijzigdeZin.includes(spelers.name2) || gewijzigdeZin.includes("speler 2") || gewijzigdeZin.includes("player 2");
@@ -1673,33 +1801,39 @@
             voegToeAanHistorie(doelSpeler, `-${gegooideScore} (over: ${nieuweScore})`);
 
             if (nieuweScore === 0) {
-                if (doelSpeler === 1) legs.leg1++;
-                else legs.leg2++;
+                if (matchMode === 'sets') {
+                    if (doelSpeler === 1) legs.leg1++;
+                    else legs.leg2++;
 
-                let setGewonnen = false;
-                if (legs.leg1 >= 3) { sets.set1++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
-                else if (legs.leg2 >= 3) { sets.set2++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
+                    let setGewonnen = false;
+                    if (legs.leg1 >= 3) { sets.set1++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
+                    else if (legs.leg2 >= 3) { sets.set2++; legs.leg1 = 0; legs.leg2 = 0; setGewonnen = true; }
 
-                if (sets.set1 >= targetSets || sets.set2 >= targetSets) {
-                    document.getElementById('winnerText').innerText = spelerNaamMooi.toUpperCase();
-                    document.getElementById('winnerBanner').style.display = 'block';
-                    speakFeedback(`${spelerNaamMooi} heeft de wedstrijd gewonnen!`);
-                    
-                    if (timerInterval) clearInterval(timerInterval);
-                    if (watchdogTimer) clearInterval(watchdogTimer);
-                    registreerWinst(spelerNaamMooi, (doelSpeler === 1) ? spelers.name2Mooi : spelers.name1Mooi);
+                    if (sets.set1 >= targetSets || sets.set2 >= targetSets) {
+                        eindigWedstrijd(doelSpeler, spelerNaamMooi);
+                        return;
+                    }
 
+                    scores.score1 = parseInt(huidigSpel, 10);
+                    scores.score2 = parseInt(huidigSpel, 10);
                     wisseGeschiedenis();
-                    updateScherm();
-                    return;
+
+                    if (setGewonnen) speakFeedback(`${spelerNaamMooi} wint de set!`);
+                    else speakFeedback(`${spelerNaamMooi} wint de leg!`);
+                } else {
+                    if (doelSpeler === 1) legs.leg1++;
+                    else legs.leg2++;
+
+                    if (legs.leg1 >= targetLegs || legs.leg2 >= targetLegs) {
+                        eindigWedstrijd(doelSpeler, spelerNaamMooi);
+                        return;
+                    }
+
+                    scores.score1 = parseInt(huidigSpel, 10);
+                    scores.score2 = parseInt(huidigSpel, 10);
+                    wisseGeschiedenis();
+                    speakFeedback(`${spelerNaamMooi} wint de leg!`);
                 }
-
-                scores.score1 = parseInt(huidigSpel, 10);
-                scores.score2 = parseInt(huidigSpel, 10);
-                wisseGeschiedenis();
-
-                if (setGewonnen) speakFeedback(`${spelerNaamMooi} wint de set!`);
-                else speakFeedback(`${spelerNaamMooi} wint de leg!`);
             } else {
                 if (gegooideScore === 180) speak180();
                 else speakFeedback(gegooideScore.toString());
@@ -1768,7 +1902,11 @@
             if (btn && isLuisteren) btn.style.background = "#27ae60";
         }
 
+        // ==========================================
+        // AUDIO & MP3 180 BESCHERMING
+        // ==========================================
         function speakFeedback(tekst) {
+            if (!soundEnabled) return;
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 setLuisterKnopRoodTijdensAudio();
@@ -1782,6 +1920,7 @@
         }
 
         function speak180() {
+            if (!soundEnabled) return;
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             setLuisterKnopRoodTijdensAudio();
             let audio = new Audio('180.mp3');
