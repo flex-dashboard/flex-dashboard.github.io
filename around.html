@@ -1,0 +1,1091 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spraakgestuurde Dartteller - Around The Clock</title>
+    <style>
+        body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('dartsbg.jpg') no-repeat center center fixed;
+    background-size: cover;
+    color: #ffffff;
+    text-align: center;
+    margin: 0;
+    padding: 0;
+    overflow: hidden; /* Dwingt de browser om alle scrollbalken permanent te verbergen */
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    box-sizing: border-box;
+}
+        .around-game-container {
+            max-width: 1300px;
+            width: 100%;
+            margin: 0 auto;
+            background: rgba(20, 20, 20, 0.5);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            padding: 15px 12px;
+            border-radius: 10px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.7);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            text-align: left;
+            position: relative;
+            box-sizing: border-box;
+            display: flex;
+            flex-direction: column;
+            flex: 1;
+        }
+
+        /* Hoek-dartbordjes ("Punaises") */
+        .corner-dartboard {
+            position: absolute;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            border: 2px solid #f39c12;
+            object-fit: cover;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.8);
+            z-index: 10;
+        }
+        .corner-dartboard.tl { top: -17px; left: -17px; }
+        .corner-dartboard.tr { top: -17px; right: -17px; }
+        .corner-dartboard.bl { bottom: -17px; left: -17px; }
+        .corner-dartboard.br { bottom: -17px; right: -17px; }
+
+        /* Around Tabel - Compacte 7-Koloms opbouw */
+        .around-board {
+            width: 100%;
+            max-width: 580px; /* Smalle, compacte tabel zodat dartpijlen alle ruimte hebben */
+            margin: 4px auto;
+            border-collapse: collapse;
+            background: rgba(24, 24, 24, 0.45);
+            backdrop-filter: blur(4px);
+            border: 2px solid rgba(255, 255, 255, 0.15);
+            border-radius: 8px;
+            overflow: hidden;
+            table-layout: fixed;
+        }
+        .around-board tr.top-header-row {
+            background: rgba(26, 26, 26, 0.6);
+            font-size: 11px;
+            color: #aaa;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .around-board tr.top-header-row th {
+            padding: 4px 0;
+            font-weight: normal;
+            text-align: center;
+        }
+        .around-board th {
+            padding: 5px 0;
+            color: #f39c12;
+            font-size: 13px;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.15);
+            background: rgba(34, 34, 34, 0.6);
+            text-align: center;
+        }
+        
+        .around-board td {
+            height: 24px;
+            vertical-align: middle;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            font-weight: bold;
+            font-size: 11px;
+            text-align: center;
+            padding: 0 2px;
+            white-space: nowrap;
+        }
+
+        /* Exacte kolombreedtes voor 7 kolommen */
+        .col-vak-left { width: 8%; background: rgba(17, 17, 17, 0.5); color: #f39c12; border-right: 2px solid rgba(255, 255, 255, 0.15); text-align: center; }
+        .col-p1-l { width: 21%; color: #fff; text-align: center; }
+        .col-p1-r { width: 21%; color: #fff; text-align: center; border-left: 1px solid rgba(255, 255, 255, 0.2); border-right: 2px solid rgba(255, 255, 255, 0.15); }
+        
+        .col-vak-mid { width: 8%; background: rgba(17, 17, 17, 0.5); color: #f39c12; border-left: 2px solid rgba(255, 255, 255, 0.15); border-right: 2px solid rgba(255, 255, 255, 0.15); text-align: center; }
+        
+        .col-p2-l { width: 21%; color: #fff; text-align: center; }
+        .col-p2-r { width: 21%; color: #fff; text-align: center; border-left: 1px solid rgba(255, 255, 255, 0.2); border-right: 2px solid rgba(255, 255, 255, 0.15); }
+        
+        .col-vak-right { width: 8%; background: rgba(17, 17, 17, 0.5); color: #f39c12; border-left: 2px solid rgba(255, 255, 255, 0.15); text-align: center; }
+
+        .green-bull-text { color: #2ecc71 !important; }
+        .red-bull-text { color: #e74c3c !important; }
+
+        .around-board tr.pts-row td {
+            background: rgba(34, 34, 34, 0.6);
+            color: #f39c12;
+            font-size: 12px;
+            border-top: 2px solid rgba(255, 255, 255, 0.15);
+            border-bottom: none;
+            text-align: center;
+        }
+        
+        .around-board td.clickable-pts {
+            cursor: pointer;
+            transition: all 0.2s;
+            border-radius: 4px;
+            padding: 4px 8px;
+            border: none;
+            display: inline-block;
+            margin: 2px 0;
+            font-size: 10px;
+            font-weight: bold;
+            color: white;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+        }
+        .around-board td.clickable-pts:hover {
+            opacity: 0.9;
+            transform: scale(1.02);
+        }
+
+        /* 3-Koloms Onder-sectie */
+        .bottom-layout {
+            display: flex;
+            gap: 6px;
+            margin-top: 8px;
+            width: 100%;
+            box-sizing: border-box;
+            align-items: stretch;
+        }
+
+        .history-col {
+            flex: 1;
+            background: rgba(37, 37, 37, 0.45);
+            backdrop-filter: blur(4px);
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: left;
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            position: relative;
+            align-self: stretch;
+            overflow: hidden;
+        }
+        .history-col h4 {
+            margin: 0 0 4px 0;
+            color: #f39c12;
+            font-size: 11px;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+            padding-bottom: 2px;
+            position: relative;
+            z-index: 2;
+            flex-shrink: 0;
+        }
+
+        .history-dartboard-container {
+            position: relative;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: stretch;
+            justify-content: flex-start; /* Historie begint direct bovenaan onder de titel */
+            overflow: hidden;
+        }
+
+        .history-dartboard-img {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 85px;
+            height: 85px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 2px solid rgba(243, 156, 18, 0.5);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.7);
+            opacity: 0.85;
+            transition: opacity 0.3s ease, filter 0.3s ease;
+            pointer-events: none;
+            z-index: 1;
+        }
+        .history-col.has-history .history-dartboard-img {
+            filter: blur(2px);
+            opacity: 0.35;
+        }
+
+        .history-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+            font-size: 10px;
+            color: #dcdcdc;
+            text-align: center;
+            overflow-y: auto;
+            flex: 1;
+            position: relative;
+            z-index: 2;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start; /* Direct bovenaan starten */
+            align-items: stretch;
+        }
+        .history-list li {
+            padding: 2px 4px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            background: rgba(20, 20, 20, 0.55);
+            border-radius: 3px;
+            margin-bottom: 2px;
+            flex-shrink: 0;
+        }
+
+        .button-bar-vertical {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            width: 68px;
+            flex-shrink: 0;
+            justify-content: space-between;
+        }
+        .button-bar-vertical button {
+            width: 100%;
+            height: 25px;
+            padding: 0 2px;
+            font-size: 8.5px;
+            border-radius: 4px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            color: white;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-sizing: border-box;
+            transition: opacity 0.2s;
+        }
+        .button-bar-vertical button:hover { opacity: 0.9; }
+        .btn-menu { background: #d35400; }
+        .btn-start { background: #e74c3c; }
+        .btn-undo { background: #e67e22; }
+        .btn-stats { background: #8e44ad; }
+        .btn-fullscreen { background: #34495e; font-size: 8px !important; }
+        .btn-lang { background: #16a085; }
+        .btn-reset { background: #7f8c8d; }
+
+        #around_status {
+            font-style: italic;
+            color: #bdc3c7;
+            margin-top: 6px;
+            font-size: 11px;
+            text-align: center;
+        }
+        #around_transcript {
+            background: rgba(37, 37, 37, 0.45);
+            backdrop-filter: blur(4px);
+            padding: 5px;
+            border-radius: 4px;
+            margin-top: 4px;
+            min-height: 16px;
+            color: #3498db;
+            font-weight: bold;
+            font-size: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+        }
+
+        .tip-box {
+            background: rgba(44, 62, 80, 0.55);
+            backdrop-filter: blur(4px);
+            color: #ecf0f1;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-top: 6px;
+            font-size: 10px;
+            display: block;
+            text-align: center;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0; top: 0; width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            padding: 10px;
+            box-sizing: border-box;
+        }
+        .modal-content {
+            background: rgba(30, 30, 30, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            width: 100%;
+            max-width: 450px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 2px solid #f39c12;
+            text-align: left;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.8);
+            position: relative;
+            box-sizing: border-box;
+        }
+        .modal-content h3 { margin-top: 0; color: #f39c12; text-align: center; }
+        .close-btn {
+            background: #c0392b; color: white; border: none; padding: 6px 12px;
+            border-radius: 4px; cursor: pointer; float: right; font-weight: bold;
+        }
+        .clear-stats-btn {
+            background: #c0392b; color: white; border: none; padding: 5px 10px;
+            border-radius: 4px; cursor: pointer; font-weight: bold; font-size: 11px;
+            position: absolute; top: 15px; left: 15px;
+        }
+        .clear-stats-btn:hover { opacity: 0.9; }
+
+        .stats-table { width: 100%; border-collapse: collapse; margin-top: 25px; }
+        .stats-table th, .stats-table td { padding: 8px; border-bottom: 1px solid #444; text-align: center; font-size: 13px; }
+        .stats-table th { color: #f39c12; background: #252525; }
+
+        #around_winModal .modal-content {
+            text-align: center;
+            border: 2px solid #2ecc71;
+        }
+        #around_winModal h3 {
+            color: #2ecc71;
+            font-size: 22px;
+        }
+
+       @media (min-width: 900px) {
+    body {
+        justify-content: center;
+        align-items: center;
+    }
+    .around-game-container {
+        flex: 0 1 auto; /* Zorgt ervoor dat hij niet meer automatisch over de hele hoogte uitrekt */
+        padding: 12px 12px 10px 12px; /* Maakt de onderkant net iets compacter */
+    }
+    .around-game-container::before{
+        content:""; position:absolute; top:clamp(50px, 8vw, 100px); left:clamp(10px, 1vw, 20px);
+        width:740px; height:740px; background-image:url('dartpijl.png'); background-size:contain; background-repeat:no-repeat; z-index:10; pointer-events:none;
+    }
+    .around-game-container::after{
+        content:""; position:absolute; top:clamp(50px, 8vw, 100px); right:clamp(-650px, -25vw, -485px);
+        width:740px; height:740px; background-image:url('dartpijl.png'); background-size:contain; background-repeat:no-repeat; z-index:10; pointer-events:none;
+    }
+}
+
+        @media (max-width: 768px) {
+            body { padding: 2px; margin: 0; }
+            .around-game-container { 
+                width: 100%; 
+                max-width: 100%; 
+                min-height: 100vh; 
+                border-radius: 0; 
+                border: none; 
+                padding: 6px 4px; 
+            }
+            .around-board {
+                max-width: 100%;
+                width: 100%;
+                table-layout: fixed;
+                font-size: 10px;
+            }
+            .around-board th {
+                font-size: 11px;
+                padding: 3px 0;
+            }
+            .around-board td {
+                height: 20px;
+                font-size: 10px;
+            }
+            .history-col.has-history .history-dartboard-img {
+                filter: blur(2px);
+                opacity: 0.25;
+            }
+            .bottom-layout {
+                gap: 4px;
+            }
+            .button-bar-vertical {
+                width: 58px;
+            }
+            .button-bar-vertical button {
+                font-size: 7.5px;
+                height: 23px;
+            }
+            #around_ptsToggleCell {
+                font-size: 7.5px;
+                padding: 2px 6px;
+                max-width: 65px;
+                margin: 0 auto;
+                display: block;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="around-game-container">
+        <!-- 4 Hoek-dartbordjes -->
+        <img src="dartbord.jpg" class="corner-dartboard tl" alt="">
+        <img src="dartbord.jpg" class="corner-dartboard tr" alt="">
+        <img src="dartbord.jpg" class="corner-dartboard bl" alt="">
+        <img src="dartbord.jpg" class="corner-dartboard br" alt="">
+
+        <!-- Speltitel Around The Clock -->
+        <h2 style="color: #f39c12; margin: 0 0 4px 0; font-size: 18px; text-align: center; text-transform: uppercase; letter-spacing: 2px;">Around The Clock</h2>
+
+        <!-- Around Tabel - Exact 7 Kolommen met correct uitgelijnde Headers -->
+        <table class="around-board">
+            <thead>
+                <tr class="top-header-row">
+                    <th colspan="3" style="border-right: 2px solid rgba(255,255,255,0.15); text-align: center;" id="around_headerSpeler1">Speler 1</th>
+                    <th class="center-header" id="around_matchClock" style="font-weight: bold; color: #f39c12; text-align: center;">00:00</th>
+                    <th colspan="3" style="border-left: 2px solid rgba(255,255,255,0.15); text-align: center;" id="around_headerSpeler2">Speler 2</th>
+                </tr>
+                <tr>
+                    <th class="col-vak-left" style="color: #f39c12;">Vak</th>
+                    <th colspan="2" id="around_tLabelP1" contenteditable="true" onblur="around_updateSpelerNamen()" style="text-align: center; border-right: 2px solid rgba(255,255,255,0.15);">Frans</th>
+                    <th class="col-vak-mid" style="color: #f39c12; text-align: center; border-left: 2px solid rgba(255,255,255,0.15); border-right: 2px solid rgba(255,255,255,0.15);">Vak</th>
+                    <th colspan="2" id="around_tLabelP2" contenteditable="true" onblur="around_updateSpelerNamen()" style="text-align: center; border-left: 2px solid rgba(255,255,255,0.15);">Patrick</th>
+                    <th class="col-vak-right" style="color: #f39c12;">Vak</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td class="col-vak-left">1</td><td class="col-p1-l" id="around_p1_1">-</td><td class="col-p1-r" id="around_p1_11">-</td><td class="col-vak-mid">11</td><td class="col-p2-l" id="around_p2_11">-</td><td class="col-p2-r" id="around_p2_1">-</td><td class="col-vak-right">1</td></tr>
+                <tr><td class="col-vak-left">2</td><td class="col-p1-l" id="around_p1_2">-</td><td class="col-p1-r" id="around_p1_12">-</td><td class="col-vak-mid">12</td><td class="col-p2-l" id="around_p2_12">-</td><td class="col-p2-r" id="around_p2_2">-</td><td class="col-vak-right">2</td></tr>
+                <tr><td class="col-vak-left">3</td><td class="col-p1-l" id="around_p1_3">-</td><td class="col-p1-r" id="around_p1_13">-</td><td class="col-vak-mid">13</td><td class="col-p2-l" id="around_p2_13">-</td><td class="col-p2-r" id="around_p2_3">-</td><td class="col-vak-right">3</td></tr>
+                <tr><td class="col-vak-left">4</td><td class="col-p1-l" id="around_p1_4">-</td><td class="col-p1-r" id="around_p1_14">-</td><td class="col-vak-mid">14</td><td class="col-p2-l" id="around_p2_14">-</td><td class="col-p2-r" id="around_p2_4">-</td><td class="col-vak-right">4</td></tr>
+                <tr><td class="col-vak-left">5</td><td class="col-p1-l" id="around_p1_5">-</td><td class="col-p1-r" id="around_p1_15">-</td><td class="col-vak-mid">15</td><td class="col-p2-l" id="around_p2_15">-</td><td class="col-p2-r" id="around_p2_5">-</td><td class="col-vak-right">5</td></tr>
+                <tr><td class="col-vak-left">6</td><td class="col-p1-l" id="around_p1_6">-</td><td class="col-p1-r" id="around_p1_16">-</td><td class="col-vak-mid">16</td><td class="col-p2-l" id="around_p2_16">-</td><td class="col-p2-r" id="around_p2_6">-</td><td class="col-vak-right">6</td></tr>
+                <tr><td class="col-vak-left">7</td><td class="col-p1-l" id="around_p1_7">-</td><td class="col-p1-r" id="around_p1_17">-</td><td class="col-vak-mid">17</td><td class="col-p2-l" id="around_p2_17">-</td><td class="col-p2-r" id="around_p2_7">-</td><td class="col-vak-right">7</td></tr>
+                <tr><td class="col-vak-left">8</td><td class="col-p1-l" id="around_p1_8">-</td><td class="col-p1-r" id="around_p1_18">-</td><td class="col-vak-mid">18</td><td class="col-p2-l" id="around_p2_18">-</td><td class="col-p2-r" id="around_p2_8">-</td><td class="col-vak-right">8</td></tr>
+                <tr><td class="col-vak-left">9</td><td class="col-p1-l" id="around_p1_9">-</td><td class="col-p1-r" id="around_p1_19">-</td><td class="col-vak-mid">19</td><td class="col-p2-l" id="around_p2_19">-</td><td class="col-p2-r" id="around_p2_9">-</td><td class="col-vak-right">9</td></tr>
+                <tr><td class="col-vak-left">10</td><td class="col-p1-l" id="around_p1_10">-</td><td class="col-p1-r" id="around_p1_20">-</td><td class="col-vak-mid">20</td><td class="col-p2-l" id="around_p2_20">-</td><td class="col-p2-r" id="around_p2_10">-</td><td class="col-vak-right">10</td></tr>
+                <tr><td class="col-vak-left green-bull-text">B</td><td class="col-p1-l green-bull-text" id="around_p1_green_bull">-</td><td class="col-p1-r red-bull-text" id="around_p1_red_bull">-</td><td class="col-vak-mid red-bull-text">B</td><td class="col-p2-l red-bull-text" id="around_p2_red_bull">-</td><td class="col-p2-r green-bull-text" id="around_p2_green_bull">-</td><td class="col-vak-right green-bull-text">B</td></tr>
+                <tr class="pts-row">
+                    <td colspan="3" class="col-p1" id="around_p1_pts" style="border-right: 2px solid rgba(255,255,255,0.15);">Pt: 0</td>
+                    <td class="col-center">
+                        <button class="clickable-pts" id="around_ptsToggleCell" onclick="around_togglePuntenModus()" title="Klik om punten aan/uit te zetten">PUNTEN</button>
+                    </td>
+                    <td colspan="3" class="col-p2" id="around_p2_pts" style="border-left: 2px solid rgba(255,255,255,0.15);">Pt: 0</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 3-Koloms Sectie -->
+        <div class="bottom-layout">
+            <!-- Linker Historie (Frans) -->
+            <div class="history-col" id="around_colHistP1">
+                <h4 id="around_histHeaderP1">Historie Frans</h4>
+                <div class="history-dartboard-container">
+                    <img src="dartbord.jpg" class="history-dartboard-img" alt="">
+                    <ul class="history-list" id="around_historyP1">
+                        <li style="color:#777;" id="around_histEmpty1">Geen acties</li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- Middelste Kolom met Knoppen -->
+            <div class="button-bar-vertical">
+                <button class="btn-menu" onclick="window.location.href='dartteller.html'" id="around_btnMenuEl" title="Terug naar Menu">🏠 Menu</button>
+                <button class="btn-start" onclick="around_toggleLuisteren()" id="around_listenBtn">🔴 Mic Uit</button>
+                <button class="btn-undo" onclick="around_laatsteActieTerugdraaien()" id="around_btnUndoEl" title="Herstel">↩️ Terug</button>
+                <button class="btn-stats" onclick="around_openStatsModal()" id="around_btnStatsEl" title="Statistieken">📊 Stats</button>
+                <button class="btn-fullscreen" onclick="around_toggleFullscreen()" title="Volledig Scherm">Full Screen</button>
+                <button class="btn-lang" onclick="around_toggleTaal()" id="around_langBtn" title="Wissel Taal">English</button>
+                <button class="btn-reset" onclick="around_resetSpel()" id="around_btnResetEl">Reset</button>
+            </div>
+
+            <!-- Rechter Historie (Patrick) -->
+            <div class="history-col" id="around_colHistP2">
+                <h4 id="around_histHeaderP2">Historie Patrick</h4>
+                <div class="history-dartboard-container">
+                    <img src="dartbord.jpg" class="history-dartboard-img" alt="">
+                    <ul class="history-list" id="around_historyP2">
+                        <li style="color:#777;" id="around_histEmpty2">Geen acties</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div id="around_status">Microfoon staat uit. Klik op 'Mic Uit'.</div>
+        <div id="around_transcript">Gehoord: (wacht op commando...)</div>
+
+        <div class="tip-box" id="around_tipBoxText">
+            💡 <b>Tip:</b> Zeg bijv. <i>"Speler één"</i> en daarna <i>"2 keer 16"</i> of in één zin. Spreek ook commando's als <i>"Reset"</i>, <i>"Herstel"</i> of <i>"Stats"</i>.
+        </div>
+    </div>
+
+    <!-- Statistieken Modal -->
+    <div id="around_statsModal" class="modal">
+        <div class="modal-content">
+            <button class="clear-stats-btn" onclick="around_vraagWisStats()" id="around_clearStatsBtn">Wissen</button>
+            <button class="close-btn" onclick="around_closeStatsModal()">✕</button>
+            <h3 id="around_statsModalTitle">Speler Statistieken</h3>
+            <table class="stats-table">
+                <thead>
+                    <tr>
+                        <th id="around_thPair">Spelerspaar</th>
+                        <th id="around_thWins">Gewonnen Spellen</th>
+                    </tr>
+                </thead>
+                <tbody id="around_statsTableBody"></tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Eigen Winst-Pop-up -->
+    <div id="around_winModal" class="modal">
+        <div class="modal-content">
+            <h3 id="around_winTitle">🎉 GEWONNEN!</h3>
+            <p id="around_winText" style="font-size: 16px; margin: 15px 0;">Speler heeft het spel gewonnen!</p>
+            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Standen en geschiedenis blijven zichtbaar om te controleren. Gebruik 'Herstel' indien nodig, of 'Reset' voor een nieuw spel.</p>
+            <button class="close-btn" style="float: none; padding: 8px 20px;" onclick="around_sluitWinstModal()">OK</button>
+        </div>
+    </div>
+
+    <script>
+        // --- VERTALINGEN / DICTIONARY ---
+        const around_translations = {
+            nl: {
+                headerSpeler1: "Speler 1",
+                headerSpeler2: "Speler 2",
+                pointsWith: "PUNTEN",
+                pointsWithout: "GEEN PUNTEN",
+                langBtnText: "English",
+                histPrefix: "Historie ",
+                noActions: "Geen acties",
+                menu: "🏠 Menu",
+                micUit: "🔴 Mic Uit",
+                micAan: "🟢 Mic Aan",
+                undo: "↩️ Terug",
+                stats: "📊 Stats",
+                reset: "Reset",
+                statusUit: "Microfoon staat uit. Klik op 'Mic Uit'.",
+                statusAan: "Luistert naar Around commando's...",
+                transcriptWait: "Gehoord: (wacht op commando...)",
+                tip: "💡 <b>Tip:</b> Zeg bijv. <i>\"Speler één\"</i> en daarna <i>\"2 keer 16\"</i> of in één zin.",
+                statsTitle: "Speler Statistieken",
+                thPair: "Spelerspaar",
+                thWins: "Gewonnen Spellen",
+                noted: "Genoteerd",
+                restored: "Hersteld",
+                gameReset: "Spel gereset!",
+                winMsg: "🎉 GEWONNEN! {name} heeft het spel gewonnen!",
+                fullMsg: "⚠️ {name} is al vol!",
+                fullSpeech: "Die is vol",
+                undoRestored: "↩️ Vorige actie hersteld!",
+                noActionsLeft: "Geen acties meer om te herstellen.",
+                confirmClear: "Weet je zeker dat je alle statistieken wilt wissen?"
+            },
+            en: {
+                headerSpeler1: "Player 1",
+                headerSpeler2: "Player 2",
+                pointsWith: "POINTS",
+                pointsWithout: "NO POINTS",
+                langBtnText: "Nederlands",
+                histPrefix: "History ",
+                noActions: "No actions",
+                menu: "🏠 Menu",
+                micUit: "🔴 Mic Off",
+                micAan: "🟢 Mic On",
+                undo: "↩️ Undo",
+                stats: "📊 Stats",
+                reset: "Reset",
+                statusUit: "Microphone is off. Click 'Mic Off'.",
+                statusAan: "Listening for Around commands...",
+                transcriptWait: "Heard: (waiting for command...)",
+                tip: "💡 <b>Tip:</b> Say e.g. <i>\"Player one\"</i> and then <i>\"2 times 16\"</i> or in one sentence.",
+                statsTitle: "Player Statistics",
+                thPair: "Player Pair",
+                thWins: "Won Games",
+                noted: "Noted",
+                restored: "Restored",
+                gameReset: "Game reset!",
+                winMsg: "🎉 WON! {name} has won the game!",
+                fullMsg: "⚠️ {name} is already full!",
+                fullSpeech: "That is full",
+                undoRestored: "↩️ Previous action restored!",
+                noActionsLeft: "No more actions to restore.",
+                confirmClear: "Are you sure you want to clear all statistics?"
+            }
+        };
+
+        let around_currentLang = 'nl';
+
+        function around_applyLanguage() {
+            const t = around_translations[around_currentLang];
+            document.getElementById('around_headerSpeler1').innerText = t.headerSpeler1;
+            document.getElementById('around_headerSpeler2').innerText = t.headerSpeler2;
+            document.getElementById('around_btnMenuEl').innerText = t.menu;
+            document.getElementById('around_btnUndoEl').innerText = t.undo;
+            document.getElementById('around_btnStatsEl').innerText = t.stats;
+            document.getElementById('around_btnResetEl').innerText = t.reset;
+            document.getElementById('around_langBtn').innerText = t.langBtnText;
+            document.getElementById('around_clearStatsBtn').innerText = (around_currentLang === 'en' ? 'Clear' : 'Wissen');
+            
+            const micBtn = document.getElementById('around_listenBtn');
+            if (around_isLuisteren) {
+                micBtn.innerText = t.micAan;
+                document.getElementById('around_status').innerText = t.statusAan;
+            } else {
+                micBtn.innerText = t.micUit;
+                document.getElementById('around_status').innerText = t.statusUit;
+            }
+
+            document.getElementById('around_tipBoxText').innerHTML = t.tip;
+            document.getElementById('around_statsModalTitle').innerText = t.statsTitle;
+            document.getElementById('around_thPair').innerText = t.thPair;
+            document.getElementById('around_thWins').innerText = t.thWins;
+
+            around_updateSpelerNamen();
+            around_pasPuntenWeergaveToe();
+        }
+
+        function around_toggleTaal() {
+            around_currentLang = around_currentLang === 'nl' ? 'en' : 'nl';
+            around_applyLanguage();
+
+            if (around_isLuisteren && around_recognition) {
+                try { around_recognition.stop(); } catch(e) {}
+                around_initSpraak();
+                try { around_recognition.start(); } catch(e) {}
+            }
+        }
+
+        let around_spelers = { 
+            name1: localStorage.getItem('around_p1') || "Frans", 
+            name2: localStorage.getItem('around_p2') || "Patrick" 
+        };
+
+        let around_geschiedenisStappen = []; 
+        let around_isLuisteren = false;
+        let around_recognition;
+        let around_startTime = Date.now();
+        let around_actieveSpelerKey = 'p1';
+
+        let around_playerStats = JSON.parse(localStorage.getItem('around_player_stats')) || {};
+
+        const around_getallenLijst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 'green_bull', 'red_bull'];
+        
+        let aroundData = {
+            p1: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
+            p2: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
+        };
+
+        const urlParams = new URLSearchParams(window.location.search);
+        let urlPunten = urlParams.get('punten') || urlParams.get('around_punten');
+        
+        let aroundPuntenAan = true;
+        if (urlPunten !== null) {
+            aroundPuntenAan = (urlPunten === 'true' || urlPunten === '1' || urlPunten === 'aan');
+        } else {
+            let storedPunten = localStorage.getItem('around_punten');
+            if (storedPunten !== null) {
+                aroundPuntenAan = (storedPunten !== 'false' && storedPunten !== '0' && storedPunten !== 'nee' && storedPunten !== 'off');
+            }
+        }
+
+        function around_pasPuntenWeergaveToe() {
+            const ptsCell = document.getElementById('around_ptsToggleCell');
+            const t = around_translations[around_currentLang];
+            if (aroundPuntenAan) {
+                ptsCell.innerText = t.pointsWith;
+                ptsCell.style.background = "#2ecc71";
+            } else {
+                ptsCell.innerText = t.pointsWithout;
+                ptsCell.style.background = "#e74c3c";
+            }
+            around_updateScherm();
+        }
+
+        setInterval(() => {
+            let diff = Math.floor((Date.now() - around_startTime) / 1000);
+            let mins = String(Math.floor(diff / 60)).padStart(2, '0');
+            let secs = String(diff % 60).padStart(2, '0');
+            document.getElementById('around_matchClock').innerText = `${mins}:${secs}`;
+        }, 1000);
+
+        function around_updateSpelerNamen() {
+            let n1 = document.getElementById('around_tLabelP1').innerText.trim() || "Speler 1";
+            let n2 = document.getElementById('around_tLabelP2').innerText.trim() || "Speler 2";
+            around_spelers.name1 = n1;
+            around_spelers.name2 = n2;
+            localStorage.setItem('around_p1', n1);
+            localStorage.setItem('around_p2', n2);
+            
+            const t = around_translations[around_currentLang];
+            document.getElementById('around_histHeaderP1').innerText = t.histPrefix + n1;
+            document.getElementById('around_histHeaderP2').innerText = t.histPrefix + n2;
+        }
+
+        function around_initSpraak() {
+            const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!SpeechRecognition) return;
+
+            around_recognition = new SpeechRecognition();
+            around_recognition.lang = around_currentLang === 'en' ? 'en-US' : 'nl-NL';
+            around_recognition.continuous = true;
+            around_recognition.interimResults = false;
+
+            around_recognition.onresult = function(event) {
+                let speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
+                
+                if (around_currentLang === 'nl') {
+                    speechResult = speechResult
+                        .replace(/één/g, '1').replace(/een/g, '1')
+                        .replace(/twee/g, '2').replace(/drie/g, '3')
+                        .replace(/vier/g, '4').replace(/vijf/g, '5')
+                        .replace(/zes/g, '6').replace(/zeven/g, '7')
+                        .replace(/acht/g, '8').replace(/negen/g, '9')
+                        .replace(/tien|tin|tiene/g, '10').replace(/elf/g, '11')
+                        .replace(/twaalf/g, '12').replace(/dertien|deertien/g, '13')
+                        .replace(/veertien/g, '14').replace(/vijftien/g, '15')
+                        .replace(/zestien/g, '16').replace(/zeventien/g, '17')
+                        .replace(/achttien/g, '18').replace(/negentien/g, '19')
+                        .replace(/twintig/g, '20');
+                } else {
+                    speechResult = speechResult
+                        .replace(/one|first/g, '1').replace(/two|second/g, '2')
+                        .replace(/three|third/g, '3').replace(/four/g, '4')
+                        .replace(/five/g, '5').replace(/six/g, '6')
+                        .replace(/seven/g, '7').replace(/eight/g, '8')
+                        .replace(/nine/g, '9').replace(/ten/g, '10')
+                        .replace(/eleven/g, '11').replace(/twelve/g, '12')
+                        .replace(/thirteen/g, '13').replace(/fourteen/g, '14')
+                        .replace(/fifteen/g, '15').replace(/sixteen/g, '16')
+                        .replace(/seventeen/g, '17').replace(/eighteen/g, '18')
+                        .replace(/nineteen/g, '19').replace(/twenty/g, '20');
+                }
+
+                around_verwerkSpraakAround(speechResult);
+            };
+
+            around_recognition.onend = function() {
+                if (around_isLuisteren) { 
+                    try { around_recognition.start(); } catch (e) {} 
+                }
+            };
+        }
+
+        function around_toggleLuisteren() {
+            if (!around_recognition) around_initSpraak();
+            const btn = document.getElementById('around_listenBtn');
+            const t = around_translations[around_currentLang];
+            if (!around_isLuisteren) {
+                around_isLuisteren = true;
+                try { around_recognition.start(); } catch(e) {}
+                btn.innerText = t.micAan;
+                btn.style.background = "#2ecc71";
+                document.getElementById('around_status').innerText = t.statusAan;
+            } else {
+                around_isLuisteren = false;
+                try { around_recognition.stop(); } catch(e) {}
+                btn.innerText = t.micUit;
+                btn.style.background = "#e74c3c";
+                document.getElementById('around_status').innerText = t.statusUit;
+            }
+        }
+
+        function around_togglePuntenModus() {
+            aroundPuntenAan = !aroundPuntenAan;
+            localStorage.setItem('around_punten', aroundPuntenAan);
+            around_pasPuntenWeergaveToe();
+        }
+
+        function around_toggleFullscreen() {
+            if (!document.fullscreenElement) {
+                document.documentElement.requestFullscreen().catch(err => {});
+            } else {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen();
+                }
+            }
+        }
+
+        function around_openStatsModal() {
+            const tbody = document.getElementById('around_statsTableBody');
+            tbody.innerHTML = "";
+            
+            let p1Name = around_spelers.name1 || "Speler 1";
+            let p2Name = around_spelers.name2 || "Speler 2";
+            let currentPairKey = `${p1Name} vs ${p2Name}`;
+
+            if (!around_playerStats[currentPairKey]) {
+                around_playerStats[currentPairKey] = 0;
+            }
+
+            for (let [pairName, winsCount] of Object.entries(around_playerStats)) {
+                let tr = document.createElement('tr');
+                let displayWins = typeof winsCount === 'number' ? winsCount : 0;
+                tr.innerHTML = `<td><b>${pairName}</b></td><td>${displayWins}</td>`;
+                tbody.appendChild(tr);
+            }
+            
+            document.getElementById('around_statsModal').style.display = 'flex';
+        }
+
+        function around_closeStatsModal() {
+            document.getElementById('around_statsModal').style.display = 'none';
+        }
+
+        function around_vraagWisStats() {
+            const t = around_translations[around_currentLang];
+            if (confirm(t.confirmClear)) {
+                around_playerStats = {};
+                localStorage.removeItem('around_player_stats');
+                around_openStatsModal();
+            }
+        }
+
+        function around_verwerkSpraakAround(zin) {
+            if (zin.includes("volledig scherm") || zin.includes("heel het scherm") || zin.includes("full screen") || zin.includes("fullscreen")) {
+                around_toggleFullscreen();
+                return;
+            }
+            if (zin.includes("menu") || zin.includes("hoofdmenu") || zin.includes("main menu")) {
+                window.location.href = 'dartteller.html';
+                return;
+            }
+            if (zin.includes("reset") || zin.includes("nieuw spel") || zin.includes("new game")) {
+                around_resetSpel();
+                return;
+            }
+            if (zin.includes("terug") || zin.includes("undo") || zin.includes("herstel")) {
+                around_laatsteActieTerugdraaien();
+                return;
+            }
+            if (zin.includes("stats") || zin.includes("statistieken")) {
+                around_openStatsModal();
+                return;
+            }
+
+            if (document.getElementById('around_statsModal').style.display === 'flex') {
+                if (zin.includes("sluiten") || zin.includes("close") || zin.includes("terug") || zin.includes("back")) {
+                    around_closeStatsModal();
+                    return;
+                }
+            }
+
+            const n1 = around_spelers.name1.toLowerCase();
+            const n2 = around_spelers.name2.toLowerCase();
+            const zegtSpeler1 = zin.includes("speler 1") || zin.includes("player 1") || zin.includes(n1);
+            const zegtSpeler2 = zin.includes("speler 2") || zin.includes("player 2") || zin.includes(n2);
+
+            if (!zegtSpeler1 && !zegtSpeler2) {
+                return;
+            }
+
+            if (zegtSpeler1) around_actieveSpelerKey = 'p1';
+            if (zegtSpeler2) around_actieveSpelerKey = 'p2';
+
+            let doelSpelerKey = around_actieveSpelerKey;
+            let actieveNaam = (doelSpelerKey === 'p1') ? around_spelers.name1 : around_spelers.name2;
+
+            document.getElementById('around_transcript').innerText = (around_currentLang === 'en' ? 'Heard: ' : 'Gehoord: ') + `"${zin}"`;
+
+            let aantalHits = 1;
+            if (zin.includes("triple") || zin.includes("trippel") || zin.includes("driemaal") || zin.includes("3 keer") || zin.includes("3 maal") || zin.includes("3 times")) {
+                aantalHits = 3;
+            } else if (zin.includes("dubbel") || zin.includes("double") || zin.includes("tweemaal") || zin.includes("2 keer") || zin.includes("2 maal") || zin.includes("2x") || zin.includes("2 times")) {
+                aantalHits = 2;
+            } else {
+                const matchMult = zin.match(/\b([123])\s*(keer|maal|x|\*|times)\b/);
+                if (matchMult) {
+                    aantalHits = parseInt(matchMult[1]);
+                }
+            }
+
+            let isBull = zin.includes("boel") || zin.includes("boule") || zin.includes("bull") || zin.includes("bullseye");
+            let hitsAangepast = false;
+            let actieMelding = "";
+
+            let stateBeforeAction = {
+                aroundData: JSON.parse(JSON.stringify(aroundData)),
+                htmlHistP1: document.getElementById('around_historyP1').innerHTML,
+                htmlHistP2: document.getElementById('around_historyP2').innerHTML
+            };
+
+            if (isBull) {
+                let isRodeBull = zin.includes("rode") || zin.includes("dubbel") || zin.includes("double") || zin.includes("bullseye");
+                let doelVak = isRodeBull ? 'red_bull' : 'green_bull';
+                actieMelding = isRodeBull ? (around_currentLang === 'en' ? "Red Bull" : "Rode Bull") : (around_currentLang === 'en' ? "Green Bull" : "Groene Bull");
+
+                around_verwerkCijferTreffers(doelSpelerKey, doelVak, 3);
+                hitsAangepast = true;
+            } else {
+                around_getallenLijst.forEach(cijfer => {
+                    if (cijfer === 'green_bull' || cijfer === 'red_bull') return;
+                    let regex = new RegExp(`\\b${cijfer}\\b`);
+                    if (regex.test(zin)) {
+                        around_verwerkCijferTreffers(doelSpelerKey, cijfer, aantalHits);
+                        hitsAangepast = true;
+                        actieMelding = `${aantalHits}x ${cijfer}`;
+                    }
+                });
+            }
+
+            if (!hitsAangepast) {
+                return;
+            }
+
+            around_geschiedenisStappen.push(stateBeforeAction);
+
+            aroundData[doelSpelerKey].beurten += 1;
+            aroundData[doelSpelerKey].totaalHits += aantalHits;
+
+            around_updateScherm();
+            around_voegToeAanHistorie(doelSpelerKey, actieMelding);
+            around_toonMelding(`✓ ${actieveNaam}: ${actieMelding}`, "#2ecc71");
+            around_speakFeedback(around_currentLang === 'en' ? "Noted" : "Genoteerd");
+
+            around_controleerGewonnen(doelSpelerKey, actieveNaam);
+        }
+
+        function around_verwerkCijferTreffers(spelerKey, vakje, hits) {
+            let huidigeHits = aroundData[spelerKey][vakje];
+            let totaleNieuweHits = huidigeHits + hits;
+            let nieuweHits = Math.min(3, totaleNieuweHits);
+            let overigeHits = Math.max(0, totaleNieuweHits - 3);
+
+            aroundData[spelerKey][vakje] = nieuweHits;
+
+            if (aroundPuntenAan && overigeHits > 0) {
+                let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
+                let puntenWaarde = (vakje === 'red_bull') ? 50 : ((vakje === 'green_bull') ? 25 : (typeof vakje === 'number' ? vakje : 10));
+                if (aroundData[tegenstanderKey][vakje] < 3) {
+                    aroundData[spelerKey].punten += (overigeHits * puntenWaarde);
+                }
+            }
+        }
+
+        function around_controleerGewonnen(spelerKey, naam) {
+            let allesDicht = around_getallenLijst.every(v => aroundData[spelerKey][v] >= 3);
+            if (!allesDicht) return;
+
+            let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
+            let heeftMeestePunten = true;
+
+            if (aroundPuntenAan) {
+                heeftMeestePunten = aroundData[spelerKey].punten >= aroundData[tegenstanderKey].punten;
+            }
+
+            if (allesDicht && heeftMeestePunten) {
+                let tegenstanderNaam = (spelerKey === 'p1') ? around_spelers.name2 : around_spelers.name1;
+                let pairKey = `${naam} vs ${tegenstanderNaam}`;
+                
+                around_playerStats[pairKey] = (around_playerStats[pairKey] || 0) + 1;
+                localStorage.setItem('around_player_stats', JSON.stringify(around_playerStats));
+
+                const t = around_translations[around_currentLang];
+                let msg = t.winMsg.replace('{name}', naam);
+                
+                document.getElementById('around_winText').innerText = msg;
+                document.getElementById('around_winModal').style.display = 'flex';
+                around_speakFeedback(msg);
+            }
+        }
+
+        function around_sluitWinstModal() {
+            document.getElementById('around_winModal').style.display = 'none';
+        }
+
+        function around_laatsteActieTerugdraaien() {
+            const t = around_translations[around_currentLang];
+            if (around_geschiedenisStappen.length === 0) {
+                around_toonMelding(t.noActionsLeft, "#e74c3c");
+                return;
+            }
+            let vorigeStaat = around_geschiedenisStappen.pop();
+            aroundData = JSON.parse(JSON.stringify(vorigeStaat.aroundData));
+            document.getElementById('around_historyP1').innerHTML = vorigeStaat.htmlHistP1;
+            document.getElementById('around_historyP2').innerHTML = vorigeStaat.htmlHistP2;
+
+            around_updateScherm();
+            around_updateHistoryState('p1');
+            around_updateHistoryState('p2');
+            around_toonMelding(t.undoRestored, "#e67e22");
+            around_speakFeedback(t.restored);
+        }
+
+        function around_updateScherm() {
+            for (let i = 1; i <= 20; i++) {
+                document.getElementById(`around_p1_${i}`).innerText = around_formatteerHits(aroundData.p1[i]);
+                document.getElementById(`around_p2_${i}`).innerText = around_formatteerHits(aroundData.p2[i]);
+            }
+            document.getElementById('around_p1_green_bull').innerText = around_formatteerHits(aroundData.p1['green_bull']);
+            document.getElementById('around_p2_green_bull').innerText = around_formatteerHits(aroundData.p2['green_bull']);
+            document.getElementById('around_p1_red_bull').innerText = around_formatteerHits(aroundData.p1['red_bull']);
+            document.getElementById('around_p2_red_bull').innerText = around_formatteerHits(aroundData.p2['red_bull']);
+
+            document.getElementById('around_p1_pts').innerText = aroundPuntenAan ? `Pt: ${aroundData.p1.punten}` : "-";
+            document.getElementById('around_p2_pts').innerText = aroundPuntenAan ? `Pt: ${aroundData.p2.punten}` : "-";
+        }
+
+        function around_formatteerHits(aantal) {
+            if (aantal === 1) return "X";
+            if (aantal === 2) return "XX";
+            if (aantal >= 3) return around_currentLang === 'en' ? "XXX full" : "XXX vol";
+            return "-";
+        }
+
+        function around_voegToeAanHistorie(spelerKey, tekst) {
+            const listEl = document.getElementById(spelerKey === 'p1' ? 'around_historyP1' : 'around_historyP2');
+            const t = around_translations[around_currentLang];
+            if (listEl.children.length === 1 && (listEl.children[0].innerText === "Geen acties" || listEl.children[0].innerText === "No actions")) {
+                listEl.innerHTML = "";
+            }
+            const li = document.createElement('li');
+            li.innerText = tekst;
+            listEl.prepend(li);
+            around_updateHistoryState(spelerKey);
+        }
+
+        function around_updateHistoryState(spelerKey) {
+            const listEl = document.getElementById(spelerKey === 'p1' ? 'around_historyP1' : 'around_historyP2');
+            const colEl = document.getElementById(spelerKey === 'p1' ? 'around_colHistP1' : 'around_colHistP2');
+            const hasRealActions = Array.from(listEl.children).some(li => 
+                li.innerText !== "Geen acties" && li.innerText !== "No actions"
+            );
+            if (hasRealActions) {
+                colEl.classList.add('has-history');
+            } else {
+                colEl.classList.remove('has-history');
+            }
+        }
+
+        function around_toonMelding(tekst, kleur) {
+            const transcriptEl = document.getElementById('around_transcript');
+            transcriptEl.style.color = kleur;
+            transcriptEl.innerText = tekst;
+            setTimeout(() => { transcriptEl.style.color = "#3498db"; }, 2500);
+        }
+
+        function around_speakFeedback(tekst) {
+            if ('speechSynthesis' in window) {
+                const utterance = new SpeechSynthesisUtterance(tekst);
+                utterance.lang = around_currentLang === 'en' ? 'en-US' : 'nl-NL';
+                utterance.rate = 1.1;
+                utterance.pitch = 1.2;
+                window.speechSynthesis.speak(utterance);
+            }
+        }
+
+        function around_resetSpel() {
+            aroundData = {
+                p1: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
+                p2: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
+            };
+            around_geschiedenisStappen = [];
+            around_startTime = Date.now();
+            around_updateScherm();
+            const t = around_translations[around_currentLang];
+            document.getElementById('around_historyP1').innerHTML = `<li style="color:#777;">${t.noActions}</li>`;
+            document.getElementById('around_historyP2').innerHTML = `<li style="color:#777;">${t.noActions}</li>`;
+            around_updateHistoryState('p1');
+            around_updateHistoryState('p2');
+            document.getElementById('around_transcript').innerText = t.gameReset;
+        }
+
+        around_applyLanguage();
+        around_initSpraak();
+    </script>
+</body>
+</html>
