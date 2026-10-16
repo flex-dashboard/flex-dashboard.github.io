@@ -361,13 +361,32 @@
         flex: 0 1 auto; /* Zorgt ervoor dat hij niet meer automatisch over de hele hoogte uitrekt */
         padding: 12px 12px 10px 12px; /* Maakt de onderkant net iets compacter */
     }
-    .around-game-container::before{
-        content:""; position:absolute; top:clamp(50px, 8vw, 100px); left:clamp(10px, 1vw, 20px);
-        width:740px; height:740px; background-image:url('dartpijl.png'); background-size:contain; background-repeat:no-repeat; z-index:10; pointer-events:none;
+   .around-game-container::before{
+        content: ""; 
+        position: absolute; 
+        top: calc(50% - 370px + 55px); /* 1,5 cm naar beneden */
+        left: calc(clamp(10px, 1vw, 20px) + 55px); /* 1,5 cm naar rechts */
+        width: 740px; 
+        height: 740px; 
+        background-image: url('dartpijl.png'); 
+        background-size: contain; 
+        background-repeat: no-repeat; 
+        z-index: 10; 
+        pointer-events: none;
     }
     .around-game-container::after{
-        content:""; position:absolute; top:clamp(50px, 8vw, 100px); right:clamp(-650px, -25vw, -485px);
-        width:740px; height:740px; background-image:url('dartpijl.png'); background-size:contain; background-repeat:no-repeat; z-index:10; pointer-events:none;
+        content: ""; 
+        position: absolute; 
+        top: calc(50% - 370px + 55px); /* De hoogte van 1,5 cm naar beneden blijft goed */
+        right: calc(clamp(-650px, -25vw, -485px) + 55px); /* Plus 55px zorgt dat hij naar rechts (naar de rand) verschuift */
+        width: 740px; 
+        height: 740px; 
+        background-image: url('dartpijl.png'); 
+        background-size: contain; 
+        background-repeat: no-repeat; 
+        z-index: 10; 
+        pointer-events: none;
+    
     }
 }
 
