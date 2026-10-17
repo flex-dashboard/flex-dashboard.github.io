@@ -6,21 +6,21 @@
     <title>Spraakgestuurde Dartteller - Around The Clock</title>
     <style>
         body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-    background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('dartsbg.jpg') no-repeat center center fixed;
-    background-size: cover;
-    color: #ffffff;
-    text-align: center;
-    margin: 0;
-    padding: 0;
-    overflow: hidden; /* Dwingt de browser om alle scrollbalken permanent te verbergen */
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    min-height: 100vh;
-    box-sizing: border-box;
-}
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(rgba(0,0,0,0.75), rgba(0,0,0,0.75)), url('dartsbg.jpg') no-repeat center center fixed;
+            background-size: cover;
+            color: #ffffff;
+            text-align: center;
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
         .around-game-container {
             max-width: 1300px;
             width: 100%;
@@ -40,7 +40,6 @@
             flex: 1;
         }
 
-        /* Hoek-dartbordjes ("Punaises") */
         .corner-dartboard {
             position: absolute;
             width: 34px;
@@ -56,10 +55,9 @@
         .corner-dartboard.bl { bottom: -17px; left: -17px; }
         .corner-dartboard.br { bottom: -17px; right: -17px; }
 
-        /* Around Tabel - Compacte 7-Koloms opbouw */
         .around-board {
             width: 100%;
-            max-width: 580px; /* Smalle, compacte tabel zodat dartpijlen alle ruimte hebben */
+            max-width: 580px;
             margin: 4px auto;
             border-collapse: collapse;
             background: rgba(24, 24, 24, 0.45);
@@ -88,7 +86,6 @@
             background: rgba(34, 34, 34, 0.6);
             text-align: center;
         }
-        
         .around-board td {
             height: 24px;
             vertical-align: middle;
@@ -100,16 +97,12 @@
             white-space: nowrap;
         }
 
-        /* Exacte kolombreedtes voor 7 kolommen */
         .col-vak-left { width: 8%; background: rgba(17, 17, 17, 0.5); color: #f39c12; border-right: 2px solid rgba(255, 255, 255, 0.15); text-align: center; }
         .col-p1-l { width: 21%; color: #fff; text-align: center; }
         .col-p1-r { width: 21%; color: #fff; text-align: center; border-left: 1px solid rgba(255, 255, 255, 0.2); border-right: 2px solid rgba(255, 255, 255, 0.15); }
-        
         .col-vak-mid { width: 8%; background: rgba(17, 17, 17, 0.5); color: #f39c12; border-left: 2px solid rgba(255, 255, 255, 0.15); border-right: 2px solid rgba(255, 255, 255, 0.15); text-align: center; }
-        
         .col-p2-l { width: 21%; color: #fff; text-align: center; }
         .col-p2-r { width: 21%; color: #fff; text-align: center; border-left: 1px solid rgba(255, 255, 255, 0.2); border-right: 2px solid rgba(255, 255, 255, 0.15); }
-        
         .col-vak-right { width: 8%; background: rgba(17, 17, 17, 0.5); color: #f39c12; border-left: 2px solid rgba(255, 255, 255, 0.15); text-align: center; }
 
         .green-bull-text { color: #2ecc71 !important; }
@@ -122,32 +115,39 @@
             border-top: 2px solid rgba(255, 255, 255, 0.15);
             border-bottom: none;
             text-align: center;
+            padding: 2px 4px;
         }
-        
+        /* Vaste, onveranderlijke maat voor de Opties-knop op PC en Mobile */
         .around-board td.clickable-pts {
             cursor: pointer;
             transition: all 0.2s;
-            border-radius: 4px;
-            padding: 4px 8px;
+            border-radius: 3px;
+            padding: 3px 5px;
             border: none;
             display: inline-block;
-            margin: 2px 0;
-            font-size: 10px;
+            margin: 1px auto;
+            font-size: 9px;
             font-weight: bold;
             color: white;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            background: #27ae60;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.4);
+            white-space: nowrap;
+            width: 72px;
+            max-width: 72px;
+            text-align: center;
         }
         .around-board td.clickable-pts:hover {
             opacity: 0.9;
             transform: scale(1.02);
         }
 
-        /* 3-Koloms Onder-sectie */
+        /* 3-Koloms Onder-sectie met vastgezette layout */
         .bottom-layout {
             display: flex;
             gap: 6px;
             margin-top: 8px;
             width: 100%;
+            height: 160px;
             box-sizing: border-box;
             align-items: stretch;
         }
@@ -164,7 +164,7 @@
             flex-direction: column;
             box-sizing: border-box;
             position: relative;
-            align-self: stretch;
+            height: 100%;
             overflow: hidden;
         }
         .history-col h4 {
@@ -185,7 +185,7 @@
             display: flex;
             flex-direction: column;
             align-items: stretch;
-            justify-content: flex-start; /* Historie begint direct bovenaan onder de titel */
+            justify-content: flex-start;
             overflow: hidden;
         }
 
@@ -218,12 +218,13 @@
             color: #dcdcdc;
             text-align: center;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
             flex: 1;
             position: relative;
             z-index: 2;
             display: flex;
             flex-direction: column;
-            justify-content: flex-start; /* Direct bovenaan starten */
+            justify-content: flex-start;
             align-items: stretch;
         }
         .history-list li {
@@ -241,11 +242,12 @@
             gap: 4px;
             width: 68px;
             flex-shrink: 0;
+            height: 100%;
             justify-content: space-between;
         }
         .button-bar-vertical button {
             width: 100%;
-            height: 25px;
+            height: 23px;
             padding: 0 2px;
             font-size: 8.5px;
             border-radius: 4px;
@@ -352,43 +354,42 @@
             font-size: 22px;
         }
 
-       @media (min-width: 900px) {
-    body {
-        justify-content: center;
-        align-items: center;
-    }
-    .around-game-container {
-        flex: 0 1 auto; /* Zorgt ervoor dat hij niet meer automatisch over de hele hoogte uitrekt */
-        padding: 12px 12px 10px 12px; /* Maakt de onderkant net iets compacter */
-    }
-   .around-game-container::before{
-        content: ""; 
-        position: absolute; 
-        top: calc(50% - 370px + 55px); /* 1,5 cm naar beneden */
-        left: calc(clamp(10px, 1vw, 20px) + 55px); /* 1,5 cm naar rechts */
-        width: 740px; 
-        height: 740px; 
-        background-image: url('dartpijl.png'); 
-        background-size: contain; 
-        background-repeat: no-repeat; 
-        z-index: 10; 
-        pointer-events: none;
-    }
-    .around-game-container::after{
-        content: ""; 
-        position: absolute; 
-        top: calc(50% - 370px + 55px); /* De hoogte van 1,5 cm naar beneden blijft goed */
-        right: calc(clamp(-650px, -25vw, -485px) + 55px); /* Plus 55px zorgt dat hij naar rechts (naar de rand) verschuift */
-        width: 740px; 
-        height: 740px; 
-        background-image: url('dartpijl.png'); 
-        background-size: contain; 
-        background-repeat: no-repeat; 
-        z-index: 10; 
-        pointer-events: none;
-    
-    }
-}
+        @media (min-width: 900px) {
+            body {
+                justify-content: center;
+                align-items: center;
+            }
+            .around-game-container {
+                flex: 0 1 auto;
+                padding: 12px 12px 10px 12px;
+            }
+            .around-game-container::before{
+                content: ""; 
+                position: absolute; 
+                top: calc(50% - 370px + 55px);
+                left: calc(clamp(10px, 1vw, 20px) + 55px);
+                width: 740px; 
+                height: 740px; 
+                background-image: url('dartpijl.png'); 
+                background-size: contain; 
+                background-repeat: no-repeat; 
+                z-index: 10; 
+                pointer-events: none;
+            }
+            .around-game-container::after{
+                content: ""; 
+                position: absolute; 
+                top: calc(50% - 370px + 55px);
+                right: calc(clamp(-650px, -25vw, -485px) + 55px);
+                width: 740px; 
+                height: 740px; 
+                background-image: url('dartpijl.png'); 
+                background-size: contain; 
+                background-repeat: no-repeat; 
+                z-index: 10; 
+                pointer-events: none;
+            }
+        }
 
         @media (max-width: 768px) {
             body { padding: 2px; margin: 0; }
@@ -414,26 +415,22 @@
                 height: 20px;
                 font-size: 10px;
             }
-            .history-col.has-history .history-dartboard-img {
-                filter: blur(2px);
-                opacity: 0.25;
+            .around-board td.clickable-pts {
+                font-size: 8px;
+                padding: 2px 4px;
+                width: 65px;
+                max-width: 65px;
             }
             .bottom-layout {
                 gap: 4px;
+                height: 140px;
             }
             .button-bar-vertical {
                 width: 58px;
             }
             .button-bar-vertical button {
                 font-size: 7.5px;
-                height: 23px;
-            }
-            #around_ptsToggleCell {
-                font-size: 7.5px;
-                padding: 2px 6px;
-                max-width: 65px;
-                margin: 0 auto;
-                display: block;
+                height: 21px;
             }
         }
     </style>
@@ -447,10 +444,13 @@
         <img src="dartbord.jpg" class="corner-dartboard bl" alt="">
         <img src="dartbord.jpg" class="corner-dartboard br" alt="">
 
-        <!-- Speltitel Around The Clock -->
-        <h2 style="color: #f39c12; margin: 0 0 4px 0; font-size: 18px; text-align: center; text-transform: uppercase; letter-spacing: 2px;">Around The Clock</h2>
+        <!-- Hoofdtitel & Dynamische Spel-Titel -->
+        <h2 style="color: #f39c12; margin: 0; font-size: 18px; text-align: center; text-transform: uppercase; letter-spacing: 2px;">Around The Clock</h2>
+        <div id="around_activeGameTitle" style="color: #3498db; font-size: 11px; font-weight: bold; text-align: center; margin-bottom: 4px; text-transform: uppercase;">
+            [OPTIE 1: KLASSIEK - OP VOLGORDE]
+        </div>
 
-        <!-- Around Tabel - Exact 7 Kolommen met correct uitgelijnde Headers -->
+        <!-- Around Tabel - Exact 7 Kolommen -->
         <table class="around-board">
             <thead>
                 <tr class="top-header-row">
@@ -481,16 +481,15 @@
                 <tr class="pts-row">
                     <td colspan="3" class="col-p1" id="around_p1_pts" style="border-right: 2px solid rgba(255,255,255,0.15);">Pt: 0</td>
                     <td class="col-center">
-                        <button class="clickable-pts" id="around_ptsToggleCell" onclick="around_togglePuntenModus()" title="Klik om punten aan/uit te zetten">PUNTEN</button>
+                        <button class="clickable-pts" id="around_ptsToggleCell" onclick="around_openSettingsModal()" title="Klik om speloptie en instellingen in te stellen">OPTIES</button>
                     </td>
                     <td colspan="3" class="col-p2" id="around_p2_pts" style="border-left: 2px solid rgba(255,255,255,0.15);">Pt: 0</td>
                 </tr>
             </tbody>
         </table>
 
-        <!-- 3-Koloms Sectie -->
+        <!-- 3-Koloms Sectie met Touch-Scroll geschiedenis -->
         <div class="bottom-layout">
-            <!-- Linker Historie (Frans) -->
             <div class="history-col" id="around_colHistP1">
                 <h4 id="around_histHeaderP1">Historie Frans</h4>
                 <div class="history-dartboard-container">
@@ -501,7 +500,6 @@
                 </div>
             </div>
 
-            <!-- Middelste Kolom met Knoppen -->
             <div class="button-bar-vertical">
                 <button class="btn-menu" onclick="window.location.href='dartteller.html'" id="around_btnMenuEl" title="Terug naar Menu">🏠 Menu</button>
                 <button class="btn-start" onclick="around_toggleLuisteren()" id="around_listenBtn">🔴 Mic Uit</button>
@@ -512,7 +510,6 @@
                 <button class="btn-reset" onclick="around_resetSpel()" id="around_btnResetEl">Reset</button>
             </div>
 
-            <!-- Rechter Historie (Patrick) -->
             <div class="history-col" id="around_colHistP2">
                 <h4 id="around_histHeaderP2">Historie Patrick</h4>
                 <div class="history-dartboard-container">
@@ -528,7 +525,39 @@
         <div id="around_transcript">Gehoord: (wacht op commando...)</div>
 
         <div class="tip-box" id="around_tipBoxText">
-            💡 <b>Tip:</b> Zeg bijv. <i>"Speler één"</i> en daarna <i>"2 keer 16"</i> of in één zin. Spreek ook commando's als <i>"Reset"</i>, <i>"Herstel"</i> of <i>"Stats"</i>.
+            💡 <b>Tip:</b> Klik op OPTIES voor je spelkeuze en instellingen!
+        </div>
+    </div>
+
+    <!-- Spelinstellingen & Spelkeuze Modal (gekoppeld aan OPTIES-knop) -->
+    <div id="around_settingsModal" class="modal">
+        <div class="modal-content">
+            <button class="close-btn" onclick="around_closeSettingsModal()">✕</button>
+            <h3 id="around_modalTitle" style="color: #f39c12; text-align: center; margin-top: 0;">Spelinstellingen & Spelkeuze</h3>
+            
+            <div style="margin: 15px 0;">
+                <label id="around_modalLabelSelect" style="display: block; margin-bottom: 6px; font-weight: bold; color: #f39c12; font-size: 12px;">Kies Spelvariant:</label>
+                <select id="around_modalGameSelect" style="width: 100%; padding: 8px; background: #222; color: #fff; border: 1px solid #444; border-radius: 4px; font-size: 12px;">
+                    <option value="optie_klassiek" id="around_opt1">Optie 1: Klassiek (Op Volgorde / Random)</option>
+                    <option value="optie_singles" id="around_opt2">Optie 2: Alleen Singles & Bull</option>
+                    <option value="optie_dubbels" id="around_opt3">Optie 3: Alleen Dubbels & Bull</option>
+                    <option value="optie_triples" id="around_opt4">Optie 4: Alleen Triples & Bull</option>
+                    <option value="optie_tactics" id="around_opt5">Optie 5: Random & 3 Hits</option>
+                    <option value="optie_aflopend" id="around_opt6">Optie 6: Aflopend (Rode/Groene Bull -> 20-1)</option>
+                </select>
+            </div>
+
+            <div style="margin: 15px 0; display: flex; align-items: center; gap: 10px;">
+                <input type="checkbox" id="around_modalPointsCheck" style="width: 18px; height: 18px; cursor: pointer;">
+                <label for="around_modalPointsCheck" id="around_modalLabelPoints" style="font-size: 12px; cursor: pointer; color: #fff;">Punten bijhouden (Punten Aan / Uit)</label>
+            </div>
+
+            <div style="margin: 15px 0;" id="around_modalRandomContainer">
+                <input type="checkbox" id="around_modalRandomCheck" style="width: 18px; height: 18px; cursor: pointer;">
+                <label for="around_modalRandomCheck" id="around_modalLabelRandom" style="font-size: 12px; cursor: pointer; color: #fff;">Klassiek op Random (in plaats van volgorde)</label>
+            </div>
+
+            <button onclick="around_saveSettingsModal()" id="around_modalSaveBtn" style="width: 100%; background: #27ae60; color: white; border: none; padding: 10px; border-radius: 4px; font-weight: bold; cursor: pointer; font-size: 13px; margin-top: 10px;">Opslaan & Spel toepassen</button>
         </div>
     </div>
 
@@ -550,24 +579,22 @@
         </div>
     </div>
 
-    <!-- Eigen Winst-Pop-up -->
+    <!-- Winst-Pop-up -->
     <div id="around_winModal" class="modal">
         <div class="modal-content">
             <h3 id="around_winTitle">🎉 GEWONNEN!</h3>
             <p id="around_winText" style="font-size: 16px; margin: 15px 0;">Speler heeft het spel gewonnen!</p>
-            <p style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Standen en geschiedenis blijven zichtbaar om te controleren. Gebruik 'Herstel' indien nodig, of 'Reset' voor een nieuw spel.</p>
+            <p id="around_winSubText" style="font-size: 11px; color: #aaa; margin-bottom: 15px;">Standen en geschiedenis blijven zichtbaar om te controleren.</p>
             <button class="close-btn" style="float: none; padding: 8px 20px;" onclick="around_sluitWinstModal()">OK</button>
         </div>
     </div>
 
     <script>
-        // --- VERTALINGEN / DICTIONARY ---
         const around_translations = {
             nl: {
                 headerSpeler1: "Speler 1",
                 headerSpeler2: "Speler 2",
-                pointsWith: "PUNTEN",
-                pointsWithout: "GEEN PUNTEN",
+                optionsBtn: "OPTIES",
                 langBtnText: "English",
                 histPrefix: "Historie ",
                 noActions: "Geen acties",
@@ -580,7 +607,8 @@
                 statusUit: "Microfoon staat uit. Klik op 'Mic Uit'.",
                 statusAan: "Luistert naar Around commando's...",
                 transcriptWait: "Gehoord: (wacht op commando...)",
-                tip: "💡 <b>Tip:</b> Zeg bijv. <i>\"Speler één\"</i> en daarna <i>\"2 keer 16\"</i> of in één zin.",
+                tipStart: "💡 <b>Tip:</b> Klik op OPTIES voor je spelkeuze en instellingen!",
+                tipDefault: "💡 <b>Tip:</b> Zeg verplicht <i>\"groene bull\"</i> of <i>\"rode bull\"</i> voor de bull!",
                 statsTitle: "Speler Statistieken",
                 thPair: "Spelerspaar",
                 thWins: "Gewonnen Spellen",
@@ -588,17 +616,34 @@
                 restored: "Hersteld",
                 gameReset: "Spel gereset!",
                 winMsg: "🎉 GEWONNEN! {name} heeft het spel gewonnen!",
-                fullMsg: "⚠️ {name} is al vol!",
-                fullSpeech: "Die is vol",
                 undoRestored: "↩️ Vorige actie hersteld!",
                 noActionsLeft: "Geen acties meer om te herstellen.",
-                confirmClear: "Weet je zeker dat je alle statistieken wilt wissen?"
+                confirmClear: "Weet je zeker dat je alle statistieken wilt wissen?",
+                alreadyFull: "Is al vol",
+                onlySingles: "⚠️ Alleen singles tellen in deze optie!",
+                onlyDoubles: "⚠️ Alleen dubbels (en bull) tellen in deze optie!",
+                onlyTriples: "⚠️ Alleen triples (en bull) tellen in deze optie!",
+                sayBull: "Zeg 'groene bull' of 'rode bull'!",
+                firstThrow: "⚠️ Eerst {target} gooien!",
+                throwBullFirst: "⚠️ Je moet nu gooien op: {target}",
+                modalTitle: "Spelinstellingen & Spelkeuze",
+                modalLabelSelect: "Kies Spelvariant:",
+                opt1: "Optie 1: Klassiek (Op Volgorde / Random)",
+                opt2: "Optie 2: Alleen Singles & Bull",
+                opt3: "Optie 3: Alleen Dubbels & Bull",
+                opt4: "Optie 4: Alleen Triples & Bull",
+                opt5: "Optie 5: Random & 3 Hits",
+                opt6: "Optie 6: Aflopend (Rode/Groene Bull -> 20-1)",
+                modalLabelPoints: "Punten bijhouden (Punten Aan / Uit)",
+                modalLabelRandom: "Klassiek op Random (in plaats van volgorde)",
+                modalSaveBtn: "Opslaan & Spel toepassen",
+                winTitle: "🎉 GEWONNEN!",
+                winSubText: "Standen en geschiedenis blijven zichtbaar om te controleren."
             },
             en: {
                 headerSpeler1: "Player 1",
                 headerSpeler2: "Player 2",
-                pointsWith: "POINTS",
-                pointsWithout: "NO POINTS",
+                optionsBtn: "OPTIONS",
                 langBtnText: "Nederlands",
                 histPrefix: "History ",
                 noActions: "No actions",
@@ -611,7 +656,8 @@
                 statusUit: "Microphone is off. Click 'Mic Off'.",
                 statusAan: "Listening for Around commands...",
                 transcriptWait: "Heard: (waiting for command...)",
-                tip: "💡 <b>Tip:</b> Say e.g. <i>\"Player one\"</i> and then <i>\"2 times 16\"</i> or in one sentence.",
+                tipStart: "💡 <b>Tip:</b> Click OPTIONS for game selection and settings!",
+                tipDefault: "💡 <b>Tip:</b> Explicitly say <i>\"green bull\"</i> or <i>\"red bull\"</i>!",
                 statsTitle: "Player Statistics",
                 thPair: "Player Pair",
                 thWins: "Won Games",
@@ -619,26 +665,127 @@
                 restored: "Restored",
                 gameReset: "Game reset!",
                 winMsg: "🎉 WON! {name} has won the game!",
-                fullMsg: "⚠️ {name} is already full!",
-                fullSpeech: "That is full",
                 undoRestored: "↩️ Previous action restored!",
                 noActionsLeft: "No more actions to restore.",
-                confirmClear: "Are you sure you want to clear all statistics?"
+                confirmClear: "Are you sure you want to clear all statistics?",
+                alreadyFull: "Already full",
+                onlySingles: "⚠️ Only singles count in this option!",
+                onlyDoubles: "⚠️ Only doubles (and bull) count in this option!",
+                onlyTriples: "⚠️ Only triples (and bull) count in this option!",
+                sayBull: "Say 'green bull' or 'red bull'!",
+                firstThrow: "⚠️ Throw {target} first!",
+                throwBullFirst: "⚠️ You must throw: {target}",
+                modalTitle: "Game Settings & Game Selection",
+                modalLabelSelect: "Select Game Variant:",
+                opt1: "Option 1: Classic (Sequential / Random)",
+                opt2: "Option 2: Singles Only & Bull",
+                opt3: "Option 3: Doubles Only & Bull",
+                opt4: "Option 4: Triples Only & Bull",
+                opt5: "Option 5: Random & 3 Hits",
+                opt6: "Option 6: Descending (Red/Green Bull -> 20-1)",
+                modalLabelPoints: "Keep Score (Points On / Off)",
+                modalLabelRandom: "Classic on Random (instead of sequential)",
+                modalSaveBtn: "Save & Apply Game",
+                winTitle: "🎉 WON!",
+                winSubText: "Standings and history remain visible for review."
             }
         };
 
         let around_currentLang = 'nl';
+        let around_actieveOptieId = 'optie_klassiek';
+        let around_isRandomOrder = false;
+
+        // Uitlezen uit URL of localStorage
+        const urlParams = new URLSearchParams(window.location.search);
+        let paramOptie = urlParams.get('optie') || urlParams.get('speloptie') || localStorage.getItem('around_actieve_optie');
+        if (paramOptie) around_actieveOptieId = paramOptie;
+        if (urlParams.get('random') === 'true' || urlParams.get('random') === '1') around_isRandomOrder = true;
+
+        let urlPunten = urlParams.get('punten') || urlParams.get('around_punten');
+        let aroundPuntenAan = (around_actieveOptieId === 'optie_tactics');
+        if (urlPunten !== null) {
+            aroundPuntenAan = (urlPunten === 'true' || urlPunten === '1' || urlPunten === 'aan');
+        } else if (localStorage.getItem('around_punten_aan') !== null) {
+            aroundPuntenAan = localStorage.getItem('around_punten_aan') === 'true';
+        }
+
+        function around_updateTitelWeergave() {
+            const titleEl = document.getElementById('around_activeGameTitle');
+            if (around_currentLang === 'en') {
+                switch(around_actieveOptieId) {
+                    case 'optie_klassiek':
+                        titleEl.innerText = around_isRandomOrder ? "[OPTION 1: CLASSIC - RANDOM]" : "[OPTION 1: CLASSIC - SEQUENTIAL]";
+                        break;
+                    case 'optie_singles':
+                        titleEl.innerText = "[OPTION 2: SINGLES ONLY & BULL]";
+                        break;
+                    case 'optie_dubbels':
+                        titleEl.innerText = "[OPTION 3: DOUBLES ONLY & BULL]";
+                        break;
+                    case 'optie_triples':
+                        titleEl.innerText = "[OPTION 4: TRIPLES ONLY & BULL]";
+                        break;
+                    case 'optie_tactics':
+                        titleEl.innerText = "[OPTION 5: RANDOM & 3 HITS]";
+                        break;
+                    case 'optie_aflopend':
+                        titleEl.innerText = "[OPTION 6: DESCENDING - RED/GREEN BULL -> 20-1]";
+                        break;
+                    default:
+                        titleEl.innerText = "[OPTION 1: CLASSIC]";
+                }
+            } else {
+                switch(around_actieveOptieId) {
+                    case 'optie_klassiek':
+                        titleEl.innerText = around_isRandomOrder ? "[OPTIE 1: KLASSIEK - RANDOM]" : "[OPTIE 1: KLASSIEK - OP VOLGORDE]";
+                        break;
+                    case 'optie_singles':
+                        titleEl.innerText = "[OPTIE 2: ALLEEN SINGLES & BULL]";
+                        break;
+                    case 'optie_dubbels':
+                        titleEl.innerText = "[OPTIE 3: ALLEEN DUBBELS & BULL]";
+                        break;
+                    case 'optie_triples':
+                        titleEl.innerText = "[OPTIE 4: ALLEEN TRIPLES & BULL]";
+                        break;
+                    case 'optie_tactics':
+                        titleEl.innerText = "[OPTIE 5: RANDOM & 3 HITS]";
+                        break;
+                    case 'optie_aflopend':
+                        titleEl.innerText = "[OPTIE 6: AFLOPEND - RODE/GROENE BULL -> 20-1]";
+                        break;
+                    default:
+                        titleEl.innerText = "[OPTIE 1: KLASSIEK]";
+                }
+            }
+        }
 
         function around_applyLanguage() {
             const t = around_translations[around_currentLang];
             document.getElementById('around_headerSpeler1').innerText = t.headerSpeler1;
             document.getElementById('around_headerSpeler2').innerText = t.headerSpeler2;
+            document.getElementById('around_ptsToggleCell').innerText = t.optionsBtn;
             document.getElementById('around_btnMenuEl').innerText = t.menu;
             document.getElementById('around_btnUndoEl').innerText = t.undo;
             document.getElementById('around_btnStatsEl').innerText = t.stats;
             document.getElementById('around_btnResetEl').innerText = t.reset;
             document.getElementById('around_langBtn').innerText = t.langBtnText;
             document.getElementById('around_clearStatsBtn').innerText = (around_currentLang === 'en' ? 'Clear' : 'Wissen');
+            
+            // Modal vertalingen
+            document.getElementById('around_modalTitle').innerText = t.modalTitle;
+            document.getElementById('around_modalLabelSelect').innerText = t.modalLabelSelect;
+            document.getElementById('around_opt1').innerText = t.opt1;
+            document.getElementById('around_opt2').innerText = t.opt2;
+            document.getElementById('around_opt3').innerText = t.opt3;
+            document.getElementById('around_opt4').innerText = t.opt4;
+            document.getElementById('around_opt5').innerText = t.opt5;
+            document.getElementById('around_opt6').innerText = t.opt6;
+            document.getElementById('around_modalLabelPoints').innerText = t.modalLabelPoints;
+            document.getElementById('around_modalLabelRandom').innerText = t.modalLabelRandom;
+            document.getElementById('around_modalSaveBtn').innerText = t.modalSaveBtn;
+            document.getElementById('around_winTitle').innerText = t.winTitle;
+            document.getElementById('around_winSubText').innerText = t.winSubText;
             
             const micBtn = document.getElementById('around_listenBtn');
             if (around_isLuisteren) {
@@ -649,13 +796,17 @@
                 document.getElementById('around_status').innerText = t.statusUit;
             }
 
-            document.getElementById('around_tipBoxText').innerHTML = t.tip;
+            // Dynamische tip bij start of tijdens spel
+            const totaalGegooid = aroundData.p1.beurten + aroundData.p2.beurten;
+            document.getElementById('around_tipBoxText').innerHTML = (totaalGegooid === 0) ? t.tipStart : t.tipDefault;
+
             document.getElementById('around_statsModalTitle').innerText = t.statsTitle;
             document.getElementById('around_thPair').innerText = t.thPair;
             document.getElementById('around_thWins').innerText = t.thWins;
 
             around_updateSpelerNamen();
-            around_pasPuntenWeergaveToe();
+            around_updateScherm();
+            around_updateTitelWeergave();
         }
 
         function around_toggleTaal() {
@@ -684,35 +835,42 @@
 
         const around_getallenLijst = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 'green_bull', 'red_bull'];
         
+        let around_volgordeIndex = { p1: 0, p2: 0 };
+        const around_aflopendLijst = ['red_bull', 'green_bull', 20, 19, 18, 17, 16, 15, 14, 13, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1];
+
         let aroundData = {
             p1: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
             p2: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
         };
 
-        const urlParams = new URLSearchParams(window.location.search);
-        let urlPunten = urlParams.get('punten') || urlParams.get('around_punten');
-        
-        let aroundPuntenAan = true;
-        if (urlPunten !== null) {
-            aroundPuntenAan = (urlPunten === 'true' || urlPunten === '1' || urlPunten === 'aan');
-        } else {
-            let storedPunten = localStorage.getItem('around_punten');
-            if (storedPunten !== null) {
-                aroundPuntenAan = (storedPunten !== 'false' && storedPunten !== '0' && storedPunten !== 'nee' && storedPunten !== 'off');
-            }
+        // Functies voor het Openen en Sluiten van het Spelinstellingen-Modal
+        function around_openSettingsModal() {
+            document.getElementById('around_modalGameSelect').value = around_actieveOptieId;
+            document.getElementById('around_modalPointsCheck').checked = aroundPuntenAan;
+            document.getElementById('around_modalRandomCheck').checked = around_isRandomOrder;
+            
+            let randContainer = document.getElementById('around_modalRandomContainer');
+            randContainer.style.display = (around_actieveOptieId === 'optie_klassiek') ? 'block' : 'none';
+
+            document.getElementById('around_settingsModal').style.display = 'flex';
         }
 
-        function around_pasPuntenWeergaveToe() {
-            const ptsCell = document.getElementById('around_ptsToggleCell');
-            const t = around_translations[around_currentLang];
-            if (aroundPuntenAan) {
-                ptsCell.innerText = t.pointsWith;
-                ptsCell.style.background = "#2ecc71";
-            } else {
-                ptsCell.innerText = t.pointsWithout;
-                ptsCell.style.background = "#e74c3c";
-            }
+        function around_closeSettingsModal() {
+            document.getElementById('around_settingsModal').style.display = 'none';
+        }
+
+        function around_saveSettingsModal() {
+            around_actieveOptieId = document.getElementById('around_modalGameSelect').value;
+            aroundPuntenAan = document.getElementById('around_modalPointsCheck').checked;
+            around_isRandomOrder = document.getElementById('around_modalRandomCheck').checked;
+
+            localStorage.setItem('around_actieve_optie', around_actieveOptieId);
+            localStorage.setItem('around_punten_aan', aroundPuntenAan);
+
+            around_updateTitelWeergave();
             around_updateScherm();
+            around_resetSpel();
+            around_closeSettingsModal();
         }
 
         setInterval(() => {
@@ -747,6 +905,13 @@
             around_recognition.onresult = function(event) {
                 let speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 
+                // Romeinse Cijfers fix (bijv. patrick ii -> patrick 2)
+                speechResult = speechResult
+                    .replace(/\bii\.?\b/g, '2')
+                    .replace(/\biii\.?\b/g, '3')
+                    .replace(/\biv\.?\b/g, '4')
+                    .replace(/\bv\.?\b/g, '5');
+
                 if (around_currentLang === 'nl') {
                     speechResult = speechResult
                         .replace(/één/g, '1').replace(/een/g, '1')
@@ -803,19 +968,11 @@
             }
         }
 
-        function around_togglePuntenModus() {
-            aroundPuntenAan = !aroundPuntenAan;
-            localStorage.setItem('around_punten', aroundPuntenAan);
-            around_pasPuntenWeergaveToe();
-        }
-
         function around_toggleFullscreen() {
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {});
             } else {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen();
-                }
+                if (document.exitFullscreen) document.exitFullscreen();
             }
         }
 
@@ -827,9 +984,7 @@
             let p2Name = around_spelers.name2 || "Speler 2";
             let currentPairKey = `${p1Name} vs ${p2Name}`;
 
-            if (!around_playerStats[currentPairKey]) {
-                around_playerStats[currentPairKey] = 0;
-            }
+            if (!around_playerStats[currentPairKey]) around_playerStats[currentPairKey] = 0;
 
             for (let [pairName, winsCount] of Object.entries(around_playerStats)) {
                 let tr = document.createElement('tr');
@@ -837,7 +992,6 @@
                 tr.innerHTML = `<td><b>${pairName}</b></td><td>${displayWins}</td>`;
                 tbody.appendChild(tr);
             }
-            
             document.getElementById('around_statsModal').style.display = 'flex';
         }
 
@@ -852,6 +1006,25 @@
                 localStorage.removeItem('around_player_stats');
                 around_openStatsModal();
             }
+        }
+
+        // Universele slimme naamherkenning met fonetische / prefix / alias controle (o.a. voor Frans)
+        function around_matchenSpelerNaam(gehoord, spelerNaam) {
+            if (!spelerNaam) return false;
+            let g = gehoord.toLowerCase().trim();
+            let n = spelerNaam.toLowerCase().trim();
+            if (g.includes(n)) return true;
+
+            // Specifieke vangnetten voor de naam Frans / Francis e.d.
+            if (n === "frans" || n.startsWith("fran")) {
+                const fransAliases = ["france", "franz", "vrans", "friends", "fronts", "francis", "fra"];
+                if (fransAliases.some(alias => g.includes(alias))) return true;
+            }
+
+            // Algemene klank / eerste 3-4 letters overeenkomst voor andere namen
+            if (n.length >= 3 && g.includes(n.substring(0, 3))) return true;
+
+            return false;
         }
 
         function around_verwerkSpraakAround(zin) {
@@ -876,21 +1049,10 @@
                 return;
             }
 
-            if (document.getElementById('around_statsModal').style.display === 'flex') {
-                if (zin.includes("sluiten") || zin.includes("close") || zin.includes("terug") || zin.includes("back")) {
-                    around_closeStatsModal();
-                    return;
-                }
-            }
-
-            const n1 = around_spelers.name1.toLowerCase();
-            const n2 = around_spelers.name2.toLowerCase();
-            const zegtSpeler1 = zin.includes("speler 1") || zin.includes("player 1") || zin.includes(n1);
-            const zegtSpeler2 = zin.includes("speler 2") || zin.includes("player 2") || zin.includes(n2);
-
-            if (!zegtSpeler1 && !zegtSpeler2) {
-                return;
-            }
+            const n1 = around_spelers.name1;
+            const n2 = around_spelers.name2;
+            const zegtSpeler1 = zin.includes("speler 1") || zin.includes("player 1") || around_matchenSpelerNaam(zin, n1);
+            const zegtSpeler2 = zin.includes("speler 2") || zin.includes("player 2") || around_matchenSpelerNaam(zin, n2);
 
             if (zegtSpeler1) around_actieveSpelerKey = 'p1';
             if (zegtSpeler2) around_actieveSpelerKey = 'p2';
@@ -900,60 +1062,146 @@
 
             document.getElementById('around_transcript').innerText = (around_currentLang === 'en' ? 'Heard: ' : 'Gehoord: ') + `"${zin}"`;
 
-            let aantalHits = 1;
-            if (zin.includes("triple") || zin.includes("trippel") || zin.includes("driemaal") || zin.includes("3 keer") || zin.includes("3 maal") || zin.includes("3 times")) {
-                aantalHits = 3;
-            } else if (zin.includes("dubbel") || zin.includes("double") || zin.includes("tweemaal") || zin.includes("2 keer") || zin.includes("2 maal") || zin.includes("2x") || zin.includes("2 times")) {
-                aantalHits = 2;
-            } else {
-                const matchMult = zin.match(/\b([123])\s*(keer|maal|x|\*|times)\b/);
-                if (matchMult) {
-                    aantalHits = parseInt(matchMult[1]);
-                }
+            // Strikte Bull Filter: Losse "boel" / "bull" wordt genegeerd, verplicht "groene bull" / "rode bull" (of boel in NL)
+            let isGroeneBoel = zin.includes("groene boel") || zin.includes("groene bull") || zin.includes("green bull");
+            let isRodeBoel = zin.includes("rode boel") || zin.includes("rode bull") || zin.includes("red bull");
+            let isLosseBoel = (zin.includes("boel") || zin.includes("bull")) && !isGroeneBoel && !isRodeBoel;
+
+            const t = around_translations[around_currentLang];
+
+            if (isLosseBoel) {
+                around_toonMelding(t.sayBull, "#e74c3c");
+                return;
             }
 
-            let isBull = zin.includes("boel") || zin.includes("boule") || zin.includes("bull") || zin.includes("bullseye");
+            let isTriple = zin.includes("triple") || zin.includes("trippel") || zin.includes("driemaal") || zin.includes("3 keer") || zin.includes("3 maal") || zin.includes("3 times");
+            let isDubbel = zin.includes("dubbel") || zin.includes("double") || zin.includes("tweemaal") || zin.includes("2 keer") || zin.includes("2 maal") || zin.includes("2x") || zin.includes("2 times");
+
+            // STRIKTE VARIANTCONTROLES:
+            if (around_actieveOptieId === 'optie_singles' && (isTriple || isDubbel)) {
+                around_toonMelding(t.onlySingles, "#e74c3c");
+                return;
+            }
+            if (around_actieveOptieId === 'optie_dubbels' && !isDubbel && !isGroeneBoel && !isRodeBoel) {
+                around_toonMelding(t.onlyDoubles, "#e74c3c");
+                return;
+            }
+            if (around_actieveOptieId === 'optie_triples' && !isTriple && !isGroeneBoel && !isRodeBoel) {
+                around_toonMelding(t.onlyTriples, "#e74c3c");
+                return;
+            }
+
             let hitsAangepast = false;
             let actieMelding = "";
 
             let stateBeforeAction = {
                 aroundData: JSON.parse(JSON.stringify(aroundData)),
+                volgordeIndex: JSON.parse(JSON.stringify(around_volgordeIndex)),
                 htmlHistP1: document.getElementById('around_historyP1').innerHTML,
                 htmlHistP2: document.getElementById('around_historyP2').innerHTML
             };
 
-            if (isBull) {
-                let isRodeBull = zin.includes("rode") || zin.includes("dubbel") || zin.includes("double") || zin.includes("bullseye");
-                let doelVak = isRodeBull ? 'red_bull' : 'green_bull';
-                actieMelding = isRodeBull ? (around_currentLang === 'en' ? "Red Bull" : "Rode Bull") : (around_currentLang === 'en' ? "Green Bull" : "Groene Bull");
+            // === OPTIE 6: AFLOPEND ===
+            if (around_actieveOptieId === 'optie_aflopend') {
+                let huidigDoel = around_aflopendLijst[around_volgordeIndex[doelSpelerKey]];
+                let isTreffer = false;
 
-                around_verwerkCijferTreffers(doelSpelerKey, doelVak, 3);
-                hitsAangepast = true;
-            } else {
-                around_getallenLijst.forEach(cijfer => {
-                    if (cijfer === 'green_bull' || cijfer === 'red_bull') return;
-                    let regex = new RegExp(`\\b${cijfer}\\b`);
-                    if (regex.test(zin)) {
-                        around_verwerkCijferTreffers(doelSpelerKey, cijfer, aantalHits);
-                        hitsAangepast = true;
-                        actieMelding = `${aantalHits}x ${cijfer}`;
+                if (huidigDoel === 'red_bull' && isRodeBoel) isTreffer = true;
+                else if (huidigDoel === 'green_bull' && isGroeneBoel) isTreffer = true;
+                else if (typeof huidigDoel === 'number') {
+                    let regex = new RegExp(`\\b${huidigDoel}\\b`);
+                    if (regex.test(zin)) isTreffer = true;
+                }
+
+                if (isTreffer) {
+                    let targetKey = huidigDoel;
+                    if (aroundData[doelSpelerKey][targetKey] >= 3) {
+                        around_toonMelding(`${huidigDoel === 'red_bull' ? 'Red Bull' : (huidigDoel === 'green_bull' ? 'Green Bull' : huidigDoel)} - ${t.alreadyFull}!`, "#e74c3c");
+                        around_speakFeedback(t.alreadyFull);
+                        return;
                     }
-                });
+                    aroundData[doelSpelerKey][targetKey] = 3;
+                    around_volgordeIndex[doelSpelerKey] += 1;
+                    hitsAangepast = true;
+                    actieMelding = `${huidigDoel === 'red_bull' ? 'Red Bull' : (huidigDoel === 'green_bull' ? 'Green Bull' : huidigDoel)}`;
+                } else {
+                    let targetName = huidigDoel === 'red_bull' ? 'Red Bull' : (huidigDoel === 'green_bull' ? 'Green Bull' : huidigDoel);
+                    let meldingTekst = t.throwBullFirst.replace('{target}', targetName);
+                    around_toonMelding(meldingTekst, "#e74c3c");
+                    return;
+                }
+            } else {
+                // === OPTIE 1 T/M 5 ===
+                if (isGroeneBoel || isRodeBoel) {
+                    let doelVak = isRodeBoel ? 'red_bull' : 'green_bull';
+                    actieMelding = isRodeBoel ? "Red Bull" : "Green Bull";
+                    
+                    let boelHitWaarde = 1;
+                    if (around_actieveOptieId === 'optie_dubbels') boelHitWaarde = 2;
+                    else if (around_actieveOptieId === 'optie_triples') boelHitWaarde = 3;
+
+                    // Al gegooid check
+                    if (aroundData[doelSpelerKey][doelVak] >= 3) {
+                        around_toonMelding(`${actieMelding} - ${t.alreadyFull}!`, "#e74c3c");
+                        around_speakFeedback(t.alreadyFull);
+                        return;
+                    }
+
+                    around_verwerkCijferTreffers(doelSpelerKey, doelVak, boelHitWaarde);
+                    hitsAangepast = true;
+                } else {
+                    around_getallenLijst.forEach(cijfer => {
+                        if (cijfer === 'green_bull' || cijfer === 'red_bull') return;
+                        let regex = new RegExp(`\\b${cijfer}\\b`);
+                        if (regex.test(zin)) {
+                            // === OPTIE 1: KLASSIEK ===
+                            if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
+                                let huidigVerplicht = around_getallenLijst[around_volgordeIndex[doelSpelerKey]];
+                                if (cijfer !== huidigVerplicht) {
+                                    let targetName = huidigVerplicht === 'green_bull' ? 'Green Bull' : (huidigVerplicht === 'red_bull' ? 'Red Bull' : huidigVerplicht);
+                                    let meldingTekst = t.firstThrow.replace('{target}', targetName);
+                                    around_toonMelding(meldingTekst, "#e74c3c");
+                                    return;
+                                }
+                            }
+
+                            // Al gegooid check voor getallen
+                            if (aroundData[doelSpelerKey][cijfer] >= 3) {
+                                around_toonMelding(`${cijfer} - ${t.alreadyFull}!`, "#e74c3c");
+                                around_speakFeedback(t.alreadyFull);
+                                return;
+                            }
+
+                            // === OPTIE 2: SINGLES ===
+                            // === OPTIE 3: DUBBELS ===
+                            // === OPTIE 4: TRIPLES ===
+                            // === OPTIE 5: RANDOM & 3 HITS ===
+                            let hitsToeTeVoegen = 1;
+                            if (around_actieveOptieId === 'optie_dubbels') hitsToeTeVoegen = 2;
+                            else if (around_actieveOptieId === 'optie_triples' || isTriple) hitsToeTeVoegen = 3;
+                            else if (isDubbel) hitsToeTeVoegen = 2;
+
+                            around_verwerkCijferTreffers(doelSpelerKey, cijfer, hitsToeTeVoegen);
+                            hitsAangepast = true;
+                            actieMelding = `${cijfer}`;
+
+                            if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
+                                around_volgordeIndex[doelSpelerKey] += 1;
+                            }
+                        }
+                    });
+                }
             }
 
-            if (!hitsAangepast) {
-                return;
-            }
+            if (!hitsAangepast) return;
 
             around_geschiedenisStappen.push(stateBeforeAction);
-
             aroundData[doelSpelerKey].beurten += 1;
-            aroundData[doelSpelerKey].totaalHits += aantalHits;
 
             around_updateScherm();
             around_voegToeAanHistorie(doelSpelerKey, actieMelding);
             around_toonMelding(`✓ ${actieveNaam}: ${actieMelding}`, "#2ecc71");
-            around_speakFeedback(around_currentLang === 'en' ? "Noted" : "Genoteerd");
+            around_speakFeedback(t.noted);
 
             around_controleerGewonnen(doelSpelerKey, actieveNaam);
         }
@@ -966,6 +1214,7 @@
 
             aroundData[spelerKey][vakje] = nieuweHits;
 
+            // Punten bijhouden optie
             if (aroundPuntenAan && overigeHits > 0) {
                 let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
                 let puntenWaarde = (vakje === 'red_bull') ? 50 : ((vakje === 'green_bull') ? 25 : (typeof vakje === 'number' ? vakje : 10));
@@ -976,7 +1225,14 @@
         }
 
         function around_controleerGewonnen(spelerKey, naam) {
-            let allesDicht = around_getallenLijst.every(v => aroundData[spelerKey][v] >= 3);
+            let allesDicht = false;
+
+            if (around_actieveOptieId === 'optie_aflopend') {
+                allesDicht = (around_volgordeIndex[spelerKey] >= around_aflopendLijst.length);
+            } else {
+                allesDicht = around_getallenLijst.every(v => aroundData[spelerKey][v] >= 3);
+            }
+
             if (!allesDicht) return;
 
             let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
@@ -1014,6 +1270,7 @@
             }
             let vorigeStaat = around_geschiedenisStappen.pop();
             aroundData = JSON.parse(JSON.stringify(vorigeStaat.aroundData));
+            around_volgordeIndex = JSON.parse(JSON.stringify(vorigeStaat.volgordeIndex));
             document.getElementById('around_historyP1').innerHTML = vorigeStaat.htmlHistP1;
             document.getElementById('around_historyP2').innerHTML = vorigeStaat.htmlHistP2;
 
@@ -1039,8 +1296,8 @@
         }
 
         function around_formatteerHits(aantal) {
-            if (aantal === 1) return "X";
-            if (aantal === 2) return "XX";
+            if (aantal === 1) return around_currentLang === 'en' ? "X full" : "X vol";
+            if (aantal === 2) return around_currentLang === 'en' ? "XX full" : "XX vol";
             if (aantal >= 3) return around_currentLang === 'en' ? "XXX full" : "XXX vol";
             return "-";
         }
@@ -1063,11 +1320,8 @@
             const hasRealActions = Array.from(listEl.children).some(li => 
                 li.innerText !== "Geen acties" && li.innerText !== "No actions"
             );
-            if (hasRealActions) {
-                colEl.classList.add('has-history');
-            } else {
-                colEl.classList.remove('has-history');
-            }
+            if (hasRealActions) colEl.classList.add('has-history');
+            else colEl.classList.remove('has-history');
         }
 
         function around_toonMelding(tekst, kleur) {
@@ -1092,6 +1346,7 @@
                 p1: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 },
                 p2: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
             };
+            around_volgordeIndex = { p1: 0, p2: 0 };
             around_geschiedenisStappen = [];
             around_startTime = Date.now();
             around_updateScherm();
