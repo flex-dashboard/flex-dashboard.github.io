@@ -1135,19 +1135,19 @@
                 label.innerText = (currentLang === 'eng') ? 'Around the Clock Options:' : 'Around the Clock Opties:';
                 if (aroundContainer) aroundContainer.style.display = 'flex';
                 select.innerHTML = currentLang === 'eng' ? `
-                    <option value="standard">Standard (1 to 20 & Red/Green Bull) (Option 1)</option>
-                    <option value="singles">Singles Only (1 to 20) (Option 2)</option>
-                    <option value="doubles">Doubles Only (D1 to D20 + Green Bull) (Option 3)</option>
-                    <option value="triples">Triples Only (T1 to T20 + Red Bull) (Option 4)</option>
-                    <option value="random">Random / Willekeurig (+ Both Bulls) (Option 5)</option>
-                    <option value="quick">Count Down (Red Bull first + 20 to 1) (Option 6)</option>
+                    <option value="optie_klassiek">Standard (1 to 20 & Red/Green Bull) (Option 1)</option>
+                    <option value="optie_singles">Singles Only (1 to 20) (Option 2)</option>
+                    <option value="optie_dubbels">Doubles Only (D1 to D20 + Green Bull) (Option 3)</option>
+                    <option value="optie_triples">Triples Only (T1 to T20 + Red Bull) (Option 4)</option>
+                    <option value="optie_tactics">Random / Willekeurig (+ Both Bulls) (Option 5)</option>
+                    <option value="optie_aflopend">Count Down (Red Bull first + 20 to 1) (Option 6)</option>
                 ` : `
-                    <option value="standard">Standaard (1 t/m 20 & Rode en Groene Bull) (Optie 1)</option>
-                    <option value="singles">Alleen Singles (1 t/m 20 & Rode en Groene Bull ) (Optie 2)</option>
-                    <option value="doubles">Alleen Doubles (D1 t/m D20 & Rode en Groene Bull) (Optie 3)</option>
-                    <option value="triples">Alleen Triples (T1 t/m T20 & Rode en Groene Bull) (Optie 4)</option>
-                    <option value="random">Willekeurig / Random (+ Beide Bulls) (Optie 5)</option>
-                    <option value="quick">Terug Tellend (Rode Bull dan Groene Bull + 20 t/m 1) (Optie 6)</option>
+                    <option value="optie_klassiek">Standaard (1 t/m 20 & Rode en Groene Bull) (Optie 1)</option>
+                    <option value="optie_singles">Alleen Singles (1 t/m 20 & Rode en Groene Bull ) (Optie 2)</option>
+                    <option value="optie_dubbels">Alleen Doubles (D1 t/m D20 & Rode en Groene Bull) (Optie 3)</option>
+                    <option value="optie_triples">Alleen Triples (T1 t/m T20 & Rode en Groene Bull) (Optie 4)</option>
+                    <option value="optie_tactics">Willekeurig / Random (+ Beide Bulls) (Optie 5)</option>
+                    <option value="optie_aflopend">Terug Tellend (Rode Bull dan Groene Bull + 20 t/m 1) (Optie 6)</option>
                 `;
                 checkAroundOrderCheckboxState();
             } else {
@@ -1179,7 +1179,7 @@
             let cb = document.getElementById('aroundOrderCheckbox');
             if (!select || !cb) return;
             let val = select.value;
-            if (val === 'random' || val === 'quick') {
+            if (val === 'optie_tactics' || val === 'optie_aflopend') {
                 cb.checked = false;
                 cb.disabled = true;
             } else {

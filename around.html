@@ -117,7 +117,6 @@
             text-align: center;
             padding: 2px 4px;
         }
-        /* Vaste, onveranderlijke maat voor de Opties-knop op PC en Mobile */
         .around-board td.clickable-pts {
             cursor: pointer;
             transition: all 0.2s;
@@ -141,7 +140,6 @@
             transform: scale(1.02);
         }
 
-        /* 3-Koloms Onder-sectie met vastgezette layout */
         .bottom-layout {
             display: flex;
             gap: 6px;
@@ -277,18 +275,43 @@
             font-size: 11px;
             text-align: center;
         }
+        .transcript-container {
+            display: flex;
+            gap: 4px;
+            margin-top: 4px;
+            width: 100%;
+        }
         #around_transcript {
+            flex: 1;
             background: rgba(37, 37, 37, 0.45);
             backdrop-filter: blur(4px);
             padding: 5px;
             border-radius: 4px;
-            margin-top: 4px;
+            min-height: 16px;
+            color: #2ecc71;
+            font-weight: bold;
+            font-size: 11px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        #around_action_status {
+            flex: 1;
+            background: rgba(37, 37, 37, 0.45);
+            backdrop-filter: blur(4px);
+            padding: 5px;
+            border-radius: 4px;
             min-height: 16px;
             color: #3498db;
             font-weight: bold;
             font-size: 11px;
             border: 1px solid rgba(255, 255, 255, 0.1);
             text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .tip-box {
@@ -432,17 +455,15 @@
                 font-size: 7.5px;
                 height: 21px;
             }
-.around-board .clickable-pts {
-    font-size: 7.5px !important;
-    padding: 2px 3px !important;
-    width: 45px !important;
-    max-width: 45px !important;
-    height: 21px !important;
-    font-size: 9px !important;
-    position: relative;
-    left: -3px;
-}
-
+            .around-board .clickable-pts {
+                font-size: 7.5px !important;
+                padding: 2px 3px !important;
+                width: 45px !important;
+                max-width: 45px !important;
+                height: 21px !important;
+                position: relative;
+                left: -3px;
+            }
         }
     </style>
 </head>
@@ -471,9 +492,9 @@
                 </tr>
                 <tr>
                     <th class="col-vak-left" style="color: #f39c12;">Vak</th>
-                    <th colspan="2" id="around_tLabelP1" contenteditable="true" onblur="around_updateSpelerNamen()" style="text-align: center; border-right: 2px solid rgba(255,255,255,0.15);">Frans</th>
+                    <th colspan="2" id="around_tLabelP1" contenteditable="true" onblur="around_updateSpelerNamen()" style="text-align: center; border-right: 2px solid rgba(255,255,255,0.15); cursor: pointer;" title="Klik om naam te wijzigen">Frans</th>
                     <th class="col-vak-mid" style="color: #f39c12; text-align: center; border-left: 2px solid rgba(255,255,255,0.15); border-right: 2px solid rgba(255,255,255,0.15);">Vak</th>
-                    <th colspan="2" id="around_tLabelP2" contenteditable="true" onblur="around_updateSpelerNamen()" style="text-align: center; border-left: 2px solid rgba(255,255,255,0.15);">Patrick</th>
+                    <th colspan="2" id="around_tLabelP2" contenteditable="true" onblur="around_updateSpelerNamen()" style="text-align: center; border-left: 2px solid rgba(255,255,255,0.15); cursor: pointer;" title="Klik om naam te wijzigen">Patrick</th>
                     <th class="col-vak-right" style="color: #f39c12;">Vak</th>
                 </tr>
             </thead>
@@ -533,14 +554,17 @@
         </div>
 
         <div id="around_status">Microfoon staat uit. Klik op 'Mic Uit'.</div>
-        <div id="around_transcript">Gehoord: (wacht op commando...)</div>
+        <div class="transcript-container">
+            <div id="around_transcript">Gehoord: (wacht...)</div>
+            <div id="around_action_status">Status: Klaar</div>
+        </div>
 
         <div class="tip-box" id="around_tipBoxText">
             💡 <b>Tip:</b> Klik op OPTIES voor je spelkeuze en instellingen!
         </div>
     </div>
 
-    <!-- Spelinstellingen & Spelkeuze Modal (gekoppeld aan OPTIES-knop) -->
+    <!-- Spelinstellingen & Spelkeuze Modal -->
     <div id="around_settingsModal" class="modal">
         <div class="modal-content">
             <button class="close-btn" onclick="around_closeSettingsModal()">✕</button>
@@ -617,9 +641,9 @@
                 reset: "Reset",
                 statusUit: "Microfoon staat uit. Klik op 'Mic Uit'.",
                 statusAan: "Luistert naar Around commando's...",
-                transcriptWait: "Gehoord: (wacht op commando...)",
+                transcriptWait: "Gehoord: (wacht...)",
                 tipStart: "💡 <b>Tip:</b> Klik op OPTIES voor je spelkeuze en instellingen!",
-                tipDefault: "💡 <b>Tip:</b> Zeg verplicht <i>\"groene bull\"</i> of <i>\"rode bull\"</i> voor de bull!",
+                tipDefault: "💡 <b>Tip:</b> Zeg verplicht <i>\"groene boule/bull\"</i> of <i>\"rode boule/bull\"</i>!",
                 statsTitle: "Speler Statistieken",
                 thPair: "Spelerspaar",
                 thWins: "Gewonnen Spellen",
@@ -630,11 +654,11 @@
                 undoRestored: "↩️ Vorige actie hersteld!",
                 noActionsLeft: "Geen acties meer om te herstellen.",
                 confirmClear: "Weet je zeker dat je alle statistieken wilt wissen?",
-                alreadyFull: "Is al vol",
+                alreadyFull: "is al vol!",
                 onlySingles: "⚠️ Alleen singles tellen in deze optie!",
-                onlyDoubles: "⚠️ Alleen dubbels (en bull) tellen in deze optie!",
-                onlyTriples: "⚠️ Alleen triples (en bull) tellen in deze optie!",
-                sayBull: "Zeg 'groene bull' of 'rode bull'!",
+                onlyDoubles: "⚠️ Alleen dubbels (en boule/bull) tellen in deze optie!",
+                onlyTriples: "⚠️ Alleen triples (en boule/bull) tellen in deze optie!",
+                sayBull: "Zeg expliciet 'groene boule' of 'rode boule'!",
                 firstThrow: "⚠️ Eerst {target} gooien!",
                 throwBullFirst: "⚠️ Je moet nu gooien op: {target}",
                 modalTitle: "Spelinstellingen & Spelkeuze",
@@ -666,9 +690,9 @@
                 reset: "Reset",
                 statusUit: "Microphone is off. Click 'Mic Off'.",
                 statusAan: "Listening for Around commands...",
-                transcriptWait: "Heard: (waiting for command...)",
+                transcriptWait: "Heard: (waiting...)",
                 tipStart: "💡 <b>Tip:</b> Click OPTIONS for game selection and settings!",
-                tipDefault: "💡 <b>Tip:</b> Explicitly say <i>\"green bull\"</i> or <i>\"red bull\"</i>!",
+                tipDefault: "💡 <b>Tip:</b> Explicitly say <i>\"green boule/bull\"</i> or <i>\"red boule/bull\"</i>!",
                 statsTitle: "Player Statistics",
                 thPair: "Player Pair",
                 thWins: "Won Games",
@@ -679,11 +703,11 @@
                 undoRestored: "↩️ Previous action restored!",
                 noActionsLeft: "No more actions to restore.",
                 confirmClear: "Are you sure you want to clear all statistics?",
-                alreadyFull: "Already full",
+                alreadyFull: "is already full!",
                 onlySingles: "⚠️ Only singles count in this option!",
-                onlyDoubles: "⚠️ Only doubles (and bull) count in this option!",
-                onlyTriples: "⚠️ Only triples (and bull) count in this option!",
-                sayBull: "Say 'green bull' or 'red bull'!",
+                onlyDoubles: "⚠️ Only doubles (and boule/bull) count in this option!",
+                onlyTriples: "⚠️ Only triples (and boule/bull) count in this option!",
+                sayBull: "Say explicitly 'green boule' or 'red boule'!",
                 firstThrow: "⚠️ Throw {target} first!",
                 throwBullFirst: "⚠️ You must throw: {target}",
                 modalTitle: "Game Settings & Game Selection",
@@ -706,16 +730,38 @@
         let around_actieveOptieId = 'optie_klassiek';
         let around_isRandomOrder = false;
 
-        // Uitlezen uit URL of localStorage
+        // Uitlezen uit URL (met de allerhoogste prioriteit voor p1 en p2 vanuit het 501 menu) of localStorage
         const urlParams = new URLSearchParams(window.location.search);
-        let paramOptie = urlParams.get('optie') || urlParams.get('speloptie') || localStorage.getItem('around_actieve_optie');
-        if (paramOptie) around_actieveOptieId = paramOptie;
-        if (urlParams.get('random') === 'true' || urlParams.get('random') === '1') around_isRandomOrder = true;
+        let paramP1 = urlParams.get('p1');
+        let paramP2 = urlParams.get('p2');
+
+        if (paramP1) localStorage.setItem('around_p1', paramP1);
+        if (paramP2) localStorage.setItem('around_p2', paramP2);
+
+        let paramOptie = urlParams.get('variant') || urlParams.get('optie') || urlParams.get('speloptie');
+        if (paramOptie) {
+            around_actieveOptieId = paramOptie;
+            localStorage.setItem('around_actieve_optie', around_actieveOptieId);
+        } else {
+            let savedOptie = localStorage.getItem('around_actieve_optie');
+            if (savedOptie) around_actieveOptieId = savedOptie;
+        }
+
+        if (urlParams.get('random') === 'true' || urlParams.get('random') === '1') {
+            around_isRandomOrder = true;
+            localStorage.setItem('around_random', 'true');
+        } else if (urlParams.get('random') === 'false' || urlParams.get('random') === '0') {
+            around_isRandomOrder = false;
+            localStorage.setItem('around_random', 'false');
+        } else {
+            around_isRandomOrder = localStorage.getItem('around_random') === 'true';
+        }
 
         let urlPunten = urlParams.get('punten') || urlParams.get('around_punten');
-        let aroundPuntenAan = (around_actieveOptieId === 'optie_tactics');
+        aroundPuntenAan = (around_actieveOptieId === 'optie_tactics');
         if (urlPunten !== null) {
             aroundPuntenAan = (urlPunten === 'true' || urlPunten === '1' || urlPunten === 'aan');
+            localStorage.setItem('around_punten_aan', aroundPuntenAan);
         } else if (localStorage.getItem('around_punten_aan') !== null) {
             aroundPuntenAan = localStorage.getItem('around_punten_aan') === 'true';
         }
@@ -783,7 +829,6 @@
             document.getElementById('around_langBtn').innerText = t.langBtnText;
             document.getElementById('around_clearStatsBtn').innerText = (around_currentLang === 'en' ? 'Clear' : 'Wissen');
             
-            // Modal vertalingen
             document.getElementById('around_modalTitle').innerText = t.modalTitle;
             document.getElementById('around_modalLabelSelect').innerText = t.modalLabelSelect;
             document.getElementById('around_opt1').innerText = t.opt1;
@@ -807,7 +852,6 @@
                 document.getElementById('around_status').innerText = t.statusUit;
             }
 
-            // Dynamische tip bij start of tijdens spel
             const totaalGegooid = aroundData.p1.beurten + aroundData.p2.beurten;
             document.getElementById('around_tipBoxText').innerHTML = (totaalGegooid === 0) ? t.tipStart : t.tipDefault;
 
@@ -836,6 +880,13 @@
             name2: localStorage.getItem('around_p2') || "Patrick" 
         };
 
+        // Direct invullen in de tabel bij laden
+        document.addEventListener("DOMContentLoaded", function() {
+            document.getElementById('around_tLabelP1').innerText = around_spelers.name1;
+            document.getElementById('around_tLabelP2').innerText = around_spelers.name2;
+            around_updateSpelerNamen();
+        });
+
         let around_geschiedenisStappen = []; 
         let around_isLuisteren = false;
         let around_recognition;
@@ -854,7 +905,12 @@
             p2: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, 7: 0, 8: 0, 9: 0, 10: 0, 11: 0, 12: 0, 13: 0, 14: 0, 15: 0, 16: 0, 17: 0, 18: 0, 19: 0, 20: 0, 'green_bull': 0, 'red_bull': 0, punten: 0, beurten: 0, totaalHits: 0 }
         };
 
-        // Functies voor het Openen en Sluiten van het Spelinstellingen-Modal
+        function around_getMaxTreffers() {
+            if (around_actieveOptieId === 'optie_dubbels') return 2;
+            if (around_actieveOptieId === 'optie_triples' || around_actieveOptieId === 'optie_tactics') return 3;
+            return 1; // optie_klassiek, optie_singles, optie_aflopend
+        }
+
         function around_openSettingsModal() {
             document.getElementById('around_modalGameSelect').value = around_actieveOptieId;
             document.getElementById('around_modalPointsCheck').checked = aroundPuntenAan;
@@ -877,6 +933,7 @@
 
             localStorage.setItem('around_actieve_optie', around_actieveOptieId);
             localStorage.setItem('around_punten_aan', aroundPuntenAan);
+            localStorage.setItem('around_random', around_isRandomOrder);
 
             around_updateTitelWeergave();
             around_updateScherm();
@@ -916,7 +973,8 @@
             around_recognition.onresult = function(event) {
                 let speechResult = event.results[event.results.length - 1][0].transcript.trim().toLowerCase();
                 
-                // Romeinse Cijfers fix (bijv. patrick ii -> patrick 2)
+                document.getElementById('around_transcript').innerText = `Gehoord: "${speechResult}"`;
+
                 speechResult = speechResult
                     .replace(/\bii\.?\b/g, '2')
                     .replace(/\biii\.?\b/g, '3')
@@ -955,6 +1013,18 @@
 
             around_recognition.onend = function() {
                 if (around_isLuisteren) { 
+                    const btn = document.getElementById('around_listenBtn');
+                    if (btn) {
+                        let t = around_translations[around_currentLang];
+                        btn.style.background = "#c0392b";
+                        btn.innerText = around_currentLang === 'en' ? "🔴 Reset..." : "🔴 Herstart...";
+                        setTimeout(() => {
+                            if (around_isLuisteren) {
+                                btn.style.background = "#2ecc71";
+                                btn.innerText = t.micAan;
+                            }
+                        }, 2000);
+                    }
                     try { around_recognition.start(); } catch (e) {} 
                 }
             };
@@ -1019,20 +1089,17 @@
             }
         }
 
-        // Universele slimme naamherkenning met fonetische / prefix / alias controle (o.a. voor Frans)
         function around_matchenSpelerNaam(gehoord, spelerNaam) {
             if (!spelerNaam) return false;
             let g = gehoord.toLowerCase().trim();
             let n = spelerNaam.toLowerCase().trim();
             if (g.includes(n)) return true;
 
-            // Specifieke vangnetten voor de naam Frans / Francis e.d.
             if (n === "frans" || n.startsWith("fran")) {
                 const fransAliases = ["france", "franz", "vrans", "friends", "fronts", "francis", "fra"];
                 if (fransAliases.some(alias => g.includes(alias))) return true;
             }
 
-            // Algemene klank / eerste 3-4 letters overeenkomst voor andere namen
             if (n.length >= 3 && g.includes(n.substring(0, 3))) return true;
 
             return false;
@@ -1071,17 +1138,25 @@
             let doelSpelerKey = around_actieveSpelerKey;
             let actieveNaam = (doelSpelerKey === 'p1') ? around_spelers.name1 : around_spelers.name2;
 
-            document.getElementById('around_transcript').innerText = (around_currentLang === 'en' ? 'Heard: ' : 'Gehoord: ') + `"${zin}"`;
+            let isGroeneBoel = zin.includes("groene boel") || zin.includes("groene bull") || zin.includes("groene boule") || zin.includes("green bull") || zin.includes("groen boel") || zin.includes("groen bull") || zin.includes("groen boule");
+            let isRodeBoel = zin.includes("rode boel") || zin.includes("rode bull") || zin.includes("rode boule") || zin.includes("red bull") || zin.includes("rood boel") || zin.includes("rood bull") || zin.includes("rood boule") || zin.includes("red boel");
+            let isLosseBoel = (zin.includes("boel") || zin.includes("bull") || zin.includes("boule")) && !isGroeneBoel && !isRodeBoel;
 
-            // Strikte Bull Filter: Losse "boel" / "bull" wordt genegeerd, verplicht "groene bull" / "rode bull" (of boel in NL)
-            let isGroeneBoel = zin.includes("groene boel") || zin.includes("groene bull") || zin.includes("green bull");
-            let isRodeBoel = zin.includes("rode boel") || zin.includes("rode bull") || zin.includes("red bull");
-            let isLosseBoel = (zin.includes("boel") || zin.includes("bull")) && !isGroeneBoel && !isRodeBoel;
+            if (!isGroeneBoel && !isRodeBoel && !isLosseBoel) {
+                let naamSchoon = n1.toLowerCase();
+                if (naamSchoon.startsWith("fran") || naamSchoon === "fra") {
+                    if (zin.includes("france") || zin.includes("franz") || zin.includes("fram")) {
+                        zin = zin.replace("france", naamSchoon)
+                                 .replace("franz", naamSchoon)
+                                 .replace("fram", naamSchoon);
+                    }
+                }
+            }
 
             const t = around_translations[around_currentLang];
 
             if (isLosseBoel) {
-                around_toonMelding(t.sayBull, "#e74c3c");
+                around_toonActieStatus(t.sayBull, "#e74c3c");
                 return;
             }
 
@@ -1090,20 +1165,21 @@
 
             // STRIKTE VARIANTCONTROLES:
             if (around_actieveOptieId === 'optie_singles' && (isTriple || isDubbel)) {
-                around_toonMelding(t.onlySingles, "#e74c3c");
+                around_toonActieStatus(t.onlySingles, "#e74c3c");
                 return;
             }
             if (around_actieveOptieId === 'optie_dubbels' && !isDubbel && !isGroeneBoel && !isRodeBoel) {
-                around_toonMelding(t.onlyDoubles, "#e74c3c");
+                around_toonActieStatus(t.onlyDoubles, "#e74c3c");
                 return;
             }
             if (around_actieveOptieId === 'optie_triples' && !isTriple && !isGroeneBoel && !isRodeBoel) {
-                around_toonMelding(t.onlyTriples, "#e74c3c");
+                around_toonActieStatus(t.onlyTriples, "#e74c3c");
                 return;
             }
 
             let hitsAangepast = false;
             let actieMelding = "";
+            let maxT = around_getMaxTreffers();
 
             let stateBeforeAction = {
                 aroundData: JSON.parse(JSON.stringify(aroundData)),
@@ -1126,81 +1202,104 @@
 
                 if (isTreffer) {
                     let targetKey = huidigDoel;
-                    if (aroundData[doelSpelerKey][targetKey] >= 3) {
-                        around_toonMelding(`${huidigDoel === 'red_bull' ? 'Red Bull' : (huidigDoel === 'green_bull' ? 'Green Bull' : huidigDoel)} - ${t.alreadyFull}!`, "#e74c3c");
-                        around_speakFeedback(t.alreadyFull);
+                    let targetDisplayName = targetKey === 'red_bull' ? (around_currentLang === 'en' ? 'Red Bull' : 'Rode Boule') : (targetKey === 'green_bull' ? (around_currentLang === 'en' ? 'Green Bull' : 'Groene Boule') : targetKey);
+                    
+                    if (aroundData[doelSpelerKey][targetKey] >= maxT) {
+                        let volMelding = `${targetDisplayName} ${t.alreadyFull}`;
+                        around_toonActieStatus(volMelding, "#e74c3c");
+                        around_speakFeedback(volMelding);
                         return;
                     }
-                    aroundData[doelSpelerKey][targetKey] = 3;
+                    aroundData[doelSpelerKey][targetKey] = maxT;
                     around_volgordeIndex[doelSpelerKey] += 1;
                     hitsAangepast = true;
-                    actieMelding = `${huidigDoel === 'red_bull' ? 'Red Bull' : (huidigDoel === 'green_bull' ? 'Green Bull' : huidigDoel)}`;
+                    actieMelding = targetDisplayName;
                 } else {
-                    let targetName = huidigDoel === 'red_bull' ? 'Red Bull' : (huidigDoel === 'green_bull' ? 'Green Bull' : huidigDoel);
+                    let targetName = huidigDoel === 'red_bull' ? (around_currentLang === 'en' ? 'Red Bull' : 'Rode Boule') : (huidigDoel === 'green_bull' ? (around_currentLang === 'en' ? 'Green Bull' : 'Groene Boule') : huidigDoel);
                     let meldingTekst = t.throwBullFirst.replace('{target}', targetName);
-                    around_toonMelding(meldingTekst, "#e74c3c");
+                    around_toonActieStatus(meldingTekst, "#e74c3c");
                     return;
                 }
             } else {
                 // === OPTIE 1 T/M 5 ===
                 if (isGroeneBoel || isRodeBoel) {
                     let doelVak = isRodeBoel ? 'red_bull' : 'green_bull';
-                    actieMelding = isRodeBoel ? "Red Bull" : "Green Bull";
+                    actieMelding = isRodeBoel ? (around_currentLang === 'en' ? "Red Bull" : "Rode Boule") : (around_currentLang === 'en' ? "Green Bull" : "Groene Boule");
                     
-                    let boelHitWaarde = 1;
-                    if (around_actieveOptieId === 'optie_dubbels') boelHitWaarde = 2;
-                    else if (around_actieveOptieId === 'optie_triples') boelHitWaarde = 3;
+                    // Strikte Volgorde Check voor Optie 1 (Klassiek): Pas Bull na 1 t/m 20, en Rode Boule pas na Groene Boule!
+                    if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
+                        let benodigdIndex = around_volgordeIndex[doelSpelerKey];
+                        let huidigVerplicht = around_getallenLijst[benodigdIndex];
+                        if (huidigVerplicht !== doelVak) {
+                            let targetName = huidigVerplicht === 'green_bull' ? (around_currentLang === 'en' ? 'Green Bull' : 'Groene Boule') : (huidigVerplicht === 'red_bull' ? (around_currentLang === 'en' ? 'Red Bull' : 'Rode Boule') : huidigVerplicht);
+                            let meldingTekst = t.firstThrow.replace('{target}', targetName);
+                            around_toonActieStatus(meldingTekst, "#e74c3c");
+                            around_speakFeedback(meldingTekst);
+                            return;
+                        }
+                    }
 
-                    // Al gegooid check
-                    if (aroundData[doelSpelerKey][doelVak] >= 3) {
-                        around_toonMelding(`${actieMelding} - ${t.alreadyFull}!`, "#e74c3c");
-                        around_speakFeedback(t.alreadyFull);
+                    if (aroundData[doelSpelerKey][doelVak] >= maxT) {
+                        let volMelding = `${actieMelding} ${t.alreadyFull}`;
+                        around_toonActieStatus(volMelding, "#e74c3c");
+                        around_speakFeedback(volMelding);
                         return;
                     }
 
-                    around_verwerkCijferTreffers(doelSpelerKey, doelVak, boelHitWaarde);
-                    hitsAangepast = true;
-                } else {
-                    around_getallenLijst.forEach(cijfer => {
-                        if (cijfer === 'green_bull' || cijfer === 'red_bull') return;
-                        let regex = new RegExp(`\\b${cijfer}\\b`);
-                        if (regex.test(zin)) {
-                            // === OPTIE 1: KLASSIEK ===
-                            if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
-                                let huidigVerplicht = around_getallenLijst[around_volgordeIndex[doelSpelerKey]];
-                                if (cijfer !== huidigVerplicht) {
-                                    let targetName = huidigVerplicht === 'green_bull' ? 'Green Bull' : (huidigVerplicht === 'red_bull' ? 'Red Bull' : huidigVerplicht);
-                                    let meldingTekst = t.firstThrow.replace('{target}', targetName);
-                                    around_toonMelding(meldingTekst, "#e74c3c");
-                                    return;
-                                }
-                            }
+                    let hitsToeTeVoegen = maxT;
+                    if (around_actieveOptieId === 'optie_tactics') hitsToeTeVoegen = 1;
 
-                            // Al gegooid check voor getallen
-                            if (aroundData[doelSpelerKey][cijfer] >= 3) {
-                                around_toonMelding(`${cijfer} - ${t.alreadyFull}!`, "#e74c3c");
-                                around_speakFeedback(t.alreadyFull);
+                    around_verwerkCijferTreffers(doelSpelerKey, doelVak, hitsToeTeVoegen);
+                    hitsAangepast = true;
+
+                    if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
+                        around_volgordeIndex[doelSpelerKey] += 1;
+                    }
+                } else {
+                    // Strikte getallenlus van 20 naar 1 met exact word boundaries (\b) om valse triggers te voorkomen
+                    let gevondenGetal = null;
+                    for (let c = 20; c >= 1; c--) {
+                        let regex = new RegExp(`\\b${c}\\b`);
+                        if (regex.test(zin)) {
+                            gevondenGetal = c;
+                            break;
+                        }
+                    }
+
+                    if (gevondenGetal !== null) {
+                        let cijfer = gevondenGetal;
+
+                        // === OPTIE 1: KLASSIEK ===
+                        if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
+                            let huidigVerplicht = around_getallenLijst[around_volgordeIndex[doelSpelerKey]];
+                            if (cijfer !== huidigVerplicht) {
+                                let targetName = huidigVerplicht === 'green_bull' ? (around_currentLang === 'en' ? 'Green Bull' : 'Groene Boule') : (huidigVerplicht === 'red_bull' ? (around_currentLang === 'en' ? 'Red Bull' : 'Rode Boule') : huidigVerplicht);
+                                let meldingTekst = t.firstThrow.replace('{target}', targetName);
+                                around_toonActieStatus(meldingTekst, "#e74c3c");
                                 return;
                             }
-
-                            // === OPTIE 2: SINGLES ===
-                            // === OPTIE 3: DUBBELS ===
-                            // === OPTIE 4: TRIPLES ===
-                            // === OPTIE 5: RANDOM & 3 HITS ===
-                            let hitsToeTeVoegen = 1;
-                            if (around_actieveOptieId === 'optie_dubbels') hitsToeTeVoegen = 2;
-                            else if (around_actieveOptieId === 'optie_triples' || isTriple) hitsToeTeVoegen = 3;
-                            else if (isDubbel) hitsToeTeVoegen = 2;
-
-                            around_verwerkCijferTreffers(doelSpelerKey, cijfer, hitsToeTeVoegen);
-                            hitsAangepast = true;
-                            actieMelding = `${cijfer}`;
-
-                            if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
-                                around_volgordeIndex[doelSpelerKey] += 1;
-                            }
                         }
-                    });
+
+                        if (aroundData[doelSpelerKey][cijfer] >= maxT) {
+                            let volMelding = `Vak ${cijfer} ${t.alreadyFull}`;
+                            around_toonActieStatus(volMelding, "#e74c3c");
+                            around_speakFeedback(volMelding);
+                            return;
+                        }
+
+                        let hitsToeTeVoegen = maxT;
+                        if (around_actieveOptieId === 'optie_tactics') hitsToeTeVoegen = 1;
+                        else if (isDubbel) hitsToeTeVoegen = Math.min(2, maxT);
+                        else if (isTriple) hitsToeTeVoegen = Math.min(3, maxT);
+
+                        around_verwerkCijferTreffers(doelSpelerKey, cijfer, hitsToeTeVoegen);
+                        hitsAangepast = true;
+                        actieMelding = `${cijfer}`;
+
+                        if (around_actieveOptieId === 'optie_klassiek' && !around_isRandomOrder) {
+                            around_volgordeIndex[doelSpelerKey] += 1;
+                        }
+                    }
                 }
             }
 
@@ -1211,25 +1310,25 @@
 
             around_updateScherm();
             around_voegToeAanHistorie(doelSpelerKey, actieMelding);
-            around_toonMelding(`✓ ${actieveNaam}: ${actieMelding}`, "#2ecc71");
+            around_toonActieStatus(`✓ ${actieveNaam}: ${actieMelding}`, "#2ecc71");
             around_speakFeedback(t.noted);
 
             around_controleerGewonnen(doelSpelerKey, actieveNaam);
         }
 
         function around_verwerkCijferTreffers(spelerKey, vakje, hits) {
+            let maxT = around_getMaxTreffers();
             let huidigeHits = aroundData[spelerKey][vakje];
             let totaleNieuweHits = huidigeHits + hits;
-            let nieuweHits = Math.min(3, totaleNieuweHits);
-            let overigeHits = Math.max(0, totaleNieuweHits - 3);
+            let nieuweHits = Math.min(maxT, totaleNieuweHits);
+            let overigeHits = Math.max(0, totaleNieuweHits - maxT);
 
             aroundData[spelerKey][vakje] = nieuweHits;
 
-            // Punten bijhouden optie
             if (aroundPuntenAan && overigeHits > 0) {
                 let tegenstanderKey = spelerKey === 'p1' ? 'p2' : 'p1';
                 let puntenWaarde = (vakje === 'red_bull') ? 50 : ((vakje === 'green_bull') ? 25 : (typeof vakje === 'number' ? vakje : 10));
-                if (aroundData[tegenstanderKey][vakje] < 3) {
+                if (aroundData[tegenstanderKey][vakje] < maxT) {
                     aroundData[spelerKey].punten += (overigeHits * puntenWaarde);
                 }
             }
@@ -1237,11 +1336,12 @@
 
         function around_controleerGewonnen(spelerKey, naam) {
             let allesDicht = false;
+            let maxT = around_getMaxTreffers();
 
             if (around_actieveOptieId === 'optie_aflopend') {
                 allesDicht = (around_volgordeIndex[spelerKey] >= around_aflopendLijst.length);
             } else {
-                allesDicht = around_getallenLijst.every(v => aroundData[spelerKey][v] >= 3);
+                allesDicht = around_getallenLijst.every(v => aroundData[spelerKey][v] >= maxT);
             }
 
             if (!allesDicht) return;
@@ -1276,7 +1376,7 @@
         function around_laatsteActieTerugdraaien() {
             const t = around_translations[around_currentLang];
             if (around_geschiedenisStappen.length === 0) {
-                around_toonMelding(t.noActionsLeft, "#e74c3c");
+                around_toonActieStatus(t.noActionsLeft, "#e74c3c");
                 return;
             }
             let vorigeStaat = around_geschiedenisStappen.pop();
@@ -1288,7 +1388,7 @@
             around_updateScherm();
             around_updateHistoryState('p1');
             around_updateHistoryState('p2');
-            around_toonMelding(t.undoRestored, "#e67e22");
+            around_toonActieStatus(t.undoRestored, "#e67e22");
             around_speakFeedback(t.restored);
         }
 
@@ -1307,20 +1407,33 @@
         }
 
         function around_formatteerHits(aantal) {
-            if (aantal === 1) return around_currentLang === 'en' ? "X full" : "X vol";
-            if (aantal === 2) return around_currentLang === 'en' ? "XX full" : "XX vol";
-            if (aantal >= 3) return around_currentLang === 'en' ? "XXX full" : "XXX vol";
-            return "-";
+            let maxT = around_getMaxTreffers();
+            if (maxT === 1) {
+                return aantal >= 1 ? (around_currentLang === 'en' ? "X full" : "X vol") : "-";
+            } else if (maxT === 2) {
+                if (aantal === 1) return around_currentLang === 'en' ? "X full" : "X vol";
+                if (aantal >= 2) return around_currentLang === 'en' ? "XX full" : "XX vol";
+                return "-";
+            } else {
+                if (aantal === 1) return around_currentLang === 'en' ? "X full" : "X vol";
+                if (aantal === 2) return around_currentLang === 'en' ? "XX full" : "XX vol";
+                if (aantal >= 3) return around_currentLang === 'en' ? "XXX full" : "XXX vol";
+                return "-";
+            }
         }
 
         function around_voegToeAanHistorie(spelerKey, tekst) {
+            let netteTekst = tekst;
+            if (tekst.toLowerCase().includes("groene")) netteTekst = "Groene Boule";
+            else if (tekst.toLowerCase().includes("rode")) netteTekst = "Rode Boule";
+
             const listEl = document.getElementById(spelerKey === 'p1' ? 'around_historyP1' : 'around_historyP2');
             const t = around_translations[around_currentLang];
             if (listEl.children.length === 1 && (listEl.children[0].innerText === "Geen acties" || listEl.children[0].innerText === "No actions")) {
                 listEl.innerHTML = "";
             }
             const li = document.createElement('li');
-            li.innerText = tekst;
+            li.innerText = netteTekst;
             listEl.prepend(li);
             around_updateHistoryState(spelerKey);
         }
@@ -1335,11 +1448,14 @@
             else colEl.classList.remove('has-history');
         }
 
-        function around_toonMelding(tekst, kleur) {
-            const transcriptEl = document.getElementById('around_transcript');
-            transcriptEl.style.color = kleur;
-            transcriptEl.innerText = tekst;
-            setTimeout(() => { transcriptEl.style.color = "#3498db"; }, 2500);
+        function around_toonActieStatus(tekst, kleur) {
+            const statusEl = document.getElementById('around_action_status');
+            statusEl.style.color = kleur;
+            statusEl.innerText = tekst;
+            setTimeout(() => { 
+                statusEl.style.color = "#3498db"; 
+                statusEl.innerText = "Status: Klaar";
+            }, 3000);
         }
 
         function around_speakFeedback(tekst) {
@@ -1366,7 +1482,7 @@
             document.getElementById('around_historyP2').innerHTML = `<li style="color:#777;">${t.noActions}</li>`;
             around_updateHistoryState('p1');
             around_updateHistoryState('p2');
-            document.getElementById('around_transcript').innerText = t.gameReset;
+            document.getElementById('around_action_status').innerText = t.gameReset;
         }
 
         around_applyLanguage();
