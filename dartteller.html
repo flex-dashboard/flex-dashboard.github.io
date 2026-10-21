@@ -212,7 +212,7 @@
         .p-name {
             text-align: left;
             font-weight: bold;
-            font-size: clamp(10px, 4vw, 18px); /* Schaal automatisch mee: maximaal 18px, maar kleindert op kleine schermen */
+            font-size: clamp(10px, 4vw, 18px);
             padding-left: 5px;
             display: flex;
             align-items: center;
@@ -678,6 +678,11 @@
     </div>
 </div>
 
+    <!-- Schermvullende Game Pop-up Container voor Tactics & Around the Clock -->
+    <div id="gameModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:9999; background:rgba(18,18,18,0.98); overflow:hidden; box-sizing:border-box; padding:0; margin:0;">
+        <iframe id="gameModalContent" src="" style="width:100%; height:100%; border:none; box-sizing:border-box;"></iframe>
+    </div>
+
     <!-- Modals -->
     <div id="statsModal" class="modal">
         <div class="modal-content">
@@ -1090,7 +1095,7 @@
                 let bustMsg = currentLang === 'eng' ? `Bust! (${beschrijving}) - Score restored.` : `Kapot! (${beschrijving}) - Score hersteld.`;
                 speakFeedback(bustText);
                 toonMelding(bustMsg);
-                voegToeAanHistorie(spelerNummer, `${gegooideScore} - ${currentLang === 'eng' ? 'BUST' : 'KAPOT'}`);
+                voegToeAanHistorie(spelerNummer, `${gegooideScore} -${currentLang === 'eng' ? 'BUST' : 'KAPOT'}`);
                 updateScherm();
                 return;
             }
@@ -1751,8 +1756,27 @@
         }
 
         // ==========================================
-        // 501 SPEL & START LOGICA
+        // 501 SPEL & START LOGICA (INCLUSIEF POP-UP LOADER)
         // ==========================================
+        function openExternalGamePopup(filename, paramsObj) {
+            let urlParams = new URLSearchParams(paramsObj);
+            let fullUrl = filename + '?' + urlParams.toString();
+
+            let modal = document.getElementById('gameModal');
+            let contentContainer = document.getElementById('gameModalContent');
+            
+            contentContainer.src = fullUrl;
+            modal.style.display = 'block';
+        }
+
+        function sluitGamePopup() {
+            let modal = document.getElementById('gameModal');
+            let contentContainer = document.getElementById('gameModalContent');
+            contentContainer.src = '';
+            modal.style.display = 'none';
+            document.getElementById('setupDiv').style.display = 'block';
+        }
+
         function startSpel() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
             let wasSetupListening = isSetupLuisteren;
@@ -1772,12 +1796,12 @@
             if (huidigSpel === 'around_clock') {
                 let aroundVariant = setsModeVal;
                 let aroundOrder = document.getElementById('aroundOrderCheckbox').checked ? 'order' : 'random';
-                window.location.href = `around.html?p1=${encodeURIComponent(p1Input)}&p2=${encodeURIComponent(p2Input)}&variant=${aroundVariant}&order=${aroundOrder}`;
+                openExternalGamePopup('around.html', { p1: p1Input, p2: p2Input, variant: aroundVariant, order: aroundOrder });
                 return;
             }
 
             if (huidigSpel === 'tactics') {
-                window.location.href = `tactics.html?p1=${encodeURIComponent(p1Input)}&p2=${encodeURIComponent(p2Input)}&mode=${setsModeVal}`;
+                openExternalGamePopup('tactics.html', { p1: p1Input, p2: p2Input, mode: setsModeVal });
                 return;
             }
 
@@ -1979,7 +2003,6 @@
         // ==========================================
         function vervangWoordenDoorCijfers(tekst) {
             return tekst
-                // Nederlandse getallen
                 .replace(/\belf\b/g, '11').replace(/\btwaalf\b/g, '12').replace(/\bdertien\b/g, '13').replace(/\bveertien\b/g, '14').replace(/\bvijftien\b/g, '15')
                 .replace(/\bzestien\b/g, '16').replace(/\bzeventien\b/g, '17').replace(/\bachttien\b/g, '18').replace(/\bnegentien\b/g, '19')
                 .replace(/\btwintig\b/g, '20').replace(/\bdertig\b/g, '30').replace(/\bveertig\b/g, '40').replace(/\bvijftig\b/g, '50')
@@ -1987,7 +2010,6 @@
                 .replace(/\been\b/g, '1').replace(/\btwee\b/g, '2').replace(/\bdrie\b/g, '3').replace(/\bvier\b/g, '4').replace(/\bvijf\b/g, '5')
                 .replace(/\bzes\b/g, '6').replace(/\bzeven\b/g, '7').replace(/\bacht\b/g, '8').replace(/\bnegen\b/g, '9').replace(/\btien\b/g, '10')
                 .replace(/\bhondurt\b/g, '100').replace(/\bhonderd\b/g, '100')
-                // Engelse getallen (English numbers support)
                 .replace(/\beleven\b/g, '11').replace(/\btwelve\b/g, '12').replace(/\bthirteen\b/g, '13').replace(/\bfourteen\b/g, '14').replace(/\bfifteen\b/g, '15')
                 .replace(/\bsixteen\b/g, '16').replace(/\bseventeen\b/g, '17').replace(/\beighteen\b/g, '18').replace(/\bnineteen\b/g, '19')
                 .replace(/\btwenty\b/g, '20').replace(/\bthirty\b/g, '30').replace(/\bforty\b/g, '40').replace(/\bfifty\b/g, '50')
