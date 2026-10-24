@@ -125,7 +125,7 @@
             border-radius: 6px;
             white-space: nowrap;
         }
-        .btn-fullscreen { background: #2980b9; height: 38px !important; }
+        .btn-fullscreen { background: #2980b9; height: 38px !important; transition: background 0.3s; }
         .btn-dashboard { background: #d35400; height: 38px !important; }
         .btn-manual { background: #16a085; font-size: 12px; padding: 2px 8px; height: 32px !important; margin-left: 8px; }
 
@@ -447,9 +447,6 @@
         }
         .vk-row button:hover { background: #f39c12; color: #000; }
 
-        /* ========================================== */
-        /* MEDIA QUERY: Alleen voor Telefoon (Mobile) */
-        /* ========================================== */
         @media (max-width: 600px) {
             body { padding: 0 !important; margin: 0 !important; overflow-x: hidden !important; }
             .setup-container {
@@ -499,7 +496,6 @@
             }       
         }
     </style>
-
 </head>
 <body>
 
@@ -535,19 +531,16 @@
             <option value="10_legs">First to 10 Legs (Optie 8)</option>
         </select>
 
-        <!-- Around the Clock Order Checkbox Container -->
         <div id="aroundOrderContainer" style="margin: 12px 0; display: none; align-items: center; gap: 10px;">
             <input type="checkbox" id="aroundOrderCheckbox" checked style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
             <label for="aroundOrderCheckbox" id="lblAroundOrder" style="margin: 0; display: inline; cursor: pointer; font-weight: normal; color: #ddd;">Op volgorde (ingeschakeld = volgorde, uitgeschakeld = random)</label>
         </div>
 
-        <!-- Checkout Toggle / Uitgooisuggesties Vinkje -->
         <div id="checkoutToggleContainer" style="margin: 12px 0; display: flex; align-items: center; gap: 10px;">
             <input type="checkbox" id="checkoutToggle" checked style="width: 18px; height: 18px; margin: 0; cursor: pointer;">
             <label for="checkoutToggle" id="lblCheckoutToggle" style="margin: 0; display: inline; cursor: pointer; font-weight: normal; color: #ddd;">Toon Uitgooisuggesties (Checkouts)</label>
         </div>
 
-        <!-- Geluid Toggle (Menu ⇄ Game Synchronisatie) -->
         <div id="soundToggleContainer" style="margin: 12px 0; display: flex; align-items: center; gap: 10px;">
             <input type="checkbox" id="soundToggle" checked style="width: 18px; height: 18px; margin: 0; cursor: pointer;" onchange="syncSoundSetting()">
             <label for="soundToggle" id="lblSoundToggle" style="margin: 0; display: inline; cursor: pointer; font-weight: normal; color: #ddd;">Geluid Ingeschakeld (Spraak & Audio)</label>
@@ -559,7 +552,6 @@
         <label for="player2Input" id="lblPlayer2">Naam Speler 2:</label>
         <input type="text" id="player2Input" value="Patrick" maxlength="15" style="white-space: nowrap;" autocomplete="off" onclick="clearAndFocusInput(this); toggleVirtualKeyboardOnFocus(this);" onfocus="clearAndFocusInput(this); toggleVirtualKeyboardOnFocus(this);" onkeydown="handleInputKey(event, this)">
 
-        <!-- PC On-Screen Virtual Keyboard -->
         <div id="pcVirtualKeyboard">
             <div style="font-size:11px; color:#f39c12; margin-bottom:4px; text-align:center;">PC On-Screen Keyboard ⌨️ <button type="button" onclick="toggleVirtualKeyboard()" style="background:#c0392b; font-size:10px; padding:1px 5px; height:20px !important; margin-left:10px;">Sluit ✖</button></div>
             <div class="vk-row">
@@ -573,12 +565,11 @@
             </div>
         </div>
 
-        <!-- Setup Knoppenbalk -->
         <div class="setup-btn-bar">
             <button class="btn-start" onclick="toggleSetupLuisteren()" id="setupListenBtn" style="background: #c0392b;">Mic Off 🎙️</button>
             <button class="btn-start" id="startBtn" onclick="startSpel()" style="background: #16a085;">Start Wedstrijd</button>
             <button class="btn-square btn-dashboard" onclick="window.location.href='https://flex-dashboard.github.io'" title="Persoonlijk Dashboard">HOME🏠</button>
-            <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()">Fullscreen</button>
+            <button class="btn-square btn-fullscreen" id="setupFullscreenBtn" onclick="toggleFullscreen()">Fullscreen</button>
             <button class="btn-square" id="langBtn" onclick="toggleLanguage()" style="background: #e67e22;">ENG</button>
             <button class="btn-square" onclick="openSetupTipsModal()" style="background: #e74c3c;">💡 Tips</button>
         </div>
@@ -612,7 +603,6 @@
             <div>Score</div>
         </div>
 
-        <!-- Speler 1 Rij -->
         <div id="rowP1" class="player-row active">
             <div class="p-name">
                 <div>
@@ -629,7 +619,6 @@
             <div id="scoreP1" class="p-score">501</div>
         </div>
 
-        <!-- Speler 2 Rij -->
         <div id="rowP2" class="player-row">
             <div class="p-name">
                 <div>
@@ -647,13 +636,12 @@
         </div>
     </div>
 
-    <!-- In-Game Knoppenbalk -->
     <div class="button-bar">
         <button onclick="terugNaarInstellingen()" style="background: #34495e; font-size: 13px; padding: 0 10px; height: 38px !important;">Menu ⚙️</button>
         <button class="btn-start" onclick="toggleLuisteren()" id="listenBtn" style="background: #c0392b; height: 38px !important;">Mic Off 🎙️</button>
         <button class="btn-undo" id="undoBtn" onclick="laatsteActieTerugdraaien()" style="background: #e67e22; height: 38px !important;">Herstel ↩</button>
         <button class="btn-square" onclick="openStatsModal()" style="background: #8e44ad; height: 38px !important;">Stats⚡</button>
-        <button class="btn-square btn-fullscreen" onclick="toggleFullscreen()" style="background: #f39c12; height: 38px !important;">Fullscreen</button>
+        <button class="btn-square btn-fullscreen" id="gameFullscreenBtn" onclick="toggleFullscreen()" style="background: #f39c12; height: 38px !important;">Fullscreen</button>
         <button class="btn-square" id="langBtnGame" onclick="toggleLanguage()" style="background: #2563eb; height: 38px !important;">ENG</button>
         <button id="resetLegBtn" onclick="resetSpel()" style="background: #7f8c8d; font-size: 13px; padding: 0 10px; height: 38px !important;">Reset Leg</button>
     </div>
@@ -661,7 +649,6 @@
     <div id="transcript">Gehoord: (wacht op commando...)</div>
     <div id="speechTip">💡 Tip: Zeg bijvoorbeeld "<span id="tipName1">Frans</span> 60" of "Speler 1 60"</div>
 
-    <!-- Geschiedenis -->
     <div class="history-grid">
         <div class="history-box">
             <h4 id="histTitleP1">Frans</h4>
@@ -678,12 +665,10 @@
     </div>
 </div>
 
-    <!-- Schermvullende Game Pop-up Container voor Tactics & Around the Clock -->
     <div id="gameModal" style="display:none; position:fixed; top:0; left:0; width:100vw; height:100vh; z-index:9999; background:rgba(18,18,18,0.98); overflow:hidden; box-sizing:border-box; padding:0; margin:0;">
         <iframe id="gameModalContent" src="" style="width:100%; height:100%; border:none; box-sizing:border-box;"></iframe>
     </div>
 
-    <!-- Modals -->
     <div id="statsModal" class="modal">
         <div class="modal-content">
             <div class="modal-header">
@@ -694,7 +679,6 @@
         </div>
     </div>
 
-    <!-- Handmatige Invoer Score Modal (Toetsenbord) -->
     <div id="manualKeypadModal" class="modal">
         <div class="modal-content" style="max-width: 320px; text-align: center;">
             <div class="modal-header">
@@ -724,7 +708,6 @@
         </div>
     </div>
 
-    <!-- Virtueel Letter-Toetsenbord Modal (Naam Wijzigen met <input> voor fysiek & virtueel toetsenbord) -->
     <div id="nameKeypadModal" class="modal">
         <div class="modal-content" style="max-width: 360px; text-align: center;">
             <div class="modal-header">
@@ -797,7 +780,7 @@
         let huidigSpel = "501";
         let targetSets = 3;
         let targetLegs = 3;
-        let matchMode = "sets"; // 'sets' of 'legs'
+        let matchMode = "sets";
         let spelers = { name1: "frans", name2: "patrick", name1Mooi: "Frans", name2Mooi: "Patrick" };
         let scores = { score1: 501, score2: 501 };
         let legs = { leg1: 0, leg2: 0 };
@@ -817,19 +800,17 @@
         let currentLang = 'nl';
         let setupRecognition = null;
         let isSetupLuisteren = false;
+        let isAudioPlaying = false;
         let tipsModalLang = 'nl';
         let activeInputEl = null;
         let soundEnabled = true;
 
-        // Handmatige Invoer Toetsenbord State
         let manualTargetPlayer = 1;
         let manualInputBuffer = "0";
         let manualMultiplier = 1;
 
-        // Naam Invoer Toetsenbord State
         let nameKeypadTargetPlayer = 1;
 
-        // Bij opstarten localStorage en URL parameters inladen
         window.addEventListener('DOMContentLoaded', () => {
             const urlParams = new URLSearchParams(window.location.search);
             let p1Param = urlParams.get('p1');
@@ -1202,6 +1183,13 @@
         };
 
         function toggleFullscreen() {
+            let btns = [document.getElementById('setupFullscreenBtn'), document.getElementById('gameFullscreenBtn')];
+            btns.forEach(b => {
+                if (b) {
+                    b.style.background = "#2ecc71";
+                    setTimeout(() => { b.style.background = b.id === 'gameFullscreenBtn' ? "#f39c12" : "#2980b9"; }, 1500);
+                }
+            });
             if (!document.fullscreenElement) {
                 document.documentElement.requestFullscreen().catch(err => {});
             } else {
@@ -1233,19 +1221,19 @@
                 if(headerEl) headerEl.innerText = 'Voice Commands & Features Tips 💡';
                 if(btnEl) btnEl.innerText = 'Nederlands (NL)';
                 if(bodyEl) bodyEl.innerHTML = `
-                    <p style="margin: 4px 0;"><strong>Game & Length (One-Shot):</strong><br>• "Choose 501 three sets / three legs"<br>• "Choose 301 five sets"<br>• "Choose tactics"<br>• "Choose around the clock"</p>
-                    <p style="margin: 8px 0;"><strong>Global Commands (Everywhere):</strong><br>• "Menu" / "Open home"<br>• "Open tips"<br>• "Undo"<br>• "Reset"<br>• "Fullscreen"<br>• "Open stats"</p>
-                    <p style="margin: 8px 0;"><strong>During Match & Multipliers:</strong><br>• "[Player Name] 60" or "Player 1 60"<br>• Supports **triple**, **treble**, **double**.</p>
-                    <p style="margin: 8px 0;"><strong>Name Editing & Crash Prevention:</strong><br>• Click a player name to open the editor with full physical & virtual keyboard support.<br>• Automatic crash recovery prevents microphone lock-ups.</p>
+                    <p style="margin: 4px 0;"><strong>Game & Length:</strong><br>• "Choose 501 / 301 / 701 / Tactics / Around the Clock"<br>• "Option 1" to "Option 8"</p>
+                    <p style="margin: 8px 0;"><strong>Global Commands (Everywhere):</strong><br>• "Menu" / "Home"<br>• "Open tips" / "Tips"<br>• "Undo" / "Restore"<br>• "Reset leg" / "Reset"<br>• "Fullscreen"<br>• "Open stats" / "Stats"<br>• "Close" / "Close window" (Closes any pop-up)</p>
+                    <p style="margin: 8px 0;"><strong>During Match & Multipliers:</strong><br>• "[Player Name] 60" or "Player 1 60" / "Player One 60"<br>• Supports **triple**, **treble**, **double**, **single**, **bullseye**.</p>
+                    <p style="margin: 8px 0;"><strong>Name Editing:</strong><br>• "Change player 1 to [Name]" or click a name directly.</p>
                 `;
             } else {
                 if(headerEl) headerEl.innerText = 'Spraakcommando\'s & Functies Tips 💡';
                 if(btnEl) btnEl.innerText = 'English (ENG)';
                 if(bodyEl) bodyEl.innerHTML = `
-                    <p style="margin: 4px 0;"><strong>Spel & Sets/Legs in één zin:</strong><br>• "Kies 501 drie sets" / "kiespel 501 drie legs"<br>• "Kies 301 vijf sets"<br>• "Kies tactics"<br>• "Kies around the clock" / "kiespel 4"</p>
-                    <p style="margin: 8px 0;"><strong>Globale commando's (Werkt overal):</strong><br>• "Menu" / "Home"<br>• "Tips"<br>• "Herstel"<br>• "Reset"<br>• "Fullscreen"<br>• "Open stats" / "Stand"</p>
-                    <p style="margin: 8px 0;"><strong>Tijdens de wedstrijd & Multipliers:</strong><br>• "[Naam] 60" of "Speler 1 60" of "Dubbel 20 en 16"<br>• Ondersteunt feilloos **triple**, **trippel**, **double**, **dubbel**.</p>
-                    <p style="margin: 8px 0;"><strong>Naam wijzigen & Crash-beveiliging:</strong><br>• Klik op een spelersnaam om direct te typen via fysiek of virtueel toetsenbord.<br>• Automatische crash-recovery herstelt de microfoon onmiddellijk bij haperingen.</p>
+                    <p style="margin: 4px 0;"><strong>Spel & Optie Keuze:</strong><br>• "Kies 501 / 301 / 701 / Tactics / Around the clock"<br>• "Optie 1" t/m "Optie 8"</p>
+                    <p style="margin: 8px 0;"><strong>Globale commando's (Werkt overal):</strong><br>• "Menu" / "Home"<br>• "Tips" / "Uitleg"<br>• "Herstel" / "Undo"<br>• "Reset leg" / "Reset"<br>• "Fullscreen"<br>• "Open stats" / "Stand"<br>• "Sluiten" / "Sluit" / "Volgende" (Sluit alle pop-ups handsfree)</p>
+                    <p style="margin: 8px 0;"><strong>Tijdens de wedstrijd & Multipliers:</strong><br>• "[Naam] 60" of "Speler 1 60" / "Speler één 60"<br>• Ondersteunt feilloos **triple**, **trippel**, **double**, **dubbel**, **bullseye**.</p>
+                    <p style="margin: 8px 0;"><strong>Naam Wijzigen:</strong><br>• "Verander speler 1 in [Naam]" of klik op de naam.</p>
                 `;
             }
         }
@@ -1478,8 +1466,8 @@
             
             let triggers = [
                 n1, n2,
-                "speler 1", "speler één", "speler een", "player 1",
-                "speler 2", "speler twee", "player 2"
+                "speler 1", "speler één", "speler een", "player 1", "player one",
+                "speler 2", "speler twee", "player 2", "player two"
             ];
             
             for (let trig of triggers) {
@@ -1491,14 +1479,63 @@
         }
 
         function isGeldigCommando(text) {
-            let t = text.toLowerCase();
-            let isGlobal = (t.includes("menu") || t.includes("herstel") || t.includes("undo") || t.includes("fullscreen") || t.includes("stats") || t.includes("reset") || t.includes("start") || t.includes("kies") || t.includes("kiespel") || t.includes("choose") || t.includes("select") || t.includes("verander") || t.includes("change") || t.includes("tips") || t.includes("uitleg") || t.includes("home") || t.includes("instellingen") || t.includes("tactics") || t.includes("tectics") || t.includes("501") || t.includes("301") || t.includes("701") || t.includes("around the clock") || t.includes("spel 4") || t.includes("game"));
+            let t = text.toLowerCase().trim();
+            let isGlobal = (
+                t.includes("menu") || t.includes("herstel") || t.includes("undo") || t.includes("fullscreen") || 
+                t.includes("volledig scherm") || t.includes("stats") || t.includes("statistieken") || t.includes("reset") || 
+                t.includes("start") || t.includes("kies") || t.includes("kiespel") || t.includes("choose") || 
+                t.includes("select") || t.includes("verander") || t.includes("change") || t.includes("tips") || 
+                t.includes("uitleg") || t.includes("home") || t.includes("instellingen") || t.includes("tactics") || 
+                t.includes("tectics") || t.includes("501") || t.includes("301") || t.includes("701") || 
+                t.includes("around the clock") || t.includes("spel 4") || t.includes("game") || t.includes("sluit") || 
+                t.includes("sluiten") || t.includes("volgende") || t.includes("close")
+            );
             if (isGlobal) return true;
             return begintMetTrigger(t);
         }
 
         function handleGlobalCommando(cmd) {
             let text = normaliseerSpraak(cmd);
+            
+            if (text.includes("sluiten") || text.includes("sluit") || text.includes("volgende") || text.includes("volgende spel") || text.includes("close")) {
+                let closedAny = false;
+                let statsModal = document.getElementById('statsModal');
+                if (statsModal && statsModal.style.display === 'flex') {
+                    closeStatsModal();
+                    closedAny = true;
+                }
+                let manualModal = document.getElementById('manualKeypadModal');
+                if (manualModal && manualModal.style.display === 'flex') {
+                    closeManualKeypad();
+                    closedAny = true;
+                }
+                let nameModal = document.getElementById('nameKeypadModal');
+                if (nameModal && nameModal.style.display === 'flex') {
+                    closeNameKeypad();
+                    closedAny = true;
+                }
+                let tipsModal = document.getElementById('setupTipsModalEl');
+                if (tipsModal && tipsModal.style.display === 'flex') {
+                    closeSetupTipsModal();
+                    closedAny = true;
+                }
+                let gameModal = document.getElementById('gameModal');
+                if (gameModal && gameModal.style.display === 'block') {
+                    sluitGamePopup();
+                    closedAny = true;
+                }
+                let winnerBanner = document.getElementById('winnerBanner');
+                if (winnerBanner && winnerBanner.style.display === 'block') {
+                    winnerBanner.style.display = 'none';
+                    resetSpel();
+                    closedAny = true;
+                }
+                if (closedAny) {
+                    speakFeedback(currentLang === 'eng' ? "Closed" : "Gesloten");
+                    return true;
+                }
+            }
+
             if (text.includes("menu") || text.includes("open home") || text.includes("ga naar home") || text.includes("home") || text.includes("instellingen") || text.includes("go home")) {
                 if (document.getElementById('gameDiv').style.display !== 'none') terugNaarInstellingen();
                 speakFeedback(currentLang === 'eng' ? "Menu" : "Menu");
@@ -1542,8 +1579,8 @@
         }
 
         function probeerNaamTeVeranderen(cmd) {
-            let matchNL = cmd.match(/(?:verander\s+)?(?:de\s+)?(speler\s+[12]|player\s+[12]|frans|patrick|mien)\s+(?:in\s+)?(.+)/i);
-            let matchENG = cmd.match(/(?:change\s+)?(?:the\s+)?(player\s+[12]|speler\s+[12]|frans|patrick|mien)\s+(?:to\s+)?(.+)/i);
+            let matchNL = cmd.match(/(?:verander\s+)?(?:de\s+)?(speler\s+[12]|speler\s+één|speler\s+twee|player\s+[12]|frans|patrick|mien)\s+(?:in\s+)?(.+)/i);
+            let matchENG = cmd.match(/(?:change\s+)?(?:the\s+)?(player\s+[12]|player\s+one|player\s+two|speler\s+[12]|frans|patrick|mien)\s+(?:to\s+)?(.+)/i);
             let match = matchNL || matchENG;
 
             if (match) {
@@ -1556,12 +1593,12 @@
                 let curP1 = p1Input.value.trim().toLowerCase();
                 let curP2 = p2Input.value.trim().toLowerCase();
 
-                if (doel.includes("1") || doel.includes("één") || doel.includes("een") || doel === curP1) {
+                if (doel.includes("1") || doel.includes("één") || doel.includes("een") || doel.includes("one") || doel === curP1) {
                     p1Input.value = nieuweNaam;
                     saveNamesToLocalStorage();
                     speakFeedback(currentLang === 'eng' ? `Player 1 changed to ${nieuweNaam}` : `Speler 1 veranderd in ${nieuweNaam}`);
                     return true;
-                } else if (doel.includes("2") || doel.includes("twee") || doel === curP2) {
+                } else if (doel.includes("2") || doel.includes("twee") || doel.includes("two") || doel === curP2) {
                     p2Input.value = nieuweNaam;
                     saveNamesToLocalStorage();
                     speakFeedback(currentLang === 'eng' ? `Player 2 changed to ${nieuweNaam}` : `Speler 2 veranderd in ${nieuweNaam}`);
@@ -1572,7 +1609,37 @@
         }
 
         // ==========================================
-        // MENU RESET & MIC STATUS LOGICA (MET CRASH RECOVERY)
+        // CENTRALE SCHONE HERSTART & RESET MOTOR
+        // ==========================================
+        function schoneHerstart() {
+            if (recognition) {
+                try { recognition.stop(); } catch(e) {}
+            }
+            const btn = document.getElementById('listenBtn');
+            if (btn && isLuisteren) {
+                btn.style.background = "#c0392b";
+                setTimeout(() => {
+                    if (isLuisteren) {
+                        btn.style.background = "#27ae60";
+                    }
+                }, 1500);
+            }
+            if (isLuisteren && !isAudioPlaying && !microphoneError) {
+                setTimeout(() => {
+                    if (isLuisteren && !isAudioPlaying && !microphoneError) {
+                        try {
+                            recognition.start();
+                        } catch(e) {
+                            initSpraak();
+                            try { recognition.start(); } catch(err) {}
+                        }
+                    }
+                }, 300);
+            }
+        }
+
+        // ==========================================
+        // MENU RESET & MIC STATUS LOGICA (WATERDICHT & LOKAAL VEILIG)
         // ==========================================
         function initSetupSpraak() {
             const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
@@ -1591,6 +1658,7 @@
             setupRecognition.onstart = function() {
                 lastSetupEventTime = Date.now();
                 isSetupLuisteren = true;
+                microphoneError = false;
                 updateSetupListenUI(true);
             };
 
@@ -1611,7 +1679,9 @@
             setupRecognition.onerror = function(event) {
                 lastSetupEventTime = Date.now();
                 if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
+                    microphoneError = true;
                     isSetupLuisteren = false;
+                    if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
                     updateSetupListenUI(false);
                 } else {
                     try { setupRecognition.abort(); } catch(e) {}
@@ -1619,9 +1689,9 @@
             };
 
             setupRecognition.onend = function() {
-                if (isSetupLuisteren) {
+                if (isSetupLuisteren && !microphoneError && !isAudioPlaying) {
                     setTimeout(() => {
-                        if (isSetupLuisteren) {
+                        if (isSetupLuisteren && !microphoneError && !isAudioPlaying) {
                             try {
                                 setupRecognition.start();
                             } catch(e) {
@@ -1629,7 +1699,7 @@
                                 try { setupRecognition.start(); } catch(err) { isSetupLuisteren = false; updateSetupListenUI(false); }
                             }
                         }
-                    }, 300);
+                    }, 400);
                 } else {
                     updateSetupListenUI(false);
                 }
@@ -1637,12 +1707,12 @@
 
             if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
             setupWatchdogTimer = setInterval(() => {
-                if (isSetupLuisteren) {
+                if (isSetupLuisteren && !microphoneError && !isAudioPlaying) {
                     if (Date.now() - lastSetupEventTime > 15000) {
                         lastSetupEventTime = Date.now();
                         try { setupRecognition.abort(); } catch (e) {}
                         setTimeout(() => {
-                            if (isSetupLuisteren) {
+                            if (isSetupLuisteren && !microphoneError && !isAudioPlaying) {
                                 initSetupSpraak();
                                 try { setupRecognition.start(); } catch(e) {}
                             }
@@ -1655,11 +1725,16 @@
         function toggleSetupLuisteren() {
             if (!setupRecognition) initSetupSpraak();
             if (!isSetupLuisteren) {
-                updateSetupListenUI(false, true);
+                microphoneError = false;
                 isSetupLuisteren = true;
                 lastSetupEventTime = Date.now();
                 setupRecognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
-                try { setupRecognition.start(); } catch(e) { isSetupLuisteren = false; updateSetupListenUI(false); }
+                try { 
+                    setupRecognition.start(); 
+                } catch(e) { 
+                    initSetupSpraak();
+                    try { setupRecognition.start(); } catch(err) { isSetupLuisteren = false; updateSetupListenUI(false); }
+                }
             } else {
                 isSetupLuisteren = false;
                 if (setupWatchdogTimer) clearInterval(setupWatchdogTimer);
@@ -1852,7 +1927,6 @@
             if (wasSetupListening) {
                 isLuisteren = true;
                 try { recognition.start(); } catch(e) { isLuisteren = false; }
-                updateStatusUI(isLuisteren);
             } else {
                 updateStatusUI(false);
             }
@@ -1871,7 +1945,7 @@
 
         function terugNaarInstellingen() {
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            if (isLuisteren) { 
+            if (isLuisteren || recognition) { 
                 isLuisteren = false;
                 if (watchdogTimer) clearInterval(watchdogTimer);
                 try { recognition.abort(); } catch(e) {}
@@ -1899,6 +1973,8 @@
 
             recognition.onstart = function() {
                 lastRecognitionEventTime = Date.now();
+                isLuisteren = true;
+                microphoneError = false;
                 updateStatusUI(true);
             };
 
@@ -1918,6 +1994,7 @@
                 if (event.error === 'not-allowed' || event.error === 'service-not-allowed') {
                     microphoneError = true;
                     isLuisteren = false;
+                    if (watchdogTimer) clearInterval(watchdogTimer);
                     updateStatusUI(false);
                 } else {
                     try { recognition.abort(); } catch(e) {}
@@ -1925,17 +2002,8 @@
             };
 
             recognition.onend = function() {
-                if (isLuisteren && !microphoneError) { 
-                    setTimeout(() => {
-                        if (isLuisteren && !microphoneError) {
-                            try {
-                                recognition.start();
-                            } catch (e) {
-                                initSpraak();
-                                try { recognition.start(); } catch(err) { isLuisteren = false; updateStatusUI(false); }
-                            }
-                        }
-                    }, 300);
+                if (isLuisteren && !microphoneError && !isAudioPlaying) { 
+                    schoneHerstart();
                 } else {
                     updateStatusUI(false);
                 }
@@ -1943,12 +2011,12 @@
 
             if (watchdogTimer) clearInterval(watchdogTimer);
             watchdogTimer = setInterval(() => {
-                if (isLuisteren && !microphoneError) {
+                if (isLuisteren && !microphoneError && !isAudioPlaying) {
                     if (Date.now() - lastRecognitionEventTime > 10000) {
                         lastRecognitionEventTime = Date.now();
                         try { recognition.abort(); } catch (e) {}
                         setTimeout(() => {
-                            if (isLuisteren && !microphoneError) {
+                            if (isLuisteren && !microphoneError && !isAudioPlaying) {
                                 initSpraak();
                                 try { recognition.start(); } catch(e) {}
                             }
@@ -1967,12 +2035,10 @@
                 recognition.lang = currentLang === 'eng' ? 'en-US' : 'nl-NL';
                 try {
                     recognition.start();
-                    updateStatusUI(true);
                 } catch(e) {
                     initSpraak();
                     try {
                         recognition.start();
-                        updateStatusUI(true);
                     } catch(err) {
                         isLuisteren = false;
                         updateStatusUI(false);
@@ -2030,8 +2096,8 @@
                 return;
             }
 
-            const isSpeler1 = gewijzigdeZin.startsWith(spelers.name1) || gewijzigdeZin.startsWith("speler 1") || gewijzigdeZin.startsWith("speler één") || gewijzigdeZin.startsWith("speler een") || gewijzigdeZin.startsWith("player 1");
-            const isSpeler2 = gewijzigdeZin.startsWith(spelers.name2) || gewijzigdeZin.startsWith("speler 2") || gewijzigdeZin.startsWith("speler twee") || gewijzigdeZin.startsWith("player 2");
+            const isSpeler1 = gewijzigdeZin.startsWith(spelers.name1) || gewijzigdeZin.startsWith("speler 1") || gewijzigdeZin.startsWith("speler één") || gewijzigdeZin.startsWith("speler een") || gewijzigdeZin.startsWith("player 1") || gewijzigdeZin.startsWith("player one");
+            const isSpeler2 = gewijzigdeZin.startsWith(spelers.name2) || gewijzigdeZin.startsWith("speler 2") || gewijzigdeZin.startsWith("speler twee") || gewijzigdeZin.startsWith("player 2") || gewijzigdeZin.startsWith("player two");
 
             let doelSpeler = isSpeler2 ? 2 : 1;
             let spelerNaamMooi = (doelSpeler === 1) ? spelers.name1Mooi : spelers.name2Mooi;
@@ -2050,7 +2116,7 @@
                 let scoreTekst = gewijzigdeZin
                     .replace(new RegExp(spelers.name1, 'g'), '')
                     .replace(new RegExp(spelers.name2, 'g'), '')
-                    .replace(/speler 1|speler 2|speler één|speler twee|player 1|player 2/g, '')
+                    .replace(/speler 1|speler 2|speler één|speler twee|player 1|player 2|player one|player two/g, '')
                     .trim();
 
                 let tokens = scoreTekst.replace(/,/g, ' ').replace(/\ben\b/g, ' ').replace(/\band\b/g, ' ').trim().split(/\s+/).filter(t => t.length > 0);
@@ -2227,40 +2293,94 @@
         }
 
         // ==========================================
-        // AUDIO & MP3 180 BESCHERMING
+        // AUDIO & MP3 180 BESCHERMING (WATERDICHT)
         // ==========================================
         function speakFeedback(tekst) {
             if (!soundEnabled) return;
+            isAudioPlaying = true;
+            if (recognition) {
+                try { recognition.stop(); } catch(e) {}
+            }
             if ('speechSynthesis' in window) {
                 window.speechSynthesis.cancel();
                 setLuisterKnopRoodTijdensAudio();
                 const utterance = new SpeechSynthesisUtterance(tekst);
                 utterance.lang = currentLang === 'eng' ? 'en-GB' : 'nl-NL';
                 utterance.onend = () => {
+                    isAudioPlaying = false;
                     setLuisterKnopGroenAlsActief();
+                    if (isLuisteren && !microphoneError) {
+                        schoneHerstart();
+                    }
+                };
+                utterance.onerror = () => {
+                    isAudioPlaying = false;
+                    setLuisterKnopGroenAlsActief();
+                    if (isLuisteren && !microphoneError) {
+                        schoneHerstart();
+                    }
                 };
                 window.speechSynthesis.speak(utterance);
+            } else {
+                isAudioPlaying = false;
+                setLuisterKnopGroenAlsActief();
             }
         }
 
         function speak180() {
             if (!soundEnabled) return;
+            isAudioPlaying = true;
+            if (recognition) {
+                try { recognition.stop(); } catch(e) {}
+            }
             if ('speechSynthesis' in window) window.speechSynthesis.cancel();
             setLuisterKnopRoodTijdensAudio();
             let audio = new Audio('180.mp3');
             audio.onended = () => {
+                isAudioPlaying = false;
                 setLuisterKnopGroenAlsActief();
+                if (isLuisteren && !microphoneError) {
+                    schoneHerstart();
+                }
             };
-            audio.play().catch(e => {
+            audio.onerror = () => {
+                isAudioPlaying = false;
                 if ('speechSynthesis' in window) {
                     const utterance = new SpeechSynthesisUtterance("One hundred and eighty!!!");
                     utterance.lang = 'en-GB';
                     utterance.onend = () => {
+                        isAudioPlaying = false;
                         setLuisterKnopGroenAlsActief();
+                        if (isLuisteren && !microphoneError) {
+                            schoneHerstart();
+                        }
                     };
                     window.speechSynthesis.speak(utterance);
                 } else {
                     setLuisterKnopGroenAlsActief();
+                    if (isLuisteren && !microphoneError) {
+                        schoneHerstart();
+                    }
+                }
+            };
+            audio.play().catch(e => {
+                isAudioPlaying = false;
+                if ('speechSynthesis' in window) {
+                    const utterance = new SpeechSynthesisUtterance("One hundred and eighty!!!");
+                    utterance.lang = 'en-GB';
+                    utterance.onend = () => {
+                        isAudioPlaying = false;
+                        setLuisterKnopGroenAlsActief();
+                        if (isLuisteren && !microphoneError) {
+                            schoneHerstart();
+                        }
+                    };
+                    window.speechSynthesis.speak(utterance);
+                } else {
+                    setLuisterKnopGroenAlsActief();
+                    if (isLuisteren && !microphoneError) {
+                        schoneHerstart();
+                    }
                 }
             });
         }
