@@ -1467,7 +1467,10 @@
             t = t.replace(/\b5\s*0\s*1\b/g, '501');
             t = t.replace(/\b3\s*0\s*1\b/g, '301');
             t = t.replace(/\b7\s*0\s*1\b/g, '701');
-            t = t.replace(/\bhondurt\b/g, '100').replace(/\bhonderd\b/g, '100').replace(/\bhundred\b/g, '100');
+            
+            // Vangt 'hond', 'honderd', 'hondert' etc. af, zelfs als er direct een getal aan vast plakt (zoals honderdtwee)
+            t = t.replace(/\b(hond|hondurt|hondert|honderdt|honderd|honderde|hundred)/g, '100 ');
+            
             return t.replace(/\s+/g, ' ').trim();
         }
 
