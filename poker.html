@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Klassiek Videopoker Casino</title>
+    <title>Klassiek Videopoker Casino - Multi-Tafel</title>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
         }
         body {
-            background: radial-gradient(circle at center, #1b2a47 0%, #090d16 100%);
+            background: radial-gradient(circle at center, var(--bg-core, #1b2a47) 0%, var(--bg-edge, #090d16) 100%);
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
@@ -19,18 +19,20 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
+            transition: background 0.5s ease;
         }
         .cabinet {
             width: 100%;
-            max-width: 900px;
-            background: linear-gradient(135deg, #10192d 0%, #060911 100%);
-            border: 4px solid #d4af37;
+            max-width: 950px;
+            background: linear-gradient(135deg, var(--cab-1, #10192d) 0%, var(--cab-2, #060911) 100%);
+            border: 4px solid var(--border-color, #d4af37);
             border-radius: 16px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
             padding: 20px;
             display: flex;
             flex-direction: column;
             gap: 12px;
+            transition: all 0.5s ease;
         }
         /* Header & Menu */
         .header-panel {
@@ -40,14 +42,14 @@
             background: rgba(0,0,0,0.4);
             padding: 10px 15px;
             border-radius: 10px;
-            border: 1px solid #334e68;
+            border: 1px solid var(--border-color, #334e68);
             flex-wrap: wrap;
             gap: 8px;
         }
         .game-title {
             font-size: 1.1rem;
             font-weight: bold;
-            color: #ffd700;
+            color: var(--accent-color, #ffd700);
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             letter-spacing: 1px;
         }
@@ -56,23 +58,24 @@
             gap: 6px;
             align-items: center;
             max-width: 100%;
+            flex-wrap: wrap;
         }
         select, option {
             background: #14213d !important;
             color: #ffd700 !important;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--border-color, #d4af37);
             padding: 4px 6px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            max-width: 105px;
+            max-width: 135px;
             font-size: 0.75rem;
             text-overflow: ellipsis;
         }
         .fullscreen-btn {
             background: #14213d;
             color: #ffd700;
-            border: 1px solid #d4af37;
+            border: 1px solid var(--border-color, #d4af37);
             border-radius: 6px;
             padding: 5px 8px;
             cursor: pointer;
@@ -83,7 +86,7 @@
             background: #243b55;
         }
 
-        /* Stats Dashboard */
+        /* Stats Dashboard met Doel erin verwerkt */
         .stats-bar {
             display: flex;
             justify-content: space-around;
@@ -99,19 +102,32 @@
             text-transform: uppercase;
         }
         .stat-box .value {
-            font-size: 1.3rem;
+            font-size: 1.2rem;
             font-weight: bold;
             color: #00ffcc;
             text-shadow: 0 0 8px rgba(0,255,204,0.4);
         }
 
-        /* Payout Table - Geoptimaliseerd voor mobiel zodat alle 5 kolommen passen */
-        .payout-table-container {
+        /* Gesplitste Payout Layout (Vast links + Scrollbaar rechts) */
+        .payout-wrapper {
+            display: flex;
+            width: 100%;
             background: #0d1527;
-            border: 2px solid #243b55;
+            border: 2px solid var(--border-color, #243b55);
             border-radius: 8px;
-            overflow-x: auto;
+            overflow: hidden;
         }
+        .payout-names-container {
+            flex: 0 0 23%;
+            background: #0d1527;
+            border-right: 2px solid var(--border-color, #243b55);
+        }
+        .payout-table-container {
+            flex: 1;
+            overflow-x: auto;
+            overflow-y: hidden;
+        }
+
         table {
             width: 100%;
             border-collapse: collapse;
@@ -120,27 +136,29 @@
             white-space: nowrap;
         }
         th, td {
-            padding: 3px 5px;
+            padding: 4px 8px;
             border-bottom: 1px solid #1c2e4a;
+            height: 27px; /* Exact gelijke rijhoogte voor uitlijning */
         }
         th {
             background: #14213d;
-            color: #ffd700;
+            color: var(--accent-color, #ffd700);
             text-align: center;
+        }
+        .payout-names-container th {
+            text-align: left;
+            padding-left: 10px;
         }
         td:not(:first-child), th:not(:first-child) {
             text-align: center;
-            width: 7%;
-        }
-        td:first-child, th:first-child {
-            width: 65%;
+            min-width: 65px;
         }
         tr.active-win {
             background-color: rgba(255, 215, 0, 0.3) !important;
             animation: pulse-win 0.8s infinite alternate;
         }
         td.active-col {
-            background: rgba(0, 255, 204, 0.15);
+            background: rgba(0, 255, 204, 0.25) !important;
             color: #00ffcc;
             font-weight: bold;
         }
@@ -186,7 +204,6 @@
             box-shadow: 0 6px 12px rgba(0,0,0,0.5);
             box-sizing: border-box;
         }
-        /* Voorkant kaart */
         .card-front {
             background: #f8f9fa;
             transform: rotateY(180deg);
@@ -201,9 +218,8 @@
         .card-front.red { color: #d63031; }
         .card-front.black { color: #2d3436; }
 
-        /* Achterkant kaart - Afbeelding kaart.jpg uit eigen map */
         .card-back {
-            background-image: url('kaart.jpg');
+            background-image: var(--card-bg, url('kaart.jpg'));
             background-size: cover;
             background-position: center;
             border: 2px solid #ffffff;
@@ -260,7 +276,7 @@
             box-shadow: 0 0 8px #a3be8c;
         }
 
-        /* Strakke Sfeer Statusbalk */
+        /* Statusbalk */
         .message-box {
             background: #000;
             color: #00ffcc;
@@ -293,7 +309,7 @@
         .main-action-btn {
             flex: 2;
             padding: 10px;
-            background: linear-gradient(to bottom, #f6d365 0%, #fda085 100%);
+            background: var(--btn-main-bg, linear-gradient(to bottom, #f6d365 0%, #fda085 100%));
             color: #1a1a1a;
             border: 2px solid #fff;
             border-radius: 8px;
@@ -317,7 +333,7 @@
         
         .single-bet-btn {
             flex: 1;
-            background: linear-gradient(to bottom, #4a69bd, #1e3799);
+            background: var(--btn-bet-bg, linear-gradient(to bottom, #4a69bd, #1e3799));
             color: #fff;
             border: 1px solid #6a89cc;
             border-radius: 8px;
@@ -347,7 +363,7 @@
         .overlay-notice p { color: #f1f2f6; font-size: 1.1rem; }
     </style>
 </head>
-<body>
+<body id="body-theme">
 
 <div class="cabinet" id="cabinet">
     <!-- Header -->
@@ -361,16 +377,23 @@
                 <option value="joker">Joker Poker (+1 Joker)</option>
                 <option value="tens">Tens or Better</option>
             </select>
+            <label style="font-size: 0.75rem; color:#aaa; margin-left: 5px;">Tafel:</label>
+            <select id="table-select" onchange="switchTableManually(this.value)">
+                <option value="1">Tafel 1 (Bronze - 5x)</option>
+                <option value="2" id="opt-t2" disabled>Tafel 2 (Silver - 10x)</option>
+                <option value="3" id="opt-t3" disabled>Tafel 3 (Gold - 15x)</option>
+                <option value="4" id="opt-t4" disabled>Tafel 4 (VIP - 20x)</option>
+            </select>
             <button class="fullscreen-btn" onclick="location.href='index.html'" title="Dashboard / Home">🏠</button>
             <button class="fullscreen-btn" onclick="toggleFullScreen()" title="Volledig scherm">[ ⤢ ]</button>
         </div>
     </div>
 
-    <!-- Stats -->
+    <!-- Stats Dashboard -->
     <div class="stats-bar">
         <div class="stat-box">
-            <div class="label">Credits</div>
-            <div class="value" id="credits-display">100</div>
+            <div class="label">Credits / Doel</div>
+            <div class="value" id="credits-display" style="font-size: 1.1rem;">100 / 2000</div>
         </div>
         <div class="stat-box">
             <div class="label">Inzet</div>
@@ -382,33 +405,41 @@
         </div>
         <div class="stat-box">
             <div class="label">Bonus Timer</div>
-            <div class="value" id="timer-display">--:--</div>
+            <div class="value" id="timer-display" style="font-size: 1.1rem;">--:--</div>
         </div>
     </div>
 
-    <!-- Payout Table -->
-    <div class="payout-table-container">
-        <table>
-            <thead>
-                <tr>
-                    <th>Handcombinatie</th>
-                    <th id="col-h1">1x</th>
-                    <th id="col-h2">2x</th>
-                    <th id="col-h3">3x</th>
-                    <th id="col-h4">4x</th>
-                    <th id="col-h5">5x</th>
-                </tr>
-            </thead>
-            <tbody id="payout-table-body">
-            </tbody>
-        </table>
+    <!-- Gesplitste Payout Table Container -->
+    <div class="payout-wrapper">
+        <!-- Vaste linker kolom voor handnamen -->
+        <div class="payout-names-container">
+            <table>
+                <thead>
+                    <tr><th>Handcombinatie</th></tr>
+                </thead>
+                <tbody id="payout-names-body">
+                </tbody>
+            </table>
+        </div>
+        <!-- Scrollbare rechter container voor multipliers -->
+        <div class="payout-table-container" id="payout-container">
+            <table>
+                <thead>
+                    <tr id="table-header-row">
+                        <th id="col-h1">1x</th>
+                    </tr>
+                </thead>
+                <tbody id="payout-table-body">
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <!-- Cards & Hold Controls -->
     <div class="cards-area" id="cards-area">
     </div>
 
-    <!-- Lege Sfeer Statusbalk -->
+    <!-- Statusbalk -->
     <div class="message-box" id="message-box"></div>
 
     <!-- Action Bar -->
@@ -465,71 +496,46 @@
         }
     }
 
+    const tablesConfig = {
+        1: { name: "Tafel 1 (Bronze)", maxBet: 5, cardBg: "url('kaart.jpg')", goal: 2000, nextTable: 2, 
+             theme: { core: "#1b2a47", edge: "#090d16", cab1: "#10192d", cab2: "#060911", border: "#d4af37", accent: "#ffd700", btnMain: "linear-gradient(to bottom, #f6d365, #fda085)", btnBet: "linear-gradient(to bottom, #4a69bd, #1e3799)" } },
+        2: { name: "Tafel 2 (Silver)", maxBet: 10, cardBg: "url('kaart1.jpg')", goal: 10000, nextTable: 3, 
+             theme: { core: "#471b1b", edge: "#160909", cab1: "#2d1010", cab2: "#110606", border: "#ff6b6b", accent: "#ff9999", btnMain: "linear-gradient(to bottom, #ff9999, #cc3333)", btnBet: "linear-gradient(to bottom, #802b2b, #401010)" } },
+        3: { name: "Tafel 3 (Gold)", maxBet: 15, cardBg: "url('kaart2.jpg')", goal: 25000, nextTable: 4, 
+             theme: { core: "#1b471e", edge: "#09160a", cab1: "#102d13", cab2: "#061107", border: "#2ecc71", accent: "#a3be8c", btnMain: "linear-gradient(to bottom, #2ecc71, #27ae60)", btnBet: "linear-gradient(to bottom, #1e8449, #145a32)" } },
+        4: { name: "Tafel 4 (VIP)", maxBet: 20, cardBg: "url('kaart3.jpg')", goal: 999999, nextTable: null, 
+             theme: { core: "#5a0f14", edge: "#1a0305", cab1: "#3b0a0d", cab2: "#120203", border: "#e74c3c", accent: "#ffadad", btnMain: "linear-gradient(to bottom, #e74c3c, #c0392b)", btnBet: "linear-gradient(to bottom, #962d22, #641e16)" } }
+    };
+
+    let currentTable = localStorage.getItem('poker_table') !== null ? parseInt(localStorage.getItem('poker_table'), 10) : 1;
+    let unlockedTable = localStorage.getItem('poker_unlocked') !== null ? parseInt(localStorage.getItem('poker_unlocked'), 10) : 1;
+
     const gameModes = {
         jacks: {
             name: "JACKS OR BETTER",
-            payouts: [
-                { name: "Royal Flush", pays: [250, 500, 750, 1000, 4000] },
-                { name: "Straight Flush", pays: [50, 100, 150, 200, 250] },
-                { name: "Four of a Kind", pays: [25, 50, 75, 100, 125] },
-                { name: "Full House", pays: [9, 18, 27, 36, 45] },
-                { name: "Flush", pays: [6, 12, 18, 24, 30] },
-                { name: "Straight", pays: [4, 8, 12, 16, 20] },
-                { name: "Three of a Kind", pays: [3, 6, 9, 12, 15] },
-                { name: "Two Pair", pays: [2, 4, 6, 8, 10] },
-                { name: "Jacks or Better", pays: [1, 2, 3, 4, 5] }
-            ]
+            basePays: [250, 125, 80, 40, 30, 20, 16, 8, 2],
+            names: ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Jacks or Better"]
         },
         deuces: {
             name: "DEUCES WILD (2 = Wild)",
-            payouts: [
-                { name: "Natural Royal Flush", pays: [250, 500, 750, 1000, 4000] },
-                { name: "Four Deuces", pays: [200, 400, 600, 800, 1000] },
-                { name: "Wild Royal Flush", pays: [25, 50, 75, 100, 125] },
-                { name: "Five of a Kind", pays: [15, 30, 45, 60, 75] },
-                { name: "Straight Flush", pays: [9, 18, 27, 36, 45] },
-                { name: "Four of a Kind", pays: [5, 10, 15, 20, 25] },
-                { name: "Full House", pays: [3, 6, 9, 12, 15] },
-                { name: "Flush", pays: [2, 4, 6, 8, 10] },
-                { name: "Straight", pays: [2, 4, 6, 8, 10] },
-                { name: "Three of a Kind", pays: [1, 2, 3, 4, 5] }
-            ]
+            basePays: [250, 200, 25, 15, 9, 5, 3, 2, 2, 1],
+            names: ["Natural Royal Flush", "Four Deuces", "Wild Royal Flush", "Five of a Kind", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind"]
         },
         joker: {
             name: "JOKER POKER (+1 Joker)",
-            payouts: [
-                { name: "Natural Royal Flush", pays: [250, 500, 750, 1000, 4000] },
-                { name: "Five of a Kind", pays: [200, 400, 600, 800, 1000] },
-                { name: "Wild Royal Flush", pays: [100, 200, 300, 400, 500] },
-                { name: "Straight Flush", pays: [50, 100, 150, 200, 250] },
-                { name: "Four of a Kind", pays: [20, 40, 60, 80, 100] },
-                { name: "Full House", pays: [7, 14, 21, 28, 35] },
-                { name: "Flush", pays: [5, 10, 15, 20, 25] },
-                { name: "Straight", pays: [3, 6, 9, 12, 15] },
-                { name: "Three of a Kind", pays: [2, 4, 6, 8, 10] },
-                { name: "Kings or Better", pays: [1, 2, 3, 4, 5] }
-            ]
+            basePays: [250, 200, 100, 50, 20, 7, 5, 3, 2, 1],
+            names: ["Natural Royal Flush", "Five of a Kind", "Wild Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Kings or Better"]
         },
         tens: {
             name: "TENS OR BETTER",
-            payouts: [
-                { name: "Royal Flush", pays: [250, 500, 750, 1000, 4000] },
-                { name: "Straight Flush", pays: [50, 100, 150, 200, 250] },
-                { name: "Four of a Kind", pays: [25, 50, 75, 100, 125] },
-                { name: "Full House", pays: [6, 12, 18, 24, 30] },
-                { name: "Flush", pays: [5, 10, 15, 20, 25] },
-                { name: "Straight", pays: [4, 8, 12, 16, 20] },
-                { name: "Three of a Kind", pays: [3, 6, 9, 12, 15] },
-                { name: "Two Pair", pays: [2, 4, 6, 8, 10] },
-                { name: "Tens or Better", pays: [1, 2, 3, 4, 5] }
-            ]
+            basePays: [250, 500, 25, 6, 5, 4, 3, 2, 1],
+            names: ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Tens or Better"]
         }
     };
 
     let credits = localStorage.getItem('poker_credits') !== null ? parseInt(localStorage.getItem('poker_credits'), 10) : 100;
-    
     let currentBet = 1;
-    let gameState = 'DEAL'; 
+    let gameState = 'READY';
     let isBusyAnimating = false;
     let deck = [];
     let hand = [];
@@ -537,14 +543,15 @@
     let currentMode = 'jacks';
     let lastWinningIndex = -1;
 
-    // Persistente Timer Variabelen op basis van tijdstempels
-    let timerSeconds = 3600; // 60 minuten standaard
+    let timerSeconds = 3600;
     let timerInterval = null;
 
     const suits = ['♠', '♥', '♦', '♣'];
     const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 
     window.onload = function() {
+        applyTheme();
+        updateTableSelectDropdowns();
         buildPayoutTable();
         initEmptyCards();
         checkAndRestoreTimer();
@@ -553,9 +560,71 @@
 
     function saveGameState() {
         localStorage.setItem('poker_credits', credits);
+        localStorage.setItem('poker_table', currentTable);
+        localStorage.setItem('poker_unlocked', unlockedTable);
     }
 
-    // Slimme timer check op basis van werkelijke tijd (timestamp)
+    function applyTheme() {
+        let t = tablesConfig[currentTable].theme;
+        let root = document.documentElement;
+        root.style.setProperty('--bg-core', t.core);
+        root.style.setProperty('--bg-edge', t.edge);
+        root.style.setProperty('--cab-1', t.cab1);
+        root.style.setProperty('--cab-2', t.cab2);
+        root.style.setProperty('--border-color', t.border);
+        root.style.setProperty('--accent-color', t.accent);
+        root.style.setProperty('--btn-main-bg', t.btnMain);
+        root.style.setProperty('--btn-bet-bg', t.btnBet);
+        root.style.setProperty('--card-bg', tablesConfig[currentTable].cardBg);
+    }
+
+    function updateTableSelectDropdowns() {
+        document.getElementById('table-select').value = currentTable;
+        for (let i = 2; i <= 4; i++) {
+            let opt = document.getElementById(`opt-t${i}`);
+            let prevGoal = tablesConfig[i-1].goal;
+            if (i <= unlockedTable) {
+                opt.disabled = false;
+                opt.innerText = `Tafel ${i} (${tablesConfig[i].name.split(' ')[1]})`;
+            } else {
+                opt.disabled = true;
+                opt.innerText = `Tafel ${i} (Slot: ${prevGoal} pts)`;
+            }
+        }
+        checkTableUnlock();
+    }
+
+    function checkTableUnlock() {
+        let cfg = tablesConfig[currentTable];
+        if (currentTable < 4) {
+            if (credits >= cfg.goal && unlockedTable <= currentTable) {
+                unlockedTable = currentTable + 1;
+                saveGameState();
+                updateTableSelectDropdowns();
+            }
+        }
+    }
+
+    function switchTableManually(tableNum) {
+        tableNum = parseInt(tableNum, 10);
+        if (tableNum <= unlockedTable) {
+            currentTable = tableNum;
+            if (currentBet > tablesConfig[currentTable].maxBet) {
+                currentBet = 1;
+            }
+            saveGameState();
+            applyTheme();
+            updateTableSelectDropdowns();
+            buildPayoutTable();
+            resetToInitialState();
+            flashStatusBox(`Welkom op ${tablesConfig[currentTable].name}!`);
+        } else {
+            let prevGoal = tablesConfig[tableNum-1].goal;
+            alert(`Je hebt nog niet genoeg punten om Tafel ${tableNum} te ontgrendelen! (Doel: ${prevGoal} punten)`);
+            document.getElementById('table-select').value = currentTable;
+        }
+    }
+
     function checkAndRestoreTimer() {
         let savedTargetTime = localStorage.getItem('poker_timer_target');
         let now = Date.now();
@@ -565,22 +634,18 @@
             let timeLeft = Math.floor((targetTime - now) / 1000);
 
             if (timeLeft <= 0) {
-                // Er is minimaal 1 uur verstreken terwijl de browser uitstond! Geef bonus(sen)
                 let overtime = Math.abs(timeLeft);
                 let bonuses = 1 + Math.floor(overtime / 3600);
                 credits += (bonuses * 100);
                 saveGameState();
 
-                // Start een nieuwe timer voor het resterende deel
                 let remainder = 3600 - (overtime % 3600);
                 timerSeconds = remainder > 0 ? remainder : 3600;
                 setNewTimerTarget(timerSeconds);
             } else {
-                // Binnen het uur teruggekomen, hervat de resterende tijd
                 timerSeconds = timeLeft;
             }
         } else {
-            // Eerste keer / nog geen timer gezet: start op 60 minuten
             setNewTimerTarget(timerSeconds);
         }
 
@@ -606,7 +671,6 @@
                 playSound('win');
             }
             
-            // Regelmatig target tijd bijwerken
             setNewTimerTarget(timerSeconds);
             updateTimerDisplay();
         }, 1000);
@@ -639,44 +703,80 @@
     }
 
     function cycleBet() {
-        if (gameState !== 'DEAL' || isBusyAnimating) return;
+        if (isBusyAnimating) return;
         playSound('click');
-        currentBet = currentBet >= 5 ? 1 : currentBet + 1;
+        let maxB = tablesConfig[currentTable].maxBet;
+        currentBet = currentBet >= maxB ? 1 : currentBet + 1;
         document.getElementById('bet-cycle-btn').innerText = `BET (${currentBet}x)`;
         document.getElementById('bet-display').innerText = currentBet + 'x';
         updatePayoutHighlight();
     }
 
     function buildPayoutTable() {
+        const theadRow = document.getElementById('table-header-row');
         const tbody = document.getElementById('payout-table-body');
+        const namesBody = document.getElementById('payout-names-body');
+        
+        let maxB = tablesConfig[currentTable].maxBet;
+        
+        // Bouw de header voor de multipliers
+        let headerHtml = '';
+        for (let i = 1; i <= maxB; i++) {
+            headerHtml += `<th id="col-h${i}">${i}x</th>`;
+        }
+        theadRow.innerHTML = headerHtml;
+
+        namesBody.innerHTML = '';
         tbody.innerHTML = '';
         const modeData = gameModes[currentMode];
-        modeData.payouts.forEach((row, idx) => {
-            let tr = document.createElement('tr');
-            tr.id = `payout-row-${idx}`;
-            let tdName = document.createElement('td');
-            tdName.innerText = row.name;
-            tr.appendChild(tdName);
+        
+        modeData.names.forEach((name, idx) => {
+            let basePay = modeData.basePays[idx];
 
-            for (let i = 0; i < 5; i++) {
+            // 1. Handnaam in linker vaste tabel
+            let trName = document.createElement('tr');
+            trName.id = `payout-name-row-${idx}`;
+            let tdName = document.createElement('td');
+            tdName.innerText = name;
+            trName.appendChild(tdName);
+            namesBody.appendChild(trName);
+
+            // 2. Multiplier waarden in rechter scrollbare tabel
+            let trVal = document.createElement('tr');
+            trVal.id = `payout-row-${idx}`;
+
+            for (let i = 1; i <= maxB; i++) {
                 let td = document.createElement('td');
-                td.id = `payout-${idx}-${i+1}`;
-                td.innerText = row.pays[i];
-                if (i + 1 === currentBet) td.classList.add('active-col');
-                tr.appendChild(td);
+                td.id = `payout-${idx}-${i}`;
+                
+                let payVal = basePay * i;
+                if (i === 5 && name.includes('Royal Flush')) payVal = 4000;
+                td.innerText = payVal;
+
+                if (i === currentBet) td.classList.add('active-col');
+                trVal.appendChild(td);
             }
-            tbody.appendChild(tr);
+            tbody.appendChild(trVal);
         });
+        updatePayoutHighlight();
     }
 
     function updatePayoutHighlight() {
+        let maxB = tablesConfig[currentTable].maxBet;
         const modeData = gameModes[currentMode];
-        for (let idx = 0; idx < modeData.payouts.length; idx++) {
-            for (let i = 1; i <= 5; i++) {
+        const container = document.getElementById('payout-container');
+
+        for (let idx = 0; idx < modeData.names.length; idx++) {
+            for (let i = 1; i <= maxB; i++) {
                 let cell = document.getElementById(`payout-${idx}-${i}`);
                 if (cell) {
-                    if (i === currentBet) cell.classList.add('active-col');
-                    else cell.classList.remove('active-col');
+                    if (i === currentBet) {
+                        cell.classList.add('active-col');
+                        let scrollLeftTarget = cell.offsetLeft - (container.clientWidth / 2) + (cell.clientWidth / 2);
+                        container.scrollTo({ left: scrollLeftTarget, behavior: 'smooth' });
+                    } else {
+                        cell.classList.remove('active-col');
+                    }
                 }
             }
         }
@@ -725,7 +825,7 @@
         if (isBusyAnimating) return;
         playSound('click');
 
-        if (gameState === 'DEAL') {
+        if (gameState === 'READY') {
             if (credits < currentBet) {
                 document.getElementById('bankrupt-overlay').style.display = 'flex';
                 return;
@@ -745,7 +845,7 @@
                 hand.push(deck.pop());
             }
 
-            gameState = 'DRAW';
+            gameState = 'HOLDING';
             isBusyAnimating = true;
             document.getElementById('action-btn').disabled = true;
             document.getElementById('bet-cycle-btn').disabled = true;
@@ -766,13 +866,64 @@
 
             isBusyAnimating = false;
             document.getElementById('action-btn').disabled = false;
-            document.getElementById('action-btn').innerText = 'TREK';
+            document.getElementById('bet-cycle-btn').disabled = false;
+            
+            updateActionButtonLabel();
             updateUI();
 
-        } else {
-            // DRAW Fase
+        } else if (gameState === 'HOLDING') {
+            let hasHolds = held.some(h => h === true);
+
+            if (!hasHolds) {
+                if (credits < currentBet) {
+                    document.getElementById('bankrupt-overlay').style.display = 'flex';
+                    return;
+                }
+                credits -= currentBet;
+                saveGameState();
+                document.getElementById('win-display').innerText = '0';
+                clearWinningHighlight();
+                clearStatusBox();
+                createDeck();
+
+                hand = [];
+                held = [false, false, false, false, false];
+                resetCardHoldUI();
+
+                for (let i = 0; i < 5; i++) {
+                    hand.push(deck.pop());
+                }
+
+                isBusyAnimating = true;
+                document.getElementById('action-btn').disabled = true;
+                document.getElementById('bet-cycle-btn').disabled = true;
+
+                for (let i = 0; i < 5; i++) {
+                    document.getElementById(`flipper-${i}`).classList.remove('flipped');
+                }
+                await sleep(200);
+
+                for (let i = 0; i < 5; i++) {
+                    updateCardFront(i, hand[i]);
+                    document.getElementById(`flipper-${i}`).classList.add('flipped');
+                    playSound('card-flip');
+                    await sleep(180);
+                }
+
+                highlightInitialWinAndAutoHold();
+
+                isBusyAnimating = false;
+                document.getElementById('action-btn').disabled = false;
+                document.getElementById('bet-cycle-btn').disabled = false;
+                
+                updateActionButtonLabel();
+                updateUI();
+                return;
+            }
+
             isBusyAnimating = true;
             document.getElementById('action-btn').disabled = true;
+            document.getElementById('bet-cycle-btn').disabled = true;
 
             for (let i = 0; i < 5; i++) {
                 if (!held[i]) {
@@ -791,14 +942,25 @@
                 }
             }
 
-            gameState = 'DEAL';
-            document.getElementById('action-btn').innerText = 'SPIN';
             evaluateHand();
+
+            gameState = 'READY';
+            document.getElementById('action-btn').innerText = 'SPIN';
             resetCardHoldUI();
+
             isBusyAnimating = false;
             document.getElementById('action-btn').disabled = false;
             document.getElementById('bet-cycle-btn').disabled = false;
             updateUI();
+        }
+    }
+
+    function updateActionButtonLabel() {
+        let hasHolds = held.some(h => h === true);
+        if (gameState === 'HOLDING') {
+            document.getElementById('action-btn').innerText = hasHolds ? 'TREK' : 'SPIN';
+        } else {
+            document.getElementById('action-btn').innerText = 'SPIN';
         }
     }
 
@@ -813,7 +975,7 @@
     }
 
     function toggleHold(index) {
-        if (gameState !== 'DRAW' || isBusyAnimating) return;
+        if (gameState !== 'HOLDING' || isBusyAnimating) return;
         playSound('click');
         held[index] = !held[index];
 
@@ -832,6 +994,8 @@
             btnEl.innerText = 'HOLD';
             ledEl.classList.remove('active');
         }
+
+        updateActionButtonLabel();
     }
 
     function setHoldState(index, shouldHold) {
@@ -844,6 +1008,7 @@
             btnEl.classList.add('held-state');
             btnEl.innerText = 'HELD';
             ledEl.classList.add('active');
+            updateActionButtonLabel();
         }
     }
 
@@ -857,10 +1022,11 @@
             btnEl.innerText = 'HOLD';
             ledEl.classList.remove('active');
         }
+        updateActionButtonLabel();
     }
 
     function resetToInitialState() {
-        gameState = 'DEAL';
+        gameState = 'READY';
         document.getElementById('action-btn').innerText = 'SPIN';
         document.getElementById('bet-cycle-btn').disabled = false;
         for (let i = 0; i < 5; i++) {
@@ -876,14 +1042,16 @@
         const modeData = gameModes[currentMode];
         const result = checkPokerHand(hand, currentMode);
         
-        let matchedRowIdx = modeData.payouts.findIndex(row => row.name === result.name);
+        let matchedRowIdx = modeData.names.findIndex(n => n === result.name);
         if (matchedRowIdx !== -1) {
-            let rowObj = modeData.payouts[matchedRowIdx];
-            let paysSomething = rowObj.pays[currentBet - 1] > 0;
+            let basePay = modeData.basePays[matchedRowIdx];
+            let payoutMultiplier = basePay * currentBet;
+            if (currentBet === 5 && result.name.includes('Royal Flush')) payoutMultiplier = 4000;
 
-            if (paysSomething) {
+            if (payoutMultiplier > 0) {
                 lastWinningIndex = matchedRowIdx;
                 document.getElementById(`payout-row-${matchedRowIdx}`).classList.add('active-win');
+                document.getElementById(`payout-name-row-${matchedRowIdx}`).classList.add('active-win');
                 playSound('win');
                 applyAutoHoldCards(result.name);
             }
@@ -932,9 +1100,11 @@
         let payoutMultiplier = 0;
         let matchedRowIdx = -1;
 
-        modeData.payouts.forEach((row, idx) => {
-            if (row.name === result.name) {
-                payoutMultiplier = row.pays[currentBet - 1];
+        modeData.names.forEach((name, idx) => {
+            if (name === result.name) {
+                let basePay = modeData.basePays[idx];
+                payoutMultiplier = basePay * currentBet;
+                if (currentBet === 5 && name.includes('Royal Flush')) payoutMultiplier = 4000;
                 matchedRowIdx = idx;
             }
         });
@@ -949,10 +1119,13 @@
             if (matchedRowIdx !== -1) {
                 lastWinningIndex = matchedRowIdx;
                 document.getElementById(`payout-row-${matchedRowIdx}`).classList.add('active-win');
+                document.getElementById(`payout-name-row-${matchedRowIdx}`).classList.add('active-win');
             }
         } else {
             clearStatusBox();
         }
+        checkTableUnlock();
+        updateUI();
     }
 
     function flashStatusBox(text) {
@@ -969,8 +1142,10 @@
 
     function clearWinningHighlight() {
         if (lastWinningIndex !== -1) {
-            const row = document.getElementById(`payout-row-${lastWinningIndex}`);
-            if (row) row.classList.remove('active-win');
+            const rowVal = document.getElementById(`payout-row-${lastWinningIndex}`);
+            const rowName = document.getElementById(`payout-name-row-${lastWinningIndex}`);
+            if (rowVal) rowVal.classList.remove('active-win');
+            if (rowName) rowName.classList.remove('active-win');
             lastWinningIndex = -1;
         }
     }
@@ -1064,7 +1239,10 @@
     }
 
     function updateUI() {
-        document.getElementById('credits-display').innerText = credits;
+        let currentGoal = tablesConfig[currentTable].goal;
+        let goalText = currentTable < 4 ? ` / ${currentGoal}` : '';
+        document.getElementById('credits-display').innerText = `${credits}${goalText}`;
+        checkTableUnlock();
     }
 
     function refillCredits() {
