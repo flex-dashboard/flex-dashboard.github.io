@@ -2,49 +2,59 @@
 <html lang="nl">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Klassiek Videopoker Casino - Multi-Tafel</title>
     <style>
         * {
             box-sizing: border-box;
             user-select: none;
+            -webkit-user-select: none;
         }
         body {
             background: radial-gradient(circle at center, var(--bg-core, #1b2a47) 0%, var(--bg-edge, #090d16) 100%);
             color: #fff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0;
-            padding: 10px;
+            padding: 5px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 100vh;
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
             transition: background 0.5s ease;
         }
         .cabinet {
             width: 100%;
             max-width: 950px;
+            height: 100%;
+            max-height: 100vh;
             background: linear-gradient(135deg, var(--cab-1, #10192d) 0%, var(--cab-2, #060911) 100%);
-            border: 4px solid var(--border-color, #d4af37);
-            border-radius: 16px;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
-            padding: 20px;
+            border: 3px solid var(--border-color, #d4af37);
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.8), inset 0 2px 5px rgba(255,255,255,0.2);
+            padding: 8px;
             display: flex;
             flex-direction: column;
-            gap: 12px;
-            transition: all 0.5s ease;
+            justify-content: space-between;
+            gap: 6px;
         }
-        /* Header & Menu */
+
+        /* Header & Responsive Menu */
         .header-panel {
             display: flex;
-            justify-content: space-between;
-            align-items: center;
+            flex-direction: column;
             background: rgba(0,0,0,0.4);
-            padding: 10px 15px;
-            border-radius: 10px;
+            padding: 6px 10px;
+            border-radius: 8px;
             border: 1px solid var(--border-color, #334e68);
-            flex-wrap: wrap;
-            gap: 8px;
+            gap: 4px;
+        }
+        .header-top-row {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 100%;
         }
         .game-title {
             font-size: 1.1rem;
@@ -52,73 +62,160 @@
             color: var(--accent-color, #ffd700);
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
             letter-spacing: 1px;
+            white-space: nowrap;
         }
-        .controls-top {
+        .header-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .header-left {
             display: flex;
             gap: 6px;
             align-items: center;
-            max-width: 100%;
-            flex-wrap: wrap;
+            justify-content: flex-start;
         }
+        .header-right {
+            display: flex;
+            gap: 6px;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        /* Subtiele Home Link (Huisje) */
+        .home-link {
+            color: var(--accent-color, #ffd700);
+            text-decoration: none;
+            font-size: 1.1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2px 4px;
+            transition: transform 0.2s;
+        }
+        .home-link:hover {
+            transform: scale(1.1);
+        }
+
         select, option {
             background: #14213d !important;
             color: #ffd700 !important;
             border: 1px solid var(--border-color, #d4af37);
-            padding: 4px 6px;
+            padding: 4px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
-            max-width: 135px;
+            max-width: 140px;
             font-size: 0.75rem;
             text-overflow: ellipsis;
         }
-        .fullscreen-btn {
+        option:disabled {
+            color: #6c757d !important;
+            background: #0b1326 !important;
+        }
+        .icon-btn {
             background: #14213d;
             color: #ffd700;
             border: 1px solid var(--border-color, #d4af37);
             border-radius: 6px;
-            padding: 5px 8px;
+            padding: 3px 6px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.85rem;
+            font-size: 0.75rem;
         }
-        .fullscreen-btn:hover {
-            background: #243b55;
-        }
+        .icon-btn:hover { background: #243b55; }
 
-        /* Stats Dashboard met Doel erin verwerkt */
-        .stats-bar {
+    /* Media query voor smalle telefoons */
+    @media (max-width: 600px) {
+        .header-panel {
             display: flex;
-            justify-content: space-around;
+            flex-direction: column;
+            gap: 4px;
+            padding: 4px 6px;
+        }
+        .header-top-row {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+        .game-title-container {
+            text-align: center;
+            width: 100%;
+        }
+        .game-title {
+            font-size: 0.95rem;
+        }
+        .header-bottom-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+        }
+        .header-left {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .header-right {
+            display: flex;
+            gap: 4px;
+            align-items: center;
+        }
+        .home-link {
+            display: flex; /* Zorgt ervoor dat het huisje nu wél zichtbaar is op mobiel! */
+            font-size: 1rem;
+        }
+        .header-right .icon-btn {
+            padding: 3px 5px;
+            font-size: 0.7rem;
+        }
+    }
+        /* Stats Dashboard */
+        .stats-bar {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 6px;
             background: #080c14;
             border: 2px inset #243b55;
-            padding: 8px;
+            padding: 6px;
             border-radius: 8px;
             text-align: center;
         }
+        .stat-box {
+            background: rgba(255,255,255,0.03);
+            border-radius: 4px;
+            padding: 4px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
         .stat-box .label {
-            font-size: 0.75rem;
+            font-size: 0.65rem;
             color: #8a99ad;
             text-transform: uppercase;
         }
         .stat-box .value {
-            font-size: 1.2rem;
+            font-size: 0.95rem;
             font-weight: bold;
             color: #00ffcc;
             text-shadow: 0 0 8px rgba(0,255,204,0.4);
+            white-space: nowrap;
         }
 
-        /* Gesplitste Payout Layout (Vast links + Scrollbaar rechts) */
+        /* Payout Layout Zonder Scrollbalken */
         .payout-wrapper {
             display: flex;
             width: 100%;
+            flex: 1;
+            min-height: 0;
             background: #0d1527;
             border: 2px solid var(--border-color, #243b55);
             border-radius: 8px;
             overflow: hidden;
         }
         .payout-names-container {
-            flex: 0 0 23%;
+            flex: 0 0 35%;
             background: #0d1527;
             border-right: 2px solid var(--border-color, #243b55);
         }
@@ -126,19 +223,26 @@
             flex: 1;
             overflow-x: auto;
             overflow-y: hidden;
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+        }
+        .payout-table-container::-webkit-scrollbar {
+            display: none !important;
+            width: 0 !important;
+            height: 0 !important;
         }
 
         table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-align: left;
             white-space: nowrap;
         }
         th, td {
-            padding: 4px 8px;
+            padding: 2px 4px;
             border-bottom: 1px solid #1c2e4a;
-            height: 27px; /* Exact gelijke rijhoogte voor uitlijning */
+            height: 22px;
         }
         th {
             background: #14213d;
@@ -147,11 +251,11 @@
         }
         .payout-names-container th {
             text-align: left;
-            padding-left: 10px;
+            padding-left: 6px;
         }
         td:not(:first-child), th:not(:first-child) {
             text-align: center;
-            min-width: 65px;
+            min-width: 45px;
         }
         tr.active-win {
             background-color: rgba(255, 215, 0, 0.3) !important;
@@ -167,29 +271,30 @@
             100% { background-color: rgba(255, 215, 0, 0.5); }
         }
 
-        /* Cards Area & 3D Flip */
+        /* Cards Area & Losse Kaart Afbeeldingen */
         .cards-area {
             display: flex;
             justify-content: center;
-            gap: 6px;
-            margin: 5px 0;
+            gap: 4px;
+            margin: 2px 0;
             perspective: 1000px;
         }
         .card-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 6px;
+            gap: 4px;
             flex: 1;
-            max-width: 140px;
+            max-width: 130px;
         }
         .card-flipper {
             width: 100%;
             aspect-ratio: 2/3;
             position: relative;
             transform-style: preserve-3d;
-            transition: transform 0.4s ease-in-out;
-            border-radius: 8px;
+            transition: transform 0.3s ease-in-out;
+            border-radius: 6px;
+            cursor: pointer;
         }
         .card-flipper.flipped {
             transform: rotateY(180deg);
@@ -199,41 +304,34 @@
             width: 100%;
             height: 100%;
             backface-visibility: hidden;
-            border-radius: 8px;
+            border-radius: 6px;
             overflow: hidden;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.6);
             box-sizing: border-box;
         }
+        
         .card-front {
-            background: #f8f9fa;
+            background-color: #fff;
             transform: rotateY(180deg);
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-            padding: 4px;
-            font-weight: bold;
-            font-size: 1rem;
-            border: 2px solid #ccc;
+            border: 1px solid #ccc;
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
         }
-        .card-front.red { color: #d63031; }
-        .card-front.black { color: #2d3436; }
 
         .card-back {
             background-image: var(--card-bg, url('kaart.jpg'));
             background-size: cover;
             background-position: center;
             border: 2px solid #ffffff;
-            border-radius: 8px;
+            border-radius: 6px;
         }
 
         .card-container.held .card-flipper {
-            transform: rotateY(180deg) translateY(-6px);
+            transform: rotateY(180deg) translateY(-8px);
         }
-        .card-top { align-self: flex-start; line-height: 1; }
-        .card-center { align-self: center; font-size: 1.6rem; line-height: 1; }
-        .card-bottom { align-self: flex-end; line-height: 1; transform: rotate(180deg); }
 
-        /* Hold / Release 3D Knoppen */
+        /* Hold Knoppen */
         .hold-btn-container {
             display: flex;
             flex-direction: column;
@@ -242,95 +340,64 @@
         }
         .hold-btn {
             width: 100%;
-            padding: 6px 0;
+            padding: 5px 0;
             background: linear-gradient(to bottom, #3b4252, #2e3440);
             color: #d8dee9;
             border: 1px solid #4c566a;
-            border-radius: 6px;
+            border-radius: 5px;
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.4);
-            transition: all 0.1s ease;
-        }
-        .hold-btn:active {
-            transform: translateY(2px);
+            box-shadow: 0 3px 5px rgba(0,0,0,0.4);
         }
         .hold-btn.held-state {
             background: linear-gradient(to bottom, #d08770, #bf616a);
             color: #fff;
             border-color: #ebcb8b;
-            box-shadow: 0 0 10px #bf616a;
+            box-shadow: 0 0 8px #bf616a;
         }
         .led-indicator {
-            width: 8px;
-            height: 8px;
+            width: 7px;
+            height: 7px;
             background: #4c566a;
             border-radius: 50%;
-            margin-bottom: 3px;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.5);
-            transition: background 0.2s, box-shadow 0.2s;
+            margin-bottom: 2px;
+            transition: background 0.2s;
         }
         .led-indicator.active {
             background: #a3be8c;
-            box-shadow: 0 0 8px #a3be8c;
+            box-shadow: 0 0 6px #a3be8c;
         }
 
-        /* Statusbalk */
-        .message-box {
-            background: #000;
-            color: #00ffcc;
-            font-family: monospace;
-            font-size: 0.95rem;
-            text-align: center;
-            padding: 8px;
-            border-radius: 6px;
-            border: 1px solid #1e3a5f;
-            min-height: 38px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-            transition: all 0.3s ease;
-        }
-        .message-box.win-glow {
-            border-color: #ffd700;
-            box-shadow: 0 0 15px rgba(255, 215, 0, 0.6);
-            color: #ffd700;
-            font-weight: bold;
-        }
-
+        /* Actieknoppen */
         .action-bar {
             display: flex;
-            gap: 12px;
+            gap: 10px;
             justify-content: center;
         }
         .main-action-btn {
             flex: 2;
-            padding: 10px;
+            padding: 8px;
             background: var(--btn-main-bg, linear-gradient(to bottom, #f6d365 0%, #fda085 100%));
             color: #1a1a1a;
             border: 2px solid #fff;
             border-radius: 8px;
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 900;
             cursor: pointer;
-            box-shadow: 0 6px 12px rgba(0,0,0,0.5);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.5);
             text-transform: uppercase;
-            letter-spacing: 1px;
         }
-        .main-action-btn:active {
-            transform: translateY(2px);
+        .main-action-btn.autoplay-active {
+            background: linear-gradient(to bottom, #e74c3c, #c0392b) !important;
+            color: #fff;
+            animation: pulse-autoplay 1s infinite alternate;
         }
-        .main-action-btn:disabled {
-            background: linear-gradient(to bottom, #4c566a, #3b4252);
-            color: #8590a6;
-            border-color: #4c566a;
-            cursor: not-allowed;
-            box-shadow: none;
+        @keyframes pulse-autoplay {
+            0% { box-shadow: 0 0 5px #e74c3c; }
+            100% { box-shadow: 0 0 15px #e74c3c; }
         }
-        
+
         .single-bet-btn {
             flex: 1;
             background: var(--btn-bet-bg, linear-gradient(to bottom, #4a69bd, #1e3799));
@@ -338,13 +405,67 @@
             border: 1px solid #6a89cc;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             cursor: pointer;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-            letter-spacing: 1px;
         }
-        .single-bet-btn:active {
-            transform: translateY(2px);
+
+        .message-box {
+            background: #000;
+            color: #00ffcc;
+            font-family: monospace;
+            font-size: 0.85rem;
+            text-align: center;
+            padding: 6px;
+            border-radius: 6px;
+            border: 1px solid #1e3a5f;
+            min-height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+        .message-box.win-glow {
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Pop-up Uitleg Modal */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: rgba(0,0,0,0.85);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            padding: 15px;
+        }
+        .modal-content {
+            background: #10192d;
+            border: 2px solid #d4af37;
+            border-radius: 12px;
+            padding: 20px;
+            max-width: 600px;
+            width: 100%;
+            max-height: 85vh;
+            overflow-y: auto;
+            color: #fff;
+            font-size: 0.85rem;
+            line-height: 1.4;
+        }
+        .modal-content h3 { color: #ffd700; margin-top: 0; }
+        .modal-close-btn {
+            background: #d4af37;
+            color: #000;
+            border: none;
+            padding: 8px 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            float: right;
         }
 
         .overlay-notice {
@@ -360,32 +481,44 @@
             display: none;
         }
         .overlay-notice h2 { color: #ff6b6b; margin: 0; }
-        .overlay-notice p { color: #f1f2f6; font-size: 1.1rem; }
+
+        @media (min-width: 768px) {
+            .payout-names-container { flex: 0 0 25%; }
+            table { font-size: 0.8rem; }
+            th, td { height: 26px; }
+        }
     </style>
 </head>
-<body id="body-theme">
+<body>
 
 <div class="cabinet" id="cabinet">
-    <!-- Header -->
+    <!-- Header Panel -->
     <div class="header-panel">
-        <div class="game-title" id="game-title-display">JACKS OR BETTER</div>
-        <div class="controls-top">
-            <label style="font-size: 0.75rem; color:#aaa;">Spel:</label>
-            <select id="game-mode-select" onchange="changeGameMode()">
-                <option value="jacks">Jacks or Better</option>
-                <option value="deuces">Deuces Wild (2 = Wild)</option>
-                <option value="joker">Joker Poker (+1 Joker)</option>
-                <option value="tens">Tens or Better</option>
-            </select>
-            <label style="font-size: 0.75rem; color:#aaa; margin-left: 5px;">Tafel:</label>
-            <select id="table-select" onchange="switchTableManually(this.value)">
-                <option value="1">Tafel 1 (Bronze - 5x)</option>
-                <option value="2" id="opt-t2" disabled>Tafel 2 (Silver - 10x)</option>
-                <option value="3" id="opt-t3" disabled>Tafel 3 (Gold - 15x)</option>
-                <option value="4" id="opt-t4" disabled>Tafel 4 (VIP - 20x)</option>
-            </select>
-            <button class="fullscreen-btn" onclick="location.href='index.html'" title="Dashboard / Home">🏠</button>
-            <button class="fullscreen-btn" onclick="toggleFullScreen()" title="Volledig scherm">[ ⤢ ]</button>
+        <div class="header-top-row">
+            <div class="game-title" id="game-title-display">JACKS OR BETTER</div>
+        </div>
+
+        <div class="header-bottom-row">
+            <div class="header-left">
+                <a href="index.html" class="home-link" title="Naar Dashboard">🏠</a>
+                <select id="game-mode-select" onchange="changeGameMode()">
+                    <option value="jacks">Jacks or Better</option>
+                    <option value="deuces">Deuces Wild</option>
+                    <option value="joker">Joker Poker</option>
+                    <option value="tens">Tens or Better</option>
+                </select>
+            </div>
+
+            <div class="header-right">
+                <select id="table-select" onchange="switchTableManually(this.value)">
+                    <option value="1">Tafel 1 (5x)</option>
+                    <option value="2" id="opt-t2" disabled>Tafel 2 (10x)</option>
+                    <option value="3" id="opt-t3" disabled>Tafel 3 (20x)</option>
+                    <option value="4" id="opt-t4" disabled>Tafel 4 (30x)</option>
+                </select>
+                <button class="icon-btn" onclick="openInfoModal()" title="Uitleg & Spelregels">?</button>
+                <button class="icon-btn" onclick="toggleFullScreen()" title="Volledig scherm">⤢</button>
+            </div>
         </div>
     </div>
 
@@ -393,7 +526,7 @@
     <div class="stats-bar">
         <div class="stat-box">
             <div class="label">Credits / Doel</div>
-            <div class="value" id="credits-display" style="font-size: 1.1rem;">100 / 2000</div>
+            <div class="value" id="credits-display">100 / 2000</div>
         </div>
         <div class="stat-box">
             <div class="label">Inzet</div>
@@ -405,47 +538,53 @@
         </div>
         <div class="stat-box">
             <div class="label">Bonus Timer</div>
-            <div class="value" id="timer-display" style="font-size: 1.1rem;">--:--</div>
+            <div class="value" id="timer-display">--:--</div>
         </div>
     </div>
 
-    <!-- Gesplitste Payout Table Container -->
+    <!-- Payout Table Wrapper -->
     <div class="payout-wrapper">
-        <!-- Vaste linker kolom voor handnamen -->
         <div class="payout-names-container">
             <table>
-                <thead>
-                    <tr><th>Handcombinatie</th></tr>
-                </thead>
-                <tbody id="payout-names-body">
-                </tbody>
+                <thead><tr><th>Handcombinatie</th></tr></thead>
+                <tbody id="payout-names-body"></tbody>
             </table>
         </div>
-        <!-- Scrollbare rechter container voor multipliers -->
         <div class="payout-table-container" id="payout-container">
             <table>
-                <thead>
-                    <tr id="table-header-row">
-                        <th id="col-h1">1x</th>
-                    </tr>
-                </thead>
-                <tbody id="payout-table-body">
-                </tbody>
+                <thead><tr id="table-header-row"><th id="col-h1">1x</th></tr></thead>
+                <tbody id="payout-table-body"></tbody>
             </table>
         </div>
     </div>
 
-    <!-- Cards & Hold Controls -->
-    <div class="cards-area" id="cards-area">
-    </div>
+    <!-- Cards Area -->
+    <div class="cards-area" id="cards-area"></div>
 
-    <!-- Statusbalk -->
-    <div class="message-box" id="message-box"></div>
-
-    <!-- Action Bar -->
+    <!-- Actieknoppen & Zwarte Meldingsbalk -->
     <div class="action-bar">
         <button class="single-bet-btn" id="bet-cycle-btn" onclick="cycleBet()">BET (1x)</button>
-        <button class="main-action-btn" id="action-btn" onclick="handleMainAction()">SPIN</button>
+        <button class="main-action-btn" id="action-btn" onclick="handleMainActionClick()" onmousedown="startAutoSpinTimer()" onmouseup="clearAutoSpinTimer()" ontouchstart="startAutoSpinTimer()" ontouchend="clearAutoSpinTimer()">SPIN</button>
+    </div>
+
+    <div class="message-box" id="message-box"></div>
+</div>
+
+<!-- Pop-up Uitleg Modal -->
+<div class="modal-overlay" id="info-modal">
+    <div class="modal-content">
+        <button class="modal-close-btn" onclick="closeInfoModal()">Sluiten</button>
+        <h3>Speluitleg & Regels</h3>
+        <p><strong>De 4 Keuzespellen:</strong></p>
+        <ul>
+            <li><strong>Jacks or Better:</strong> Klassiek poker. Uitbetaling vanaf een paar Boeren of hoger.</li>
+            <li><strong>Deuces Wild:</strong> Alle 2'en tellen als Wild-kaart (vervanger).</li>
+            <li><strong>Joker Poker:</strong> Wordt gespeeld met 53 kaarten inclusief 1 Joker.</li>
+            <li><strong>Tens or Better:</strong> Uitbetaling start al vanaf een paar 10'en.</li>
+        </ul>
+        <p><strong>Gratis Bonus:</strong> Om het uur ontvang je automatisch 100 gratis credits!</p>
+        <p><strong>Automatische Demotie (Terugval):</strong> Zodra je credits onder de helft van het doel van de huidige tafel zakken (bijv. onder 1.000 punten op Tafel 1 of onder 5.000 punten op Tafel 2), springt de kast automatisch terug naar Tafel 1 om weer op te bouwen.</p>
+        <p><strong>Inzetranges:</strong> Tafel 1 (max 5x), Tafel 2 (max 10x), Tafel 3 (5x tot 20x), Tafel 4 (5x tot 30x).</p>
     </div>
 </div>
 
@@ -453,7 +592,7 @@
 <div class="overlay-notice" id="bankrupt-overlay">
     <h2>GEEN CREDITS MEER!</h2>
     <p>Je credits zijn op. Vul direct gratis aan om verder te spelen!</p>
-    <button class="fullscreen-btn" onclick="refillCredits()" style="padding: 10px 20px; font-size: 1rem;">+100 Gratis Credits Pakken</button>
+    <button class="icon-btn" onclick="refillCredits()" style="padding: 10px 20px; font-size: 1rem;">+100 Gratis Credits Pakken</button>
 </div>
 
 <script>
@@ -497,13 +636,13 @@
     }
 
     const tablesConfig = {
-        1: { name: "Tafel 1 (Bronze)", maxBet: 5, cardBg: "url('kaart.jpg')", goal: 2000, nextTable: 2, 
+        1: { name: "Tafel 1", bets: [1,2,3,4,5], cardBg: "url('kaart.jpg')", goal: 2000,
              theme: { core: "#1b2a47", edge: "#090d16", cab1: "#10192d", cab2: "#060911", border: "#d4af37", accent: "#ffd700", btnMain: "linear-gradient(to bottom, #f6d365, #fda085)", btnBet: "linear-gradient(to bottom, #4a69bd, #1e3799)" } },
-        2: { name: "Tafel 2 (Silver)", maxBet: 10, cardBg: "url('kaart1.jpg')", goal: 10000, nextTable: 3, 
+        2: { name: "Tafel 2", bets: [1,2,4,6,8,10], cardBg: "url('kaart1.jpg')", goal: 10000,
              theme: { core: "#471b1b", edge: "#160909", cab1: "#2d1010", cab2: "#110606", border: "#ff6b6b", accent: "#ff9999", btnMain: "linear-gradient(to bottom, #ff9999, #cc3333)", btnBet: "linear-gradient(to bottom, #802b2b, #401010)" } },
-        3: { name: "Tafel 3 (Gold)", maxBet: 15, cardBg: "url('kaart2.jpg')", goal: 25000, nextTable: 4, 
+        3: { name: "Tafel 3", bets: [5,10,15,20], cardBg: "url('kaart2.jpg')", goal: 25000,
              theme: { core: "#1b471e", edge: "#09160a", cab1: "#102d13", cab2: "#061107", border: "#2ecc71", accent: "#a3be8c", btnMain: "linear-gradient(to bottom, #2ecc71, #27ae60)", btnBet: "linear-gradient(to bottom, #1e8449, #145a32)" } },
-        4: { name: "Tafel 4 (VIP)", maxBet: 20, cardBg: "url('kaart3.jpg')", goal: 999999, nextTable: null, 
+        4: { name: "Tafel 4", bets: [5,10,15,20,25,30], cardBg: "url('kaart3.jpg')", goal: 999999,
              theme: { core: "#5a0f14", edge: "#1a0305", cab1: "#3b0a0d", cab2: "#120203", border: "#e74c3c", accent: "#ffadad", btnMain: "linear-gradient(to bottom, #e74c3c, #c0392b)", btnBet: "linear-gradient(to bottom, #962d22, #641e16)" } }
     };
 
@@ -517,23 +656,24 @@
             names: ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Jacks or Better"]
         },
         deuces: {
-            name: "DEUCES WILD (2 = Wild)",
+            name: "DEUCES WILD",
             basePays: [250, 200, 25, 15, 9, 5, 3, 2, 2, 1],
             names: ["Natural Royal Flush", "Four Deuces", "Wild Royal Flush", "Five of a Kind", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind"]
         },
         joker: {
-            name: "JOKER POKER (+1 Joker)",
+            name: "JOKER POKER",
             basePays: [250, 200, 100, 50, 20, 7, 5, 3, 2, 1],
             names: ["Natural Royal Flush", "Five of a Kind", "Wild Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Kings or Better"]
         },
         tens: {
             name: "TENS OR BETTER",
-            basePays: [250, 500, 25, 6, 5, 4, 3, 2, 1],
+            basePays: [250, 125, 80, 40, 30, 20, 16, 8, 2],
             names: ["Royal Flush", "Straight Flush", "Four of a Kind", "Full House", "Flush", "Straight", "Three of a Kind", "Two Pair", "Tens or Better"]
         }
     };
 
     let credits = localStorage.getItem('poker_credits') !== null ? parseInt(localStorage.getItem('poker_credits'), 10) : 100;
+    let currentBetIndex = 0;
     let currentBet = 1;
     let gameState = 'READY';
     let isBusyAnimating = false;
@@ -542,6 +682,10 @@
     let held = [false, false, false, false, false];
     let currentMode = 'jacks';
     let lastWinningIndex = -1;
+
+    let cycleMeter = parseInt(localStorage.getItem('poker_cycle_meter') || '0', 10);
+    let isAutoSpinActive = false;
+    let autoSpinHoldTimer = null;
 
     let timerSeconds = 3600;
     let timerInterval = null;
@@ -562,6 +706,7 @@
         localStorage.setItem('poker_credits', credits);
         localStorage.setItem('poker_table', currentTable);
         localStorage.setItem('poker_unlocked', unlockedTable);
+        localStorage.setItem('poker_cycle_meter', cycleMeter);
     }
 
     function applyTheme() {
@@ -582,26 +727,36 @@
         document.getElementById('table-select').value = currentTable;
         for (let i = 2; i <= 4; i++) {
             let opt = document.getElementById(`opt-t${i}`);
-            let prevGoal = tablesConfig[i-1].goal;
+            let maxB = tablesConfig[i].bets[tablesConfig[i].bets.length - 1];
             if (i <= unlockedTable) {
                 opt.disabled = false;
-                opt.innerText = `Tafel ${i} (${tablesConfig[i].name.split(' ')[1]})`;
+                opt.innerText = `Tafel ${i} (${maxB}x)`;
             } else {
+                let prevGoal = tablesConfig[i-1].goal;
                 opt.disabled = true;
                 opt.innerText = `Tafel ${i} (Slot: ${prevGoal} pts)`;
             }
         }
-        checkTableUnlock();
     }
 
     function checkTableUnlock() {
         let cfg = tablesConfig[currentTable];
-        if (currentTable < 4) {
-            if (credits >= cfg.goal && unlockedTable <= currentTable) {
-                unlockedTable = currentTable + 1;
-                saveGameState();
-                updateTableSelectDropdowns();
-            }
+        if (currentTable < 4 && credits >= cfg.goal && unlockedTable <= currentTable) {
+            unlockedTable = currentTable + 1;
+            saveGameState();
+            updateTableSelectDropdowns();
+        }
+
+        let dropThreshold = Math.floor(cfg.goal / 2);
+        if (currentTable > 1 && credits < dropThreshold) {
+            currentTable = 1;
+            currentBetIndex = 0;
+            currentBet = tablesConfig[1].bets[0];
+            saveGameState();
+            applyTheme();
+            updateTableSelectDropdowns();
+            buildPayoutTable();
+            flashStatusBox("Automatisch teruggevallen naar Tafel 1!");
         }
     }
 
@@ -609,18 +764,16 @@
         tableNum = parseInt(tableNum, 10);
         if (tableNum <= unlockedTable) {
             currentTable = tableNum;
-            if (currentBet > tablesConfig[currentTable].maxBet) {
-                currentBet = 1;
-            }
+            currentBetIndex = 0;
+            currentBet = tablesConfig[currentTable].bets[0];
             saveGameState();
             applyTheme();
             updateTableSelectDropdowns();
             buildPayoutTable();
             resetToInitialState();
-            flashStatusBox(`Welkom op ${tablesConfig[currentTable].name}!`);
+            updateUI();
+            flashStatusBox(`Welkom op Tafel ${currentTable}!`);
         } else {
-            let prevGoal = tablesConfig[tableNum-1].goal;
-            alert(`Je hebt nog niet genoeg punten om Tafel ${tableNum} te ontgrendelen! (Doel: ${prevGoal} punten)`);
             document.getElementById('table-select').value = currentTable;
         }
     }
@@ -634,13 +787,9 @@
             let timeLeft = Math.floor((targetTime - now) / 1000);
 
             if (timeLeft <= 0) {
-                let overtime = Math.abs(timeLeft);
-                let bonuses = 1 + Math.floor(overtime / 3600);
-                credits += (bonuses * 100);
+                credits += 100;
                 saveGameState();
-
-                let remainder = 3600 - (overtime % 3600);
-                timerSeconds = remainder > 0 ? remainder : 3600;
+                timerSeconds = 3600;
                 setNewTimerTarget(timerSeconds);
             } else {
                 timerSeconds = timeLeft;
@@ -653,15 +802,13 @@
     }
 
     function setNewTimerTarget(seconds) {
-        let targetTime = Date.now() + (seconds * 1000);
-        localStorage.setItem('poker_timer_target', targetTime);
+        localStorage.setItem('poker_timer_target', Date.now() + (seconds * 1000));
     }
 
     function startTimerInterval() {
         if (timerInterval) clearInterval(timerInterval);
         timerInterval = setInterval(() => {
             timerSeconds--;
-            
             if (timerSeconds <= 0) {
                 credits += 100;
                 saveGameState();
@@ -670,7 +817,6 @@
                 flashStatusBox('+100 CREDITS BONUS');
                 playSound('win');
             }
-            
             setNewTimerTarget(timerSeconds);
             updateTimerDisplay();
         }, 1000);
@@ -680,19 +826,16 @@
     function updateTimerDisplay() {
         let m = Math.floor(timerSeconds / 60);
         let s = timerSeconds % 60;
-        let formatted = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        document.getElementById('timer-display').innerText = formatted;
+        document.getElementById('timer-display').innerText = `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
     }
 
     function toggleFullScreen() {
-        if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen();
-        } else {
-            if (document.exitFullscreen) {
-                document.exitFullscreen();
-            }
-        }
+        if (!document.fullscreenElement) document.documentElement.requestFullscreen();
+        else if (document.exitFullscreen) document.exitFullscreen();
     }
+
+    function openInfoModal() { document.getElementById('info-modal').style.display = 'flex'; }
+    function closeInfoModal() { document.getElementById('info-modal').style.display = 'none'; }
 
     function changeGameMode() {
         if (isBusyAnimating) return;
@@ -705,8 +848,9 @@
     function cycleBet() {
         if (isBusyAnimating) return;
         playSound('click');
-        let maxB = tablesConfig[currentTable].maxBet;
-        currentBet = currentBet >= maxB ? 1 : currentBet + 1;
+        let bets = tablesConfig[currentTable].bets;
+        currentBetIndex = (currentBetIndex + 1) % bets.length;
+        currentBet = bets[currentBetIndex];
         document.getElementById('bet-cycle-btn').innerText = `BET (${currentBet}x)`;
         document.getElementById('bet-display').innerText = currentBet + 'x';
         updatePayoutHighlight();
@@ -717,13 +861,13 @@
         const tbody = document.getElementById('payout-table-body');
         const namesBody = document.getElementById('payout-names-body');
         
-        let maxB = tablesConfig[currentTable].maxBet;
+        let bets = tablesConfig[currentTable].bets;
+        currentBet = bets[currentBetIndex] || bets[0];
         
-        // Bouw de header voor de multipliers
         let headerHtml = '';
-        for (let i = 1; i <= maxB; i++) {
-            headerHtml += `<th id="col-h${i}">${i}x</th>`;
-        }
+        bets.forEach(b => {
+            headerHtml += `<th id="col-h${b}">${b}x</th>`;
+        });
         theadRow.innerHTML = headerHtml;
 
         namesBody.innerHTML = '';
@@ -733,7 +877,6 @@
         modeData.names.forEach((name, idx) => {
             let basePay = modeData.basePays[idx];
 
-            // 1. Handnaam in linker vaste tabel
             let trName = document.createElement('tr');
             trName.id = `payout-name-row-${idx}`;
             let tdName = document.createElement('td');
@@ -741,36 +884,35 @@
             trName.appendChild(tdName);
             namesBody.appendChild(trName);
 
-            // 2. Multiplier waarden in rechter scrollbare tabel
             let trVal = document.createElement('tr');
             trVal.id = `payout-row-${idx}`;
 
-            for (let i = 1; i <= maxB; i++) {
+            bets.forEach(b => {
                 let td = document.createElement('td');
-                td.id = `payout-${idx}-${i}`;
+                td.id = `payout-${idx}-${b}`;
                 
-                let payVal = basePay * i;
-                if (i === 5 && name.includes('Royal Flush')) payVal = 4000;
+                let payVal = basePay * b;
+                if (b === bets[bets.length - 1] && name.includes('Royal Flush')) payVal = basePay * b * 2;
                 td.innerText = payVal;
 
-                if (i === currentBet) td.classList.add('active-col');
+                if (b === currentBet) td.classList.add('active-col');
                 trVal.appendChild(td);
-            }
+            });
             tbody.appendChild(trVal);
         });
         updatePayoutHighlight();
     }
 
     function updatePayoutHighlight() {
-        let maxB = tablesConfig[currentTable].maxBet;
+        let bets = tablesConfig[currentTable].bets;
         const modeData = gameModes[currentMode];
         const container = document.getElementById('payout-container');
 
         for (let idx = 0; idx < modeData.names.length; idx++) {
-            for (let i = 1; i <= maxB; i++) {
-                let cell = document.getElementById(`payout-${idx}-${i}`);
+            bets.forEach(b => {
+                let cell = document.getElementById(`payout-${idx}-${b}`);
                 if (cell) {
-                    if (i === currentBet) {
+                    if (b === currentBet) {
                         cell.classList.add('active-col');
                         let scrollLeftTarget = cell.offsetLeft - (container.clientWidth / 2) + (cell.clientWidth / 2);
                         container.scrollTo({ left: scrollLeftTarget, behavior: 'smooth' });
@@ -778,7 +920,7 @@
                         cell.classList.remove('active-col');
                     }
                 }
-            }
+            });
         }
     }
 
@@ -790,11 +932,7 @@
                 <div class="card-container" id="card-container-${i}">
                     <div class="card-flipper" id="flipper-${i}" onclick="toggleHold(${i})">
                         <div class="card-back"></div>
-                        <div class="card-front black" id="card-front-${i}">
-                            <div class="card-top">?</div>
-                            <div class="card-center">🂠</div>
-                            <div class="card-bottom">?</div>
-                        </div>
+                        <div class="card-front" id="card-front-${i}"></div>
                     </div>
                     <div class="hold-btn-container">
                         <div class="led-indicator" id="led-${i}"></div>
@@ -807,9 +945,9 @@
 
     function createDeck() {
         deck = [];
-        for (let s of suits) {
-            for (let v of values) {
-                deck.push({ suit: s, val: v, color: (s === '♥' || s === '♦') ? 'red' : 'black' });
+        for (let sIdx = 0; sIdx < suits.length; sIdx++) {
+            for (let vIdx = 0; vIdx < values.length; vIdx++) {
+                deck.push({ suit: suits[sIdx], val: values[vIdx], color: (suits[sIdx] === '♥' || suits[sIdx] === '♦') ? 'red' : 'black' });
             }
         }
         if (currentMode === 'joker') {
@@ -821,16 +959,56 @@
         }
     }
 
+    function startAutoSpinTimer() {
+        autoSpinHoldTimer = setTimeout(() => {
+            isAutoSpinActive = !isAutoSpinActive;
+            const btn = document.getElementById('action-btn');
+            if (isAutoSpinActive) {
+                btn.classList.add('autoplay-active');
+                flashStatusBox('AUTO-SPIN ACTIEF');
+                if (gameState === 'READY' && !isBusyAnimating) handleMainAction();
+            } else {
+                btn.classList.remove('autoplay-active');
+                flashStatusBox('AUTO-SPIN GESTOPT');
+            }
+        }, 800);
+    }
+
+    function clearAutoSpinTimer() {
+        if (autoSpinHoldTimer) clearTimeout(autoSpinHoldTimer);
+    }
+
+    function stopAutoSpin() {
+        isAutoSpinActive = false;
+        document.getElementById('action-btn').classList.remove('autoplay-active');
+    }
+
+    function handleMainActionClick() {
+        if (isAutoSpinActive) {
+            stopAutoSpin();
+            flashStatusBox('AUTO-SPIN GESTOPT');
+            return;
+        }
+        handleMainAction();
+    }
+
     async function handleMainAction() {
         if (isBusyAnimating) return;
         playSound('click');
 
+        let hasAnyHold = held.some(h => h === true);
+        if (gameState === 'HOLDING' && !hasAnyHold) {
+            gameState = 'READY';
+        }
+
         if (gameState === 'READY') {
             if (credits < currentBet) {
+                stopAutoSpin();
                 document.getElementById('bankrupt-overlay').style.display = 'flex';
                 return;
             }
             credits -= currentBet;
+            cycleMeter += currentBet;
             saveGameState();
             document.getElementById('win-display').innerText = '0';
             clearWinningHighlight();
@@ -841,96 +1019,39 @@
             held = [false, false, false, false, false];
             resetCardHoldUI();
 
-            for (let i = 0; i < 5; i++) {
-                hand.push(deck.pop());
-            }
+            for (let i = 0; i < 5; i++) hand.push(deck.pop());
 
             gameState = 'HOLDING';
             isBusyAnimating = true;
-            document.getElementById('action-btn').disabled = true;
-            document.getElementById('bet-cycle-btn').disabled = true;
 
-            for (let i = 0; i < 5; i++) {
-                document.getElementById(`flipper-${i}`).classList.remove('flipped');
-            }
-            await sleep(200);
+            for (let i = 0; i < 5; i++) document.getElementById(`flipper-${i}`).classList.remove('flipped');
+            await sleep(150);
 
             for (let i = 0; i < 5; i++) {
                 updateCardFront(i, hand[i]);
                 document.getElementById(`flipper-${i}`).classList.add('flipped');
                 playSound('card-flip');
-                await sleep(180);
+                await sleep(100);
             }
 
             highlightInitialWinAndAutoHold();
 
             isBusyAnimating = false;
-            document.getElementById('action-btn').disabled = false;
-            document.getElementById('bet-cycle-btn').disabled = false;
-            
             updateActionButtonLabel();
             updateUI();
 
-        } else if (gameState === 'HOLDING') {
-            let hasHolds = held.some(h => h === true);
-
-            if (!hasHolds) {
-                if (credits < currentBet) {
-                    document.getElementById('bankrupt-overlay').style.display = 'flex';
-                    return;
-                }
-                credits -= currentBet;
-                saveGameState();
-                document.getElementById('win-display').innerText = '0';
-                clearWinningHighlight();
-                clearStatusBox();
-                createDeck();
-
-                hand = [];
-                held = [false, false, false, false, false];
-                resetCardHoldUI();
-
-                for (let i = 0; i < 5; i++) {
-                    hand.push(deck.pop());
-                }
-
-                isBusyAnimating = true;
-                document.getElementById('action-btn').disabled = true;
-                document.getElementById('bet-cycle-btn').disabled = true;
-
-                for (let i = 0; i < 5; i++) {
-                    document.getElementById(`flipper-${i}`).classList.remove('flipped');
-                }
-                await sleep(200);
-
-                for (let i = 0; i < 5; i++) {
-                    updateCardFront(i, hand[i]);
-                    document.getElementById(`flipper-${i}`).classList.add('flipped');
-                    playSound('card-flip');
-                    await sleep(180);
-                }
-
-                highlightInitialWinAndAutoHold();
-
-                isBusyAnimating = false;
-                document.getElementById('action-btn').disabled = false;
-                document.getElementById('bet-cycle-btn').disabled = false;
-                
-                updateActionButtonLabel();
-                updateUI();
-                return;
+            if (isAutoSpinActive) {
+                await sleep(1600);
+                if (isAutoSpinActive && gameState === 'HOLDING') handleMainAction();
             }
 
+        } else if (gameState === 'HOLDING') {
             isBusyAnimating = true;
-            document.getElementById('action-btn').disabled = true;
-            document.getElementById('bet-cycle-btn').disabled = true;
 
             for (let i = 0; i < 5; i++) {
-                if (!held[i]) {
-                    document.getElementById(`flipper-${i}`).classList.remove('flipped');
-                }
+                if (!held[i]) document.getElementById(`flipper-${i}`).classList.remove('flipped');
             }
-            await sleep(250);
+            await sleep(150);
 
             for (let i = 0; i < 5; i++) {
                 if (!held[i]) {
@@ -938,7 +1059,7 @@
                     updateCardFront(i, hand[i]);
                     document.getElementById(`flipper-${i}`).classList.add('flipped');
                     playSound('card-flip');
-                    await sleep(200);
+                    await sleep(120);
                 }
             }
 
@@ -949,34 +1070,57 @@
             resetCardHoldUI();
 
             isBusyAnimating = false;
-            document.getElementById('action-btn').disabled = false;
-            document.getElementById('bet-cycle-btn').disabled = false;
             updateUI();
+
+            if (isAutoSpinActive) {
+                await sleep(1800);
+                if (isAutoSpinActive && gameState === 'READY') handleMainAction();
+            }
         }
     }
 
     function updateActionButtonLabel() {
         let hasHolds = held.some(h => h === true);
-        if (gameState === 'HOLDING') {
-            document.getElementById('action-btn').innerText = hasHolds ? 'TREK' : 'SPIN';
-        } else {
-            document.getElementById('action-btn').innerText = 'SPIN';
+        document.getElementById('action-btn').innerText = (gameState === 'HOLDING' && hasHolds) ? 'TREK' : 'SPIN';
+    }
+
+    function getCardFileName(c) {
+        if (c.val === 'JOKER') {
+            return 'cards/red_joker.png';
         }
+
+        let suitName = '';
+        if (c.suit === '♣') suitName = 'clubs';
+        else if (c.suit === '♦') suitName = 'diamonds';
+        else if (c.suit === '♥') suitName = 'hearts';
+        else if (c.suit === '♠') suitName = 'spades';
+
+        let valName = '';
+        if (c.val === 'J') valName = 'jack';
+        else if (c.val === 'Q') valName = 'queen';
+        else if (c.val === 'K') valName = 'king';
+        else if (c.val === 'A') valName = 'ace';
+        else valName = c.val;
+
+        return `cards/${valName}_of_${suitName}.png`;
     }
 
     function updateCardFront(index, c) {
         const front = document.getElementById(`card-front-${index}`);
-        front.className = `card-front ${c.color}`;
-        front.innerHTML = `
-            <div class="card-top">${c.val}<br>${c.suit}</div>
-            <div class="card-center">${c.suit}</div>
-            <div class="card-bottom">${c.val}<br>${c.suit}</div>
-        `;
+        const fileName = getCardFileName(c);
+        front.style.backgroundImage = `url('${fileName}')`;
+        front.innerHTML = '';
     }
 
     function toggleHold(index) {
         if (gameState !== 'HOLDING' || isBusyAnimating) return;
         playSound('click');
+        
+        if (isAutoSpinActive) {
+            stopAutoSpin();
+            flashStatusBox('AUTO-SPIN ONDERBROKEN');
+        }
+
         held[index] = !held[index];
 
         const container = document.getElementById(`card-container-${index}`);
@@ -1028,10 +1172,7 @@
     function resetToInitialState() {
         gameState = 'READY';
         document.getElementById('action-btn').innerText = 'SPIN';
-        document.getElementById('bet-cycle-btn').disabled = false;
-        for (let i = 0; i < 5; i++) {
-            document.getElementById(`flipper-${i}`).classList.remove('flipped');
-        }
+        for (let i = 0; i < 5; i++) document.getElementById(`flipper-${i}`).classList.remove('flipped');
         resetCardHoldUI();
         clearWinningHighlight();
         clearStatusBox();
@@ -1046,49 +1187,49 @@
         if (matchedRowIdx !== -1) {
             let basePay = modeData.basePays[matchedRowIdx];
             let payoutMultiplier = basePay * currentBet;
-            if (currentBet === 5 && result.name.includes('Royal Flush')) payoutMultiplier = 4000;
 
             if (payoutMultiplier > 0) {
                 lastWinningIndex = matchedRowIdx;
                 document.getElementById(`payout-row-${matchedRowIdx}`).classList.add('active-win');
                 document.getElementById(`payout-name-row-${matchedRowIdx}`).classList.add('active-win');
                 playSound('win');
-                applyAutoHoldCards(result.name);
             }
         }
+        applyAutoHoldCards(result.name);
     }
 
     function applyAutoHoldCards(handName) {
-        const valMap = { '2':2, '3':3, '4':4, '5':5, '6':6, '7':7, '8':8, '9':9, '10':10, 'J':11, 'Q':12, 'K':13, 'A':14 };
         let valueCounts = {};
+        let suitCounts = {};
+
         hand.forEach((c, idx) => {
             if (c.val !== 'JOKER') {
                 let v = c.val;
                 if (!valueCounts[v]) valueCounts[v] = [];
                 valueCounts[v].push(idx);
+
+                let s = c.suit;
+                if (!suitCounts[s]) suitCounts[s] = [];
+                suitCounts[s].push(idx);
             }
         });
 
         Object.keys(valueCounts).forEach(val => {
             let indices = valueCounts[val];
-            let numVal = valMap[val];
             if (indices.length >= 2) {
-                let isHighPair = (currentMode === 'jacks' && numVal >= 11) || 
-                                 (currentMode === 'tens' && numVal >= 10) || 
-                                 (currentMode === 'joker' && numVal >= 13) ||
-                                 (currentMode === 'deuces');
-                if (indices.length > 2 || isHighPair) {
-                    indices.forEach(idx => setHoldState(idx, true));
-                }
-            } else if (indices.length === 4) {
+                indices.forEach(idx => setHoldState(idx, true));
+            }
+        });
+
+        Object.keys(suitCounts).forEach(s => {
+            let indices = suitCounts[s];
+            if (indices.length >= 4) {
                 indices.forEach(idx => setHoldState(idx, true));
             }
         });
 
         if (handName.includes('Flush') || handName.includes('Straight') || handName.includes('Royal')) {
-            for (let i = 0; i < 5; i++) {
-                setHoldState(i, true);
-            }
+            for (let i = 0; i < 5; i++) setHoldState(i, true);
         }
     }
 
@@ -1100,17 +1241,21 @@
         let payoutMultiplier = 0;
         let matchedRowIdx = -1;
 
+        let bets = tablesConfig[currentTable].bets;
+        let maxB = bets[bets.length - 1];
+
         modeData.names.forEach((name, idx) => {
             if (name === result.name) {
                 let basePay = modeData.basePays[idx];
                 payoutMultiplier = basePay * currentBet;
-                if (currentBet === 5 && name.includes('Royal Flush')) payoutMultiplier = 4000;
+                if (currentBet === maxB && name.includes('Royal Flush')) payoutMultiplier = basePay * currentBet * 2;
                 matchedRowIdx = idx;
             }
         });
 
         if (payoutMultiplier > 0) {
             credits += payoutMultiplier;
+            cycleMeter = Math.max(0, cycleMeter - Math.floor(payoutMultiplier / 2));
             saveGameState();
             document.getElementById('win-display').innerText = payoutMultiplier;
             flashStatusBox(`WINNER! +${payoutMultiplier}`);
@@ -1234,9 +1379,7 @@
         return false;
     }
 
-    function sleep(ms) {
-        return new Promise(resolve => setTimeout(resolve, ms));
-    }
+    function sleep(ms) { return new Promise(resolve => setTimeout(resolve, ms)); }
 
     function updateUI() {
         let currentGoal = tablesConfig[currentTable].goal;
