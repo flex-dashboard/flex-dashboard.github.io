@@ -37,18 +37,18 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            gap: 6px;
+            gap: 4px;
         }
 
-        /* Header & Responsive Menu */
+        /* Header Panel */
         .header-panel {
             display: flex;
             flex-direction: column;
             background: rgba(0,0,0,0.4);
-            padding: 6px 10px;
+            padding: 4px 8px;
             border-radius: 8px;
             border: 1px solid var(--border-color, #334e68);
-            gap: 4px;
+            gap: 2px;
         }
         .header-top-row {
             display: flex;
@@ -57,7 +57,7 @@
             width: 100%;
         }
         .game-title {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: bold;
             color: var(--accent-color, #ffd700);
             text-shadow: 0 2px 4px rgba(0,0,0,0.5);
@@ -83,31 +83,28 @@
             justify-content: flex-end;
         }
 
-        /* Subtiele Home Link (Huisje) */
         .home-link {
             color: var(--accent-color, #ffd700);
             text-decoration: none;
-            font-size: 1.1rem;
+            font-size: 1rem;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 2px 4px;
             transition: transform 0.2s;
         }
-        .home-link:hover {
-            transform: scale(1.1);
-        }
+        .home-link:hover { transform: scale(1.1); }
 
         select, option {
             background: #14213d !important;
             color: #ffd700 !important;
             border: 1px solid var(--border-color, #d4af37);
-            padding: 4px;
+            padding: 3px 4px;
             border-radius: 6px;
             font-weight: bold;
             cursor: pointer;
             max-width: 140px;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             text-overflow: ellipsis;
         }
         option:disabled {
@@ -119,91 +116,52 @@
             color: #ffd700;
             border: 1px solid var(--border-color, #d4af37);
             border-radius: 6px;
-            padding: 3px 6px;
+            padding: 2px 5px;
             cursor: pointer;
             font-weight: bold;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
         }
         .icon-btn:hover { background: #243b55; }
 
-    /* Media query voor smalle telefoons */
-    @media (max-width: 600px) {
-        .header-panel {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            padding: 4px 6px;
-        }
-        .header-top-row {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-        .game-title-container {
-            text-align: center;
-            width: 100%;
-        }
-        .game-title {
-            font-size: 0.95rem;
-        }
-        .header-bottom-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            width: 100%;
-        }
-        .header-left {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .header-right {
-            display: flex;
-            gap: 4px;
-            align-items: center;
-        }
-        .home-link {
-            display: flex; /* Zorgt ervoor dat het huisje nu wél zichtbaar is op mobiel! */
-            font-size: 1rem;
-        }
-        .header-right .icon-btn {
-            padding: 3px 5px;
-            font-size: 0.7rem;
-        }
-    }
         /* Stats Dashboard */
         .stats-bar {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
-            gap: 6px;
+            gap: 4px;
             background: #080c14;
             border: 2px inset #243b55;
-            padding: 6px;
+            padding: 4px;
             border-radius: 8px;
             text-align: center;
         }
         .stat-box {
             background: rgba(255,255,255,0.03);
             border-radius: 4px;
-            padding: 4px;
+            padding: 2px 4px;
             display: flex;
             flex-direction: column;
-            justify-content: center;
+            justify-content: space-between;
+            min-height: 40px;
         }
         .stat-box .label {
-            font-size: 0.65rem;
+            font-size: 0.58rem;
             color: #8a99ad;
             text-transform: uppercase;
+            line-height: 1;
+            min-height: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .stat-box .value {
-            font-size: 0.95rem;
+            font-size: 0.85rem;
             font-weight: bold;
             color: #00ffcc;
             text-shadow: 0 0 8px rgba(0,255,204,0.4);
             white-space: nowrap;
         }
 
-        /* Payout Layout Zonder Scrollbalken */
+        /* Payout Layout */
         .payout-wrapper {
             display: flex;
             width: 100%;
@@ -226,11 +184,7 @@
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-        .payout-table-container::-webkit-scrollbar {
-            display: none !important;
-            width: 0 !important;
-            height: 0 !important;
-        }
+        .payout-table-container::-webkit-scrollbar { display: none !important; }
 
         table {
             width: 100%;
@@ -242,17 +196,14 @@
         th, td {
             padding: 2px 4px;
             border-bottom: 1px solid #1c2e4a;
-            height: 22px;
+            height: 20px;
         }
         th {
             background: #14213d;
             color: var(--accent-color, #ffd700);
             text-align: center;
         }
-        .payout-names-container th {
-            text-align: left;
-            padding-left: 6px;
-        }
+        .payout-names-container th { text-align: left; padding-left: 6px; }
         td:not(:first-child), th:not(:first-child) {
             text-align: center;
             min-width: 45px;
@@ -271,21 +222,46 @@
             100% { background-color: rgba(255, 215, 0, 0.5); }
         }
 
-        /* Cards Area & Losse Kaart Afbeeldingen */
+        /* Message Box */
+        .message-box {
+            background: #000;
+            color: #00ffcc;
+            font-family: monospace;
+            font-size: 0.8rem;
+            text-align: center;
+            padding: 3px;
+            border-radius: 6px;
+            border: 1px solid #1e3a5f;
+            min-height: 24px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            margin: 1px 0;
+        }
+        .message-box.win-glow {
+            border-color: #ffd700;
+            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
+            color: #ffd700;
+            font-weight: bold;
+        }
+
+        /* Cards Area */
         .cards-area {
             display: flex;
             justify-content: center;
             gap: 4px;
-            margin: 2px 0;
+            margin: 1px 0;
             perspective: 1000px;
         }
         .card-container {
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             flex: 1;
-            max-width: 130px;
+            max-width: 125px;
         }
         .card-flipper {
             width: 100%;
@@ -296,9 +272,7 @@
             border-radius: 6px;
             cursor: pointer;
         }
-        .card-flipper.flipped {
-            transform: rotateY(180deg);
-        }
+        .card-flipper.flipped { transform: rotateY(180deg); }
         .card-front, .card-back {
             position: absolute;
             width: 100%;
@@ -309,7 +283,6 @@
             box-shadow: 0 4px 8px rgba(0,0,0,0.6);
             box-sizing: border-box;
         }
-        
         .card-front {
             background-color: #fff;
             transform: rotateY(180deg);
@@ -318,7 +291,6 @@
             background-position: center;
             background-repeat: no-repeat;
         }
-
         .card-back {
             background-image: var(--card-bg, url('kaart.jpg'));
             background-size: cover;
@@ -326,9 +298,8 @@
             border: 2px solid #ffffff;
             border-radius: 6px;
         }
-
         .card-container.held .card-flipper {
-            transform: rotateY(180deg) translateY(-8px);
+            transform: rotateY(180deg) translateY(-6px);
         }
 
         /* Hold Knoppen */
@@ -340,15 +311,15 @@
         }
         .hold-btn {
             width: 100%;
-            padding: 5px 0;
+            padding: 4px 0;
             background: linear-gradient(to bottom, #3b4252, #2e3440);
             color: #d8dee9;
             border: 1px solid #4c566a;
             border-radius: 5px;
             font-weight: bold;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             cursor: pointer;
-            box-shadow: 0 3px 5px rgba(0,0,0,0.4);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.4);
         }
         .hold-btn.held-state {
             background: linear-gradient(to bottom, #d08770, #bf616a);
@@ -357,8 +328,8 @@
             box-shadow: 0 0 8px #bf616a;
         }
         .led-indicator {
-            width: 7px;
-            height: 7px;
+            width: 6px;
+            height: 6px;
             background: #4c566a;
             border-radius: 50%;
             margin-bottom: 2px;
@@ -372,17 +343,17 @@
         /* Actieknoppen */
         .action-bar {
             display: flex;
-            gap: 10px;
+            gap: 8px;
             justify-content: center;
         }
         .main-action-btn {
             flex: 2;
-            padding: 8px;
+            padding: 7px;
             background: var(--btn-main-bg, linear-gradient(to bottom, #f6d365 0%, #fda085 100%));
             color: #1a1a1a;
             border: 2px solid #fff;
             border-radius: 8px;
-            font-size: 1rem;
+            font-size: 0.95rem;
             font-weight: 900;
             cursor: pointer;
             box-shadow: 0 4px 8px rgba(0,0,0,0.5);
@@ -397,7 +368,6 @@
             0% { box-shadow: 0 0 5px #e74c3c; }
             100% { box-shadow: 0 0 15px #e74c3c; }
         }
-
         .single-bet-btn {
             flex: 1;
             background: var(--btn-bet-bg, linear-gradient(to bottom, #4a69bd, #1e3799));
@@ -405,34 +375,11 @@
             border: 1px solid #6a89cc;
             border-radius: 8px;
             font-weight: bold;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             cursor: pointer;
         }
 
-        .message-box {
-            background: #000;
-            color: #00ffcc;
-            font-family: monospace;
-            font-size: 0.85rem;
-            text-align: center;
-            padding: 6px;
-            border-radius: 6px;
-            border: 1px solid #1e3a5f;
-            min-height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: 1px;
-            text-transform: uppercase;
-        }
-        .message-box.win-glow {
-            border-color: #ffd700;
-            box-shadow: 0 0 10px rgba(255, 215, 0, 0.6);
-            color: #ffd700;
-            font-weight: bold;
-        }
-
-        /* Pop-up Uitleg Modal */
+        /* Pop-up Modal */
         .modal-overlay {
             position: fixed;
             top: 0; left: 0; width: 100vw; height: 100vh;
@@ -482,10 +429,28 @@
         }
         .overlay-notice h2 { color: #ff6b6b; margin: 0; }
 
+        /* SPECIFIEKE MEDIA QUERY VOOR MOBIEL */
+        @media (max-width: 600px) {
+            .cabinet { padding: 4px; gap: 3px; }
+            .header-panel { padding: 3px 5px; gap: 2px; }
+            .game-title { font-size: 0.9rem; }
+            .home-link { display: flex; font-size: 0.9rem; }
+            .header-right .icon-btn { padding: 2px 4px; font-size: 0.65rem; }
+            
+            /* Payout wrapper strak getrokken voor mobiel */
+            .payout-wrapper {
+                flex: 0 0 auto;
+                max-height: 220px;
+            }
+            .payout-names-container { flex: 0 0 42%; }
+            table { font-size: 0.62rem; }
+            th, td { height: 16px; padding: 1px 2px; }
+            td:not(:first-child), th:not(:first-child) { min-width: 32px; }
+        }
         @media (min-width: 768px) {
             .payout-names-container { flex: 0 0 25%; }
-            table { font-size: 0.8rem; }
-            th, td { height: 26px; }
+            table { font-size: 0.72rem; }
+            th, td { height: 21px; padding: 2px 3px; }
         }
     </style>
 </head>
@@ -558,33 +523,33 @@
         </div>
     </div>
 
+    <!-- Meldingsbalk -->
+    <div class="message-box" id="message-box"></div>
+
     <!-- Cards Area -->
     <div class="cards-area" id="cards-area"></div>
 
-    <!-- Actieknoppen & Zwarte Meldingsbalk -->
+    <!-- Actieknoppen -->
     <div class="action-bar">
         <button class="single-bet-btn" id="bet-cycle-btn" onclick="cycleBet()">BET (1x)</button>
         <button class="main-action-btn" id="action-btn" onclick="handleMainActionClick()" onmousedown="startAutoSpinTimer()" onmouseup="clearAutoSpinTimer()" ontouchstart="startAutoSpinTimer()" ontouchend="clearAutoSpinTimer()">SPIN</button>
     </div>
-
-    <div class="message-box" id="message-box"></div>
 </div>
 
-<!-- Pop-up Uitleg Modal -->
+<!-- Pop-up Modal -->
 <div class="modal-overlay" id="info-modal">
     <div class="modal-content">
         <button class="modal-close-btn" onclick="closeInfoModal()">Sluiten</button>
         <h3>Speluitleg & Regels</h3>
         <p><strong>De 4 Keuzespellen:</strong></p>
         <ul>
-            <li><strong>Jacks or Better:</strong> Klassiek poker. Uitbetaling vanaf een paar Boeren of hoger.</li>
-            <li><strong>Deuces Wild:</strong> Alle 2'en tellen als Wild-kaart (vervanger).</li>
-            <li><strong>Joker Poker:</strong> Wordt gespeeld met 53 kaarten inclusief 1 Joker.</li>
-            <li><strong>Tens or Better:</strong> Uitbetaling start al vanaf een paar 10'en.</li>
+            <li><strong>Jacks or Better:</strong> Uitbetaling vanaf een paar Boeren of hoger.</li>
+            <li><strong>Deuces Wild:</strong> Alle 2'en tellen als Wild-kaart.</li>
+            <li><strong>Joker Poker:</strong> Gespeeld met 53 kaarten inclusief Joker.</li>
+            <li><strong>Tens or Better:</strong> Uitbetaling vanaf een paar 10'en.</li>
         </ul>
-        <p><strong>Gratis Bonus:</strong> Om het uur ontvang je automatisch 100 gratis credits!</p>
-        <p><strong>Automatische Demotie (Terugval):</strong> Zodra je credits onder de helft van het doel van de huidige tafel zakken (bijv. onder 1.000 punten op Tafel 1 of onder 5.000 punten op Tafel 2), springt de kast automatisch terug naar Tafel 1 om weer op te bouwen.</p>
-        <p><strong>Inzetranges:</strong> Tafel 1 (max 5x), Tafel 2 (max 10x), Tafel 3 (5x tot 20x), Tafel 4 (5x tot 30x).</p>
+        <p><strong>Gratis Bonus:</strong> Om het uur +100 gratis credits zolang je saldo onder 500 is!</p>
+        <p><strong>Automatische Demotie:</strong> Zakt je saldo onder 1.000 credits, dan val je terug naar Tafel 1.</p>
     </div>
 </div>
 
@@ -682,6 +647,7 @@
     let held = [false, false, false, false, false];
     let currentMode = 'jacks';
     let lastWinningIndex = -1;
+    let lastWinAmount = localStorage.getItem('poker_last_win') !== null ? parseInt(localStorage.getItem('poker_last_win'), 10) : 0;
 
     let cycleMeter = parseInt(localStorage.getItem('poker_cycle_meter') || '0', 10);
     let isAutoSpinActive = false;
@@ -694,19 +660,31 @@
     const values = ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
 
     window.onload = function() {
+        preloadCardBacks();
         applyTheme();
+        checkTableUnlock();
         updateTableSelectDropdowns();
         buildPayoutTable();
         initEmptyCards();
         checkAndRestoreTimer();
+        document.getElementById('win-display').innerText = lastWinAmount;
         updateUI();
     };
+
+    function preloadCardBacks() {
+        for (let i = 1; i <= 4; i++) {
+            let img = new Image();
+            let bgUrl = tablesConfig[i].cardBg.replace(/url\(['"]?([^'"]+)['"]?\)/, '$1');
+            img.src = bgUrl;
+        }
+    }
 
     function saveGameState() {
         localStorage.setItem('poker_credits', credits);
         localStorage.setItem('poker_table', currentTable);
         localStorage.setItem('poker_unlocked', unlockedTable);
         localStorage.setItem('poker_cycle_meter', cycleMeter);
+        localStorage.setItem('poker_last_win', lastWinAmount);
     }
 
     function applyTheme() {
@@ -724,7 +702,8 @@
     }
 
     function updateTableSelectDropdowns() {
-        document.getElementById('table-select').value = currentTable;
+        let selectEl = document.getElementById('table-select');
+        selectEl.value = currentTable;
         for (let i = 2; i <= 4; i++) {
             let opt = document.getElementById(`opt-t${i}`);
             let maxB = tablesConfig[i].bets[tablesConfig[i].bets.length - 1];
@@ -740,15 +719,14 @@
     }
 
     function checkTableUnlock() {
-        let cfg = tablesConfig[currentTable];
-        if (currentTable < 4 && credits >= cfg.goal && unlockedTable <= currentTable) {
-            unlockedTable = currentTable + 1;
-            saveGameState();
-            updateTableSelectDropdowns();
-        }
+        if (credits >= 2000 && unlockedTable < 2) unlockedTable = 2;
+        if (credits >= 10000 && unlockedTable < 3) unlockedTable = 3;
+        if (credits >= 25000 && unlockedTable < 4) unlockedTable = 4;
 
-        let dropThreshold = Math.floor(cfg.goal / 2);
-        if (currentTable > 1 && credits < dropThreshold) {
+        saveGameState();
+        updateTableSelectDropdowns();
+
+        if (currentTable > 1 && credits < 1000) {
             currentTable = 1;
             currentBetIndex = 0;
             currentBet = tablesConfig[1].bets[0];
@@ -787,8 +765,11 @@
             let timeLeft = Math.floor((targetTime - now) / 1000);
 
             if (timeLeft <= 0) {
-                credits += 100;
-                saveGameState();
+                if (credits < 500) {
+                    credits += 100;
+                    saveGameState();
+                    flashStatusBox('+100 CREDITS BONUS');
+                }
                 timerSeconds = 3600;
                 setNewTimerTarget(timerSeconds);
             } else {
@@ -810,12 +791,14 @@
         timerInterval = setInterval(() => {
             timerSeconds--;
             if (timerSeconds <= 0) {
-                credits += 100;
-                saveGameState();
+                if (credits < 500) {
+                    credits += 100;
+                    saveGameState();
+                    updateUI();
+                    flashStatusBox('+100 CREDITS BONUS');
+                    playSound('win');
+                }
                 timerSeconds = 3600;
-                updateUI();
-                flashStatusBox('+100 CREDITS BONUS');
-                playSound('win');
             }
             setNewTimerTarget(timerSeconds);
             updateTimerDisplay();
@@ -861,11 +844,11 @@
         const tbody = document.getElementById('payout-table-body');
         const namesBody = document.getElementById('payout-names-body');
         
-        let bets = tablesConfig[currentTable].bets;
-        currentBet = bets[currentBetIndex] || bets[0];
-        
+        let allBets = tablesConfig[currentTable].bets;
+        if (!allBets.includes(currentBet)) currentBet = allBets[0];
+
         let headerHtml = '';
-        bets.forEach(b => {
+        allBets.forEach(b => {
             headerHtml += `<th id="col-h${b}">${b}x</th>`;
         });
         theadRow.innerHTML = headerHtml;
@@ -887,12 +870,14 @@
             let trVal = document.createElement('tr');
             trVal.id = `payout-row-${idx}`;
 
-            bets.forEach(b => {
+            allBets.forEach(b => {
                 let td = document.createElement('td');
                 td.id = `payout-${idx}-${b}`;
                 
                 let payVal = basePay * b;
-                if (b === bets[bets.length - 1] && name.includes('Royal Flush')) payVal = basePay * b * 2;
+                if (b === allBets[allBets.length - 1] && name.includes('Royal Flush')) {
+                    payVal = (basePay * b) + 500;
+                }
                 td.innerText = payVal;
 
                 if (b === currentBet) td.classList.add('active-col');
@@ -1010,7 +995,7 @@
             credits -= currentBet;
             cycleMeter += currentBet;
             saveGameState();
-            document.getElementById('win-display').innerText = '0';
+            
             clearWinningHighlight();
             clearStatusBox();
             createDeck();
@@ -1085,9 +1070,7 @@
     }
 
     function getCardFileName(c) {
-        if (c.val === 'JOKER') {
-            return 'cards/red_joker.png';
-        }
+        if (c.val === 'JOKER') return 'cards/red_joker.png';
 
         let suitName = '';
         if (c.suit === '♣') suitName = 'clubs';
@@ -1199,18 +1182,32 @@
     }
 
     function applyAutoHoldCards(handName) {
-        let valueCounts = {};
         let suitCounts = {};
+        hand.forEach((c, idx) => {
+            if (c.val !== 'JOKER') {
+                let s = c.suit;
+                if (!suitCounts[s]) suitCounts[s] = [];
+                suitCounts[s].push(idx);
+            }
+        });
 
+        let flushDrawSuit = Object.keys(suitCounts).find(s => suitCounts[s].length === 4);
+        if (flushDrawSuit) {
+            suitCounts[flushDrawSuit].forEach(idx => setHoldState(idx, true));
+            return; 
+        }
+
+        if (handName.includes('Flush') || handName.includes('Straight') || handName.includes('Royal') || handName.includes('Full House')) {
+            for (let i = 0; i < 5; i++) setHoldState(i, true);
+            return;
+        }
+
+        let valueCounts = {};
         hand.forEach((c, idx) => {
             if (c.val !== 'JOKER') {
                 let v = c.val;
                 if (!valueCounts[v]) valueCounts[v] = [];
                 valueCounts[v].push(idx);
-
-                let s = c.suit;
-                if (!suitCounts[s]) suitCounts[s] = [];
-                suitCounts[s].push(idx);
             }
         });
 
@@ -1220,17 +1217,6 @@
                 indices.forEach(idx => setHoldState(idx, true));
             }
         });
-
-        Object.keys(suitCounts).forEach(s => {
-            let indices = suitCounts[s];
-            if (indices.length >= 4) {
-                indices.forEach(idx => setHoldState(idx, true));
-            }
-        });
-
-        if (handName.includes('Flush') || handName.includes('Straight') || handName.includes('Royal')) {
-            for (let i = 0; i < 5; i++) setHoldState(i, true);
-        }
     }
 
     function evaluateHand() {
@@ -1241,23 +1227,25 @@
         let payoutMultiplier = 0;
         let matchedRowIdx = -1;
 
-        let bets = tablesConfig[currentTable].bets;
-        let maxB = bets[bets.length - 1];
+        let displayBets = tablesConfig[currentTable].bets;
+        let maxB = displayBets[displayBets.length - 1];
 
         modeData.names.forEach((name, idx) => {
             if (name === result.name) {
                 let basePay = modeData.basePays[idx];
                 payoutMultiplier = basePay * currentBet;
-                if (currentBet === maxB && name.includes('Royal Flush')) payoutMultiplier = basePay * currentBet * 2;
+                if (currentBet === maxB && name.includes('Royal Flush')) {
+                    payoutMultiplier = (basePay * currentBet) + 500;
+                }
                 matchedRowIdx = idx;
             }
         });
 
         if (payoutMultiplier > 0) {
             credits += payoutMultiplier;
-            cycleMeter = Math.max(0, cycleMeter - Math.floor(payoutMultiplier / 2));
+            lastWinAmount = payoutMultiplier;
             saveGameState();
-            document.getElementById('win-display').innerText = payoutMultiplier;
+            document.getElementById('win-display').innerText = lastWinAmount;
             flashStatusBox(`WINNER! +${payoutMultiplier}`);
             playSound('win');
             
@@ -1372,10 +1360,18 @@
         if (nums.length === 0) return true;
         let uniqueNums = [...new Set(nums)];
         if (uniqueNums.length !== nums.length) return false;
+        
         let min = Math.min(...nums);
         let max = Math.max(...nums);
         if (max - min <= 4) return true;
-        if (JSON.stringify(nums.sort()) === JSON.stringify([2,3,4,5,14])) return true;
+
+        if (nums.includes(14)) {
+            let aceLowNums = nums.map(n => n === 14 ? 1 : n).sort((a,b) => a-b);
+            let minLow = Math.min(...aceLowNums);
+            let maxLow = Math.max(...aceLowNums);
+            if (maxLow - minLow <= 4) return true;
+        }
+
         return false;
     }
 
