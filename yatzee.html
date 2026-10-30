@@ -97,7 +97,16 @@
             text-align: center;
         }
 
-        /* Handmatige speler-wissel pijltjesknop */
+.dice-icon {
+    font-size: 32px;
+    position: absolute;
+    left: 95px;             /* DIT IS DE AFSTAND: exact gemeten vanaf de linkerkant van de cel! */
+    top: 46%;
+    transform: translateY(-50%);
+    width: 30px;
+    text-align: center;
+}   
+     /* Handmatige speler-wissel pijltjesknop */
         .player-switch-btn {
             background: #27ae60;
             color: white;
@@ -129,7 +138,26 @@
             background-color: #c9302c;
         }
 
-        /* Totaal-vakje in de rechterhoek van de zwarte bovenbalk */
+        /* Beurtenteller en Totaal-vakje in de zwarte bovenbalk */
+        .header-right-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .turn-counter-box {
+            background: #222;
+            color: #3498db;
+            border: 2px solid #444;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
         .global-total-box {
             background: #222;
             color: #f1c40f;
@@ -168,6 +196,7 @@
             font-size: 18px;
             font-weight: bold;
             padding: 0 5px;
+            position: relative;
         }
 
         /* Vaste linker kolom (Sticky) */
@@ -196,6 +225,24 @@
             font-size: 11px;
             color: #555;
             font-weight: normal;
+        }
+
+        /* Duidelijke grote diagonale schuine streep over hele cel */
+        .big-slash {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .big-slash::before {
+            content: "";
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 50%;
+            width: 3px;
+            background-color: #000;
+            transform: translateX(-50%) rotate(-45deg);
         }
 
         /* Sectiekoppen (Deel 1 & Deel 2) */
@@ -530,19 +577,28 @@
             .header-title {
                 font-size: 18px;
                 position: absolute;
-                left: 54%;
+                left: 51%;
                 transform: translateX(-50%);
                 top: 8px;
                 letter-spacing: 0.5px;
             }
 
-            .global-total-box {
-                font-size: 14px;
-                padding: 3px 6px;
-                min-width: 55px;
+            .header-right-group {
                 position: absolute;
                 top: 6px;
                 right: 8px;
+                gap: 4px;
+            }
+
+            .turn-counter-box {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
+
+            .global-total-box {
+                font-size: 14px;
+                padding: 3px 6px;
+                min-width: 50px;
             }
 
             .player-name-container {
@@ -651,7 +707,7 @@
 <body>
 
 <div class="container">
-    <!-- Zwarte bovenbalk met knoppen, Spelernaam, Handmatig Pijltje, Nieuw Spel knop en Totaal-vakje rechtsboven -->
+    <!-- Zwarte bovenbalk met knoppen, Spelernaam, Handmatig Pijltje, Nieuw Spel knop, Beurtenteller en Totaal-vakje -->
     <div class="header-bar">
         <div class="header-left">
             <a href="index.html" class="nav-btn" title="Naar Hoofddashboard">🏠</a>
@@ -664,7 +720,10 @@
             <button class="player-switch-btn" onclick="nextPlayerManually()" title="Naar volgende speler">➔</button>
             <button class="btn-reset-top" onclick="confirmReset()">Nieuw Spel</button>
         </div>
-        <div id="global-total-display" class="global-total-box" title="Totaalscore van actieve speler">-</div>
+        <div class="header-right-group">
+            <div id="turn-counter-display" class="turn-counter-box" title="Aantal gespeelde beurten">Beurt: 0</div>
+            <div id="global-total-display" class="global-total-box" title="Totaalscore van actieve speler">-</div>
+        </div>
     </div>
 
     <!-- Scoreblad Deel 1 -->
@@ -714,7 +773,16 @@
     </div>
 </div>
 
-<!-- Cijfertoetsenbord Overlay -->
+<!-- Keuzemenu / Pop-up Overlay (voor compacte keuzes & vaste combinaties met schuine streep) -->
+<div id="choice-popup-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'choice-popup-overlay')">
+    <div class="keypad" style="width: 300px; text-align: center;">
+        <h3 id="popup-title" style="margin-bottom: 12px; font-size: 18px;">Maak je keuze</h3>
+        <div id="popup-buttons-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;"></div>
+        <button class="key-btn action" style="width: 100%;" onclick="closeChoicePopup()">Annuleren</button>
+    </div>
+</div>
+
+<!-- Cijfertoetsenbord Overlay (voor vrije som-categorieën zoals Three/Four of a kind en Kans) -->
 <div id="keypad-overlay" class="overlay" onclick="handleOverlayClick(event, 'keypad-overlay')">
     <div class="keypad">
         <div id="keypad-display" class="keypad-display"></div>
@@ -730,7 +798,8 @@
             <button class="key-btn" onclick="pressKey('9')">9</button>
             <button class="key-btn action" onclick="pressKey('CLEAR')">Wis</button>
             <button class="key-btn" onclick="pressKey('0')">0</button>
-            <button class="key-btn enter" onclick="pressKey('ENTER')">Enter ↵</button>
+            <button class="key-btn action" onclick="pressKey('/')">/</button>
+            <button class="key-btn enter" onclick="pressKey('ENTER')" style="grid-column: span 3;">Enter ↵</button>
         </div>
     </div>
 </div>
@@ -784,19 +853,14 @@
     const numGames = 6;
     let diceModeActive = false;
 
-    const maxLimits = {
-        'd1_0': 4, 'd1_1': 8, 'd1_2': 12, 'd1_3': 16, 'd1_4': 20, 'd1_5': 24,
-        'd2_0': 30, 'd2_1': 30, 'd2_6': 30
-    };
-
     const rowsPart1 = [
         { type: 'header', title: 'deel 1' },
-        { type: 'score', id: 'd1_0', name: 'enen', sub: 'tel alle enen op', val: 1 },
-        { type: 'score', id: 'd1_1', name: 'tweeën', sub: 'tel alle tweeën op', val: 2 },
-        { type: 'score', id: 'd1_2', name: 'drieën', sub: 'tel alle drieën op', val: 3 },
-        { type: 'score', id: 'd1_3', name: 'vieren', sub: 'tel alle vieren op', val: 4 },
-        { type: 'score', id: 'd1_4', name: 'vijven', sub: 'tel alle vijven op', val: 5 },
-        { type: 'score', id: 'd1_5', name: 'zessen', sub: 'tel alle zessen op', val: 6 },
+        { type: 'score', id: 'd1_0', name: 'enen <span class="dice-icon">⚀</span>', sub: 'tel alle enen op', val: 1 },
+        { type: 'score', id: 'd1_1', name: 'tweeën <span class="dice-icon">⚁</span>', sub: 'tel alle tweeën op', val: 2 },
+        { type: 'score', id: 'd1_2', name: 'drieën <span class="dice-icon">⚂</span>', sub: 'tel alle drieën op', val: 3 },
+        { type: 'score', id: 'd1_3', name: 'vieren <span class="dice-icon">⚃</span>', sub: 'tel alle vieren op', val: 4 },
+        { type: 'score', id: 'd1_4', name: 'vijven <span class="dice-icon">⚄</span>', sub: 'tel alle vijven op', val: 5 },
+        { type: 'score', id: 'd1_5', name: 'zessen <span class="dice-icon">⚅</span>', sub: 'tel alle zessen op', val: 6 },
         { type: 'total', id: 'totaal_p1', name: 'totaal aantal punten ➔', sub: '' },
         { type: 'total', id: 'bonus', name: 'extra bonus', sub: 'als puntentotaal 63 of meer is' },
         { type: 'total', id: 'totaal_boven', name: 'totaal van de bovenste helft ➔', sub: '' }
@@ -806,17 +870,17 @@
         { type: 'header', title: 'deel 2' },
         { type: 'score', id: 'd2_0', name: 'three of a kind', sub: 'totaal v.d. 5 stenen' },
         { type: 'score', id: 'd2_1', name: 'carré', sub: 'totaal v.d. 5 stenen' },
-        { type: 'score', id: 'd2_2', name: 'full house', sub: '25 punten' },
-        { type: 'score', id: 'd2_3', name: 'kleine straat', sub: '30 punten' },
-        { type: 'score', id: 'd2_4', name: 'grote straat', sub: '40 punten' },
-        { type: 'score', id: 'd2_5', name: 'yatzee', sub: '50 punten' },
+        { type: 'score', id: 'd2_2', name: 'full house', sub: '25 punten', fixed: 25 },
+        { type: 'score', id: 'd2_3', name: 'kleine straat', sub: '30 punten', fixed: 30 },
+        { type: 'score', id: 'd2_4', name: 'grote straat', sub: '40 punten', fixed: 40 },
+        { type: 'score', id: 'd2_5', name: 'yatzee', sub: '50 punten', fixed: 50 },
         { type: 'score', id: 'd2_6', name: 'kans', sub: 'totaal v.d. 5 stenen' },
         { type: 'total', id: 'totaal_d2', name: 'totaal deel 2 ➔', sub: '' },
         { type: 'total', id: 'totaal_d1_copy', name: 'totaal deel 1 ➔', sub: '' },
         { type: 'total', id: 'eindtotaal', name: 'totaal ➔', sub: '' }
     ];
 
-    // Multi-player status (elke speler heeft ook een 'hasSubmittedThisTurn' vlag)
+    // Multi-player status
     let players = [
         { name: 'Speler 1', scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
     ];
@@ -1053,14 +1117,14 @@
         const isFilled = p.scores[uniqueKey] !== undefined;
         const isLastAction = (uniqueKey === p.lastActionKey);
 
-        // 1. Als de cel al gevuld is en het is de laatst ingevulde score: toestaan om te wissen
+        // 1. Wissen als het de laatst ingevulde score is
         if (isFilled) {
             if (isLastAction) {
                 const currentVal = p.scores[uniqueKey];
-                if (confirm(`Wil je de score van ${currentVal} wissen?`)) {
+                if (confirm(`Wil je de score van ${currentVal === '/' ? 'schuine streep' : currentVal} wissen?`)) {
                     delete p.scores[uniqueKey];
                     p.lastActionKey = null;
-                    p.hasSubmittedThisTurn = false; // Vrijgave zodat er weer gespeeld/gegooid mag worden
+                    p.hasSubmittedThisTurn = false;
 
                     if (p.lastRoll) {
                         lastActiveRoll = [...p.lastRoll];
@@ -1078,13 +1142,13 @@
             return;
         }
 
-        // 2. Als de speler deze beurt al iets heeft ingevuld, blokkeer nieuwe invoer op dit blad tot overschakelen of wissen
-        if (p.hasSubmittedThisTurn) {
+        // 2. Blokkeer alleen als er méér dan 1 speler ingesteld is EN er al gegooid/ingevuld is
+        if (players.length > 1 && p.hasSubmittedThisTurn) {
             alert("Je hebt deze beurt al een score ingevuld! Wis deze eerst als je wilt wijzigen, of klik op het pijltje ➔ om naar de volgende speler te gaan.");
             return;
         }
 
-        // 3. Digitale dobbelsteen modus invullen (Direct op 1e klik)
+        // 3. Digitale dobbelsteen modus
         if (diceModeActive) {
             let activeDice = lastActiveRoll;
             if (rollCount > 0) {
@@ -1097,46 +1161,114 @@
             }
 
             let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
+            openDigitalChoicePopup(colIndex, rowId, calculatedScore);
+            return;
+        }
 
-            if (calculatedScore === 0) {
-                alert("Deze worp geeft 0 punten voor dit vakje. Misklikken voorkómen: er is niks ingevuld.");
-                return;
+        // 4. Fysieke modus - Open compact pop-up keuzescherm
+        openPhysicalChoicePopup(colIndex, rowId, rowObj);
+    }
+
+    function openPhysicalChoicePopup(colIndex, rowId, rowObj) {
+        activeTarget = { colIndex, rowId };
+        const container = document.getElementById('popup-buttons-container');
+        container.innerHTML = '';
+        document.getElementById('popup-title').innerText = `Kies voor: ${rowObj.name}`;
+
+        let choices = [];
+
+        // Bovenste helft (Enen t/m Zessen) -> veelvouden van 1 tot 4 stenen
+        if (rowObj.val !== undefined) {
+            const v = rowObj.val;
+            choices = [v, v*2, v*3, v*4];
+        }
+        // Vaste combinaties (Full House, Straats, Yatzee) -> vaste punten
+        else if (rowObj.fixed !== undefined) {
+            choices = [rowObj.fixed];
+        }
+        // Vrije categorieën (Three/Four of a kind, Kans) -> open volledige toetsenbord via keypad
+        else {
+            openKeypad(colIndex, rowId);
+            return;
+        }
+
+        // Maak knoppen aan voor elke waarde
+        choices.forEach(val => {
+            const btn = document.createElement('button');
+            btn.className = 'key-btn';
+            btn.style.background = '#e2e8f0';
+            btn.innerText = val;
+            btn.onclick = () => submitChoice(val);
+            container.appendChild(btn);
+        });
+
+        // Altijd de schuine streep knop erbij
+        const slashBtn = document.createElement('button');
+        slashBtn.className = 'key-btn action';
+        slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
+        slashBtn.onclick = () => submitChoice('/');
+        container.appendChild(slashBtn);
+
+        document.getElementById('choice-popup-overlay').style.display = 'flex';
+    }
+
+    function openDigitalChoicePopup(colIndex, rowId, calculatedScore) {
+        activeTarget = { colIndex, rowId };
+        const container = document.getElementById('popup-buttons-container');
+        container.innerHTML = '';
+        document.getElementById('popup-title').innerText = `Digitale Worp Keuze`;
+
+        const containerBtn = document.createElement('button');
+        containerBtn.className = 'key-btn';
+        containerBtn.style.background = '#d4edda';
+        containerBtn.style.color = '#155724';
+        containerBtn.innerText = `Score invullen: ${calculatedScore}`;
+        containerBtn.onclick = () => submitChoice(calculatedScore);
+        container.appendChild(containerBtn);
+
+        const slashBtn = document.createElement('button');
+        slashBtn.className = 'key-btn action';
+        slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
+        slashBtn.onclick = () => submitChoice('/');
+        container.appendChild(slashBtn);
+
+        document.getElementById('choice-popup-overlay').style.display = 'flex';
+    }
+
+    function submitChoice(val) {
+        const p = players[currentPlayerIndex];
+        const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
+
+        if (val === '/') {
+            p.scores[uniqueKey] = '/';
+        } else {
+            p.scores[uniqueKey] = parseInt(val, 10);
+        }
+
+        p.lastActionKey = uniqueKey;
+        if (diceModeActive && lastActiveRoll) {
+            p.lastRoll = [...lastActiveRoll];
+        }
+
+        // Bij 1 speler resetten we direct de status zodat je meteen de volgende beurt mag gooien/invullen
+        if (players.length === 1) {
+            p.hasSubmittedThisTurn = false;
+            resetForNextTurn();
+        } else {
+            p.hasSubmittedThisTurn = true;
+            if (diceModeActive) {
+                endTurn("Wissel van speler ➔");
             }
-
-            p.scores[uniqueKey] = calculatedScore;
-            p.lastActionKey = uniqueKey;
-            p.lastRoll = [...activeDice];
-            lastActiveRoll = [...activeDice];
-            p.hasSubmittedThisTurn = true; // Vergrendel tot volgende speler of wissen
-
-            saveToStorage();
-            updateDisplay();
-            endTurn("Wissel van speler ➔)");
-            return;
         }
 
-        // 4. Klassieke modus vaste waardes (full house, straats, yatzee)
-        if (['d2_2', 'd2_3', 'd2_4'].includes(rowId)) {
-            const fixedValues = { 'd2_2': 25, 'd2_3': 30, 'd2_4': 40 };
-            p.scores[uniqueKey] = fixedValues[rowId];
-            p.lastActionKey = uniqueKey;
-            p.hasSubmittedThisTurn = true;
-            saveToStorage();
-            updateDisplay();
-            return;
-        }
+        saveToStorage();
+        updateDisplay();
+        closeChoicePopup();
+    }
 
-        if (rowId === 'd2_5') {
-            p.scores[uniqueKey] = 50;
-            p.lastActionKey = uniqueKey;
-            p.hasSubmittedThisTurn = true;
-            saveToStorage();
-            updateDisplay();
-            return;
-        }
-
-        // 5. Toetsenbord openen voor overige cellen
-        openKeypad(colIndex, rowId);
+    function closeChoicePopup() {
+        document.getElementById('choice-popup-overlay').style.display = 'none';
+        activeTarget = { colIndex: null, rowId: null };
     }
 
     function calculateScoreForCategory(rowId, rowObj, diceValues) {
@@ -1173,7 +1305,7 @@
 
     function toggleLock(index) {
         const p = players[currentPlayerIndex];
-        if (p.hasSubmittedThisTurn) {
+        if (players.length > 1 && p.hasSubmittedThisTurn) {
             alert("Je hebt je score al ingevuld! Klik op het pijltje ➔ om naar de volgende speler te gaan.");
             return;
         }
@@ -1185,7 +1317,7 @@
 
     function handleRollClick() {
         const p = players[currentPlayerIndex];
-        if (p.hasSubmittedThisTurn) {
+        if (players.length > 1 && p.hasSubmittedThisTurn) {
             alert("Je hebt je score al ingevuld voor deze beurt! Klik op het pijltje ➔ om naar de volgende speler te gaan.");
             return;
         }
@@ -1197,7 +1329,7 @@
 
     function handleIn() {
         const p = players[currentPlayerIndex];
-        if (p.hasSubmittedThisTurn) return;
+        if (players.length > 1 && p.hasSubmittedThisTurn) return;
         if (isRolling || rollCount === 0 || turnEnded) return;
         endTurn("Ingezet");
     }
@@ -1326,7 +1458,7 @@
         return targetSub.every(val => array.includes(val));
     }
 
-/* --- HANDMATIGE SPELER WISSEL & SETUP --- */
+    /* --- HANDMATIGE SPELER WISSEL & SETUP --- */
     function nextPlayerManually() {
         if (players.length <= 1) {
             alert("Je speelt in je eentje. Klik op je naam als je meerdere spelers wilt instellen.");
@@ -1335,7 +1467,6 @@
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         const nextP = players[currentPlayerIndex];
 
-        // Reset beurtstatus voor de nieuwe speler
         nextP.hasSubmittedThisTurn = false;
         resetForNextTurn();
         if (nextP.lastRoll && diceModeActive) {
@@ -1458,6 +1589,7 @@
             if (overlayId === 'keypad-overlay') closeKeypad();
             if (overlayId === 'alpha-overlay') closeAlphaKeypad();
             if (overlayId === 'player-setup-overlay') document.getElementById('player-setup-overlay').style.display = 'none';
+            if (overlayId === 'choice-popup-overlay') closeChoicePopup();
         }
     }
 
@@ -1470,6 +1602,8 @@
     function pressKey(val) {
         if (val === 'CLEAR') {
             currentInputValue = '';
+        } else if (val === '/') {
+            currentInputValue = '/';
         } else if (val === 'ENTER') {
             const p = players[currentPlayerIndex];
             const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
@@ -1477,25 +1611,28 @@
                 delete p.scores[uniqueKey];
                 if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
                 p.hasSubmittedThisTurn = false;
+            } else if (currentInputValue === '/') {
+                p.scores[uniqueKey] = '/';
+                p.lastActionKey = uniqueKey;
+                p.hasSubmittedThisTurn = true;
             } else {
                 let numVal = parseInt(currentInputValue, 10);
-                
-                if (maxLimits[activeTarget.rowId] !== undefined) {
-                    const maxVal = maxLimits[activeTarget.rowId];
-                    if (numVal > maxVal) {
-                        alert(`De maximale waarde voor dit vakje is ${maxVal}!`);
-                        return;
-                    }
-                }
                 p.scores[uniqueKey] = numVal;
                 p.lastActionKey = uniqueKey;
                 p.hasSubmittedThisTurn = true;
             }
+
+            if (players.length === 1) {
+                p.hasSubmittedThisTurn = false;
+                resetForNextTurn();
+            }
+
             saveToStorage();
             updateDisplay();
             closeKeypad();
             return;
         } else {
+            if (currentInputValue === '/') currentInputValue = '';
             if (currentInputValue.length < 3) currentInputValue += val;
         }
         document.getElementById('keypad-display').innerText = currentInputValue;
@@ -1505,6 +1642,7 @@
         const p = players[currentPlayerIndex];
         const getVal = (rowId) => {
             const val = p.scores[`c${colIndex}_${rowId}`];
+            if (val === '/') return 0;
             return (val !== undefined && !isNaN(val)) ? val : 0;
         };
 
@@ -1544,7 +1682,7 @@
             let d1Total = p.scores[`c${colIndex}_totaal_d1_copy`];
             let d2Total = p.scores[`c${colIndex}_totaal_d2`];
             if (d1Total !== undefined && d2Total !== undefined) {
-                p.scores[targetKey] = d1Total + d2Total;
+                p.scores[targetKey] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
             }
         }
 
@@ -1557,17 +1695,36 @@
         if (!p) return;
 
         const allRows = [...rowsPart1, ...rowsPart2];
+        let filledCount = 0;
+
         for (let c = 0; c < numGames; c++) {
             allRows.forEach(row => {
                 if (row.type !== 'header') {
                     const uniqueKey = `c${c}_${row.id}`;
                     const cellEl = document.getElementById(`cell_${uniqueKey}`);
+                    const val = p.scores[uniqueKey];
+
                     if (cellEl) {
-                        cellEl.innerText = p.scores[uniqueKey] !== undefined ? p.scores[uniqueKey] : (row.type === 'total' ? '-' : '');
+                        if (val === '/') {
+                            cellEl.innerHTML = '<span class="big-slash"></span>';
+                            if (row.type !== 'total') filledCount++;
+                        } else if (val !== undefined) {
+                            cellEl.innerText = val;
+                            if (row.type !== 'total') filledCount++;
+                        } else {
+                            cellEl.innerText = (row.type === 'total' ? '-' : '');
+                        }
                     }
                 }
             });
         }
+
+        // Update beurtenteller in bovenbalk
+        const turnEl = document.getElementById('turn-counter-display');
+        if (turnEl) {
+            turnEl.innerText = `Beurt: ${filledCount}`;
+        }
+
         updateGlobalTotal();
     }
 
