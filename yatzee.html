@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitale Nederlandse Yatzee-scorekaart</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #000;
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        /* Zwarte bovenbalk met Home-knop */
+        .header-bar {
+            background-color: #000;
+            color: #fff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .home-btn {
+            color: #fff;
+            text-decoration: none;
+            font-size: 22px;
+            background: #222;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+        }
+
+        .player-name-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .player-name-label {
+            font-size: 16px;
+            color: #ccc;
+        }
+
+        .player-name-input {
+            background: #fff;
+            color: #000;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 150px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .dice-icons {
+            font-size: 22px;
+            letter-spacing: 5px;
+        }
+
+        /* Tabel Wrapper met horizontale scroll */
+        .score-table-wrapper {
+            overflow-x: auto;
+            max-height: calc(100vh - 170px);
+            background: #fff;
+            position: relative;
+        }
+
+        /* Echte HTML Tabel met keiharde zwarte randen op ELKE cel */
+        table.yatzee-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 800px;
+            table-layout: fixed;
+        }
+
+        table.yatzee-table th, 
+        table.yatzee-table td {
+            border: 1px solid #000 !important;
+            height: 46px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 0 5px;
+        }
+
+        /* Vaste linker kolom (Sticky) */
+        table.yatzee-table td.category-cell,
+        table.yatzee-table th.category-cell {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background-color: #fff;
+            border-right: 3px solid #000 !important;
+            text-align: left;
+            padding: 0 12px;
+            width: 250px;
+        }
+
+        .cat-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            font-size: 15px;
+            font-weight: bold;
+        }
+
+        .sub-text {
+            font-size: 11px;
+            color: #555;
+            font-weight: normal;
+        }
+
+        /* Sectiekoppen (Deel 1 & Deel 2) */
+        tr.section-header th,
+        tr.section-header td {
+            background-color: #e0e0e0 !important;
+            font-size: 16px;
+            font-weight: bold;
+            border-bottom: 2px solid #000 !important;
+            border-top: 2px solid #000 !important;
+        }
+
+        /* Totaalrijen met afwijkende achtergrond */
+        tr.total-row td,
+        tr.total-row th {
+            background-color: #f2f2f2 !important;
+            font-weight: bold;
+            border-bottom: 2px solid #000 !important;
+        }
+
+        /* Invoervakjes in de spellen */
+        td.score-cell {
+            cursor: pointer;
+            background-color: #fff;
+            transition: background 0.15s;
+        }
+
+        td.score-cell:hover {
+            background-color: #e6f2ff;
+        }
+
+        /* Actieve cel bij selectie */
+        td.active-cell {
+            background-color: #ffe680 !important;
+            box-shadow: inset 0 0 0 3px #ff9900;
+        }
+
+        /* Controls onderaan */
+        .controls-bar {
+            padding: 12px 20px;
+            background: #f0f2f5;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 2px solid #ccc;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .hint-text {
+            font-size: 14px;
+            color: #333;
+        }
+
+        .btn-reset {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            font-size: 15px;
+            font-weight: bold;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        /* Toetsenborden Overlays */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            justify-content: center;
+            align-items: flex-end;
+            padding: 15px;
+        }
+
+        .keypad {
+            background: #fff;
+            width: 290px;
+            border-radius: 12px;
+            padding: 10px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border: 2px solid #333;
+        }
+
+        .keypad-display {
+            background: #f0f2f5;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: right;
+            padding: 8px;
+            margin-bottom: 8px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+        }
+
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .key-btn {
+            background: #e9ecef;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            padding: 10px 0;
+            cursor: pointer;
+            text-align: center;
+            color: #000;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .key-btn:active { background: #cbd3da; }
+        .key-btn.action { background: #ffcccc; color: #b30000; }
+        .key-btn.enter { background: #d4edda; color: #155724; grid-column: span 2; }
+
+        .alpha-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        .alpha-grid .key-btn { font-size: 13px; padding: 8px 0; }
+        .alpha-grid .space-key { grid-column: span 3; background: #e2e8f0; }
+        .alpha-grid .clear-key { grid-column: span 2; background: #ffcccc; color: #b30000; }
+        .alpha-grid .enter-key { grid-column: span 2; background: #d4edda; color: #155724; }
+
+        /* Media Queries voor Telefoons (Compact) */
+        @media (max-width: 600px) {
+            body { padding: 2px; }
+            table.yatzee-table th, table.yatzee-table td { height: 38px; font-size: 15px; }
+            table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
+            .cat-title { font-size: 12px; }
+            .sub-text { font-size: 9px; }
+            .keypad { width: 240px; padding: 8px; }
+            .key-btn { padding: 6px 0; font-size: 15px; }
+            .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Zwarte bovenbalk met Home-knop -->
+    <div class="header-bar">
+        <div class="header-left">
+            <a href="index.html" class="home-btn" title="Naar Hoofddashboard">🏠</a>
+            <div class="header-title">YATZEE</div>
+        </div>
+        <div class="player-name-container">
+            <span class="player-name-label">Speler:</span>
+            <div id="player-name-display" class="player-name-input" onclick="openPlayerNameInput()">Naam</div>
+        </div>
+        <div class="dice-icons">🎲🎲🎲</div>
+    </div>
+
+    <!-- Scoreblad Tabel -->
+    <div class="score-table-wrapper">
+        <table class="yatzee-table">
+            <tbody id="table-body">
+                <!-- Wordt dynamisch opgebouwd in JS -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Onderste balk met reset en uitleg -->
+    <div class="controls-bar">
+        <div class="hint-text">💡 Tik op een scorevakje of de naam. Tik op een totaalvakje om te berekenen!</div>
+        <button class="btn-reset" onclick="confirmReset()">Nieuw Spel</button>
+    </div>
+</div>
+
+<!-- Cijfertoetsenbord Overlay -->
+<div id="keypad-overlay" class="overlay" onclick="handleOverlayClick(event, 'keypad-overlay')">
+    <div class="keypad">
+        <div id="keypad-display" class="keypad-display"></div>
+        <div class="keypad-grid">
+            <button class="key-btn" onclick="pressKey('1')">1</button>
+            <button class="key-btn" onclick="pressKey('2')">2</button>
+            <button class="key-btn" onclick="pressKey('3')">3</button>
+            <button class="key-btn" onclick="pressKey('4')">4</button>
+            <button class="key-btn" onclick="pressKey('5')">5</button>
+            <button class="key-btn" onclick="pressKey('6')">6</button>
+            <button class="key-btn" onclick="pressKey('7')">7</button>
+            <button class="key-btn" onclick="pressKey('8')">8</button>
+            <button class="key-btn" onclick="pressKey('9')">9</button>
+            <button class="key-btn action" onclick="pressKey('CLEAR')">Wis</button>
+            <button class="key-btn" onclick="pressKey('0')">0</button>
+            <button class="key-btn enter" onclick="pressKey('ENTER')">Enter ↵</button>
+        </div>
+    </div>
+</div>
+
+<!-- Alfabettoetsenbord Overlay voor Spelersnaam -->
+<div id="alpha-overlay" class="overlay" onclick="handleOverlayClick(event, 'alpha-overlay')">
+    <div class="keypad" style="width: 320px;">
+        <div id="alpha-display" class="keypad-display"></div>
+        <div class="alpha-grid">
+            <button class="key-btn" onclick="pressAlpha('Q')">Q</button>
+            <button class="key-btn" onclick="pressAlpha('W')">W</button>
+            <button class="key-btn" onclick="pressAlpha('E')">E</button>
+            <button class="key-btn" onclick="pressAlpha('R')">R</button>
+            <button class="key-btn" onclick="pressAlpha('T')">T</button>
+            <button class="key-btn" onclick="pressAlpha('Y')">Y</button>
+            <button class="key-btn" onclick="pressAlpha('U')">U</button>
+
+            <button class="key-btn" onclick="pressAlpha('I')">I</button>
+            <button class="key-btn" onclick="pressAlpha('O')">O</button>
+            <button class="key-btn" onclick="pressAlpha('P')">P</button>
+            <button class="key-btn" onclick="pressAlpha('A')">A</button>
+            <button class="key-btn" onclick="pressAlpha('S')">S</button>
+            <button class="key-btn" onclick="pressAlpha('D')">D</button>
+            <button class="key-btn" onclick="pressAlpha('F')">F</button>
+
+            <button class="key-btn" onclick="pressAlpha('G')">G</button>
+            <button class="key-btn" onclick="pressAlpha('H')">H</button>
+            <button class="key-btn" onclick="pressAlpha('J')">J</button>
+            <button class="key-btn" onclick="pressAlpha('K')">K</button>
+            <button class="key-btn" onclick="pressAlpha('L')">L</button>
+            <button class="key-btn" onclick="pressAlpha('Z')">Z</button>
+            <button class="key-btn" onclick="pressAlpha('X')">X</button>
+
+            <button class="key-btn" onclick="pressAlpha('C')">C</button>
+            <button class="key-btn" onclick="pressAlpha('V')">V</button>
+            <button class="key-btn" onclick="pressAlpha('B')">B</button>
+            <button class="key-btn" onclick="pressAlpha('N')">N</button>
+            <button class="key-btn" onclick="pressAlpha('M')">M</button>
+            <button class="key-btn" onclick="pressAlpha('BACKSPACE')">⌫</button>
+            <button class="key-btn space-key" onclick="pressAlpha('SPACE')">Spatie</button>
+
+            <button class="key-btn clear-key" onclick="pressAlpha('CLEAR')">Wis</button>
+            <button class="key-btn enter-key" onclick="pressAlpha('ENTER')">Enter ↵</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    const numGames = 6;
+
+    // Maximale limieten voor Deel 1 (4x waarde) én voor Three of a Kind, Carré en Kans (max 30)
+    const maxLimits = {
+        'd1_0': 4,
+        'd1_1': 8,
+        'd1_2': 12,
+        'd1_3': 16,
+        'd1_4': 20,
+        'd1_5': 24,
+        'd2_0': 30, // Three of a kind max 30
+        'd2_1': 30, // Carré max 30
+        'd2_6': 30  // Kans max 30
+    };
+
+    const rowsDef = [
+        { type: 'header', title: 'deel 1' },
+        { type: 'score', id: 'd1_0', name: 'enen', sub: 'tel alle enen op' },
+        { type: 'score', id: 'd1_1', name: 'tweeën', sub: 'tel alle tweeën op' },
+        { type: 'score', id: 'd1_2', name: 'drieën', sub: 'tel alle drieën op' },
+        { type: 'score', id: 'd1_3', name: 'vieren', sub: 'tel alle vieren op' },
+        { type: 'score', id: 'd1_4', name: 'vijven', sub: 'tel alle vijven op' },
+        { type: 'score', id: 'd1_5', name: 'zessen', sub: 'tel alle zessen op' },
+        { type: 'total', id: 'totaal_p1', name: 'totaal aantal punten ➔', sub: '' },
+        { type: 'total', id: 'bonus', name: 'extra bonus', sub: 'als puntentotaal 63 of meer is' },
+        { type: 'total', id: 'totaal_boven', name: 'totaal van de bovenste helft ➔', sub: '' },
+        
+        { type: 'header', title: 'deel 2' },
+        { type: 'score', id: 'd2_0', name: 'three of a kind', sub: 'totaal v.d. 5 stenen' },
+        { type: 'score', id: 'd2_1', name: 'carré', sub: 'totaal v.d. 5 stenen' },
+        { type: 'score', id: 'd2_2', name: 'full house', sub: '25 punten' },
+        { type: 'score', id: 'd2_3', name: 'kleine straat', sub: '30 punten' },
+        { type: 'score', id: 'd2_4', name: 'grote straat', sub: '40 punten' },
+        { type: 'score', id: 'd2_5', name: 'yatzee', sub: '50 punten' },
+        { type: 'score', id: 'd2_6', name: 'kans', sub: 'totaal v.d. 5 stenen' },
+        { type: 'total', id: 'totaal_d2', name: 'totaal deel 2 ➔', sub: '' },
+        { type: 'total', id: 'totaal_d1_copy', name: 'totaal deel 1 ➔', sub: '' },
+        { type: 'total', id: 'eindtotaal', name: 'totaal ➔', sub: '' }
+    ];
+
+    let gameState = {
+        playerName: 'Speler 1',
+        scores: {}
+    };
+
+    let activeTarget = { colIndex: null, rowId: null };
+    let currentInputValue = '';
+    let currentAlphaValue = '';
+
+    window.onload = function() {
+        loadFromStorage();
+        buildGrid();
+        updateDisplay();
+    };
+
+    function buildGrid() {
+        const tbody = document.getElementById('table-body');
+        tbody.innerHTML = '';
+
+        document.getElementById('player-name-display').innerText = gameState.playerName || 'Naam';
+
+        rowsDef.forEach(row => {
+            const tr = document.createElement('tr');
+
+            if (row.type === 'header') {
+                tr.className = 'section-header';
+                const thCat = document.createElement('th');
+                thCat.className = 'category-cell';
+                thCat.innerText = row.title;
+                tr.appendChild(thCat);
+
+                for (let c = 0; c < numGames; c++) {
+                    const thGame = document.createElement('th');
+                    thGame.innerText = `${c + 1}e spel`;
+                    tr.appendChild(thGame);
+                }
+            } else {
+                if (row.type === 'total') tr.className = 'total-row';
+
+                const tdCat = document.createElement('td');
+                tdCat.className = 'category-cell';
+                
+                let subHTML = row.sub ? `<span class="sub-text">${row.sub}</span>` : '';
+                tdCat.innerHTML = `<div class="cat-title"><span>${row.name}</span> ${subHTML}</div>`;
+                tr.appendChild(tdCat);
+
+                for (let c = 0; c < numGames; c++) {
+                    const tdCell = document.createElement('td');
+                    const uniqueKey = `c${c}_${row.id}`;
+                    tdCell.id = `cell_${uniqueKey}`;
+
+                    if (row.type === 'total') {
+                        tdCell.onclick = () => calculateTotal(c, row.id);
+                    } else {
+                        tdCell.className = 'score-cell';
+                        tdCell.onclick = () => handleScoreClick(c, row.id);
+                    }
+
+                    tr.appendChild(tdCell);
+                }
+            }
+
+            tbody.appendChild(tr);
+        });
+    }
+
+    function handleScoreClick(colIndex, rowId) {
+        const uniqueKey = `c${colIndex}_${rowId}`;
+
+        // Vaste puntenvakjes (Full House, Kleine Straat, Grote Straat)
+        if (['d2_2', 'd2_3', 'd2_4'].includes(rowId)) {
+            const fixedValues = { 'd2_2': 25, 'd2_3': 30, 'd2_4': 40 };
+            const val = fixedValues[rowId];
+
+            if (gameState.scores[uniqueKey] === undefined) {
+                gameState.scores[uniqueKey] = val;
+            } else {
+                delete gameState.scores[uniqueKey];
+            }
+            saveToStorage();
+            updateDisplay();
+            return;
+        }
+
+        // Yatzee logica (1e keer 50, daarna toetsenbord)
+        if (rowId === 'd2_5') {
+            if (gameState.scores[uniqueKey] === undefined) {
+                gameState.scores[uniqueKey] = 50;
+                saveToStorage();
+                updateDisplay();
+                return;
+            } else {
+                openKeypad(colIndex, rowId);
+                return;
+            }
+        }
+
+        openKeypad(colIndex, rowId);
+    }
+
+    function openPlayerNameInput() {
+        currentAlphaValue = (gameState.playerName === 'Speler 1' || gameState.playerName === 'Naam') ? '' : gameState.playerName;
+        document.getElementById('alpha-display').innerText = currentAlphaValue;
+        document.getElementById('alpha-overlay').style.display = 'flex';
+    }
+
+    function pressAlpha(key) {
+        if (key === 'CLEAR') {
+            currentAlphaValue = '';
+        } else if (key === 'BACKSPACE') {
+            currentAlphaValue = currentAlphaValue.slice(0, -1);
+        } else if (key === 'SPACE') {
+            if (currentAlphaValue.length < 15) currentAlphaValue += ' ';
+        } else if (key === 'ENTER') {
+            gameState.playerName = currentAlphaValue.trim() === '' ? 'Speler 1' : currentAlphaValue;
+            document.getElementById('player-name-display').innerText = gameState.playerName;
+            saveToStorage();
+            closeAlphaKeypad();
+            return;
+        } else {
+            if (currentAlphaValue.length < 15) currentAlphaValue += key;
+        }
+        document.getElementById('alpha-display').innerText = currentAlphaValue;
+    }
+
+    function closeAlphaKeypad() {
+        document.getElementById('alpha-overlay').style.display = 'none';
+    }
+
+    function openKeypad(colIndex, rowId) {
+        activeTarget = { colIndex, rowId };
+        const uniqueKey = `c${colIndex}_${rowId}`;
+        currentInputValue = gameState.scores[uniqueKey] !== undefined ? String(gameState.scores[uniqueKey]) : '';
+        
+        document.querySelectorAll('td').forEach(el => el.classList.remove('active-cell'));
+        const cellEl = document.getElementById(`cell_${uniqueKey}`);
+        if (cellEl) {
+            cellEl.classList.add('active-cell');
+            cellEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
+        }
+
+        // Slimme positie logica: onderin tikken = toetsenbord boven; bovenin tikken = toetsenbord onder
+        const rowIndex = rowsDef.findIndex(r => r.id === rowId);
+        const overlay = document.getElementById('keypad-overlay');
+        
+        if (rowIndex >= 10) {
+            overlay.style.alignItems = 'flex-start';
+            overlay.style.paddingTop = '20px';
+            overlay.style.paddingBottom = '0';
+        } else {
+            overlay.style.alignItems = 'flex-end';
+            overlay.style.paddingTop = '0';
+            overlay.style.paddingBottom = '20px';
+        }
+
+        document.getElementById('keypad-display').innerText = currentInputValue;
+        overlay.style.display = 'flex';
+    }
+
+    function handleOverlayClick(event, overlayId) {
+        if (event.target.id === overlayId) {
+            if (overlayId === 'keypad-overlay') closeKeypad();
+            if (overlayId === 'alpha-overlay') closeAlphaKeypad();
+        }
+    }
+
+    function closeKeypad() {
+        document.getElementById('keypad-overlay').style.display = 'none';
+        document.querySelectorAll('td').forEach(el => el.classList.remove('active-cell'));
+        activeTarget = { colIndex: null, rowId: null };
+    }
+
+    function pressKey(val) {
+        if (val === 'CLEAR') {
+            currentInputValue = '';
+        } else if (val === 'ENTER') {
+            const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
+            if (currentInputValue === '') {
+                delete gameState.scores[uniqueKey];
+            } else {
+                let numVal = parseInt(currentInputValue, 10);
+                
+                // Valideer tegen maximale limieten (Deel 1, Three of a Kind, Carré, Kans)
+                if (maxLimits[activeTarget.rowId] !== undefined) {
+                    const maxVal = maxLimits[activeTarget.rowId];
+                    if (numVal > maxVal) {
+                        alert(`De maximale waarde voor dit vakje is ${maxVal}!`);
+                        return;
+                    }
+                }
+                gameState.scores[uniqueKey] = numVal;
+            }
+            saveToStorage();
+            updateDisplay();
+            closeKeypad();
+            return;
+        } else {
+            if (currentInputValue.length < 3) currentInputValue += val;
+        }
+        document.getElementById('keypad-display').innerText = currentInputValue;
+    }
+
+    function calculateTotal(colIndex, totalRowId) {
+        const getVal = (rowId) => {
+            const val = gameState.scores[`c${colIndex}_${rowId}`];
+            return (val !== undefined && !isNaN(val)) ? val : 0;
+        };
+
+        const hasVal = (rowId) => gameState.scores[`c${colIndex}_${rowId}`] !== undefined;
+
+        let targetKey = `c${colIndex}_${totalRowId}`;
+
+        if (totalRowId === 'totaal_p1' || totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
+            let sum = 0;
+            let count = 0;
+            ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
+                if (hasVal(id)) { sum += getVal(id); count++; }
+            });
+            
+            if (count > 0) {
+                gameState.scores[`c${colIndex}_totaal_p1`] = sum;
+                let bonusVal = (sum >= 63) ? 35 : 0;
+                gameState.scores[`c${colIndex}_bonus`] = bonusVal;
+                gameState.scores[`c${colIndex}_totaal_boven`] = sum + bonusVal;
+            }
+        } 
+        else if (totalRowId === 'totaal_d2') {
+            let sum = 0;
+            let count = 0;
+            ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
+                if (hasVal(id)) { sum += getVal(id); count++; }
+            });
+            if (count > 0) gameState.scores[targetKey] = sum;
+        } 
+        else if (totalRowId === 'totaal_d1_copy') {
+            let boven = gameState.scores[`c${colIndex}_totaal_boven`];
+            if (boven !== undefined) {
+                gameState.scores[targetKey] = boven;
+            }
+        } 
+        else if (totalRowId === 'eindtotaal') {
+            let d1Total = gameState.scores[`c${colIndex}_totaal_d1_copy`];
+            let d2Total = gameState.scores[`c${colIndex}_totaal_d2`];
+            if (d1Total !== undefined && d2Total !== undefined) {
+                gameState.scores[targetKey] = d1Total + d2Total;
+            }
+        }
+
+        saveToStorage();
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        for (let c = 0; c < numGames; c++) {
+            rowsDef.forEach(row => {
+                if (row.type !== 'header') {
+                    const uniqueKey = `c${c}_${row.id}`;
+                    const cellEl = document.getElementById(`cell_${uniqueKey}`);
+                    if (cellEl) {
+                        cellEl.innerText = gameState.scores[uniqueKey] !== undefined ? gameState.scores[uniqueKey] : (row.type === 'total' ? '-' : '');
+                    }
+                }
+            });
+        }
+    }
+
+    function saveToStorage() {
+        localStorage.setItem('yatzee_game_state', JSON.stringify(gameState));
+    }
+
+    function loadFromStorage() {
+        const saved = localStorage.getItem('yatzee_game_state');
+        if (saved) {
+            try {
+                gameState = JSON.parse(saved);
+            } catch(e) {
+                console.error("Fout bij laden opslag", e);
+            }
+        }
+    }
+
+    function confirmReset() {
+        if (confirm("Weet je zeker dat je het hele scoreblad wilt leegmaken voor een nieuw spel?")) {
+            localStorage.removeItem('yatzee_game_state');
+            gameState = { playerName: 'Speler 1', scores: {} };
+            buildGrid();
+            updateDisplay();
+        }
+    }
+</script>
+
+</body>
+</html>
