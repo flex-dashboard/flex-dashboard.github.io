@@ -29,7 +29,7 @@
             overflow: hidden;
         }
 
-        /* Zwarte bovenbalk met Home-knop */
+        /* Zwarte bovenbalk met knoppen en Nieuw Spel */
         .header-bar {
             background-color: #000;
             color: #fff;
@@ -44,34 +44,44 @@
         .header-left {
             display: flex;
             align-items: center;
-            gap: 15px;
+            gap: 10px;
         }
 
-        .home-btn {
+        .nav-btn {
             color: #fff;
             text-decoration: none;
-            font-size: 22px;
+            font-size: 18px;
             background: #222;
             padding: 6px 12px;
             border-radius: 6px;
             border: 1px solid #444;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #333;
+        }
+
+        .nav-btn.active {
+            background: #27ae60;
+            border-color: #2ecc71;
         }
 
         .header-title {
             font-size: 24px;
             font-weight: bold;
             letter-spacing: 1px;
+            margin-left: 5px;
         }
 
         .player-name-container {
             display: flex;
             align-items: center;
-            gap: 10px;
-        }
-
-        .player-name-label {
-            font-size: 16px;
-            color: #ccc;
+            gap: 8px;
         }
 
         .player-name-input {
@@ -82,14 +92,39 @@
             padding: 6px 12px;
             font-size: 18px;
             font-weight: bold;
-            width: 150px;
+            width: 130px;
             cursor: pointer;
             text-align: center;
         }
 
-        .dice-icons {
-            font-size: 22px;
-            letter-spacing: 5px;
+        /* Rode Nieuw Spel knop in zwarte bovenbalk */
+        .btn-reset-top {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-reset-top:hover {
+            background-color: #c9302c;
+        }
+
+        /* Totaal-vakje in de rechterhoek van de zwarte bovenbalk */
+        .global-total-box {
+            background: #222;
+            color: #f1c40f;
+            border: 2px solid #444;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 90px;
+            letter-spacing: 1px;
         }
 
         /* Tabel Wrapper met horizontale scroll */
@@ -182,34 +217,6 @@
             box-shadow: inset 0 0 0 3px #ff9900;
         }
 
-        /* Controls onderaan */
-        .controls-bar {
-            padding: 12px 20px;
-            background: #f0f2f5;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            border-top: 2px solid #ccc;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .hint-text {
-            font-size: 14px;
-            color: #333;
-        }
-
-        .btn-reset {
-            background-color: #d9534f;
-            color: white;
-            border: none;
-            padding: 8px 16px;
-            font-size: 15px;
-            font-weight: bold;
-            border-radius: 4px;
-            cursor: pointer;
-        }
-
         /* Toetsenborden Overlays */
         .overlay {
             display: none;
@@ -283,48 +290,367 @@
         .alpha-grid .clear-key { grid-column: span 2; background: #ffcccc; color: #b30000; }
         .alpha-grid .enter-key { grid-column: span 2; background: #d4edda; color: #155724; }
 
-        /* Media Queries voor Telefoons (Compact) */
-        @media (max-width: 600px) {
+        /* --- PURE CSS 3D DOBBELBEKER STIJLEN (Volledige bladbreedte, naadloos) --- */
+        .dice-bar-wrapper {
+            display: none; /* Standaard verborgen */
+            background: #222222;
+            border-top: 3px solid #000;
+            border-bottom: 3px solid #000;
+            width: 100%;
+        }
+
+        .dice-bar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #222222;
+            padding: 10px 15px;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .dice-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .gds-mode-3d {
+            perspective: 700px;
+            perspective-origin: 50% 50%;
+        }
+
+        .gds-cube-holder {
+            width: 68px;
+            height: 68px;
+            position: relative;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: transform 0.15s;
+        }
+
+        .gds-cube-holder:hover {
+            transform: scale(1.04);
+        }
+
+        .gds-cube-holder.locked {
+            box-shadow: 0 0 12px rgba(241, 196, 15, 0.8);
+            border-radius: 12px;
+        }
+
+        .lock-badge {
+            position: absolute;
+            top: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f1c40f;
+            color: #000;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 3px;
+            display: none;
+            z-index: 20;
+        }
+
+        .gds-cube-holder.locked .lock-badge {
+            display: block;
+        }
+
+        .gds-cube {
+            position: relative;
+            width: 68px;
+            height: 68px;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .gds-face {
+            position: absolute;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(145deg, #ffffff, #eef2f5);
+            border: 1px solid #cfd6dc;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.08);
+            backface-visibility: hidden;
+        }
+
+        .gds-face-front  { transform: translateZ(34px); }
+        .gds-face-back   { transform: rotateY(180deg) translateZ(34px); }
+        .gds-face-right  { transform: rotateY(90deg)  translateZ(34px); }
+        .gds-face-left   { transform: rotateY(-90deg) translateZ(34px); }
+        .gds-face-top    { transform: rotateX(90deg)  translateZ(34px); }
+        .gds-face-bottom { transform: rotateX(-90deg) translateZ(34px); }
+
+        .gds-pip {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            margin: -6.5px 0 0 -6.5px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #4a5a6a, #2c3e50 70%);
+            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.35);
+        }
+
+        .controls-middle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-pill {
+            background: #181818;
+            color: #fff;
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            font-size: 13px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .in-btn {
+            background-color: #d35400;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .in-btn:hover { background-color: #e67e22; }
+        .in-btn:active { transform: scale(0.95); }
+        .in-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
+
+        .combo-pill {
+            background: #2c3e50;
+            color: #f1c40f;
+            font-weight: bold;
+            border: 1px solid #34495e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            width: 155px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .roll-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 125px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+        .roll-btn:hover { background-color: #2ecc71; }
+        .roll-btn:active { transform: scale(0.96); }
+        .roll-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
+
+        /* Media Queries voor Telefoons (Bovenkant onaangeraakt, dobbelstenen exact 2 volle rijen) */
+        @media (max-width: 768px) {
             body { padding: 2px; }
+            
+            /* Bovenkant blijft exact zoals hij nu goed is */
+            .header-bar {
+                padding: 6px 8px;
+                gap: 6px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+            }
+
+            .header-left {
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 6px;
+            }
+
+            button.nav-btn {
+                font-size: 0px !important;
+                padding: 5px 8px;
+            }
+            button.nav-btn::before {
+                font-size: 16px;
+            }
+            button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
+            button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
+            
+            a.nav-btn {
+                font-size: 0px !important;
+                padding: 5px 8px;
+            }
+            a.nav-btn::before {
+                content: "🏠";
+                font-size: 16px;
+            }
+
+            .header-title {
+                font-size: 18px;
+                position: absolute;
+                left: 54%;
+                transform: translateX(-50%);
+                top: 8px;
+                letter-spacing: 0.5px;
+            }
+
+            .global-total-box {
+                font-size: 14px;
+                padding: 3px 6px;
+                min-width: 55px;
+                position: absolute;
+                top: 6px;
+                right: 8px;
+            }
+
+            .player-name-container {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 6px;
+                margin-top: 2px;
+            }
+
+            .player-name-input {
+                width: 105px;
+                font-size: 15px;
+                padding: 4px 6px;
+            }
+
+            .btn-reset-top {
+                padding: 5px 8px;
+                font-size: 12px;
+            }
+
+            /* Tabel en rijen compacter */
             table.yatzee-table th, table.yatzee-table td { height: 38px; font-size: 15px; }
             table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
             .cat-title { font-size: 12px; }
             .sub-text { font-size: 9px; }
+            
+            /* Toetsenbord */
             .keypad { width: 240px; padding: 8px; }
             .key-btn { padding: 6px 0; font-size: 15px; }
             .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
+            
+            /* --- DOBBELSTENEN BALK: EXACT 2 RIJEN (GEEN DERDE LIJN MEER) --- */
+            .dice-bar-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                gap: 6px;
+                padding: 8px;
+            }
+
+            /* Rij 1: De dobbelstenen op hun eigen volle breedte regel */
+            .dice-row {
+                width: 100%;
+                display: flex;
+                gap: 4px;
+                justify-content: center;
+            }
+            .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
+            .gds-face-front  { transform: translateZ(21px); }
+            .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
+            .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
+            .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
+            .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
+            .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
+            .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+
+            /* Rij 2: Status/In-knop links en de normale Groene Gooi-knop rechts NAAST elkaar */
+            .controls-middle {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                flex: 1;
+            }
+            .info-pill { padding: 6px 8px; font-size: 11px; }
+            .in-btn { width: 30px; height: 30px; font-size: 11px; }
+            .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
+
+            /* De groene knop komt nu strak op dezelfde tweede rij te staan met een mooi normaal formaat */
+            .roll-btn { 
+                width: 110px; 
+                font-size: 12px; 
+                padding: 8px 10px; 
+                flex-shrink: 0;
+            }
         }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Zwarte bovenbalk met Home-knop -->
+    <!-- Zwarte bovenbalk met knoppen, Spelernaam, Nieuw Spel knop en Totaal-vakje rechtsboven -->
     <div class="header-bar">
         <div class="header-left">
-            <a href="index.html" class="home-btn" title="Naar Hoofddashboard">🏠</a>
+            <a href="index.html" class="nav-btn" title="Naar Hoofddashboard">🏠</a>
+            <button class="nav-btn" onclick="toggleFullscreen()" title="Volledig Scherm In/Uitschakelen">⛶ Fullscreen</button>
+            <button id="toggle-dice-btn" class="nav-btn" onclick="toggleDiceBar()" title="Digitale Dobbelsteen In/Uitschakelen">🎲 Dobbelsteen</button>
             <div class="header-title">YATZEE</div>
         </div>
         <div class="player-name-container">
-            <span class="player-name-label">Speler:</span>
-            <div id="player-name-display" class="player-name-input" onclick="openPlayerNameInput()">Naam</div>
+            <div id="player-name-display" class="player-name-input" onclick="openPlayerNameInput()" title="Typ hier je naam">Naam</div>
+            <button class="btn-reset-top" onclick="confirmReset()">Nieuw Spel</button>
         </div>
-        <div class="dice-icons">🎲🎲🎲</div>
+        <div id="global-total-display" class="global-total-box" title="Totaalscore van alle gespeelde spellen">-</div>
     </div>
 
-    <!-- Scoreblad Tabel -->
+    <!-- Scoreblad Deel 1 -->
     <div class="score-table-wrapper">
         <table class="yatzee-table">
-            <tbody id="table-body">
-                <!-- Wordt dynamisch opgebouwd in JS -->
+            <tbody id="table-body-d1">
+                <!-- Wordt dynamisch opgebouwd -->
             </tbody>
         </table>
     </div>
 
-    <!-- Onderste balk met reset en uitleg -->
-    <div class="controls-bar">
-        <div class="hint-text">💡 Tik op een scorevakje of de naam. Tik op een totaalvakje om te berekenen!</div>
-        <button class="btn-reset" onclick="confirmReset()">Nieuw Spel</button>
+    <!-- Midden-balk: Digitale Dobbelbeker (volle breedte, naadloos tussen deel 1 en 2) -->
+    <div id="dice-bar-wrapper" class="dice-bar-wrapper">
+        <div class="dice-bar-container gds-mode-3d">
+            <div class="dice-row" id="dice-row"></div>
+            <div class="controls-middle">
+                <div class="info-pill">W: <strong id="worp-count" style="color:#f1c40f;">0/3</strong></div>
+                <button id="in-btn" class="in-btn" onclick="handleIn()" title="Innen" disabled>In</button>
+                <div class="combo-pill" id="combo-display">Nieuwe beurt</div>
+            </div>
+            <button id="roll-btn" class="roll-btn" onclick="handleRollClick()">Gooi 🎲</button>
+        </div>
+    </div>
+
+    <!-- Scoreblad Deel 2 -->
+    <div class="score-table-wrapper">
+        <table class="yatzee-table">
+            <tbody id="table-body-d2">
+                <!-- Wordt dynamisch opgebouwd -->
+            </tbody>
+        </table>
     </div>
 </div>
 
@@ -394,32 +720,27 @@
 
 <script>
     const numGames = 6;
+    let diceModeActive = false;
 
-    // Maximale limieten voor Deel 1 (4x waarde) én voor Three of a Kind, Carré en Kans (max 30)
     const maxLimits = {
-        'd1_0': 4,
-        'd1_1': 8,
-        'd1_2': 12,
-        'd1_3': 16,
-        'd1_4': 20,
-        'd1_5': 24,
-        'd2_0': 30, // Three of a kind max 30
-        'd2_1': 30, // Carré max 30
-        'd2_6': 30  // Kans max 30
+        'd1_0': 4, 'd1_1': 8, 'd1_2': 12, 'd1_3': 16, 'd1_4': 20, 'd1_5': 24,
+        'd2_0': 30, 'd2_1': 30, 'd2_6': 30
     };
 
-    const rowsDef = [
+    const rowsPart1 = [
         { type: 'header', title: 'deel 1' },
-        { type: 'score', id: 'd1_0', name: 'enen', sub: 'tel alle enen op' },
-        { type: 'score', id: 'd1_1', name: 'tweeën', sub: 'tel alle tweeën op' },
-        { type: 'score', id: 'd1_2', name: 'drieën', sub: 'tel alle drieën op' },
-        { type: 'score', id: 'd1_3', name: 'vieren', sub: 'tel alle vieren op' },
-        { type: 'score', id: 'd1_4', name: 'vijven', sub: 'tel alle vijven op' },
-        { type: 'score', id: 'd1_5', name: 'zessen', sub: 'tel alle zessen op' },
+        { type: 'score', id: 'd1_0', name: 'enen', sub: 'tel alle enen op', val: 1 },
+        { type: 'score', id: 'd1_1', name: 'tweeën', sub: 'tel alle tweeën op', val: 2 },
+        { type: 'score', id: 'd1_2', name: 'drieën', sub: 'tel alle drieën op', val: 3 },
+        { type: 'score', id: 'd1_3', name: 'vieren', sub: 'tel alle vieren op', val: 4 },
+        { type: 'score', id: 'd1_4', name: 'vijven', sub: 'tel alle vijven op', val: 5 },
+        { type: 'score', id: 'd1_5', name: 'zessen', sub: 'tel alle zessen op', val: 6 },
         { type: 'total', id: 'totaal_p1', name: 'totaal aantal punten ➔', sub: '' },
         { type: 'total', id: 'bonus', name: 'extra bonus', sub: 'als puntentotaal 63 of meer is' },
-        { type: 'total', id: 'totaal_boven', name: 'totaal van de bovenste helft ➔', sub: '' },
-        
+        { type: 'total', id: 'totaal_boven', name: 'totaal van de bovenste helft ➔', sub: '' }
+    ];
+
+    const rowsPart2 = [
         { type: 'header', title: 'deel 2' },
         { type: 'score', id: 'd2_0', name: 'three of a kind', sub: 'totaal v.d. 5 stenen' },
         { type: 'score', id: 'd2_1', name: 'carré', sub: 'totaal v.d. 5 stenen' },
@@ -435,24 +756,164 @@
 
     let gameState = {
         playerName: 'Speler 1',
-        scores: {}
+        scores: {},
+        lastActionKey: null // Houdt de unieke sleutel bij van het laatst ingevulde scorevakje
     };
 
     let activeTarget = { colIndex: null, rowId: null };
     let currentInputValue = '';
     let currentAlphaValue = '';
 
+    /* --- 3D DOBBELSTEEN LOGICA --- */
+    const NUM_DICE = 5;
+    const diceInstances = [];
+    let isRolling = false;
+    let rollCount = 0;
+    let turnEnded = false;
+
+    function pipPositions(value) {
+        var C = [50, 50], TL = [27, 27], TR = [73, 27], BL = [27, 73],
+            BR = [73, 73], ML = [27, 50], MR = [73, 50];
+        switch (value) {
+            case 1: return [C];
+            case 2: return [TL, BR];
+            case 3: return [TL, C, BR];
+            case 4: return [TL, TR, BL, BR];
+            case 5: return [TL, TR, C, BL, BR];
+            case 6: return [TL, TR, ML, MR, BL, BR];
+            default: return [];
+        }
+    }
+
+    function faceRotation(value) {
+        switch (value) {
+            case 1: return { x: 0,   y: 0 };
+            case 6: return { x: 0,   y: 180 };
+            case 3: return { x: 0,   y: -90 };
+            case 4: return { x: 0,   y: 90 };
+            case 5: return { x: -90, y: 0 };
+            case 2: return { x: 90,  y: 0 };
+            default: return { x: 0,  y: 0 };
+        }
+    }
+
+    function playDiceSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const bufferSize = audioCtx.sampleRate * 0.35;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.08));
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 900;
+            filter.Q.value = 3;
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+        } catch (e) {}
+    }
+
+    function buildCube(value) {
+        const cube = document.createElement('div');
+        cube.className = 'gds-cube';
+        const faceVals = [1, 6, 3, 4, 5, 2];
+        const faceCls  = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+        
+        for (let i = 0; i < 6; i++) {
+            const face = document.createElement('div');
+            face.className = 'gds-face gds-face-' + faceCls[i];
+            
+            pipPositions(faceVals[i]).forEach(pos => {
+                const pip = document.createElement('span');
+                pip.className = 'gds-pip';
+                pip.style.left = pos[0] + '%';
+                pip.style.top = pos[1] + '%';
+                face.appendChild(pip);
+            });
+            cube.appendChild(face);
+        }
+        
+        const rot = faceRotation(value || 1);
+        cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+        return cube;
+    }
+
+    function init3DDice() {
+        const rowEl = document.getElementById('dice-row');
+        rowEl.innerHTML = '';
+        diceInstances.length = 0;
+
+        for (let i = 0; i < NUM_DICE; i++) {
+            const holder = document.createElement('div');
+            holder.className = 'gds-cube-holder';
+            holder.id = `dice-holder-${i}`;
+
+            const badge = document.createElement('div');
+            badge.className = 'lock-badge';
+            badge.innerText = 'VAST';
+            holder.appendChild(badge);
+
+            const cube = buildCube(1);
+            holder.appendChild(cube);
+
+            holder.onclick = () => toggleLock(i);
+            rowEl.appendChild(holder);
+
+            diceInstances.push({ index: i, holder, cube, value: 1, isLocked: false });
+        }
+    }
+
     window.onload = function() {
         loadFromStorage();
         buildGrid();
+        init3DDice();
         updateDisplay();
     };
 
-    function buildGrid() {
-        const tbody = document.getElementById('table-body');
-        tbody.innerHTML = '';
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {
+                alert(`Fout bij inschakelen fullscreen: ${err.message}`);
+            });
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
 
+    function toggleDiceBar() {
+        diceModeActive = !diceModeActive;
+        const wrapper = document.getElementById('dice-bar-wrapper');
+        const btn = document.getElementById('toggle-dice-btn');
+
+        if (diceModeActive) {
+            wrapper.style.display = 'block';
+            btn.classList.add('active');
+        } else {
+            wrapper.style.display = 'none';
+            btn.classList.remove('active');
+        }
+    }
+
+    function buildGrid() {
+        buildTableSection('table-body-d1', rowsPart1);
+        buildTableSection('table-body-d2', rowsPart2);
         document.getElementById('player-name-display').innerText = gameState.playerName || 'Naam';
+    }
+
+    function buildTableSection(tbodyId, rowsDef) {
+        const tbody = document.getElementById(tbodyId);
+        tbody.innerHTML = '';
 
         rowsDef.forEach(row => {
             const tr = document.createElement('tr');
@@ -488,7 +949,7 @@
                         tdCell.onclick = () => calculateTotal(c, row.id);
                     } else {
                         tdCell.className = 'score-cell';
-                        tdCell.onclick = () => handleScoreClick(c, row.id);
+                        tdCell.onclick = () => handleScoreClick(c, row.id, row);
                     }
 
                     tr.appendChild(tdCell);
@@ -499,40 +960,246 @@
         });
     }
 
-    function handleScoreClick(colIndex, rowId) {
+    function handleScoreClick(colIndex, rowId, rowObj) {
         const uniqueKey = `c${colIndex}_${rowId}`;
+        const isFilled = gameState.scores[uniqueKey] !== undefined;
+        const isLastAction = (uniqueKey === gameState.lastActionKey);
 
-        // Vaste puntenvakjes (Full House, Kleine Straat, Grote Straat)
+        // STRENGE BEVEILIGING: Als het vakje al ingevuld is, mag dit ALLEEN als het de laatst ingevulde score is!
+        if (isFilled) {
+            if (isLastAction) {
+                const currentVal = gameState.scores[uniqueKey];
+                if (confirm(`Wil je de score van ${currentVal} wissen?`)) {
+                    delete gameState.scores[uniqueKey];
+                    gameState.lastActionKey = null; // Reset laatste actie
+                    saveToStorage();
+                    updateDisplay();
+                }
+            } else {
+                // Oudere ingevulde scores zijn volledig geblokkeerd (doen niks)
+                return;
+            }
+            return;
+        }
+
+        // Als het vakje leeg is:
+        if (diceModeActive) {
+            if (rollCount === 0) {
+                alert("Gooi eerst de dobbelstenen voordat je een score invult!");
+                return;
+            }
+
+            const currentDice = diceInstances.map(d => d.value);
+            let calculatedScore = calculateScoreForCategory(rowId, rowObj, currentDice);
+
+            gameState.scores[uniqueKey] = calculatedScore;
+            gameState.lastActionKey = uniqueKey; // Sla op als laatste actie
+
+            saveToStorage();
+            updateDisplay();
+            resetForNextTurn();
+            return;
+        }
+
+        // KLASSIEKE MODUS (Met Toetsenbord voor lege vakjes)
         if (['d2_2', 'd2_3', 'd2_4'].includes(rowId)) {
             const fixedValues = { 'd2_2': 25, 'd2_3': 30, 'd2_4': 40 };
             const val = fixedValues[rowId];
 
-            if (gameState.scores[uniqueKey] === undefined) {
-                gameState.scores[uniqueKey] = val;
-            } else {
-                delete gameState.scores[uniqueKey];
-            }
+            gameState.scores[uniqueKey] = val;
+            gameState.lastActionKey = uniqueKey;
             saveToStorage();
             updateDisplay();
             return;
         }
 
-        // Yatzee logica (1e keer 50, daarna toetsenbord)
         if (rowId === 'd2_5') {
-            if (gameState.scores[uniqueKey] === undefined) {
-                gameState.scores[uniqueKey] = 50;
-                saveToStorage();
-                updateDisplay();
-                return;
-            } else {
-                openKeypad(colIndex, rowId);
-                return;
-            }
+            // Als yatzee nog leeg is, standaard 50 punten
+            gameState.scores[uniqueKey] = 50;
+            gameState.lastActionKey = uniqueKey;
+            saveToStorage();
+            updateDisplay();
+            return;
         }
 
         openKeypad(colIndex, rowId);
     }
 
+    function calculateScoreForCategory(rowId, rowObj, diceValues) {
+        const sumAll = diceValues.reduce((a, b) => a + b, 0);
+        const counts = {};
+        diceValues.forEach(v => counts[v] = (counts[v] || 0) + 1);
+        const countsArr = Object.values(counts).sort((a, b) => b - a);
+
+        if (rowObj.val !== undefined) {
+            const targetVal = rowObj.val;
+            return diceValues.filter(v => v === targetVal).length * targetVal;
+        }
+
+        if (rowId === 'd2_0') { return countsArr[0] >= 3 ? sumAll : 0; }
+        if (rowId === 'd2_1') { return countsArr[0] >= 4 ? sumAll : 0; }
+        if (rowId === 'd2_2') { return (countsArr[0] === 3 && countsArr[1] === 2) || countsArr[0] === 5 ? 25 : 0; }
+        if (rowId === 'd2_3') {
+            const uniqueSorted = [...new Set(diceValues)].sort((a,b)=>a-b);
+            const isKleine = hasSubsequence(uniqueSorted, [1,2,3,4]) ||
+                             hasSubsequence(uniqueSorted, [2,3,4,5]) ||
+                             hasSubsequence(uniqueSorted, [3,4,5,6]);
+            return isKleine ? 30 : 0;
+        }
+        if (rowId === 'd2_4') {
+            const uniqueSorted = [...new Set(diceValues)].sort((a,b)=>a-b);
+            const str = uniqueSorted.join('');
+            return (str === '12345' || str === '23456') ? 40 : 0;
+        }
+        if (rowId === 'd2_5') { return countsArr[0] === 5 ? 50 : 0; }
+        if (rowId === 'd2_6') { return sumAll; }
+
+        return 0;
+    }
+
+    function toggleLock(index) {
+        if (isRolling || rollCount === 0 || turnEnded) return;
+        const d = diceInstances[index];
+        d.isLocked = !d.isLocked;
+        d.holder.classList.toggle('locked', d.isLocked);
+    }
+
+    function handleRollClick() {
+        if (turnEnded || rollCount >= 3) {
+            resetForNextTurn();
+        }
+        rollAllDice();
+    }
+
+    function handleIn() {
+        if (isRolling || rollCount === 0 || turnEnded) return;
+        endTurn("Ingezet");
+    }
+
+    function endTurn(customText) {
+        turnEnded = true;
+        rollCount = 3;
+        document.getElementById('worp-count').innerText = "3/3";
+        document.getElementById('in-btn').disabled = true;
+        document.getElementById('roll-btn').innerText = "Gooi 🎲";
+        if (customText) {
+            document.getElementById('combo-display').innerText = customText;
+        }
+    }
+
+    function resetForNextTurn() {
+        rollCount = 0;
+        turnEnded = false;
+        diceInstances.forEach(d => {
+            d.isLocked = false;
+            d.holder.classList.remove('locked');
+        });
+        document.getElementById('worp-count').innerText = "0/3";
+        document.getElementById('combo-display').innerText = "Nieuwe beurt";
+        document.getElementById('in-btn').disabled = true;
+        document.getElementById('roll-btn').innerText = "Gooi 🎲";
+    }
+
+    function rollAllDice() {
+        if (isRolling || turnEnded) return;
+
+        isRolling = true;
+        rollCount++;
+        playDiceSound();
+
+        document.getElementById('worp-count').innerText = `${rollCount}/3`;
+        document.getElementById('roll-btn').disabled = true;
+        document.getElementById('in-btn').disabled = true;
+
+        diceInstances.forEach(d => {
+            if (!d.isLocked) {
+                d.value = Math.floor(Math.random() * 6) + 1;
+            }
+        });
+
+        diceInstances.forEach((d, i) => {
+            if (!d.isLocked) {
+                const rot = faceRotation(d.value);
+                const spinX = 360 * (2 + (i % 2)) + rot.x;
+                const spinY = 360 * (2 + ((i + 1) % 2)) + rot.y;
+                d.cube.style.transition = 'transform 0.95s cubic-bezier(.2,.8,.25,1)';
+                void d.cube.offsetWidth;
+                d.cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
+            }
+        });
+
+        setTimeout(() => {
+            isRolling = false;
+            document.getElementById('roll-btn').disabled = false;
+
+            diceInstances.forEach(d => {
+                const rot = faceRotation(d.value);
+                d.cube.style.transition = 'none';
+                d.cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+            });
+
+            const isYahtzee = updateScoreAndCombos();
+
+            if (isYahtzee) {
+                diceInstances.forEach(d => {
+                    d.isLocked = true;
+                    d.holder.classList.add('locked');
+                });
+                endTurn("🎉 YAHTZEE!");
+            } else if (rollCount < 3) {
+                document.getElementById('in-btn').disabled = false;
+                const btn = document.getElementById('roll-btn');
+                btn.innerText = rollCount === 1 ? "2e Worp 🎲" : "3e Worp 🎲";
+            } else {
+                endTurn();
+            }
+        }, 950);
+    }
+
+    function updateScoreAndCombos() {
+        const values = diceInstances.map(d => d.value);
+        const total = values.reduce((sum, v) => sum + v, 0);
+
+        const counts = {};
+        values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+        const countsArr = Object.values(counts).sort((a, b) => b - a);
+
+        let comboText = `Totaal: ${total}`;
+        let isYahtzee = false;
+
+        if (countsArr[0] === 5) {
+            comboText = "🎉 YAHTZEE!";
+            isYahtzee = true;
+        } else {
+            const uniqueSorted = [...new Set(values)].sort((a,b)=>a-b);
+            const str = uniqueSorted.join('');
+
+            if (str === '12345' || str === '23456') {
+                comboText = "Grote Straat";
+            } else if (
+                hasSubsequence(uniqueSorted, [1,2,3,4]) ||
+                hasSubsequence(uniqueSorted, [2,3,4,5]) ||
+                hasSubsequence(uniqueSorted, [3,4,5,6])
+            ) {
+                comboText = "Kleine Straat";
+            } else if (countsArr[0] === 3 && countsArr[1] === 2) {
+                comboText = "Full House";
+            } else if (countsArr[0] === 4) {
+                comboText = `Carré (${total})`;
+            } else if (countsArr[0] === 3) {
+                comboText = `3 of a kind (${total})`;
+            }
+        }
+
+        document.getElementById('combo-display').innerText = comboText;
+        return isYahtzee;
+    }
+
+    function hasSubsequence(array, targetSub) {
+        return targetSub.every(val => array.includes(val));
+    }
+
+    /* --- TOETSENBORD & BEHEER FUNCTIONS --- */
     function openPlayerNameInput() {
         currentAlphaValue = (gameState.playerName === 'Speler 1' || gameState.playerName === 'Naam') ? '' : gameState.playerName;
         document.getElementById('alpha-display').innerText = currentAlphaValue;
@@ -574,20 +1241,7 @@
             cellEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         }
 
-        // Slimme positie logica: onderin tikken = toetsenbord boven; bovenin tikken = toetsenbord onder
-        const rowIndex = rowsDef.findIndex(r => r.id === rowId);
         const overlay = document.getElementById('keypad-overlay');
-        
-        if (rowIndex >= 10) {
-            overlay.style.alignItems = 'flex-start';
-            overlay.style.paddingTop = '20px';
-            overlay.style.paddingBottom = '0';
-        } else {
-            overlay.style.alignItems = 'flex-end';
-            overlay.style.paddingTop = '0';
-            overlay.style.paddingBottom = '20px';
-        }
-
         document.getElementById('keypad-display').innerText = currentInputValue;
         overlay.style.display = 'flex';
     }
@@ -612,10 +1266,10 @@
             const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
             if (currentInputValue === '') {
                 delete gameState.scores[uniqueKey];
+                if (gameState.lastActionKey === uniqueKey) gameState.lastActionKey = null;
             } else {
                 let numVal = parseInt(currentInputValue, 10);
                 
-                // Valideer tegen maximale limieten (Deel 1, Three of a Kind, Carré, Kans)
                 if (maxLimits[activeTarget.rowId] !== undefined) {
                     const maxVal = maxLimits[activeTarget.rowId];
                     if (numVal > maxVal) {
@@ -624,6 +1278,7 @@
                     }
                 }
                 gameState.scores[uniqueKey] = numVal;
+                gameState.lastActionKey = uniqueKey; // Sla op als laatste actie
             }
             saveToStorage();
             updateDisplay();
@@ -686,8 +1341,9 @@
     }
 
     function updateDisplay() {
+        const allRows = [...rowsPart1, ...rowsPart2];
         for (let c = 0; c < numGames; c++) {
-            rowsDef.forEach(row => {
+            allRows.forEach(row => {
                 if (row.type !== 'header') {
                     const uniqueKey = `c${c}_${row.id}`;
                     const cellEl = document.getElementById(`cell_${uniqueKey}`);
@@ -696,6 +1352,28 @@
                     }
                 }
             });
+        }
+        updateGlobalTotal();
+    }
+
+    function updateGlobalTotal() {
+        let sumGlobal = 0;
+        let hasAnyTotal = false;
+
+        for (let c = 0; c < numGames; c++) {
+            const eindtotaalKey = `c${c}_eindtotaal`;
+            const val = gameState.scores[eindtotaalKey];
+            if (val !== undefined && !isNaN(val)) {
+                sumGlobal += val;
+                hasAnyTotal = true;
+            }
+        }
+
+        const globalEl = document.getElementById('global-total-display');
+        if (hasAnyTotal) {
+            globalEl.innerText = sumGlobal;
+        } else {
+            globalEl.innerText = '-';
         }
     }
 
@@ -708,6 +1386,7 @@
         if (saved) {
             try {
                 gameState = JSON.parse(saved);
+                if (!gameState.lastActionKey) gameState.lastActionKey = null;
             } catch(e) {
                 console.error("Fout bij laden opslag", e);
             }
@@ -717,7 +1396,7 @@
     function confirmReset() {
         if (confirm("Weet je zeker dat je het hele scoreblad wilt leegmaken voor een nieuw spel?")) {
             localStorage.removeItem('yatzee_game_state');
-            gameState = { playerName: 'Speler 1', scores: {} };
+            gameState = { playerName: 'Speler 1', scores: {}, lastActionKey: null };
             buildGrid();
             updateDisplay();
         }
