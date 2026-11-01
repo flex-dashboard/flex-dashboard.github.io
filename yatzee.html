@@ -1811,11 +1811,15 @@
 
     function confirmReset() {
         if (confirm("Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?")) {
-            localStorage.removeItem('yatzee_game_state_multi');
-            players = [
-                { name: 'Speler 1', scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
-            ];
+            // Maak de scores van alle bestaande spelers leeg, maar behoud hun namen!
+            players.forEach(p => {
+                p.scores = {};
+                p.lastActionKey = null;
+                p.lastRoll = null;
+                p.hasSubmittedThisTurn = false;
+            });
             currentPlayerIndex = 0;
+            saveToStorage();
             buildGrid();
             updateDisplay();
         }
