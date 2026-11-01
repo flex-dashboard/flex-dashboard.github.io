@@ -2165,23 +2165,25 @@
     }
 
     function confirmReset() {
-        showCustomAlert(
-            "Nieuw Spel", 
-            "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
-            false, 
-            "", 
-            function() {
-                const currentP1Name = (players[0] && players[0].name) ? players[0].name : 'Speler 1';
-                players = [
-                    { name: currentP1Name, scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
-                ];
-                currentPlayerIndex = 0;
-                saveToStorage();
-                buildGrid();
-                updateDisplay();
-                resetForNextTurn();
-            }
-        );
+    showCustomAlert(
+        "Nieuw Spel", 
+        "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
+        false, 
+        "", 
+        function() {
+            // Bewaar de huidige naam van Speler 1 zodat deze niet verloren gaat
+            const currentP1Name = (players[0] && players[0].name) ? players[0].name : 'Speler 1';
+            
+            players = [
+                { name: currentP1Name, scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
+            ];
+            currentPlayerIndex = 0;
+            saveToStorage();
+            buildGrid();
+            updateDisplay();
+            resetForNextTurn();
+        }
+    );
     }
 </script>
 
