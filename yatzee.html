@@ -307,6 +307,16 @@
             align-items: center;
         }
 
+        /* Slimme positionering: pop-up bovenin bij indrukken onderin, en vice versa */
+        .overlay.position-top {
+            align-items: flex-start;
+            padding-top: 30px;
+        }
+        .overlay.position-bottom {
+            align-items: flex-end;
+            padding-bottom: 30px;
+        }
+
         .keypad {
             background: #fff;
             width: 290px;
@@ -542,6 +552,22 @@
         .roll-btn:active { transform: scale(0.96); }
         .roll-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
 
+        /* Groter alfabet-toetsenbord uitsluitend voor tablets en grotere schermen */
+        @media (min-width: 481px) {
+            #alpha-overlay .keypad {
+                width: 460px !important;
+                padding: 15px;
+            }
+            #alpha-overlay .alpha-grid .key-btn {
+                font-size: 18px !important;
+                padding: 14px 0 !important;
+            }
+            #alpha-display {
+                font-size: 26px !important;
+                min-height: 48px;
+            }
+        }
+
        /* Media Queries voor Telefoons */
         @media (max-width: 768px) {
             body { padding: 2px; }
@@ -634,7 +660,6 @@
                 font-size: 12px;
             }
 
-            /* Container voor horizontaal scrollen op mobiel */
             .table-responsive, div[style*="overflow"], .table-container {
                 overflow-x: auto;
                 -webkit-overflow-scrolling: touch;
@@ -804,7 +829,7 @@
             <button class="key-btn" onclick="pressKey('9')">9</button>
             <button class="key-btn action" onclick="pressKey('CLEAR')">Wis</button>
             <button class="key-btn" onclick="pressKey('0')">0</button>
-            <button class="key-btn action" onclick="pressKey('/')">/</button>
+            <button class="key-btn action" id="keypad-slash-btn" onclick="pressKey('/')">/</button>
             <button class="key-btn enter" onclick="pressKey('ENTER')" style="grid-column: span 3;">Enter ↵</button>
         </div>
     </div>
@@ -1034,7 +1059,7 @@
     function toggleFullscreen() {
         if (!document.fullscreenElement) {
             document.documentElement.requestFullscreen().catch(err => {
-                alert(`Fout bij inschakelen fullscreen: ${err.message}`);
+                // Stille afhandeling om full-screen stabiel te houden
             });
         } else {
             if (document.exitFullscreen) {
@@ -1142,19 +1167,16 @@
                     saveToStorage();
                     updateDisplay();
                 }
-            } else {
-                alert("Je kunt alleen je laatst ingevulde score direct wissen.");
             }
             return;
         }
 
-        // 2. Blokkeer indien al ingediend in multiplayer (geldt voor 2, 3 en 4 personen)
+        // 2. Blokkeer indien al ingediend in multiplayer
         if (players.length > 1 && p.hasSubmittedThisTurn) {
-            alert("Je hebt deze beurt al een score ingevuld! Wis deze eerst als je wilt wijzigen, of klik op het pijltje ➔ om naar de volgende speler te gaan.");
             return;
         }
 
-        // 3. Digitale dobbelsteen modus (Direct invullen zonder dubbele pop-up)
+        // 3. Digitale dobbelsteen modus
         if (diceModeActive) {
             let activeDice = lastActiveRoll;
             if (rollCount > 0) {
@@ -1162,7 +1184,6 @@
             }
 
             if (!activeDice) {
-                alert("Gooi eerst de dobbelstenen voordat je een score invult!");
                 return;
             }
 
@@ -1171,8 +1192,19 @@
             return;
         }
 
-        // 4. Fysieke modus - Open compact pop-up keuzescherm
+        // 4. Fysieke modus - Open compact pop-up keuzescherm met slimme positionering
         openPhysicalChoicePopup(colIndex, rowId, rowObj);
+    }
+
+    function applySmartOverlayPosition(overlayId, isPart2Row) {
+        const overlay = document.getElementById(overlayId);
+        overlay.classList.remove('position-top', 'position-bottom', 'centered');
+        // Als je in Deel 2 (onderin) klikt, verschijnt het toetsenbord bovenin. Als je in Deel 1 klikt, verschijnt hij onderin.
+        if (isPart2Row) {
+            overlay.classList.add('position-top');
+        } else {
+            overlay.classList.add('position-bottom');
+        }
     }
 
     function openPhysicalChoicePopup(colIndex, rowId, rowObj) {
@@ -1180,13 +1212,24 @@
         const container = document.getElementById('popup-buttons-container');
         container.innerHTML = '';
         let cleanName = rowObj.name.split('<')[0].trim();
-    document.getElementById('popup-title').innerText = `Kies voor: ${cleanName}`;
+        document.getElementById('popup-title').innerText = `Kies voor: ${cleanName}`;
         let choices = [];
 
         if (rowObj.val !== undefined) {
             const v = rowObj.val;
             choices = [v, v*2, v*3, v*4];
         } else if (rowObj.fixed !== undefined) {
+            // Controleer of Kans al is ingevuld in deze kolom
+            const p = players[currentPlayerIndex];
+            const kansKey = `c${colIndex}_d2_6`;
+            const isKansFilled = p.scores[kansKey] !== undefined;
+
+            // Als Kans nog NIET ingevuld is, direct de vaste waarde invullen zonder pop-up!
+            if (!isKansFilled) {
+                submitChoice(rowObj.fixed);
+                return;
+            }
+
             choices = [rowObj.fixed];
         } else {
             openKeypad(colIndex, rowId);
@@ -1202,12 +1245,21 @@
             container.appendChild(btn);
         });
 
-        const slashBtn = document.createElement('button');
-        slashBtn.className = 'key-btn action';
-        slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
-        slashBtn.onclick = () => submitChoice('/');
-        container.appendChild(slashBtn);
+        // Schuine streep check per kolom: Alleen tonen als 'kans' in dít specifieke spel al is ingevuld
+        const p = players[currentPlayerIndex];
+        const kansKey = `c${colIndex}_d2_6`;
+        const isKansFilled = p.scores[kansKey] !== undefined;
 
+        if (isKansFilled) {
+            const slashBtn = document.createElement('button');
+            slashBtn.className = 'key-btn action';
+            slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
+            slashBtn.onclick = () => submitChoice('/');
+            container.appendChild(slashBtn);
+        }
+
+        const isPart2 = rowId.startsWith('d2_');
+        applySmartOverlayPosition('choice-popup-overlay', isPart2);
         document.getElementById('choice-popup-overlay').style.display = 'flex';
     }
 
@@ -1280,10 +1332,7 @@
 
     function toggleLock(index) {
         const p = players[currentPlayerIndex];
-        if (players.length > 1 && p.hasSubmittedThisTurn) {
-            alert("Je hebt je score al ingevuld! Klik op het pijltje ➔ om naar de volgende speler te gaan.");
-            return;
-        }
+        if (players.length > 1 && p.hasSubmittedThisTurn) return;
         if (isRolling || rollCount === 0 || turnEnded) return;
         const d = diceInstances[index];
         d.isLocked = !d.isLocked;
@@ -1292,10 +1341,7 @@
 
     function handleRollClick() {
         const p = players[currentPlayerIndex];
-        if (players.length > 1 && p.hasSubmittedThisTurn) {
-            alert("Je hebt je score al ingevuld voor deze beurt! Klik op het pijltje ➔ om naar de volgende speler te gaan.");
-            return;
-        }
+        if (players.length > 1 && p.hasSubmittedThisTurn) return;
         if (turnEnded || rollCount >= 3) {
             resetForNextTurn();
         }
@@ -1433,17 +1479,11 @@
         return targetSub.every(val => array.includes(val));
     }
 
-    /* --- HANDMATIGE SPELER WISSEL & SETUP (Geldt voor 2, 3 en 4 personen) --- */
+    /* --- HANDMATIGE SPELER WISSEL & SETUP --- */
     function nextPlayerManually() {
-        if (players.length <= 1) {
-            alert("Je speelt in je eentje. Klik op je naam als je meerdere spelers wilt instellen.");
-            return;
-        }
+        if (players.length <= 1) return;
         const p = players[currentPlayerIndex];
-        if (!p.hasSubmittedThisTurn) {
-            alert("Vul eerst je score in!");
-            return;
-        }
+        if (!p.hasSubmittedThisTurn) return;
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         const nextP = players[currentPlayerIndex];
 
@@ -1559,6 +1599,17 @@
             cellEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         }
 
+        // Schuine streep knop op cijfertoetsenbord tonen/verbergen op basis van of Kans al ingevuld is in deze kolom
+        const kansKey = `c${colIndex}_d2_6`;
+        const isKansFilled = p.scores[kansKey] !== undefined;
+        const slashBtnEl = document.getElementById('keypad-slash-btn');
+        if (slashBtnEl) {
+            slashBtnEl.style.display = isKansFilled ? 'block' : 'none';
+        }
+
+        const isPart2 = rowId.startsWith('d2_');
+        applySmartOverlayPosition('keypad-overlay', isPart2);
+
         const overlay = document.getElementById('keypad-overlay');
         document.getElementById('keypad-display').innerText = currentInputValue;
         overlay.style.display = 'flex';
@@ -1587,7 +1638,7 @@
         } else if (val === 'ENTER') {
             const p = players[currentPlayerIndex];
             const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
-            if (currentInputValue === '') {
+            if (currentInputValue === '' || currentInputValue === 'Tel al je stenen op') {
                 delete p.scores[uniqueKey];
                 if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
                 p.hasSubmittedThisTurn = false;
@@ -1597,9 +1648,9 @@
                 p.hasSubmittedThisTurn = true;
             } else {
                 let numVal = parseInt(currentInputValue, 10);
-                // Controle op maximale invoerlimiet van 29 voor Kans, Drie- en Vier-gelijke
                 if ((activeTarget.rowId === 'd2_0' || activeTarget.rowId === 'd2_1' || activeTarget.rowId === 'd2_6') && numVal > 29) {
-                    alert("U kiest teveel. Dat kan niet.");
+                    currentInputValue = 'Tel al je stenen op';
+                    document.getElementById('keypad-display').innerText = currentInputValue;
                     return;
                 }
                 p.scores[uniqueKey] = numVal;
@@ -1617,7 +1668,7 @@
             closeKeypad();
             return;
         } else {
-            if (currentInputValue === '/') currentInputValue = '';
+            if (currentInputValue === '/' || currentInputValue === 'Tel al je stenen op') currentInputValue = '';
             if (currentInputValue.length < 3) currentInputValue += val;
         }
         document.getElementById('keypad-display').innerText = currentInputValue;
@@ -1632,10 +1683,8 @@
         };
 
         const hasVal = (rowId) => p.scores[`c${colIndex}_${rowId}`] !== undefined;
-
         let targetKey = `c${colIndex}_${totalRowId}`;
 
-        // Bovenste helft berekening: tussentijds totaal mag altijd, bonus en totaal_boven pas als alle 6 vakjes gevuld zijn
         if (totalRowId === 'totaal_p1' || totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
             let sum = 0;
             let count = 0;
@@ -1646,10 +1695,7 @@
             p.scores[`c${colIndex}_totaal_p1`] = sum;
 
             if (totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
-                if (count < 6) {
-                    alert("Vul eerst alle 6 de vakjes van de bovenste helft in voordat de bonus en het totaal berekend kunnen worden!");
-                    return;
-                }
+                if (count < 6) return;
                 let bonusVal = (sum >= 63) ? 35 : 0;
                 p.scores[`c${colIndex}_bonus`] = bonusVal;
                 p.scores[`c${colIndex}_totaal_boven`] = sum + bonusVal;
@@ -1670,7 +1716,6 @@
             }
         } 
         else if (totalRowId === 'eindtotaal') {
-            // Automatisch doorrekenen in 1 klik zonder dubbele bonus
             let sumD1 = 0, countD1 = 0;
             ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
                 if (hasVal(id)) { sumD1 += getVal(id); countD1++; }
@@ -1696,8 +1741,6 @@
             let d2Total = p.scores[`c${colIndex}_totaal_d2`];
             if (d1Total !== undefined && d2Total !== undefined) {
                 p.scores[targetKey] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
-            } else {
-                alert("Zorg dat eerst alle benodigde vakjes van deel 1 en deel 2 zijn ingevuld!");
             }
         }
 
@@ -1713,7 +1756,6 @@
         let filledCount = 0;
 
         for (let c = 0; c < numGames; c++) {
-            // Automatische tussentijdse bovenste helft check voor automatische updates op de 6e invoer
             let sumD1 = 0, countD1 = 0;
             ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
                 const val = p.scores[`c${c}_${id}`];
@@ -1803,15 +1845,12 @@
                     players = parsed.players;
                     currentPlayerIndex = parsed.currentPlayerIndex || 0;
                 }
-            } catch(e) {
-                console.error("Fout bij laden opslag", e);
-            }
+            } catch(e) {}
         }
     }
 
     function confirmReset() {
         if (confirm("Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?")) {
-            // Maak de scores van alle bestaande spelers leeg, maar behoud hun namen!
             players.forEach(p => {
                 p.scores = {};
                 p.lastActionKey = null;
