@@ -608,170 +608,197 @@
         }
 
        /* Media Queries voor Telefoons */
-        @media (max-width: 768px) {
-            body { padding: 2px; }
-            
-            .header-bar {
-                padding: 6px 8px;
-                gap: 6px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                position: relative;
-            }
+@media (max-width: 768px) {
+    /* Verticale scrollbalk hersteld zodat je altijd het hele blaadje kunt bereiken */
+    html, body {
+        padding: 2px;
+    }
+    
+    .header-bar {
+        padding: 6px 8px;
+        gap: 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
 
-            .header-left {
-                width: 100%;
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                gap: 6px;
-            }
+    .header-left {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 6px;
+    }
 
-            button.nav-btn {
-                font-size: 0px !important;
-                padding: 5px 8px;
-            }
-            button.nav-btn::before {
-                font-size: 16px;
-            }
-            button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
-            button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
-            
-            a.nav-btn {
-                font-size: 0px !important;
-                padding: 5px 8px;
-            }
-            a.nav-btn::before {
-                content: "🏠";
-                font-size: 16px;
-            }
+    button.nav-btn {
+        font-size: 0px !important;
+        padding: 5px 8px;
+    }
+    button.nav-btn::before {
+        font-size: 16px;
+    }
+    button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
+    button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
+    
+    a.nav-btn {
+        font-size: 0px !important;
+        padding: 5px 8px;
+    }
+    a.nav-btn::before {
+        content: "🏠";
+        font-size: 16px;
+    }
 
-            .header-title {
-                font-size: 18px;
-                position: absolute;
-                left: 51%;
-                transform: translateX(-50%);
-                top: 8px;
-                letter-spacing: 0.5px;
-            }
+    .header-title {
+        font-size: 18px;
+        position: absolute;
+        left: 51%;
+        transform: translateX(-50%);
+        top: 8px;
+        letter-spacing: 0.5px;
+    }
 
-            .header-right-group {
-                position: absolute;
-                top: 6px;
-                right: 8px;
-                gap: 4px;
-            }
+    .header-right-group {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        gap: 4px;
+    }
 
-            .turn-counter-box {
-                font-size: 12px;
-                padding: 3px 6px;
-            }
+    .turn-counter-box {
+        font-size: 12px;
+        padding: 3px 6px;
+    }
 
-            .global-total-box {
-                font-size: 14px;
-                padding: 3px 6px;
-                min-width: 50px;
-            }
+    .global-total-box {
+        font-size: 14px;
+        padding: 3px 6px;
+        min-width: 50px;
+    }
 
-            .player-name-container {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 4px;
-                margin-top: 2px;
-            }
+    .player-name-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        margin-top: 2px;
+    }
 
-            .player-name-input {
-                width: 95px;
-                font-size: 15px;
-                padding: 4px 6px;
-            }
+    .player-name-input {
+        width: 95px;
+        font-size: 15px;
+        padding: 4px 6px;
+    }
 
-            .player-switch-btn {
-                padding: 4px 8px;
-                font-size: 14px;
-            }
+    .player-switch-btn {
+        padding: 4px 8px;
+        font-size: 14px;
+    }
 
-            .btn-reset-top {
-                padding: 5px 8px;
-                font-size: 12px;
-            }
+    .btn-reset-top {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
 
-            .table-responsive, div[style*="overflow"], .table-container {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                width: 100%;
-            }
+    .table-responsive, div[style*="overflow"], .table-container {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        scroll-snap-type: x mandatory;
+        position: relative;
+    }
 
-            table.yatzee-table {
-                width: 750px;
-                min-width: 750px;
-                table-layout: fixed;
-                border-collapse: separate !important;
-                border-spacing: 0 !important;
-            }
+    table.yatzee-table {
+        width: 750px;
+        min-width: 750px;
+        table-layout: fixed;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
 
-            table.yatzee-table td.category-cell, 
-            table.yatzee-table th:first-child {
-                position: sticky;
-                left: 0;
-                background-color: #ffffff;
-                z-index: 20;
-                border-right: 3px solid #000000 !important;
-            }
+    /* EERSTE VAK EXACT ONGEMOEID GELATEN */
+    table.yatzee-table td.category-cell, 
+    table.yatzee-table th:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #ffffff;
+        z-index: 20;
+        border-right: 3px solid #000000 !important;
+    }
 
-            table.yatzee-table th, table.yatzee-table td { height: 38px; font-size: 15px; }
-            table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
-            .cat-title { font-size: 12px; }
-            .sub-text { font-size: 9px; }
-            
-            .keypad { width: 240px; padding: 8px; }
-            .key-btn { padding: 6px 0; font-size: 15px; }
-            .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
-            
-            .dice-bar-container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                align-items: center;
-                gap: 6px;
-                padding: 8px;
-            }
+    table.yatzee-table th, table.yatzee-table td { 
+        height: 38px; 
+        font-size: 15px;
+        scroll-snap-align: start;
+    }
 
-            .dice-row {
-                width: 100%;
-                display: flex;
-                gap: 4px;
-                justify-content: center;
-            }
-            .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
-            .gds-face-front  { transform: translateZ(21px); }
-            .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
-            .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
-            .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
-            .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
-            .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
-            .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+    table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
+    .cat-title { font-size: 12px; }
+    .sub-text { font-size: 9px; }
 
-            .controls-middle {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                flex: 1;
-            }
-            .info-pill { padding: 6px 8px; font-size: 11px; }
-            .in-btn { width: 30px; height: 30px; font-size: 11px; }
-            .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
+    /* VASTE SCROLL-PIJLTJES TEGEN DE RECHTERKANT */
+    table.yatzee-table tr:nth-child(2) td:nth-child(2):after,
+    table.yatzee-table tr:nth-child(13) td:nth-child(2):after {
+        content: "›";
+        position: fixed;
+        right: 6px;
+        font-size: 22px;
+        color: rgba(0, 0, 0, 0.45);
+        background: rgba(255, 255, 255, 0.85);
+        padding: 0 4px;
+        border-radius: 3px;
+        z-index: 30;
+        line-height: 1;
+        pointer-events: none;
+    }
+    
+    .keypad { width: 240px; padding: 8px; }
+    .key-btn { padding: 6px 0; font-size: 15px; }
+    .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
+    
+    .dice-bar-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        padding: 8px;
+    }
 
-            .roll-btn { 
-                width: 110px; 
-                font-size: 12px; 
-                padding: 8px 10px; 
-                flex-shrink: 0;
-            }
-        }
+    .dice-row {
+        width: 100%;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
+    .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
+    .gds-face-front  { transform: translateZ(21px); }
+    .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
+    .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
+    .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
+    .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
+    .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
+    .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+
+    .controls-middle {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex: 1;
+    }
+    .info-pill { padding: 6px 8px; font-size: 11px; }
+    .in-btn { width: 30px; height: 30px; font-size: 11px; }
+    .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
+
+    .roll-btn { 
+        width: 110px; 
+        font-size: 12px; 
+        padding: 8px 10px; 
+        flex-shrink: 0;
+    }
+}
     </style>
 </head>
 <body>
