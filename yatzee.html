@@ -102,19 +102,19 @@
             left: 95px;
             top: 50%;
             transform: translateY(-50%);
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             text-align: center;
         }
 
         .dice-icon img {
             width: 100%;
             height: 100%;
-            border-radius: 6px;
+            border-radius: 4px;
             object-fit: cover;
         }
 
-        /* Handmatige speler-wissel pijltjesknop */
+        /* Handmatige speler-wissel pijltjesknop & Knipperanimatie */
         .player-switch-btn {
             background: #27ae60;
             color: white;
@@ -128,6 +128,16 @@
         }
         .player-switch-btn:hover {
             background: #2ecc71;
+        }
+
+        @keyframes pulseArrow {
+            0% { transform: scale(1); background-color: #27ae60; box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            50% { transform: scale(1.15); background-color: #2ecc71; box-shadow: 0 0 15px 5px rgba(46, 204, 113, 0.9); }
+            100% { transform: scale(1); background-color: #27ae60; box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+        }
+
+        .player-switch-btn.pulsing {
+            animation: pulseArrow 1s infinite ease-in-out;
         }
 
         /* Rode Nieuw Spel knop in zwarte bovenbalk */
@@ -182,7 +192,7 @@
         /* Tabel Wrapper met horizontale scroll */
         .score-table-wrapper {
             overflow-x: auto;
-            max-height: calc(100vh - 170px);
+            max-height: calc(100vh - 220px);
             background: #fff;
             position: relative;
         }
@@ -288,7 +298,7 @@
             box-shadow: inset 0 0 0 3px #ff9900;
         }
 
-        /* Toetsenborden Overlays */
+        /* Toetsenborden & Eigen In-App Modals Overlays */
         .overlay {
             display: none;
             position: fixed;
@@ -307,7 +317,6 @@
             align-items: center;
         }
 
-        /* Slimme positionering: pop-up bovenin bij indrukken onderin, en vice versa */
         .overlay.position-top {
             align-items: flex-start;
             padding-top: 30px;
@@ -315,6 +324,54 @@
         .overlay.position-bottom {
             align-items: flex-end;
             padding-bottom: 30px;
+        }
+
+        /* Eigen In-app Melding / Pop-up styling met Kruisje */
+        .custom-modal {
+            background: #fff;
+            width: 320px;
+            max-width: 90vw;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            border: 2px solid #333;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close-cross {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+        }
+        .modal-close-cross:hover {
+            color: #000;
+        }
+
+        .custom-modal h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #d9534f;
+        }
+
+        .custom-modal p {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .popup-subtext {
+            font-size: 12px;
+            color: #666;
+            margin-top: 6px;
+            font-weight: normal;
         }
 
         .keypad {
@@ -363,6 +420,8 @@
         .key-btn:active { background: #cbd3da; }
         .key-btn.action { background: #ffcccc; color: #b30000; }
         .key-btn.enter { background: #d4edda; color: #155724; grid-column: span 2; }
+        .key-btn.next-player { background: #27ae60; color: #fff; }
+        .key-btn.next-player:hover { background: #2ecc71; }
 
         .alpha-grid {
             display: grid;
@@ -376,45 +435,42 @@
         .alpha-grid .enter-key { grid-column: span 2; background: #d4edda; color: #155724; }
 
         /* --- SCREENSAVER STIJLEN --- */
-
-
         #screensaver-overlay {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    background: #000;
-    z-index: 9999;
-    overflow: hidden;
-    cursor: pointer;
-}
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 9999;
+            overflow: hidden;
+            cursor: pointer;
+        }
 
-.ss-dice {
-    position: absolute;
-    width: 60px;
-    height: 60px;
-    border-radius: 12px; /* Geeft de container mooie afgeronde hoekjes */
-    overflow: hidden;     /* Snjdt alle overstekende witte hoekjes direct af */
-    will-change: transform, left, top;
-    animation: screensaverRotate 8s linear infinite; /* Laat de HELE container meedraaien! */
-}
+        .ss-dice {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            will-change: transform, left, top;
+            animation: screensaverRotate 8s linear infinite;
+        }
 
-.ss-dice img {
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-    /* Geen animatie meer hier, want de container doet het werk al */
-}
+        .ss-dice img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
 
-@keyframes screensaverRotate {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
+        @keyframes screensaverRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
 
-        /* --- PURE CSS 3D DOBBELBEKER STIJLEN --- */
+        /* --- PURE CSS 3D DOBBELBEKER STIJLEN (TERUG IN HET MIDDEN) --- */
         .dice-bar-wrapper {
             display: none;
             background: #222222;
@@ -591,6 +647,13 @@
         .roll-btn:active { transform: scale(0.96); }
         .roll-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
 
+        /* SCROLLKNOP VERBORGEN OP LAPTOPS EN GROTE SCHERMEN */
+        @media (min-width: 769px) {
+            .scroll-arrow-btn {
+                display: none !important;
+            }
+        }
+
         /* Groter alfabet-toetsenbord uitsluitend voor tablets en grotere schermen */
         @media (min-width: 481px) {
             #alpha-overlay .keypad {
@@ -607,204 +670,206 @@
             }
         }
 
-       /* Media Queries voor Telefoons */
-@media (max-width: 768px) {
-    /* Verticale scrollbalk hersteld zodat je altijd het hele blaadje kunt bereiken */
-    html, body {
-        padding: 2px;
-    }
-    
-    .header-bar {
-        padding: 6px 8px;
-        gap: 6px;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        position: relative;
-    }
+        /* Media Queries uitsluitend voor Telefoons (max-width: 768px) */
+        @media (max-width: 768px) {
+            html, body {
+                padding: 2px;
+            }
+            
+            .header-bar {
+                padding: 6px 8px;
+                gap: 6px;
+                display: flex;
+                flex-direction: column;
+                align-items: center;
+                position: relative;
+            }
 
-    .header-left {
-        width: 100%;
-        display: flex;
-        justify-content: flex-start;
-        align-items: center;
-        gap: 6px;
-    }
+            .header-left {
+                width: 100%;
+                display: flex;
+                justify-content: flex-start;
+                align-items: center;
+                gap: 6px;
+            }
 
-    button.nav-btn {
-        font-size: 0px !important;
-        padding: 5px 8px;
-    }
-    button.nav-btn::before {
-        font-size: 16px;
-    }
-    button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
-    button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
-    
-    a.nav-btn {
-        font-size: 0px !important;
-        padding: 5px 8px;
-    }
-    a.nav-btn::before {
-        content: "🏠";
-        font-size: 16px;
-    }
+            button.nav-btn {
+                font-size: 0px !important;
+                padding: 5px 8px;
+            }
+            button.nav-btn::before {
+                font-size: 16px;
+            }
+            button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
+            button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
+            
+            a.nav-btn {
+                font-size: 0px !important;
+                padding: 5px 8px;
+            }
+            a.nav-btn::before {
+                content: "🏠";
+                font-size: 16px;
+            }
 
-    .header-title {
-        font-size: 18px;
-        position: absolute;
-        left: 51%;
-        transform: translateX(-50%);
-        top: 8px;
-        letter-spacing: 0.5px;
-    }
+            .header-title {
+                font-size: 18px;
+                position: absolute;
+                left: 51%;
+                transform: translateX(-50%);
+                top: 8px;
+                letter-spacing: 0.5px;
+            }
 
-    .header-right-group {
-        position: absolute;
-        top: 6px;
-        right: 8px;
-        gap: 4px;
-    }
+            .header-right-group {
+                position: absolute;
+                top: 6px;
+                right: 8px;
+                gap: 4px;
+            }
 
-    .turn-counter-box {
-        font-size: 12px;
-        padding: 3px 6px;
-    }
+            .turn-counter-box {
+                font-size: 12px;
+                padding: 3px 6px;
+            }
 
-    .global-total-box {
-        font-size: 14px;
-        padding: 3px 6px;
-        min-width: 50px;
-    }
+            .global-total-box {
+                font-size: 14px;
+                padding: 3px 6px;
+                min-width: 50px;
+            }
 
-    .player-name-container {
-        width: 100%;
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 4px;
-        margin-top: 2px;
-    }
+            .player-name-container {
+                width: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                gap: 4px;
+                margin-top: 2px;
+            }
 
-    .player-name-input {
-        width: 95px;
-        font-size: 15px;
-        padding: 4px 6px;
-    }
+            .player-name-input {
+                width: 95px;
+                font-size: 15px;
+                padding: 4px 6px;
+            }
 
-    .player-switch-btn {
-        padding: 4px 8px;
-        font-size: 14px;
-    }
+            .player-switch-btn {
+                padding: 4px 8px;
+                font-size: 14px;
+            }
 
-    .btn-reset-top {
-        padding: 5px 8px;
-        font-size: 12px;
-    }
+            .btn-reset-top {
+                padding: 5px 8px;
+                font-size: 12px;
+            }
 
-    .table-responsive, div[style*="overflow"], .table-container {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
-        width: 100%;
-        scroll-snap-type: x mandatory;
-        position: relative;
-    }
+            .score-table-wrapper {
+                overflow-x: auto;
+                -webkit-overflow-scrolling: touch;
+                width: 100%;
+                position: relative;
+                max-height: calc(100vh - 200px);
+            }
 
-    table.yatzee-table {
-        width: 750px;
-        min-width: 750px;
-        table-layout: fixed;
-        border-collapse: separate !important;
-        border-spacing: 0 !important;
-    }
+            table.yatzee-table {
+                width: 750px;
+                min-width: 750px;
+                table-layout: fixed;
+                border-collapse: separate !important;
+                border-spacing: 0 !important;
+            }
 
-    /* EERSTE VAK EXACT ONGEMOEID GELATEN */
-    table.yatzee-table td.category-cell, 
-    table.yatzee-table th:first-child {
-        position: sticky;
-        left: 0;
-        background-color: #ffffff;
-        z-index: 20;
-        border-right: 3px solid #000000 !important;
-    }
+            table.yatzee-table td.category-cell, 
+            table.yatzee-table th:first-child {
+                position: sticky;
+                left: 0;
+                background-color: #ffffff;
+                z-index: 20;
+                border-right: 3px solid #000000 !important;
+            }
 
-    table.yatzee-table th, table.yatzee-table td { 
-        height: 38px; 
-        font-size: 15px;
-        scroll-snap-align: start;
-    }
+            table.yatzee-table th, table.yatzee-table td { 
+                height: 38px; 
+                font-size: 15px;
+            }
 
-    table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
-    .cat-title { font-size: 12px; }
-    .sub-text { font-size: 9px; }
+            table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
+            .cat-title { font-size: 12px; }
+            .sub-text { font-size: 9px; }
 
-    /* VASTE SCROLL-PIJLTJES TEGEN DE RECHTERKANT */
-    table.yatzee-table tr:nth-child(2) td:nth-child(2):after,
-    table.yatzee-table tr:nth-child(13) td:nth-child(2):after {
-        content: "›";
-        position: fixed;
-        right: 6px;
-        font-size: 22px;
-        color: rgba(0, 0, 0, 0.45);
-        background: rgba(255, 255, 255, 0.85);
-        padding: 0 4px;
-        border-radius: 3px;
-        z-index: 30;
-        line-height: 1;
-        pointer-events: none;
-    }
-    
-    .keypad { width: 240px; padding: 8px; }
-    .key-btn { padding: 6px 0; font-size: 15px; }
-    .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
-    
-    .dice-bar-container {
-        display: flex;
-        flex-wrap: wrap;
-        justify-content: space-between;
-        align-items: center;
-        gap: 6px;
-        padding: 8px;
-    }
+            /* SUBTIEL SCROLL-PIJLTJE OP MOBIEL */
+            .scroll-arrow-btn {
+                position: fixed;
+                right: 5px;
+                top: 60%;
+                transform: translateY(-50%);
+                background: rgba(0, 0, 0, 0.6);
+                color: #fff;
+                border: 1px solid #fff;
+                font-size: 18px;
+                font-weight: bold;
+                width: 30px;
+                height: 30px;
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                z-index: 50;
+                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            }
+            
+            .keypad { width: 240px; padding: 8px; }
+            .key-btn { padding: 6px 0; font-size: 15px; }
+            .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
+            
+            .dice-bar-container {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-between;
+                align-items: center;
+                gap: 6px;
+                padding: 8px;
+            }
 
-    .dice-row {
-        width: 100%;
-        display: flex;
-        gap: 4px;
-        justify-content: center;
-    }
-    .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
-    .gds-face-front  { transform: translateZ(21px); }
-    .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
-    .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
-    .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
-    .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
-    .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
-    .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+            .dice-row {
+                width: 100%;
+                display: flex;
+                gap: 4px;
+                justify-content: center;
+            }
+            .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
+            .gds-face-front  { transform: translateZ(21px); }
+            .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
+            .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
+            .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
+            .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
+            .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
+            .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
 
-    .controls-middle {
-        display: flex;
-        align-items: center;
-        gap: 5px;
-        flex: 1;
-    }
-    .info-pill { padding: 6px 8px; font-size: 11px; }
-    .in-btn { width: 30px; height: 30px; font-size: 11px; }
-    .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
+            .controls-middle {
+                display: flex;
+                align-items: center;
+                gap: 5px;
+                flex: 1;
+            }
+            .info-pill { padding: 6px 8px; font-size: 11px; }
+            .in-btn { width: 30px; height: 30px; font-size: 11px; }
+            .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
 
-    .roll-btn { 
-        width: 110px; 
-        font-size: 12px; 
-        padding: 8px 10px; 
-        flex-shrink: 0;
-    }
-}
+            .roll-btn { 
+                width: 110px; 
+                font-size: 12px; 
+                padding: 8px 10px; 
+                flex-shrink: 0;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <!-- Zwarte bovenbalk met knoppen, Spelernaam, Handmatig Pijltje, Nieuw Spel knop, Beurtenteller en Totaal-vakje -->
     <div class="header-bar">
         <div class="header-left">
             <a href="index.html" class="nav-btn" title="Naar Hoofddashboard">🏠</a>
@@ -814,7 +879,7 @@
         </div>
         <div class="player-name-container">
             <div id="player-name-display" class="player-name-input" onclick="openPlayerSetup()" title="Klik om spelers in te stellen">Naam</div>
-            <button class="player-switch-btn" onclick="nextPlayerManually()" title="Naar volgende speler">➔</button>
+            <button id="player-switch-btn" class="player-switch-btn" onclick="nextPlayerManually()" title="Naar volgende speler">➔</button>
             <button class="btn-reset-top" onclick="confirmReset()">Nieuw Spel</button>
         </div>
         <div class="header-right-group">
@@ -824,12 +889,11 @@
     </div>
 
     <!-- Scoreblad Deel 1 -->
-    <div class="score-table-wrapper">
+    <div class="score-table-wrapper" id="table-wrapper-1">
         <table class="yatzee-table">
-            <tbody id="table-body-d1">
-                <!-- Wordt dynamisch opgebouwd -->
-            </tbody>
+            <tbody id="table-body-d1"></tbody>
         </table>
+        <button class="scroll-arrow-btn" onclick="scrollNextColumn()" title="Volgende kolom / Oneindige loop">›</button>
     </div>
 
     <!-- Midden-balk: Digitale Dobbelbeker -->
@@ -846,16 +910,25 @@
     </div>
 
     <!-- Scoreblad Deel 2 -->
-    <div class="score-table-wrapper">
+    <div class="score-table-wrapper" id="table-wrapper-2">
         <table class="yatzee-table">
-            <tbody id="table-body-d2">
-                <!-- Wordt dynamisch opgebouwd -->
-            </tbody>
+            <tbody id="table-body-d2"></tbody>
         </table>
     </div>
 </div>
 
-<!-- Screensaver Overlay met 6 losse dobbelstenen -->
+<!-- Eigen In-App Melding / Pop-up Overlay (Geen browser alerts/confirms meer) -->
+<div id="custom-alert-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'custom-alert-overlay')">
+    <div class="custom-modal">
+        <span class="modal-close-cross" onclick="closeCustomAlert()">×</span>
+        <h3 id="custom-alert-title">Let op!</h3>
+        <p id="custom-alert-text">Bericht tekst...</p>
+        <button id="custom-alert-main-btn" class="key-btn enter" style="width: 100%;" onclick="closeCustomAlert()">OK ↵</button>
+        <div id="custom-alert-subtext" class="popup-subtext"></div>
+    </div>
+</div>
+
+<!-- Screensaver Overlay -->
 <div id="screensaver-overlay" onclick="hideScreensaver()">
     <div class="ss-dice" id="ss-dice-0"><img src="dobbelsteen1.png" alt="1"></div>
     <div class="ss-dice" id="ss-dice-1"><img src="dobbelsteen2.png" alt="2"></div>
@@ -863,10 +936,9 @@
     <div class="ss-dice" id="ss-dice-3"><img src="dobbelsteen4.png" alt="4"></div>
     <div class="ss-dice" id="ss-dice-4"><img src="dobbelsteen5.png" alt="5"></div>
     <div class="ss-dice" id="ss-dice-5"><img src="dobbelsteen6.png" alt="6"></div>
-
 </div>
 
-<!-- Overlay voor Speleraantal & Namen Instellen -->
+<!-- Overlay voor Speleraantal & Namen -->
 <div id="player-setup-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'player-setup-overlay')">
     <div class="keypad" style="width: 310px; text-align: center;">
         <h3 style="margin-bottom: 10px; font-size: 18px;">Aantal Spelers</h3>
@@ -881,7 +953,7 @@
     </div>
 </div>
 
-<!-- Keuzemenu / Pop-up Overlay (voor compacte keuzes & vaste combinaties met schuine streep) -->
+<!-- Keuzemenu / Pop-up Overlay -->
 <div id="choice-popup-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'choice-popup-overlay')">
     <div class="keypad" style="width: 300px; text-align: center;">
         <h3 id="popup-title" style="margin-bottom: 12px; font-size: 18px;">Maak je keuze</h3>
@@ -890,7 +962,7 @@
     </div>
 </div>
 
-<!-- Cijfertoetsenbord Overlay (voor vrije som-categorieën zoals Three/Four of a kind en Kans) -->
+<!-- Cijfertoetsenbord Overlay -->
 <div id="keypad-overlay" class="overlay" onclick="handleOverlayClick(event, 'keypad-overlay')">
     <div class="keypad">
         <div id="keypad-display" class="keypad-display"></div>
@@ -912,7 +984,7 @@
     </div>
 </div>
 
-<!-- Alfabettoetsenbord Overlay voor Spelersnaam (Alfabetische volgorde A-Z) -->
+<!-- Alfabettoetsenbord Overlay -->
 <div id="alpha-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'alpha-overlay')">
     <div class="keypad" style="width: 320px;">
         <div id="alpha-display" class="keypad-display"></div>
@@ -922,35 +994,29 @@
             <button class="key-btn" onclick="pressAlpha('C')">C</button>
             <button class="key-btn" onclick="pressAlpha('D')">D</button>
             <button class="key-btn" onclick="pressAlpha('E')">E</button>
-
             <button class="key-btn" onclick="pressAlpha('F')">F</button>
             <button class="key-btn" onclick="pressAlpha('G')">G</button>
             <button class="key-btn" onclick="pressAlpha('H')">H</button>
             <button class="key-btn" onclick="pressAlpha('I')">I</button>
             <button class="key-btn" onclick="pressAlpha('J')">J</button>
-
             <button class="key-btn" onclick="pressAlpha('K')">K</button>
             <button class="key-btn" onclick="pressAlpha('L')">L</button>
             <button class="key-btn" onclick="pressAlpha('M')">M</button>
             <button class="key-btn" onclick="pressAlpha('N')">N</button>
             <button class="key-btn" onclick="pressAlpha('O')">O</button>
-
             <button class="key-btn" onclick="pressAlpha('P')">P</button>
             <button class="key-btn" onclick="pressAlpha('Q')">Q</button>
             <button class="key-btn" onclick="pressAlpha('R')">R</button>
             <button class="key-btn" onclick="pressAlpha('S')">S</button>
             <button class="key-btn" onclick="pressAlpha('T')">T</button>
-
             <button class="key-btn" onclick="pressAlpha('U')">U</button>
             <button class="key-btn" onclick="pressAlpha('V')">V</button>
             <button class="key-btn" onclick="pressAlpha('W')">W</button>
             <button class="key-btn" onclick="pressAlpha('X')">X</button>
             <button class="key-btn" onclick="pressAlpha('Y')">Y</button>
-
             <button class="key-btn" onclick="pressAlpha('Z')">Z</button>
             <button class="key-btn" onclick="pressAlpha('BACKSPACE')">⌫</button>
             <button class="key-btn space-key" onclick="pressAlpha('SPACE')">Spatie</button>
-
             <button class="key-btn clear-key" onclick="pressAlpha('CLEAR')">Wis</button>
             <button class="key-btn enter-key" onclick="pressAlpha('ENTER')">Enter ↵</button>
         </div>
@@ -988,7 +1054,6 @@
         { type: 'total', id: 'eindtotaal', name: 'totaal ➔', sub: '' }
     ];
 
-    // Multi-player status (1 t/m 4 spelers)
     let players = [
         { name: 'Speler 1', scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
     ];
@@ -997,11 +1062,67 @@
     let activeTarget = { colIndex: null, rowId: null };
     let currentInputValue = '';
     let currentAlphaValue = '';
+    let isFirstAlphaKey = true;
     let editingPlayerIdx = null;
 
-    /* --- SCREENSAVER LOGICA (6 LOSSE DOBBELSTENEN) --- */
+    /* --- EIGEN IN-APP MODAL (GEEN BROWSER ALERTS/CONFIRMS) --- */
+    function showCustomAlert(title, message, isNextPlayerAction = false, subtext = '', customCallback = null) {
+        document.getElementById('custom-alert-title').innerText = title;
+        document.getElementById('custom-alert-text').innerText = message;
+        
+        const mainBtn = document.getElementById('custom-alert-main-btn');
+        const subtextEl = document.getElementById('custom-alert-subtext');
+
+        if (customCallback) {
+            mainBtn.className = "key-btn enter";
+            mainBtn.innerText = "Ja, start nieuw spel ↵";
+            mainBtn.onclick = function() {
+                closeCustomAlert();
+                customCallback();
+            };
+            subtextEl.innerText = subtext || "";
+        } else if (isNextPlayerAction) {
+            mainBtn.className = "key-btn next-player";
+            mainBtn.innerText = "Volgende Speler ➔";
+            mainBtn.onclick = function() {
+                closeCustomAlert();
+                nextPlayerManually();
+            };
+            subtextEl.innerText = subtext || "Klik hier om direct door te gaan naar de volgende speler";
+        } else {
+            mainBtn.className = "key-btn enter";
+            mainBtn.innerText = "OK ↵";
+            mainBtn.onclick = function() {
+                closeCustomAlert();
+            };
+            subtextEl.innerText = subtext || "";
+        }
+
+        document.getElementById('custom-alert-overlay').style.display = 'flex';
+    }
+
+    function closeCustomAlert() {
+        document.getElementById('custom-alert-overlay').style.display = 'none';
+    }
+
+    /* --- ONEINDIGE LOOP & SCROLL-PIJL LOGICA (KOLOM 1 t/m 6 NAAR 1) --- */
+    function scrollNextColumn() {
+        const wrapper1 = document.getElementById('table-wrapper-1');
+        const wrapper2 = document.getElementById('table-wrapper-2');
+        const maxScroll = wrapper1.scrollWidth - wrapper1.clientWidth;
+        
+        let targetScroll = wrapper1.scrollLeft + 150;
+        if (wrapper1.scrollLeft >= maxScroll - 10) {
+            targetScroll = 0;
+        }
+
+        wrapper1.scrollTo({ left: targetScroll, behavior: 'smooth' });
+        wrapper2.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
+
+    /* --- SCREENSAVER LOGICA --- */
     let inactivityTimer = null;
-    const INACTIVITY_LIMIT = 2 * 60 * 1000; // 2 minuten
+    const INACTIVITY_LIMIT = 2 * 60 * 1000;
     let screensaverActive = false;
     let ssAnimFrame = null;
     let ssDiceObjects = [];
@@ -1014,7 +1135,7 @@
 
     function showScreensaver() {
         screensaverActive = true;
-        document.body.style.overflow = 'hidden'; // Blokkeert scrollbalken op de achtergrond
+        document.body.style.overflow = 'hidden';
         const overlay = document.getElementById('screensaver-overlay');
         overlay.style.display = 'block';
 
@@ -1028,7 +1149,6 @@
                 dy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random() * 2)
             });
         }
-
         animateScreensaver();
     }
 
@@ -1037,34 +1157,29 @@
         screensaverActive = false;
         cancelAnimationFrame(ssAnimFrame);
         document.getElementById('screensaver-overlay').style.display = 'none';
-        document.body.style.overflow = ''; // Herstelt normaal scrollen op het scoreblad
+        document.body.style.overflow = '';
         resetInactivityTimer();
     }
 
     function animateScreensaver() {
         if (!screensaverActive) return;
-
         const maxX = window.innerWidth - 60;
         const maxY = window.innerHeight - 60;
 
         ssDiceObjects.forEach(d => {
             d.x += d.dx;
             d.y += d.dy;
-
             if (d.x <= 0) { d.x = 0; d.dx *= -1; }
             else if (d.x >= maxX) { d.x = maxX; d.dx *= -1; }
-
             if (d.y <= 0) { d.y = 0; d.dy *= -1; }
             else if (d.y >= maxY) { d.y = maxY; d.dy *= -1; }
 
             d.el.style.left = d.x + 'px';
             d.el.style.top = d.y + 'px';
         });
-
         ssAnimFrame = requestAnimationFrame(animateScreensaver);
     }
 
-    // Luister naar gebruikersactiviteit
     ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'].forEach(evt => {
         window.addEventListener(evt, resetInactivityTimer, true);
     });
@@ -1137,7 +1252,6 @@
         for (let i = 0; i < 6; i++) {
             const face = document.createElement('div');
             face.className = 'gds-face gds-face-' + faceCls[i];
-            
             pipPositions(faceVals[i]).forEach(pos => {
                 const pip = document.createElement('span');
                 pip.className = 'gds-pip';
@@ -1147,7 +1261,6 @@
             });
             cube.appendChild(face);
         }
-        
         const rot = faceRotation(value || 1);
         cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
         return cube;
@@ -1182,8 +1295,8 @@
         if (!values || values.length !== 5) return;
         diceInstances.forEach((d, i) => {
             d.value = values[i];
-            d.isLocked = false;
-            d.holder.classList.remove('locked');
+            d.isLocked = true;
+            d.holder.classList.add('locked');
             const rot = faceRotation(d.value);
             d.cube.style.transition = 'none';
             d.cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
@@ -1206,9 +1319,7 @@
 
     function toggleFullscreen() {
         if (!document.fullscreenElement) {
-            document.documentElement.requestFullscreen().catch(err => {
-                // Stille afhandeling om full-screen stabiel te houden
-            });
+            document.documentElement.requestFullscreen().catch(err => {});
         } else {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
@@ -1224,6 +1335,11 @@
         if (diceModeActive) {
             wrapper.style.display = 'block';
             btn.classList.add('active');
+            
+            const p = players[currentPlayerIndex];
+            if (p.lastRoll && p.lastRoll.length === 5) {
+                restoreDiceValues(p.lastRoll);
+            }
         } else {
             wrapper.style.display = 'none';
             btn.classList.remove('active');
@@ -1234,11 +1350,24 @@
         buildTableSection('table-body-d1', rowsPart1);
         buildTableSection('table-body-d2', rowsPart2);
         updateHeaderPlayerName();
+        updateArrowPulse();
     }
 
     function updateHeaderPlayerName() {
         const p = players[currentPlayerIndex];
         document.getElementById('player-name-display').innerText = p ? p.name : 'Naam';
+    }
+
+    function updateArrowPulse() {
+        const p = players[currentPlayerIndex];
+        const arrowBtn = document.getElementById('player-switch-btn');
+        if (arrowBtn) {
+            if (p && p.hasSubmittedThisTurn && players.length > 1) {
+                arrowBtn.classList.add('pulsing');
+            } else {
+                arrowBtn.classList.remove('pulsing');
+            }
+        }
     }
 
     function buildTableSection(tbodyId, rowsDef) {
@@ -1247,14 +1376,12 @@
 
         rowsDef.forEach(row => {
             const tr = document.createElement('tr');
-
             if (row.type === 'header') {
                 tr.className = 'section-header';
                 const thCat = document.createElement('th');
                 thCat.className = 'category-cell';
                 thCat.innerText = row.title;
                 tr.appendChild(thCat);
-
                 for (let c = 0; c < numGames; c++) {
                     const thGame = document.createElement('th');
                     thGame.innerText = `${c + 1}e spel`;
@@ -1265,7 +1392,6 @@
 
                 const tdCat = document.createElement('td');
                 tdCat.className = 'category-cell';
-                
                 let subHTML = row.sub ? `<span class="sub-text">${row.sub}</span>` : '';
                 tdCat.innerHTML = `<div class="cat-title"><span>${row.name}</span> ${subHTML}</div>`;
                 tr.appendChild(tdCat);
@@ -1281,73 +1407,80 @@
                         tdCell.className = 'score-cell';
                         tdCell.onclick = () => handleScoreClick(c, row.id, row);
                     }
-
                     tr.appendChild(tdCell);
                 }
             }
-
             tbody.appendChild(tr);
         });
     }
 
+    /* DE ESSENTIËLE FIX: GEEN BLOKKADE VOOR HET VULLEN VAN SCORES */
     function handleScoreClick(colIndex, rowId, rowObj) {
         const p = players[currentPlayerIndex];
         const uniqueKey = `c${colIndex}_${rowId}`;
         const isFilled = p.scores[uniqueKey] !== undefined;
         const isLastAction = (uniqueKey === p.lastActionKey);
 
-        // 1. Wissen als het de laatst ingevulde score is
         if (isFilled) {
             if (isLastAction) {
                 const currentVal = p.scores[uniqueKey];
-                if (confirm(`Wil je de score van ${currentVal === '/' ? 'schuine streep' : currentVal} wissen?`)) {
-                    delete p.scores[uniqueKey];
-                    p.lastActionKey = null;
-                    p.hasSubmittedThisTurn = false;
+                showCustomAlert(
+                    "Score wissen?", 
+                    `Wil je de score van ${currentVal === '/' ? 'schuine streep' : currentVal} wissen?`, 
+                    false, 
+                    "", 
+                    function() {
+                        delete p.scores[uniqueKey];
+                        p.lastActionKey = null;
+                        p.hasSubmittedThisTurn = false;
 
-                    if (p.lastRoll) {
-                        lastActiveRoll = [...p.lastRoll];
-                        if (diceModeActive) {
-                            restoreDiceValues(p.lastRoll);
+                        if (p.lastRoll) {
+                            lastActiveRoll = [...p.lastRoll];
+                            if (diceModeActive) {
+                                restoreDiceValues(p.lastRoll);
+                            }
                         }
+                        saveToStorage();
+                        updateDisplay();
+                        updateArrowPulse();
                     }
-
-                    saveToStorage();
-                    updateDisplay();
-                }
+                );
             }
             return;
         }
 
-        // 2. Blokkeer indien al ingediend in multiplayer
+        // Als er in multiplayer al wel een score ingevuld is in DEZE BEURT, geef wissel pop-up
         if (players.length > 1 && p.hasSubmittedThisTurn) {
+            showCustomAlert(
+                "Score al ingevuld", 
+                "Je hebt je score al ingevuld voor deze beurt. Klik op de wisselknop (➔) voor de volgende speler!",
+                true
+            );
+            updateArrowPulse();
             return;
         }
 
-        // 3. Digitale dobbelsteen modus
         if (diceModeActive) {
             let activeDice = lastActiveRoll;
             if (rollCount > 0) {
                 activeDice = diceInstances.map(d => d.value);
             }
-
             if (!activeDice) {
+                showCustomAlert("Nog niet gegooid", "Gooi eerst minimaal één keer met de dobbelstenen voordat je een categorie kiest!");
                 return;
             }
-
             let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
+            activeTarget = { colIndex, rowId };
             submitChoice(calculatedScore);
             return;
         }
 
-        // 4. Fysieke modus - Open compact pop-up keuzescherm met slimme positionering
         openPhysicalChoicePopup(colIndex, rowId, rowObj);
     }
 
     function applySmartOverlayPosition(overlayId, isPart2Row) {
         const overlay = document.getElementById(overlayId);
         overlay.classList.remove('position-top', 'position-bottom', 'centered');
-        // Als je in Deel 2 (onderin) klikt, verschijnt het toetsenbord bovenin. Als je in Deel 1 klikt, verschijnt hij onderin.
         if (isPart2Row) {
             overlay.classList.add('position-top');
         } else {
@@ -1367,17 +1500,14 @@
             const v = rowObj.val;
             choices = [v, v*2, v*3, v*4];
         } else if (rowObj.fixed !== undefined) {
-            // Controleer of Kans al is ingevuld in deze kolom
             const p = players[currentPlayerIndex];
             const kansKey = `c${colIndex}_d2_6`;
             const isKansFilled = p.scores[kansKey] !== undefined;
 
-            // Als Kans nog NIET ingevuld is, direct de vaste waarde invullen zonder pop-up!
             if (!isKansFilled) {
                 submitChoice(rowObj.fixed);
                 return;
             }
-
             choices = [rowObj.fixed];
         } else {
             openKeypad(colIndex, rowId);
@@ -1393,7 +1523,6 @@
             container.appendChild(btn);
         });
 
-        // Schuine streep check per kolom: Alleen tonen als 'kans' in dít specifieke spel al is ingevuld
         const p = players[currentPlayerIndex];
         const kansKey = `c${colIndex}_d2_6`;
         const isKansFilled = p.scores[kansKey] !== undefined;
@@ -1426,11 +1555,12 @@
             p.lastRoll = [...lastActiveRoll];
         }
 
+        p.hasSubmittedThisTurn = true;
+
         if (players.length === 1) {
             p.hasSubmittedThisTurn = false;
             resetForNextTurn();
         } else {
-            p.hasSubmittedThisTurn = true;
             if (diceModeActive) {
                 endTurn("Wissel van speler ➔");
             }
@@ -1438,6 +1568,7 @@
 
         saveToStorage();
         updateDisplay();
+        updateArrowPulse();
         closeChoicePopup();
     }
 
@@ -1489,10 +1620,17 @@
 
     function handleRollClick() {
         const p = players[currentPlayerIndex];
-        if (players.length > 1 && p.hasSubmittedThisTurn) return;
-        if (turnEnded || rollCount >= 3) {
-            resetForNextTurn();
+
+        if (rollCount >= 3 || turnEnded) {
+            showCustomAlert(
+                "Max worpen bereikt!", 
+                "Je hebt al 3 keer gegooid! Kies nu je score op het scoreblad en druk daarna op de knipperende groene wisselknop (➔).",
+                false
+            );
+            updateArrowPulse();
+            return;
         }
+
         rollAllDice();
     }
 
@@ -1500,7 +1638,7 @@
         const p = players[currentPlayerIndex];
         if (players.length > 1 && p.hasSubmittedThisTurn) return;
         if (isRolling || rollCount === 0 || turnEnded) return;
-        endTurn("Ingezet");
+        endTurn("Ingezet - Kies categorie");
     }
 
     function endTurn(customText) {
@@ -1509,14 +1647,23 @@
         document.getElementById('worp-count').innerText = "3/3";
         document.getElementById('in-btn').disabled = true;
         document.getElementById('roll-btn').innerText = "Gooi 🎲";
+        
+        diceInstances.forEach(d => {
+            d.isLocked = true;
+            d.holder.classList.add('locked');
+        });
+
         if (customText) {
             document.getElementById('combo-display').innerText = customText;
         }
+        updateArrowPulse();
     }
 
     function resetForNextTurn() {
         rollCount = 0;
         turnEnded = false;
+        const p = players[currentPlayerIndex];
+        p.hasSubmittedThisTurn = false;
         diceInstances.forEach(d => {
             d.isLocked = false;
             d.holder.classList.remove('locked');
@@ -1525,6 +1672,7 @@
         document.getElementById('combo-display').innerText = "Nieuwe beurt";
         document.getElementById('in-btn').disabled = true;
         document.getElementById('roll-btn').innerText = "Gooi 🎲";
+        updateArrowPulse();
     }
 
     function rollAllDice() {
@@ -1579,7 +1727,7 @@
                 const btn = document.getElementById('roll-btn');
                 btn.innerText = rollCount === 1 ? "2e Worp 🎲" : "3e Worp 🎲";
             } else {
-                endTurn();
+                endTurn("Max worpen - Vul score in!");
             }
         }, 950);
     }
@@ -1627,11 +1775,19 @@
         return targetSub.every(val => array.includes(val));
     }
 
-    /* --- HANDMATIGE SPELER WISSEL & SETUP --- */
     function nextPlayerManually() {
         if (players.length <= 1) return;
         const p = players[currentPlayerIndex];
-        if (!p.hasSubmittedThisTurn) return;
+        
+        if (!p.hasSubmittedThisTurn) {
+            showCustomAlert(
+                "Nog geen score ingevuld", 
+                "Je moet eerst een score invullen op het scoreblad voordat je naar de volgende speler kunt wisselen!",
+                false
+            );
+            return;
+        }
+
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         const nextP = players[currentPlayerIndex];
 
@@ -1647,6 +1803,7 @@
         saveToStorage();
         updateHeaderPlayerName();
         updateDisplay();
+        updateArrowPulse();
     }
 
     function openPlayerSetup() {
@@ -1673,6 +1830,7 @@
         editingPlayerIdx = idx;
         const inputEl = document.getElementById(`setup-p-name-${idx}`);
         currentAlphaValue = inputEl ? inputEl.value : `Speler ${idx + 1}`;
+        isFirstAlphaKey = true;
         document.getElementById('alpha-display').innerText = currentAlphaValue;
         document.getElementById('player-setup-overlay').style.display = 'none';
         document.getElementById('alpha-overlay').style.display = 'flex';
@@ -1710,12 +1868,20 @@
     }
 
     function pressAlpha(key) {
+        if (isFirstAlphaKey && key !== 'ENTER' && key !== 'CLEAR' && key !== 'BACKSPACE') {
+            currentAlphaValue = '';
+            isFirstAlphaKey = false;
+        }
+
         if (key === 'CLEAR') {
             currentAlphaValue = '';
+            isFirstAlphaKey = false;
         } else if (key === 'BACKSPACE') {
             currentAlphaValue = currentAlphaValue.slice(0, -1);
+            isFirstAlphaKey = false;
         } else if (key === 'SPACE') {
             if (currentAlphaValue.length < 15) currentAlphaValue += ' ';
+            isFirstAlphaKey = false;
         } else if (key === 'ENTER') {
             if (editingPlayerIdx !== null) {
                 const inputEl = document.getElementById(`setup-p-name-${editingPlayerIdx}`);
@@ -1726,6 +1892,7 @@
             return;
         } else {
             if (currentAlphaValue.length < 15) currentAlphaValue += key;
+            isFirstAlphaKey = false;
         }
         document.getElementById('alpha-display').innerText = currentAlphaValue;
     }
@@ -1747,7 +1914,6 @@
             cellEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
         }
 
-        // Schuine streep knop op cijfertoetsenbord tonen/verbergen op basis van of Kans al ingevuld is in deze kolom
         const kansKey = `c${colIndex}_d2_6`;
         const isKansFilled = p.scores[kansKey] !== undefined;
         const slashBtnEl = document.getElementById('keypad-slash-btn');
@@ -1769,6 +1935,7 @@
             if (overlayId === 'alpha-overlay') closeAlphaKeypad();
             if (overlayId === 'player-setup-overlay') document.getElementById('player-setup-overlay').style.display = 'none';
             if (overlayId === 'choice-popup-overlay') closeChoicePopup();
+            if (overlayId === 'custom-alert-overlay') closeCustomAlert();
         }
     }
 
@@ -1813,6 +1980,7 @@
 
             saveToStorage();
             updateDisplay();
+            updateArrowPulse();
             closeKeypad();
             return;
         } else {
@@ -1839,7 +2007,6 @@
             ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
                 if (hasVal(id)) { sum += getVal(id); count++; }
             });
-            
             p.scores[`c${colIndex}_totaal_p1`] = sum;
 
             if (totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
@@ -1998,18 +2165,23 @@
     }
 
     function confirmReset() {
-        if (confirm("Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?")) {
-            players.forEach(p => {
-                p.scores = {};
-                p.lastActionKey = null;
-                p.lastRoll = null;
-                p.hasSubmittedThisTurn = false;
-            });
-            currentPlayerIndex = 0;
-            saveToStorage();
-            buildGrid();
-            updateDisplay();
-        }
+        showCustomAlert(
+            "Nieuw Spel", 
+            "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
+            false, 
+            "", 
+            function() {
+                const currentP1Name = (players[0] && players[0].name) ? players[0].name : 'Speler 1';
+                players = [
+                    { name: currentP1Name, scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
+                ];
+                currentPlayerIndex = 0;
+                saveToStorage();
+                buildGrid();
+                updateDisplay();
+                resetForNextTurn();
+            }
+        );
     }
 </script>
 
