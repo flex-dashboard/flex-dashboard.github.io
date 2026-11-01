@@ -1179,8 +1179,8 @@
         activeTarget = { colIndex, rowId };
         const container = document.getElementById('popup-buttons-container');
         container.innerHTML = '';
-        document.getElementById('popup-title').innerText = `Kies voor: ${rowObj.name}`;
-
+        let cleanName = rowObj.name.split('<')[0].trim();
+    document.getElementById('popup-title').innerText = `Kies voor: ${cleanName}`;
         let choices = [];
 
         if (rowObj.val !== undefined) {
