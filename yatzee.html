@@ -375,6 +375,45 @@
         .alpha-grid .clear-key { grid-column: span 2; background: #ffcccc; color: #b30000; }
         .alpha-grid .enter-key { grid-column: span 2; background: #d4edda; color: #155724; }
 
+        /* --- SCREENSAVER STIJLEN --- */
+
+
+        #screensaver-overlay {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #000;
+    z-index: 9999;
+    overflow: hidden;
+    cursor: pointer;
+}
+
+.ss-dice {
+    position: absolute;
+    width: 60px;
+    height: 60px;
+    border-radius: 12px; /* Geeft de container mooie afgeronde hoekjes */
+    overflow: hidden;     /* Snjdt alle overstekende witte hoekjes direct af */
+    will-change: transform, left, top;
+    animation: screensaverRotate 8s linear infinite; /* Laat de HELE container meedraaien! */
+}
+
+.ss-dice img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    /* Geen animatie meer hier, want de container doet het werk al */
+}
+
+@keyframes screensaverRotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
         /* --- PURE CSS 3D DOBBELBEKER STIJLEN --- */
         .dice-bar-wrapper {
             display: none;
@@ -789,6 +828,17 @@
     </div>
 </div>
 
+<!-- Screensaver Overlay met 6 losse dobbelstenen -->
+<div id="screensaver-overlay" onclick="hideScreensaver()">
+    <div class="ss-dice" id="ss-dice-0"><img src="dobbelsteen1.png" alt="1"></div>
+    <div class="ss-dice" id="ss-dice-1"><img src="dobbelsteen2.png" alt="2"></div>
+    <div class="ss-dice" id="ss-dice-2"><img src="dobbelsteen3.png" alt="3"></div>
+    <div class="ss-dice" id="ss-dice-3"><img src="dobbelsteen4.png" alt="4"></div>
+    <div class="ss-dice" id="ss-dice-4"><img src="dobbelsteen5.png" alt="5"></div>
+    <div class="ss-dice" id="ss-dice-5"><img src="dobbelsteen6.png" alt="6"></div>
+
+</div>
+
 <!-- Overlay voor Speleraantal & Namen Instellen -->
 <div id="player-setup-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'player-setup-overlay')">
     <div class="keypad" style="width: 310px; text-align: center;">
@@ -922,6 +972,76 @@
     let currentAlphaValue = '';
     let editingPlayerIdx = null;
 
+    /* --- SCREENSAVER LOGICA (6 LOSSE DOBBELSTENEN) --- */
+    let inactivityTimer = null;
+    const INACTIVITY_LIMIT = 2 * 60 * 1000; // 2 minuten
+    let screensaverActive = false;
+    let ssAnimFrame = null;
+    let ssDiceObjects = [];
+
+    function resetInactivityTimer() {
+        if (screensaverActive) return;
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(showScreensaver, INACTIVITY_LIMIT);
+    }
+
+    function showScreensaver() {
+        screensaverActive = true;
+        document.body.style.overflow = 'hidden'; // Blokkeert scrollbalken op de achtergrond
+        const overlay = document.getElementById('screensaver-overlay');
+        overlay.style.display = 'block';
+
+        ssDiceObjects = [];
+        for (let i = 0; i < 6; i++) {
+            ssDiceObjects.push({
+                el: document.getElementById(`ss-dice-${i}`),
+                x: Math.random() * (window.innerWidth - 70),
+                y: Math.random() * (window.innerHeight - 70),
+                dx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random() * 2),
+                dy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random() * 2)
+            });
+        }
+
+        animateScreensaver();
+    }
+
+    function hideScreensaver() {
+        if (!screensaverActive) return;
+        screensaverActive = false;
+        cancelAnimationFrame(ssAnimFrame);
+        document.getElementById('screensaver-overlay').style.display = 'none';
+        document.body.style.overflow = ''; // Herstelt normaal scrollen op het scoreblad
+        resetInactivityTimer();
+    }
+
+    function animateScreensaver() {
+        if (!screensaverActive) return;
+
+        const maxX = window.innerWidth - 60;
+        const maxY = window.innerHeight - 60;
+
+        ssDiceObjects.forEach(d => {
+            d.x += d.dx;
+            d.y += d.dy;
+
+            if (d.x <= 0) { d.x = 0; d.dx *= -1; }
+            else if (d.x >= maxX) { d.x = maxX; d.dx *= -1; }
+
+            if (d.y <= 0) { d.y = 0; d.dy *= -1; }
+            else if (d.y >= maxY) { d.y = maxY; d.dy *= -1; }
+
+            d.el.style.left = d.x + 'px';
+            d.el.style.top = d.y + 'px';
+        });
+
+        ssAnimFrame = requestAnimationFrame(animateScreensaver);
+    }
+
+    // Luister naar gebruikersactiviteit
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'].forEach(evt => {
+        window.addEventListener(evt, resetInactivityTimer, true);
+    });
+
     /* --- 3D DOBBELSTEEN LOGICA --- */
     const NUM_DICE = 5;
     const diceInstances = [];
@@ -1054,6 +1174,7 @@
         buildGrid();
         init3DDice();
         updateDisplay();
+        resetInactivityTimer();
     };
 
     function toggleFullscreen() {
