@@ -97,16 +97,24 @@
             text-align: center;
         }
 
-.dice-icon {
-    font-size: 32px;
-    position: absolute;
-    left: 95px;             /* DIT IS DE AFSTAND: exact gemeten vanaf de linkerkant van de cel! */
-    top: 46%;
-    transform: translateY(-50%);
-    width: 30px;
-    text-align: center;
-}   
-     /* Handmatige speler-wissel pijltjesknop */
+        .dice-icon {
+            position: absolute;
+            left: 95px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            text-align: center;
+        }
+
+        .dice-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        /* Handmatige speler-wissel pijltjesknop */
         .player-switch-btn {
             background: #27ae60;
             color: white;
@@ -183,19 +191,19 @@
         table.yatzee-table {
             border-collapse: collapse;
             width: 100%;
-            min-width: 800px;
+            min-width: 750px;
             table-layout: fixed;
         }
 
         table.yatzee-table th, 
         table.yatzee-table td {
             border: 1px solid #000 !important;
-            height: 46px;
+            height: 44px;
             text-align: center;
             vertical-align: middle;
-            font-size: 18px;
+            font-size: 17px;
             font-weight: bold;
-            padding: 0 5px;
+            padding: 0 4px;
             position: relative;
         }
 
@@ -208,8 +216,8 @@
             background-color: #fff;
             border-right: 3px solid #000 !important;
             text-align: left;
-            padding: 0 12px;
-            width: 250px;
+            padding: 0 10px;
+            width: 235px;
         }
 
         .cat-title {
@@ -217,12 +225,12 @@
             justify-content: space-between;
             align-items: center;
             width: 100%;
-            font-size: 15px;
+            font-size: 14px;
             font-weight: bold;
         }
 
         .sub-text {
-            font-size: 11px;
+            font-size: 10px;
             color: #555;
             font-weight: normal;
         }
@@ -249,7 +257,7 @@
         tr.section-header th,
         tr.section-header td {
             background-color: #e0e0e0 !important;
-            font-size: 16px;
+            font-size: 15px;
             font-weight: bold;
             border-bottom: 2px solid #000 !important;
             border-top: 2px solid #000 !important;
@@ -633,7 +641,6 @@
                 width: 100%;
             }
 
-            /* Essentieel: separate border-spacing zodat sticky kolommen en hun randen in Chrome blijven werken */
             table.yatzee-table {
                 width: 750px;
                 min-width: 750px;
@@ -642,7 +649,6 @@
                 border-spacing: 0 !important;
             }
 
-            /* Zet de eerste kolom én de zwarte scheidingslijn onwrikbaar vast aan de linkerkant */
             table.yatzee-table td.category-cell, 
             table.yatzee-table th:first-child {
                 position: sticky;
@@ -855,12 +861,12 @@
 
     const rowsPart1 = [
         { type: 'header', title: 'deel 1' },
-        { type: 'score', id: 'd1_0', name: 'enen <span class="dice-icon">⚀</span>', sub: 'tel alle enen op', val: 1 },
-        { type: 'score', id: 'd1_1', name: 'tweeën <span class="dice-icon">⚁</span>', sub: 'tel alle tweeën op', val: 2 },
-        { type: 'score', id: 'd1_2', name: 'drieën <span class="dice-icon">⚂</span>', sub: 'tel alle drieën op', val: 3 },
-        { type: 'score', id: 'd1_3', name: 'vieren <span class="dice-icon">⚃</span>', sub: 'tel alle vieren op', val: 4 },
-        { type: 'score', id: 'd1_4', name: 'vijven <span class="dice-icon">⚄</span>', sub: 'tel alle vijven op', val: 5 },
-        { type: 'score', id: 'd1_5', name: 'zessen <span class="dice-icon">⚅</span>', sub: 'tel alle zessen op', val: 6 },
+        { type: 'score', id: 'd1_0', name: 'enen <span class="dice-icon"><img src="dobbelsteen1.png" alt="1"></span>', sub: 'tel alle enen op', val: 1 },
+        { type: 'score', id: 'd1_1', name: 'tweeën <span class="dice-icon"><img src="dobbelsteen2.png" alt="2"></span>', sub: 'tel alle tweeën op', val: 2 },
+        { type: 'score', id: 'd1_2', name: 'drieën <span class="dice-icon"><img src="dobbelsteen3.png" alt="3"></span>', sub: 'tel alle drieën op', val: 3 },
+        { type: 'score', id: 'd1_3', name: 'vieren <span class="dice-icon"><img src="dobbelsteen4.png" alt="4"></span>', sub: 'tel alle vieren op', val: 4 },
+        { type: 'score', id: 'd1_4', name: 'vijven <span class="dice-icon"><img src="dobbelsteen5.png" alt="5"></span>', sub: 'tel alle vijven op', val: 5 },
+        { type: 'score', id: 'd1_5', name: 'zessen <span class="dice-icon"><img src="dobbelsteen6.png" alt="6"></span>', sub: 'tel alle zessen op', val: 6 },
         { type: 'total', id: 'totaal_p1', name: 'totaal aantal punten ➔', sub: '' },
         { type: 'total', id: 'bonus', name: 'extra bonus', sub: 'als puntentotaal 63 of meer is' },
         { type: 'total', id: 'totaal_boven', name: 'totaal van de bovenste helft ➔', sub: '' }
@@ -880,7 +886,7 @@
         { type: 'total', id: 'eindtotaal', name: 'totaal ➔', sub: '' }
     ];
 
-    // Multi-player status
+    // Multi-player status (1 t/m 4 spelers)
     let players = [
         { name: 'Speler 1', scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
     ];
@@ -1142,13 +1148,13 @@
             return;
         }
 
-        // 2. Blokkeer alleen als er méér dan 1 speler ingesteld is EN er al gegooid/ingevuld is
+        // 2. Blokkeer indien al ingediend in multiplayer (geldt voor 2, 3 en 4 personen)
         if (players.length > 1 && p.hasSubmittedThisTurn) {
             alert("Je hebt deze beurt al een score ingevuld! Wis deze eerst als je wilt wijzigen, of klik op het pijltje ➔ om naar de volgende speler te gaan.");
             return;
         }
 
-        // 3. Digitale dobbelsteen modus
+        // 3. Digitale dobbelsteen modus (Direct invullen zonder dubbele pop-up)
         if (diceModeActive) {
             let activeDice = lastActiveRoll;
             if (rollCount > 0) {
@@ -1161,7 +1167,7 @@
             }
 
             let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
-            openDigitalChoicePopup(colIndex, rowId, calculatedScore);
+            submitChoice(calculatedScore);
             return;
         }
 
@@ -1177,22 +1183,16 @@
 
         let choices = [];
 
-        // Bovenste helft (Enen t/m Zessen) -> veelvouden van 1 tot 4 stenen
         if (rowObj.val !== undefined) {
             const v = rowObj.val;
             choices = [v, v*2, v*3, v*4];
-        }
-        // Vaste combinaties (Full House, Straats, Yatzee) -> vaste punten
-        else if (rowObj.fixed !== undefined) {
+        } else if (rowObj.fixed !== undefined) {
             choices = [rowObj.fixed];
-        }
-        // Vrije categorieën (Three/Four of a kind, Kans) -> open volledige toetsenbord via keypad
-        else {
+        } else {
             openKeypad(colIndex, rowId);
             return;
         }
 
-        // Maak knoppen aan voor elke waarde
         choices.forEach(val => {
             const btn = document.createElement('button');
             btn.className = 'key-btn';
@@ -1201,30 +1201,6 @@
             btn.onclick = () => submitChoice(val);
             container.appendChild(btn);
         });
-
-        // Altijd de schuine streep knop erbij
-        const slashBtn = document.createElement('button');
-        slashBtn.className = 'key-btn action';
-        slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
-        slashBtn.onclick = () => submitChoice('/');
-        container.appendChild(slashBtn);
-
-        document.getElementById('choice-popup-overlay').style.display = 'flex';
-    }
-
-    function openDigitalChoicePopup(colIndex, rowId, calculatedScore) {
-        activeTarget = { colIndex, rowId };
-        const container = document.getElementById('popup-buttons-container');
-        container.innerHTML = '';
-        document.getElementById('popup-title').innerText = `Digitale Worp Keuze`;
-
-        const containerBtn = document.createElement('button');
-        containerBtn.className = 'key-btn';
-        containerBtn.style.background = '#d4edda';
-        containerBtn.style.color = '#155724';
-        containerBtn.innerText = `Score invullen: ${calculatedScore}`;
-        containerBtn.onclick = () => submitChoice(calculatedScore);
-        container.appendChild(containerBtn);
 
         const slashBtn = document.createElement('button');
         slashBtn.className = 'key-btn action';
@@ -1250,7 +1226,6 @@
             p.lastRoll = [...lastActiveRoll];
         }
 
-        // Bij 1 speler resetten we direct de status zodat je meteen de volgende beurt mag gooien/invullen
         if (players.length === 1) {
             p.hasSubmittedThisTurn = false;
             resetForNextTurn();
@@ -1458,10 +1433,15 @@
         return targetSub.every(val => array.includes(val));
     }
 
-    /* --- HANDMATIGE SPELER WISSEL & SETUP --- */
+    /* --- HANDMATIGE SPELER WISSEL & SETUP (Geldt voor 2, 3 en 4 personen) --- */
     function nextPlayerManually() {
         if (players.length <= 1) {
             alert("Je speelt in je eentje. Klik op je naam als je meerdere spelers wilt instellen.");
+            return;
+        }
+        const p = players[currentPlayerIndex];
+        if (!p.hasSubmittedThisTurn) {
+            alert("Vul eerst je score in!");
             return;
         }
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
@@ -1617,6 +1597,11 @@
                 p.hasSubmittedThisTurn = true;
             } else {
                 let numVal = parseInt(currentInputValue, 10);
+                // Controle op maximale invoerlimiet van 29 voor Kans, Drie- en Vier-gelijke
+                if ((activeTarget.rowId === 'd2_0' || activeTarget.rowId === 'd2_1' || activeTarget.rowId === 'd2_6') && numVal > 29) {
+                    alert("U kiest teveel. Dat kan niet.");
+                    return;
+                }
                 p.scores[uniqueKey] = numVal;
                 p.lastActionKey = uniqueKey;
                 p.hasSubmittedThisTurn = true;
@@ -1650,6 +1635,7 @@
 
         let targetKey = `c${colIndex}_${totalRowId}`;
 
+        // Bovenste helft berekening: tussentijds totaal mag altijd, bonus en totaal_boven pas als alle 6 vakjes gevuld zijn
         if (totalRowId === 'totaal_p1' || totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
             let sum = 0;
             let count = 0;
@@ -1657,8 +1643,13 @@
                 if (hasVal(id)) { sum += getVal(id); count++; }
             });
             
-            if (count > 0) {
-                p.scores[`c${colIndex}_totaal_p1`] = sum;
+            p.scores[`c${colIndex}_totaal_p1`] = sum;
+
+            if (totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
+                if (count < 6) {
+                    alert("Vul eerst alle 6 de vakjes van de bovenste helft in voordat de bonus en het totaal berekend kunnen worden!");
+                    return;
+                }
                 let bonusVal = (sum >= 63) ? 35 : 0;
                 p.scores[`c${colIndex}_bonus`] = bonusVal;
                 p.scores[`c${colIndex}_totaal_boven`] = sum + bonusVal;
@@ -1679,10 +1670,34 @@
             }
         } 
         else if (totalRowId === 'eindtotaal') {
+            // Automatisch doorrekenen in 1 klik zonder dubbele bonus
+            let sumD1 = 0, countD1 = 0;
+            ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
+                if (hasVal(id)) { sumD1 += getVal(id); countD1++; }
+            });
+            if (countD1 === 6) {
+                p.scores[`c${colIndex}_totaal_p1`] = sumD1;
+                let bonusVal = (sumD1 >= 63) ? 35 : 0;
+                p.scores[`c${colIndex}_bonus`] = bonusVal;
+                let boven = sumD1 + bonusVal;
+                p.scores[`c${colIndex}_totaal_boven`] = boven;
+                p.scores[`c${colIndex}_totaal_d1_copy`] = boven;
+            }
+
+            let sumD2 = 0, countD2 = 0;
+            ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
+                if (hasVal(id)) { sumD2 += getVal(id); countD2++; }
+            });
+            if (countD2 > 0) {
+                p.scores[`c${colIndex}_totaal_d2`] = sumD2;
+            }
+
             let d1Total = p.scores[`c${colIndex}_totaal_d1_copy`];
             let d2Total = p.scores[`c${colIndex}_totaal_d2`];
             if (d1Total !== undefined && d2Total !== undefined) {
                 p.scores[targetKey] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
+            } else {
+                alert("Zorg dat eerst alle benodigde vakjes van deel 1 en deel 2 zijn ingevuld!");
             }
         }
 
@@ -1698,6 +1713,26 @@
         let filledCount = 0;
 
         for (let c = 0; c < numGames; c++) {
+            // Automatische tussentijdse bovenste helft check voor automatische updates op de 6e invoer
+            let sumD1 = 0, countD1 = 0;
+            ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
+                const val = p.scores[`c${c}_${id}`];
+                if (val !== undefined) {
+                    if (val !== '/') { sumD1 += parseInt(val, 10); }
+                    countD1++;
+                }
+            });
+            if (countD1 > 0) {
+                p.scores[`c${c}_totaal_p1`] = sumD1;
+            }
+            if (countD1 === 6) {
+                let bonusVal = (sumD1 >= 63) ? 35 : 0;
+                p.scores[`c${c}_bonus`] = bonusVal;
+                let boven = sumD1 + bonusVal;
+                p.scores[`c${c}_totaal_boven`] = boven;
+                p.scores[`c${c}_totaal_d1_copy`] = boven;
+            }
+
             allRows.forEach(row => {
                 if (row.type !== 'header') {
                     const uniqueKey = `c${c}_${row.id}`;
@@ -1719,7 +1754,6 @@
             });
         }
 
-        // Update beurtenteller in bovenbalk
         const turnEl = document.getElementById('turn-counter-display');
         if (turnEl) {
             turnEl.innerText = `Beurt: ${filledCount}`;
