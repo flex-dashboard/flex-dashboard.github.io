@@ -102,17 +102,18 @@
             left: 95px;
             top: 50%;
             transform: translateY(-50%);
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             text-align: center;
         }
 
         .dice-icon img {
             width: 100%;
             height: 100%;
-            border-radius: 4px;
+            border-radius: 6px;
             object-fit: cover;
         }
+
 
         /* Handmatige speler-wissel pijltjesknop & Knipperanimatie */
         .player-switch-btn {
@@ -470,7 +471,7 @@
             100% { transform: rotate(360deg); }
         }
 
-        /* --- PURE CSS 3D DOBBELBEKER STIJLEN (TERUG IN HET MIDDEN) --- */
+        /* --- PURE CSS 3D DOBBELBEKER STIJLEN --- */
         .dice-bar-wrapper {
             display: none;
             background: #222222;
@@ -507,7 +508,7 @@
             height: 68px;
             position: relative;
             cursor: pointer;
-            border-radius: 10px;
+            border-radius: 12px;
             transition: transform 0.15s;
         }
 
@@ -647,14 +648,12 @@
         .roll-btn:active { transform: scale(0.96); }
         .roll-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
 
-        /* SCROLLKNOP VERBORGEN OP LAPTOPS EN GROTE SCHERMEN */
         @media (min-width: 769px) {
             .scroll-arrow-btn {
                 display: none !important;
             }
         }
 
-        /* Groter alfabet-toetsenbord uitsluitend voor tablets en grotere schermen */
         @media (min-width: 481px) {
             #alpha-overlay .keypad {
                 width: 460px !important;
@@ -670,7 +669,6 @@
             }
         }
 
-        /* Media Queries uitsluitend voor Telefoons (max-width: 768px) */
         @media (max-width: 768px) {
             html, body {
                 padding: 2px;
@@ -798,7 +796,6 @@
             .cat-title { font-size: 12px; }
             .sub-text { font-size: 9px; }
 
-            /* SUBTIEL SCROLL-PIJLTJE OP MOBIEL */
             .scroll-arrow-btn {
                 position: fixed;
                 right: 5px;
@@ -864,8 +861,63 @@
                 padding: 8px 10px; 
                 flex-shrink: 0;
             }
-        }
-    </style>
+
+/* Specifieke opmaak voor tablets (bijv. tussen 769px en 1024px) */
+@media (min-width: 750px) and (max-width: 1024px) {
+    .dice-bar-wrapper {
+        width: 100%;
+        max-width: 100%;
+        box-sizing: border-box;
+        margin: 0 auto;
+    }
+
+    .dice-bar-container {
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        padding: 4px 30px 4px 15px; /* Geef flink wat ademruimte aan de rechterkant */
+        gap: 12px; /* Maakt het gat tussen dobbelstenen en knoppen netjes op */
+        width: 100%;
+        box-sizing: border-box;
+    }
+
+    .dice-row {
+        gap: 3px;
+    }
+
+    /* Dobbelstenen exact vierkant op 40px */
+    .gds-cube-holder, .gds-cube, .gds-face {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    /* 3D-zijden exact op 20px */
+    .gds-face-front  { transform: translateZ(20px) !important; }
+    .gds-face-back   { transform: rotateY(180deg) translateZ(20px) !important; }
+    .gds-face-right  { transform: rotateY(90deg)  translateZ(20px) !important; }
+    .gds-face-left   { transform: rotateY(-90deg) translateZ(20px) !important; }
+    .gds-face-top    { transform: rotateX(90deg)  translateZ(20px) !important; }
+    .gds-face-bottom { transform: rotateX(-90deg) translateZ(20px) !important; }
+
+    .gds-pip {
+        width: 7px !important;
+        height: 7px !important;
+        margin: -3.5px 0 0 -3.5px !important;
+    }
+
+    /* Middelste knoppen en groene knop direct aansluitend */
+    .controls-middle {
+        gap: 4px;
+        display: flex;
+        align-items: center;
+    }
+    .info-pill { padding: 3px 5px; font-size: 10px; }
+    .in-btn { width: 26px; height: 26px; font-size: 9px; }
+    .combo-pill { width: 75px; font-size: 10px; padding: 3px; }
+    .roll-btn { width: 90px; font-size: 10px; padding: 5px 6px; flex-shrink: 0; margin-left: 0 !important; }
+}
+</style>
 </head>
 <body>
 
@@ -917,7 +969,7 @@
     </div>
 </div>
 
-<!-- Eigen In-App Melding / Pop-up Overlay (Geen browser alerts/confirms meer) -->
+<!-- Melding / Pop-up Overlay -->
 <div id="custom-alert-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'custom-alert-overlay')">
     <div class="custom-modal">
         <span class="modal-close-cross" onclick="closeCustomAlert()">×</span>
@@ -1065,7 +1117,6 @@
     let isFirstAlphaKey = true;
     let editingPlayerIdx = null;
 
-    /* --- EIGEN IN-APP MODAL (GEEN BROWSER ALERTS/CONFIRMS) --- */
     function showCustomAlert(title, message, isNextPlayerAction = false, subtext = '', customCallback = null) {
         document.getElementById('custom-alert-title').innerText = title;
         document.getElementById('custom-alert-text').innerText = message;
@@ -1105,7 +1156,6 @@
         document.getElementById('custom-alert-overlay').style.display = 'none';
     }
 
-    /* --- ONEINDIGE LOOP & SCROLL-PIJL LOGICA (KOLOM 1 t/m 6 NAAR 1) --- */
     function scrollNextColumn() {
         const wrapper1 = document.getElementById('table-wrapper-1');
         const wrapper2 = document.getElementById('table-wrapper-2');
@@ -1120,7 +1170,6 @@
         wrapper2.scrollTo({ left: targetScroll, behavior: 'smooth' });
     }
 
-    /* --- SCREENSAVER LOGICA --- */
     let inactivityTimer = null;
     const INACTIVITY_LIMIT = 2 * 60 * 1000;
     let screensaverActive = false;
@@ -1184,7 +1233,6 @@
         window.addEventListener(evt, resetInactivityTimer, true);
     });
 
-    /* --- 3D DOBBELSTEEN LOGICA --- */
     const NUM_DICE = 5;
     const diceInstances = [];
     let isRolling = false;
@@ -1414,7 +1462,6 @@
         });
     }
 
-    /* DE ESSENTIËLE FIX: GEEN BLOKKADE VOOR HET VULLEN VAN SCORES */
     function handleScoreClick(colIndex, rowId, rowObj) {
         const p = players[currentPlayerIndex];
         const uniqueKey = `c${colIndex}_${rowId}`;
@@ -1449,7 +1496,6 @@
             return;
         }
 
-        // Als er in multiplayer al wel een score ingevuld is in DEZE BEURT, geef wissel pop-up
         if (players.length > 1 && p.hasSubmittedThisTurn) {
             showCustomAlert(
                 "Score al ingevuld", 
@@ -1469,6 +1515,18 @@
                 showCustomAlert("Nog niet gegooid", "Gooi eerst minimaal één keer met de dobbelstenen voordat je een categorie kiest!");
                 return;
             }
+
+            // CONTROLE KANS per kolom: is Kans in deze kolom al ingevuld?
+            const kansKey = `c${colIndex}_d2_6`;
+            const isKansFilled = p.scores[kansKey] !== undefined;
+
+            // Als Kans is ingevuld, ALTIJD keuzemenu met schuine streep tonen (zowel deel 1 als deel 2)
+            if (isKansFilled) {
+                openDigitalChoicePopup(colIndex, rowId, rowObj, activeDice);
+                return;
+            }
+
+            // Als Kans nog NIET is ingevuld, direct automatisch invullen zonder pop-up
             let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
             activeTarget = { colIndex, rowId };
             submitChoice(calculatedScore);
@@ -1476,6 +1534,32 @@
         }
 
         openPhysicalChoicePopup(colIndex, rowId, rowObj);
+    }
+
+    function openDigitalChoicePopup(colIndex, rowId, rowObj, activeDice) {
+        activeTarget = { colIndex, rowId };
+        const container = document.getElementById('popup-buttons-container');
+        container.innerHTML = '';
+        let cleanName = rowObj.name.split('<')[0].trim();
+        document.getElementById('popup-title').innerText = `Kies voor: ${cleanName}`;
+
+        let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
+        
+        const btnScore = document.createElement('button');
+        btnScore.className = 'key-btn enter';
+        btnScore.innerText = `Accepteer score: ${calculatedScore}`;
+        btnScore.onclick = () => submitChoice(calculatedScore);
+        container.appendChild(btnScore);
+
+        const slashBtn = document.createElement('button');
+        slashBtn.className = 'key-btn action';
+        slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
+        slashBtn.onclick = () => submitChoice('/');
+        container.appendChild(slashBtn);
+
+        const isPart2 = rowId.startsWith('d2_');
+        applySmartOverlayPosition('choice-popup-overlay', isPart2);
+        document.getElementById('choice-popup-overlay').style.display = 'flex';
     }
 
     function applySmartOverlayPosition(overlayId, isPart2Row) {
@@ -1788,17 +1872,28 @@
             return;
         }
 
+        // Wissel naar de volgende speler
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         const nextP = players[currentPlayerIndex];
 
         nextP.hasSubmittedThisTurn = false;
-        resetForNextTurn();
-        if (nextP.lastRoll && diceModeActive) {
-            lastActiveRoll = [...nextP.lastRoll];
-            restoreDiceValues(nextP.lastRoll);
-        } else {
-            lastActiveRoll = null;
-        }
+        
+        // Altijd een compleet schone beurt starten voor de nieuwe speler
+        rollCount = 0;
+        turnEnded = false;
+        lastActiveRoll = null;
+        nextP.lastRoll = null; // Voorkom dat oude worpen meeverhuizen naar de volgende beurt
+
+        diceInstances.forEach(d => {
+            d.isLocked = false;
+            d.holder.classList.remove('locked');
+        });
+
+        document.getElementById('worp-count').innerText = "0/3";
+        document.getElementById('combo-display').innerText = "Nieuwe beurt";
+        document.getElementById('in-btn').disabled = true;
+        document.getElementById('roll-btn').disabled = false;
+        document.getElementById('roll-btn').innerText = "Gooi 🎲";
 
         saveToStorage();
         updateHeaderPlayerName();
@@ -2165,25 +2260,24 @@
     }
 
     function confirmReset() {
-    showCustomAlert(
-        "Nieuw Spel", 
-        "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
-        false, 
-        "", 
-        function() {
-            // Bewaar de huidige naam van Speler 1 zodat deze niet verloren gaat
-            const currentP1Name = (players[0] && players[0].name) ? players[0].name : 'Speler 1';
-            
-            players = [
-                { name: currentP1Name, scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
-            ];
-            currentPlayerIndex = 0;
-            saveToStorage();
-            buildGrid();
-            updateDisplay();
-            resetForNextTurn();
-        }
-    );
+        showCustomAlert(
+            "Nieuw Spel", 
+            "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
+            false, 
+            "", 
+            function() {
+                const currentP1Name = (players[0] && players[0].name) ? players[0].name : 'Speler 1';
+                
+                players = [
+                    { name: currentP1Name, scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
+                ];
+                currentPlayerIndex = 0;
+                saveToStorage();
+                buildGrid();
+                updateDisplay();
+                resetForNextTurn();
+            }
+        );
     }
 </script>
 
