@@ -867,6 +867,23 @@
 
 /* 2. Specifieke opmaak voor tablets (overschrijft mobiel vanaf 600px) */
 @media (min-width: 600px) and (max-width: 1024px) {
+    body {
+        padding: 0 !important;
+        margin: 0 !important;
+        height: 100vh !important;
+    }
+
+    .container {
+        width: 100%;
+        max-width: 100% !important;
+        min-height: 100vh !important;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 0;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        overflow: hidden;
+    }
+
     .dice-bar-wrapper {
         width: 100%;
         max-width: 100%;
@@ -877,9 +894,9 @@
     .dice-bar-container {
         display: flex;
         flex-wrap: nowrap !important;
-        justify-content: space-between !important; /* Zet dit weer op space-between */
+        justify-content: space-between !important;
         align-items: center;
-        padding: 4px 25px 4px 15px !important; /* Die 25px rechts zorgt dat de groene knop mooi losstaat van de rand */
+        padding: 4px 25px 4px 15px !important;
         gap: 8px !important;
         width: 100%;
         box-sizing: border-box;
@@ -927,8 +944,9 @@
         font-size: 10px !important; 
         padding: 5px 6px !important; 
         flex-shrink: 0 !important; 
-        margin-left: auto !important; /* Zet margin-left weer op auto, zodat hij rechts uitlijnt binnen de padding */
+        margin-left: auto !important;
     }
+}
 
 </style>
 </head>
