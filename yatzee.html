@@ -648,222 +648,224 @@
         .roll-btn:active { transform: scale(0.96); }
         .roll-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
 
-        @media (min-width: 769px) {
-            .scroll-arrow-btn {
-                display: none !important;
-            }
-        }
+@media (min-width: 769px) {
+    .scroll-arrow-btn {
+        display: none !important;
+    }
+}
 
-        @media (min-width: 481px) {
-            #alpha-overlay .keypad {
-                width: 460px !important;
-                padding: 15px;
-            }
-            #alpha-overlay .alpha-grid .key-btn {
-                font-size: 18px !important;
-                padding: 14px 0 !important;
-            }
-            #alpha-display {
-                font-size: 26px !important;
-                min-height: 48px;
-            }
-        }
+@media (min-width: 481px) {
+    #alpha-overlay .keypad {
+        width: 460px !important;
+        padding: 15px;
+    }
+    #alpha-overlay .alpha-grid .key-btn {
+        font-size: 18px !important;
+        padding: 14px 0 !important;
+    }
+    #alpha-display {
+        font-size: 26px !important;
+        min-height: 48px;
+    }
+}
 
-        @media (max-width: 768px) {
-            html, body {
-                padding: 2px;
-            }
-            
-            .header-bar {
-                padding: 6px 8px;
-                gap: 6px;
-                display: flex;
-                flex-direction: column;
-                align-items: center;
-                position: relative;
-            }
+/* 1. Standaard mobiele weergave (tot en met 768px) */
+@media (max-width: 768px) {
+    html, body {
+        padding: 2px;
+    }
+    
+    .header-bar {
+        padding: 6px 8px;
+        gap: 6px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
 
-            .header-left {
-                width: 100%;
-                display: flex;
-                justify-content: flex-start;
-                align-items: center;
-                gap: 6px;
-            }
+    .header-left {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 6px;
+    }
 
-            button.nav-btn {
-                font-size: 0px !important;
-                padding: 5px 8px;
-            }
-            button.nav-btn::before {
-                font-size: 16px;
-            }
-            button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
-            button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
-            
-            a.nav-btn {
-                font-size: 0px !important;
-                padding: 5px 8px;
-            }
-            a.nav-btn::before {
-                content: "🏠";
-                font-size: 16px;
-            }
+    button.nav-btn {
+        font-size: 0px !important;
+        padding: 5px 8px;
+    }
+    button.nav-btn::before {
+        font-size: 16px;
+    }
+    button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
+    button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
+    
+    a.nav-btn {
+        font-size: 0px !important;
+        padding: 5px 8px;
+    }
+    a.nav-btn::before {
+        content: "🏠";
+        font-size: 16px;
+    }
 
-            .header-title {
-                font-size: 18px;
-                position: absolute;
-                left: 51%;
-                transform: translateX(-50%);
-                top: 8px;
-                letter-spacing: 0.5px;
-            }
+    .header-title {
+        font-size: 18px;
+        position: absolute;
+        left: 51%;
+        transform: translateX(-50%);
+        top: 8px;
+        letter-spacing: 0.5px;
+    }
 
-            .header-right-group {
-                position: absolute;
-                top: 6px;
-                right: 8px;
-                gap: 4px;
-            }
+    .header-right-group {
+        position: absolute;
+        top: 6px;
+        right: 8px;
+        gap: 4px;
+    }
 
-            .turn-counter-box {
-                font-size: 12px;
-                padding: 3px 6px;
-            }
+    .turn-counter-box {
+        font-size: 12px;
+        padding: 3px 6px;
+    }
 
-            .global-total-box {
-                font-size: 14px;
-                padding: 3px 6px;
-                min-width: 50px;
-            }
+    .global-total-box {
+        font-size: 14px;
+        padding: 3px 6px;
+        min-width: 50px;
+    }
 
-            .player-name-container {
-                width: 100%;
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                gap: 4px;
-                margin-top: 2px;
-            }
+    .player-name-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 4px;
+        margin-top: 2px;
+    }
 
-            .player-name-input {
-                width: 95px;
-                font-size: 15px;
-                padding: 4px 6px;
-            }
+    .player-name-input {
+        width: 95px;
+        font-size: 15px;
+        padding: 4px 6px;
+    }
 
-            .player-switch-btn {
-                padding: 4px 8px;
-                font-size: 14px;
-            }
+    .player-switch-btn {
+        padding: 4px 8px;
+        font-size: 14px;
+    }
 
-            .btn-reset-top {
-                padding: 5px 8px;
-                font-size: 12px;
-            }
+    .btn-reset-top {
+        padding: 5px 8px;
+        font-size: 12px;
+    }
 
-            .score-table-wrapper {
-                overflow-x: auto;
-                -webkit-overflow-scrolling: touch;
-                width: 100%;
-                position: relative;
-                max-height: calc(100vh - 200px);
-            }
+    .score-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        position: relative;
+        max-height: calc(100vh - 200px);
+    }
 
-            table.yatzee-table {
-                width: 750px;
-                min-width: 750px;
-                table-layout: fixed;
-                border-collapse: separate !important;
-                border-spacing: 0 !important;
-            }
+    table.yatzee-table {
+        width: 750px;
+        min-width: 750px;
+        table-layout: fixed;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
 
-            table.yatzee-table td.category-cell, 
-            table.yatzee-table th:first-child {
-                position: sticky;
-                left: 0;
-                background-color: #ffffff;
-                z-index: 20;
-                border-right: 3px solid #000000 !important;
-            }
+    table.yatzee-table td.category-cell, 
+    table.yatzee-table th:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #ffffff;
+        z-index: 20;
+        border-right: 3px solid #000000 !important;
+    }
 
-            table.yatzee-table th, table.yatzee-table td { 
-                height: 38px; 
-                font-size: 15px;
-            }
+    table.yatzee-table th, table.yatzee-table td { 
+        height: 38px; 
+        font-size: 15px;
+    }
 
-            table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
-            .cat-title { font-size: 12px; }
-            .sub-text { font-size: 9px; }
+    table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
+    .cat-title { font-size: 12px; }
+    .sub-text { font-size: 9px; }
 
-            .scroll-arrow-btn {
-                position: fixed;
-                right: 5px;
-                top: 60%;
-                transform: translateY(-50%);
-                background: rgba(0, 0, 0, 0.6);
-                color: #fff;
-                border: 1px solid #fff;
-                font-size: 18px;
-                font-weight: bold;
-                width: 30px;
-                height: 30px;
-                border-radius: 50%;
-                display: flex;
-                align-items: center;
-                justify-content: center;
-                cursor: pointer;
-                z-index: 50;
-                box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-            }
-            
-            .keypad { width: 240px; padding: 8px; }
-            .key-btn { padding: 6px 0; font-size: 15px; }
-            .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
-            
-            .dice-bar-container {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: space-between;
-                align-items: center;
-                gap: 6px;
-                padding: 8px;
-            }
+    .scroll-arrow-btn {
+        position: fixed;
+        right: 5px;
+        top: 60%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.6);
+        color: #fff;
+        border: 1px solid #fff;
+        font-size: 18px;
+        font-weight: bold;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 50;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+    }
+    
+    .keypad { width: 240px; padding: 8px; }
+    .key-btn { padding: 6px 0; font-size: 15px; }
+    .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
+    
+    .dice-bar-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        padding: 8px;
+    }
 
-            .dice-row {
-                width: 100%;
-                display: flex;
-                gap: 4px;
-                justify-content: center;
-            }
-            .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
-            .gds-face-front  { transform: translateZ(21px); }
-            .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
-            .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
-            .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
-            .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
-            .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
-            .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+    .dice-row {
+        width: 100%;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
+    .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
+    .gds-face-front  { transform: translateZ(21px); }
+    .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
+    .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
+    .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
+    .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
+    .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
+    .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
 
-            .controls-middle {
-                display: flex;
-                align-items: center;
-                gap: 5px;
-                flex: 1;
-            }
-            .info-pill { padding: 6px 8px; font-size: 11px; }
-            .in-btn { width: 30px; height: 30px; font-size: 11px; }
-            .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
+    .controls-middle {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex: 1;
+    }
+    .info-pill { padding: 6px 8px; font-size: 11px; }
+    .in-btn { width: 30px; height: 30px; font-size: 11px; }
+    .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
 
-            .roll-btn { 
-                width: 110px; 
-                font-size: 12px; 
-                padding: 8px 10px; 
-                flex-shrink: 0;
-            }
+    .roll-btn { 
+        width: 110px; 
+        font-size: 12px; 
+        padding: 8px 10px; 
+        flex-shrink: 0;
+    }
+}
 
-/* Specifieke opmaak voor tablets (bijv. tussen 769px en 1024px) */
-@media (min-width: 750px) and (max-width: 1024px) {
+/* 2. Specifieke opmaak voor tablets (overschrijft mobiel vanaf 600px) */
+@media (min-width: 600px) and (max-width: 1024px) {
     .dice-bar-wrapper {
         width: 100%;
         max-width: 100%;
@@ -873,17 +875,18 @@
 
     .dice-bar-container {
         display: flex;
-        flex-wrap: nowrap;
-        justify-content: flex-start;
+        flex-wrap: nowrap !important;
+        justify-content: space-between !important; /* Zet dit weer op space-between */
         align-items: center;
-        padding: 4px 30px 4px 15px; /* Geef flink wat ademruimte aan de rechterkant */
-        gap: 12px; /* Maakt het gat tussen dobbelstenen en knoppen netjes op */
+        padding: 4px 25px 4px 15px !important; /* Die 25px rechts zorgt dat de groene knop mooi losstaat van de rand */
+        gap: 8px !important;
         width: 100%;
         box-sizing: border-box;
     }
 
     .dice-row {
-        gap: 3px;
+        width: auto !important;
+        gap: 3px !important;
     }
 
     /* Dobbelstenen exact vierkant op 40px */
@@ -908,15 +911,24 @@
 
     /* Middelste knoppen en groene knop direct aansluitend */
     .controls-middle {
-        gap: 4px;
-        display: flex;
-        align-items: center;
+        margin-left: auto !important;
+        margin-right: 10px !important;
+        gap: 4px !important;
+        display: flex !important;
+        align-items: center !important;
+        flex: 0 1 auto !important;
     }
-    .info-pill { padding: 3px 5px; font-size: 10px; }
-    .in-btn { width: 26px; height: 26px; font-size: 9px; }
-    .combo-pill { width: 75px; font-size: 10px; padding: 3px; }
-    .roll-btn { width: 90px; font-size: 10px; padding: 5px 6px; flex-shrink: 0; margin-left: 0 !important; }
-}
+    .info-pill { padding: 3px 5px !important; font-size: 10px !important; }
+    .in-btn { width: 26px !important; height: 26px !important; font-size: 9px !important; }
+    .combo-pill { width: 75px !important; font-size: 10px !important; padding: 3px !important; }
+    .roll-btn { 
+        width: 90px !important; 
+        font-size: 10px !important; 
+        padding: 5px 6px !important; 
+        flex-shrink: 0 !important; 
+        margin-left: auto !important; /* Zet margin-left weer op auto, zodat hij rechts uitlijnt binnen de padding */
+    }
+
 </style>
 </head>
 <body>
