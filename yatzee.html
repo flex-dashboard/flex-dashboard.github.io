@@ -376,10 +376,12 @@
         }
 
         .keypad {
-            background: #fff;
-            width: 290px;
+            background-image: url('dobs.png');
+            background-size: cover;          /* Zorgt dat de afbeelding het hele venster vult */
+            background-position: center;     /* Centreert de afbeelding in de pop-up */
+            background-repeat: no-repeat;    /* Voorkomt dat het plaatje gaat herhalen */
             border-radius: 12px;
-            padding: 10px;
+            padding: 15px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.3);
             border: 2px solid #333;
         }
@@ -394,9 +396,9 @@
             padding: 8px;
             margin-bottom: 8px;
             min-height: 40px;
-            display: flex;
-            align-items: center;
-            justify-content: flex-end;
+            max-height: 40px;
+            width: 100%;
+            box-sizing: border-box;
         }
 
         .keypad-grid {
@@ -405,21 +407,29 @@
             gap: 6px;
         }
 
-        .key-btn {
+       .key-btn {
             background: #e9ecef;
-            border: none;
-            border-radius: 6px;
-            font-size: 18px;
+            border: 2px solid #b0b8c4;
+            border-radius: 12px;
+            font-size: 24px;
             font-weight: bold;
-            padding: 10px 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
             text-align: center;
             color: #000;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            padding: 10px 0;
         }
 
         .key-btn:active { background: #cbd3da; }
-        .key-btn.action { background: #ffcccc; color: #b30000; }
+        .key-btn.action { 
+            background: #ffcccc; 
+            color: #b30000; 
+            font-size: 30px !important;
+            font-weight: 900 !important;
+        }
         .key-btn.enter { background: #d4edda; color: #155724; grid-column: span 2; }
         .key-btn.next-player { background: #27ae60; color: #fff; }
         .key-btn.next-player:hover { background: #2ecc71; }
@@ -430,10 +440,67 @@
             gap: 4px;
         }
 
+        /* --- STIJL UITSLUITEND VOOR DE KEUZE POP-UP (DEEL 1 & DIGITAL MODE) --- */
+        #choice-keypad {
+            width: auto !important;
+            display: inline-block !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin: 0 auto !important;
+        }
+
+        /* Knoppen styling voor het keuzemenu */
+        #choice-popup-overlay #popup-buttons-container .key-btn {
+            width: 65px !important;
+            height: 65px !important;
+            font-size: 22px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        /* Zodra er 5 knoppen zijn (Deel 1 keuzes): grid-layout voor de 4 hoeken + midden */
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-rows: repeat(3, 1fr) !important;
+            width: 220px !important;
+            height: 220px !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(1) { grid-area: 1 / 1 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(2) { grid-area: 1 / 3 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(3) { grid-area: 3 / 1 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(4) { grid-area: 3 / 3 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(5) { grid-area: 2 / 2 !important; }
+        /* 5e knop (Schuine streep) exact in het midden */
+        #choice-popup-overlay #popup-buttons-container .key-btn:nth-child(5) { 
+            grid-area: 2 / 2 !important; 
+        }
+
         .alpha-grid .key-btn { font-size: 13px; padding: 8px 0; }
         .alpha-grid .space-key { grid-column: span 3; background: #e2e8f0; }
         .alpha-grid .clear-key { grid-column: span 2; background: #ffcccc; color: #b30000; }
         .alpha-grid .enter-key { grid-column: span 2; background: #d4edda; color: #155724; }
+
+        /* Als er GEEN 5e knop is (dus 4 knoppen): zet ze strak in de 4 hoeken van het 3x3 raster */
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-rows: repeat(3, 1fr) !important;
+            width: 220px !important;
+            height: 220px !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(1) { grid-area: 1 / 1 !important; } /* Linksboven */
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(2) { grid-area: 1 / 3 !important; } /* Rechtsboven */
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(3) { grid-area: 3 / 1 !important; } /* Linksonder */
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(4) { grid-area: 3 / 3 !important; } /* Rechtsonder */
 
         /* --- SCREENSAVER STIJLEN --- */
         #screensaver-overlay {
@@ -763,22 +830,22 @@
         font-size: 12px;
     }
 
-    .score-table-wrapper {
+    score-table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         width: 100%;
         position: relative;
         max-height: calc(100vh - 200px);
+        /* scroll-snap-type is hier bewust weggehaald zodat je vrij kunt scrollen! */
     }
 
     table.yatzee-table {
-        width: 750px;
-        min-width: 750px;
         table-layout: fixed;
         border-collapse: separate !important;
         border-spacing: 0 !important;
     }
 
+    /* LINKERKOLOM: VOLLEDIG ONAANGERAAKT (originele breedte behouden) */
     table.yatzee-table td.category-cell, 
     table.yatzee-table th:first-child {
         position: sticky;
@@ -788,12 +855,20 @@
         border-right: 3px solid #000000 !important;
     }
 
+    /* Elke speelkolom krijgt een vaste breedte en fungeert als startpunt */
+    table.yatzee-table th:not(:first-child),
+    table.yatzee-table td:not(.category-cell) {
+        width: 180px;
+        min-width: 180px;
+        scroll-snap-align: start;
+    }
+
     table.yatzee-table th, table.yatzee-table td { 
         height: 38px; 
         font-size: 15px;
     }
 
-    table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
+    table.yatzee-table td.category-cell { padding: 0 6px; }
     .cat-title { font-size: 12px; }
     .sub-text { font-size: 9px; }
 
@@ -864,24 +939,54 @@
         flex-shrink: 0;
     }
 }
-
 /* 2. Specifieke opmaak voor tablets (overschrijft mobiel vanaf 600px) */
 @media (min-width: 600px) and (max-width: 1024px) {
-    body {
+
+    html, body {
         padding: 0 !important;
         margin: 0 !important;
         height: 100vh !important;
+        overflow: hidden !important;
     }
 
     .container {
-        width: 100%;
+        width: 100% !important;
         max-width: 100% !important;
-        min-height: 100vh !important;
-        margin: 0 auto;
+        height: 100vh !important;
+        display: flex !important;
+        flex-direction: column !important;
+        margin: 0 auto !important;
         background: #fff;
         border-radius: 0;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        box-shadow: none;
         overflow: hidden;
+    }
+
+    /* Zorg dat de wrappers de volledige beschikbare rasterruimte opvullen */
+    .score-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        height: 100% !important;
+        max-height: none !important;
+        position: relative;
+        display: flex !important;
+        flex-direction: column !important;
+    }
+
+    /* Laat de tabellen en hun rijen flexibel meeschalen met elk schermformaat */
+    table.yatzee-table {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    table.yatzee-table td, 
+    table.yatzee-table th {
+        height: 1px !important; /* Dwingt de cellen gelijk te trekken op basis van beschikbare ruimte */
+        max-height: 1px !important;
+        padding-top: 0 !important;
+        padding-bottom: 0 !important;
+        box-sizing: border-box !important;
     }
 
     .dice-bar-wrapper {
@@ -894,9 +999,9 @@
     .dice-bar-container {
         display: flex;
         flex-wrap: nowrap !important;
-        justify-content: space-between !important;
+        justify-content: space-between !important; /* Zet dit weer op space-between */
         align-items: center;
-        padding: 4px 25px 4px 15px !important;
+        padding: 4px 25px 4px 15px !important; /* Die 25px rechts zorgt dat de groene knop mooi losstaat van de rand */
         gap: 8px !important;
         width: 100%;
         box-sizing: border-box;
@@ -944,10 +1049,9 @@
         font-size: 10px !important; 
         padding: 5px 6px !important; 
         flex-shrink: 0 !important; 
-        margin-left: auto !important;
+        margin-left: auto !important; /* Zet margin-left weer op auto, zodat hij rechts uitlijnt binnen de padding */
     }
 }
-
 </style>
 </head>
 <body>
@@ -1036,12 +1140,10 @@
     </div>
 </div>
 
-<!-- Keuzemenu / Pop-up Overlay -->
+<!-- Keuzemenu / Pop-up Overlay (Flexibel & Compact) -->
 <div id="choice-popup-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'choice-popup-overlay')">
-    <div class="keypad" style="width: 300px; text-align: center;">
-        <h3 id="popup-title" style="margin-bottom: 12px; font-size: 18px;">Maak je keuze</h3>
-        <div id="popup-buttons-container" style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;"></div>
-        <button class="key-btn action" style="width: 100%;" onclick="closeChoicePopup()">Annuleren</button>
+    <div id="choice-keypad" class="keypad" style="width: auto; max-width: 300px; text-align: center; padding: 15px;">
+        <div id="popup-buttons-container"></div>
     </div>
 </div>
 
@@ -1366,7 +1468,7 @@
             holder.onclick = () => toggleLock(i);
             rowEl.appendChild(holder);
 
-            diceInstances.push({ index: i, holder, cube, value: 1, isLocked: false });
+            diceInstances.push({ index: i, holder, cube, value: 1, isLocked: false, lockedInRoll: 0 });
         }
     }
 
@@ -1375,6 +1477,7 @@
         diceInstances.forEach((d, i) => {
             d.value = values[i];
             d.isLocked = true;
+            d.lockedInRoll = 1;
             d.holder.classList.add('locked');
             const rot = faceRotation(d.value);
             d.cube.style.transition = 'none';
@@ -1493,6 +1596,31 @@
         });
     }
 
+    function checkCanScoreInColumn(colIndex, activeDice) {
+        const p = players[currentPlayerIndex];
+        const kansKey = `c${colIndex}_d2_6`;
+        const isKansOpen = (p.scores[kansKey] === undefined);
+
+        // Als Kans in dit specifieke rijtje openstaat, kun je ALTIJD scoren en mag er NOOIT gestreept worden!
+        if (isKansOpen) return true;
+
+        const scoreRows = [
+            ...rowsPart1.filter(r => r.type === 'score'),
+            ...rowsPart2.filter(r => r.type === 'score')
+        ];
+
+        for (let rowObj of scoreRows) {
+            const cellKey = `c${colIndex}_${rowObj.id}`;
+            if (p.scores[cellKey] === undefined) {
+                let points = calculateScoreForCategory(rowObj.id, rowObj, activeDice);
+                if (points > 0) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     function handleScoreClick(colIndex, rowId, rowObj) {
         const p = players[currentPlayerIndex];
         const uniqueKey = `c${colIndex}_${rowId}`;
@@ -1527,7 +1655,7 @@
             return;
         }
 
-        if (players.length > 1 && p.hasSubmittedThisTurn) {
+      if (players.length > 1 && p.hasSubmittedThisTurn) {
             showCustomAlert(
                 "Score al ingevuld", 
                 "Je hebt je score al ingevuld voor deze beurt. Klik op de wisselknop (➔) voor de volgende speler!",
@@ -1547,46 +1675,49 @@
                 return;
             }
 
-            // CONTROLE KANS per kolom: is Kans in deze kolom al ingevuld?
-            const kansKey = `c${colIndex}_d2_6`;
-            const isKansFilled = p.scores[kansKey] !== undefined;
+            const canScoreInCol = checkCanScoreInColumn(colIndex, activeDice);
+            let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
 
-            // Als Kans is ingevuld, ALTIJD keuzemenu met schuine streep tonen (zowel deel 1 als deel 2)
-            if (isKansFilled) {
-                openDigitalChoicePopup(colIndex, rowId, rowObj, activeDice);
+            if (canScoreInCol) {
+                if (calculatedScore > 0 || rowObj.id === 'd2_6') {
+                    activeTarget = { colIndex, rowId };
+                    submitChoice(calculatedScore);
+                } else {
+                    showCustomAlert("Verplicht invullen", "Je moet deze worp invullen in een openstaand vakje waar je wel punten op haalt (of op Kans als die open is)!");
+                }
                 return;
             }
 
-            // Als Kans nog NIET is ingevuld, direct automatisch invullen zonder pop-up
-            let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
             activeTarget = { colIndex, rowId };
-            submitChoice(calculatedScore);
+            submitChoice('/');
             return;
         }
 
         openPhysicalChoicePopup(colIndex, rowId, rowObj);
     }
 
-    function openDigitalChoicePopup(colIndex, rowId, rowObj, activeDice) {
+    function openDigitalChoicePopup(colIndex, rowId, rowObj, activeDice, allowSlash = false) {
         activeTarget = { colIndex, rowId };
         const container = document.getElementById('popup-buttons-container');
         container.innerHTML = '';
-        let cleanName = rowObj.name.split('<')[0].trim();
-        document.getElementById('popup-title').innerText = `Kies voor: ${cleanName}`;
 
         let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
         
-        const btnScore = document.createElement('button');
-        btnScore.className = 'key-btn enter';
-        btnScore.innerText = `Accepteer score: ${calculatedScore}`;
-        btnScore.onclick = () => submitChoice(calculatedScore);
-        container.appendChild(btnScore);
+        if (calculatedScore > 0 || rowId === 'd2_6') {
+            const btnScore = document.createElement('button');
+            btnScore.className = 'key-btn enter';
+            btnScore.innerText = `Accepteer score: ${calculatedScore}`;
+            btnScore.onclick = () => submitChoice(calculatedScore);
+            container.appendChild(btnScore);
+        }
 
-        const slashBtn = document.createElement('button');
-        slashBtn.className = 'key-btn action';
-        slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
-        slashBtn.onclick = () => submitChoice('/');
-        container.appendChild(slashBtn);
+        if (allowSlash) {
+            const slashBtn = document.createElement('button');
+            slashBtn.className = 'key-btn action';
+            slashBtn.innerText = '/';
+            slashBtn.onclick = () => submitChoice('/');
+            container.appendChild(slashBtn);
+        }
 
         const isPart2 = rowId.startsWith('d2_');
         applySmartOverlayPosition('choice-popup-overlay', isPart2);
@@ -1607,8 +1738,6 @@
         activeTarget = { colIndex, rowId };
         const container = document.getElementById('popup-buttons-container');
         container.innerHTML = '';
-        let cleanName = rowObj.name.split('<')[0].trim();
-        document.getElementById('popup-title').innerText = `Kies voor: ${cleanName}`;
         let choices = [];
 
         if (rowObj.val !== undefined) {
@@ -1645,7 +1774,7 @@
         if (isKansFilled) {
             const slashBtn = document.createElement('button');
             slashBtn.className = 'key-btn action';
-            slashBtn.innerText = '/ (Schuine streep / 0 ptn)';
+            slashBtn.innerText = '/';
             slashBtn.onclick = () => submitChoice('/');
             container.appendChild(slashBtn);
         }
@@ -1728,8 +1857,20 @@
         const p = players[currentPlayerIndex];
         if (players.length > 1 && p.hasSubmittedThisTurn) return;
         if (isRolling || rollCount === 0 || turnEnded) return;
+        
         const d = diceInstances[index];
+        
+        // WAT VAST LIGT NA EEN WORP MAG NIET MEER LOSGEMAAKT WORDEN!
+        if (d.isLocked && d.lockedInRoll > 0 && d.lockedInRoll < rollCount) {
+            return;
+        }
+
         d.isLocked = !d.isLocked;
+        if (d.isLocked) {
+            d.lockedInRoll = rollCount;
+        } else {
+            d.lockedInRoll = 0;
+        }
         d.holder.classList.toggle('locked', d.isLocked);
     }
 
@@ -1781,6 +1922,7 @@
         p.hasSubmittedThisTurn = false;
         diceInstances.forEach(d => {
             d.isLocked = false;
+            d.lockedInRoll = 0;
             d.holder.classList.remove('locked');
         });
         document.getElementById('worp-count').innerText = "0/3";
@@ -1917,6 +2059,7 @@
 
         diceInstances.forEach(d => {
             d.isLocked = false;
+            d.lockedInRoll = 0;
             d.holder.classList.remove('locked');
         });
 
@@ -2076,10 +2219,16 @@
             currentInputValue = '';
         } else if (val === '/') {
             currentInputValue = '/';
+        } else if (val === '0') {
+            // GEEN NUL MOGELIJK ALS ENKELE SCORE
+            if (currentInputValue === '') {
+                return;
+            }
+            if (currentInputValue.length < 3) currentInputValue += val;
         } else if (val === 'ENTER') {
             const p = players[currentPlayerIndex];
             const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
-            if (currentInputValue === '' || currentInputValue === 'Tel al je stenen op') {
+            if (currentInputValue === '' || currentInputValue === 'Tel al je stenen op' || currentInputValue === '0') {
                 delete p.scores[uniqueKey];
                 if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
                 p.hasSubmittedThisTurn = false;
@@ -2089,6 +2238,11 @@
                 p.hasSubmittedThisTurn = true;
             } else {
                 let numVal = parseInt(currentInputValue, 10);
+                if (numVal === 0) {
+                    delete p.scores[uniqueKey];
+                    closeKeypad();
+                    return;
+                }
                 if ((activeTarget.rowId === 'd2_0' || activeTarget.rowId === 'd2_1' || activeTarget.rowId === 'd2_6') && numVal > 29) {
                     currentInputValue = 'Tel al je stenen op';
                     document.getElementById('keypad-display').innerText = currentInputValue;
@@ -2311,6 +2465,54 @@
         );
     }
 </script>
+
+
+<script>
+(function() {
+    let currentStep = 0; // 0 = Kolom 1
+
+    function updateScroll(step) {
+        currentStep = (step + 6) % 6; // Houdt de cirkel strak tussen 0 en 5
+        
+        const wrappers = document.querySelectorAll('.score-table-wrapper');
+        wrappers.forEach(wrapper => {
+            const table = wrapper.querySelector('table.yatzee-table');
+            if (!table) return;
+
+            if (currentStep === 0) {
+                // Stap 0 is Kolom 1: scroll direct naar het absolute begin
+                wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                // Pak de breedte van een speelkolom
+                const col = table.querySelector('th:nth-child(2), td.score-cell');
+                const width = col ? col.offsetWidth : 180;
+                
+                // Schuif exact op per kolom
+                wrapper.scrollTo({ left: currentStep * width, behavior: 'smooth' });
+            }
+        });
+    }
+
+    document.addEventListener('click', function(e) {
+        // Pijlknop: stap door de cirkel (1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 1)
+        if (e.target.closest('.scroll-arrow-btn')) {
+            updateScroll(currentStep + 1);
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        // Nieuw Spel knop: direct terug naar Kolom 1
+        if (e.target && (e.target.innerText.includes('Nieuw Spel') || e.target.id === 'nieuw-spel-btn')) {
+            updateScroll(0);
+        }
+    });
+
+    // Direct bij laden op kolom 1 zetten
+    window.addEventListener('DOMContentLoaded', () => updateScroll(0));
+    setTimeout(() => updateScroll(0), 50);
+})();
+</script>
+
 
 </body>
 </html>
