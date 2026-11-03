@@ -830,22 +830,22 @@
         font-size: 12px;
     }
 
-    score-table-wrapper {
+    .score-table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
         width: 100%;
         position: relative;
         max-height: calc(100vh - 200px);
-        /* scroll-snap-type is hier bewust weggehaald zodat je vrij kunt scrollen! */
     }
 
     table.yatzee-table {
+        width: 750px;
+        min-width: 750px;
         table-layout: fixed;
         border-collapse: separate !important;
         border-spacing: 0 !important;
     }
 
-    /* LINKERKOLOM: VOLLEDIG ONAANGERAAKT (originele breedte behouden) */
     table.yatzee-table td.category-cell, 
     table.yatzee-table th:first-child {
         position: sticky;
@@ -855,20 +855,12 @@
         border-right: 3px solid #000000 !important;
     }
 
-    /* Elke speelkolom krijgt een vaste breedte en fungeert als startpunt */
-    table.yatzee-table th:not(:first-child),
-    table.yatzee-table td:not(.category-cell) {
-        width: 180px;
-        min-width: 180px;
-        scroll-snap-align: start;
-    }
-
     table.yatzee-table th, table.yatzee-table td { 
         height: 38px; 
         font-size: 15px;
     }
 
-    table.yatzee-table td.category-cell { padding: 0 6px; }
+    table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
     .cat-title { font-size: 12px; }
     .sub-text { font-size: 9px; }
 
@@ -939,6 +931,7 @@
         flex-shrink: 0;
     }
 }
+
 /* 2. Specifieke opmaak voor tablets (overschrijft mobiel vanaf 600px) */
 @media (min-width: 600px) and (max-width: 1024px) {
 
@@ -2465,54 +2458,6 @@
         );
     }
 </script>
-
-
-<script>
-(function() {
-    let currentStep = 0; // 0 = Kolom 1
-
-    function updateScroll(step) {
-        currentStep = (step + 6) % 6; // Houdt de cirkel strak tussen 0 en 5
-        
-        const wrappers = document.querySelectorAll('.score-table-wrapper');
-        wrappers.forEach(wrapper => {
-            const table = wrapper.querySelector('table.yatzee-table');
-            if (!table) return;
-
-            if (currentStep === 0) {
-                // Stap 0 is Kolom 1: scroll direct naar het absolute begin
-                wrapper.scrollTo({ left: 0, behavior: 'smooth' });
-            } else {
-                // Pak de breedte van een speelkolom
-                const col = table.querySelector('th:nth-child(2), td.score-cell');
-                const width = col ? col.offsetWidth : 180;
-                
-                // Schuif exact op per kolom
-                wrapper.scrollTo({ left: currentStep * width, behavior: 'smooth' });
-            }
-        });
-    }
-
-    document.addEventListener('click', function(e) {
-        // Pijlknop: stap door de cirkel (1 -> 2 -> 3 -> 4 -> 5 -> 6 -> 1)
-        if (e.target.closest('.scroll-arrow-btn')) {
-            updateScroll(currentStep + 1);
-            e.preventDefault();
-            e.stopPropagation();
-        }
-
-        // Nieuw Spel knop: direct terug naar Kolom 1
-        if (e.target && (e.target.innerText.includes('Nieuw Spel') || e.target.id === 'nieuw-spel-btn')) {
-            updateScroll(0);
-        }
-    });
-
-    // Direct bij laden op kolom 1 zetten
-    window.addEventListener('DOMContentLoaded', () => updateScroll(0));
-    setTimeout(() => updateScroll(0), 50);
-})();
-</script>
-
 
 </body>
 </html>
