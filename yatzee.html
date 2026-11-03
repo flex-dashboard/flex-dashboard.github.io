@@ -1094,6 +1094,8 @@
         <table class="yatzee-table">
             <tbody id="table-body-d2"></tbody>
         </table>
+<button class="scroll-arrow-btn" onclick="scrollNextColumn()" title="Volgende kolom / Oneindige loop">›</button>
+
     </div>
 </div>
 
@@ -2437,26 +2439,176 @@
         }
     }
 
-    function confirmReset() {
-        showCustomAlert(
-            "Nieuw Spel", 
-            "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
-            false, 
-            "", 
-            function() {
-                const currentP1Name = (players[0] && players[0].name) ? players[0].name : 'Speler 1';
-                
-                players = [
-                    { name: currentP1Name, scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
-                ];
-                currentPlayerIndex = 0;
-                saveToStorage();
-                buildGrid();
-                updateDisplay();
-                resetForNextTurn();
+  function confirmReset() {
+    showCustomAlert(
+        "Nieuw Spel", 
+        "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
+        false, 
+        "", 
+        function() {
+            const currentP1Name = (players[0] && players[0].name) ? players[0].name : 'Speler 1';
+            
+            players = [
+                { name: currentP1Name, scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
+            ];
+            currentPlayerIndex = 0;
+            
+            // Reset de scroll naar kolom 1
+            currentStep = 0;
+            document.querySelectorAll('.score-table-wrapper').forEach(wrapper => {
+                wrapper.scrollLeft = 0;
+            });
+
+            saveToStorage();
+            buildGrid();
+            updateDisplay();
+            resetForNextTurn();
+
+            // Pagina herladen zodat alles absoluut brandschoon en strak staat
+            location.reload();
+        }
+    );
+}
+</script>
+
+<script>
+(function() {
+    let currentStep = 0; // 0 = Kolom 1
+    let isProgrammaticScroll = false;
+
+    // 1. Voeg automatisch een fysieke kloon van kolom 1 toe achter de laatste kolom
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('table.yatzee-table').forEach(table => {
+            if (table.dataset.cloned) return;
+            
+            const headerRow = table.querySelector('tr');
+            const firstTh = headerRow ? headerRow.querySelector('th:nth-child(2)') : null;
+            if (firstTh) {
+                const cloneTh = firstTh.cloneNode(true);
+                headerRow.appendChild(cloneTh);
             }
-        );
+
+            table.querySelectorAll('tr').forEach(row => {
+                const firstTd = row.querySelector('td.score-cell, td:nth-child(2)');
+                if (firstTd) {
+                    const cloneTd = firstTd.cloneNode(true);
+                    cloneTd.querySelectorAll('input').forEach(input => input.value = '');
+                    row.appendChild(cloneTd);
+                }
+            });
+            
+            table.dataset.cloned = "true";
+        });
+    });
+
+    function updateScroll(step) {
+        // We werken nu met 7 stappen: 0 t/m 5 zijn de echte kolommen, stap 6 is de kloon van kolom 1
+        currentStep = (step + 7) % 7; 
+        isProgrammaticScroll = true;
+        
+        const wrappers = document.querySelectorAll('.score-table-wrapper');
+        wrappers.forEach(wrapper => {
+            const table = wrapper.querySelector('table.yatzee-table');
+            if (!table) return;
+
+            if (currentStep === 0) {
+                wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                const col = table.querySelector('th:nth-child(2), td.score-cell');
+                const width = col ? col.offsetWidth : 180;
+                
+                wrapper.scrollTo({ left: currentStep * width, behavior: 'smooth' });
+            }
+        });
+
+        // Als hij bij de kloon (stap 6) is aangekomen, spring direct (onzichtbaar) terug naar stap 0
+        if (currentStep === 6) {
+            setTimeout(() => {
+                currentStep = 0;
+                wrappers.forEach(wrapper => {
+                    wrapper.scrollTo({ left: 0, behavior: 'auto' });
+                });
+            }, 400); // Wacht even tot de scroll-animatie naar de kloon klaar is
+        }
+
+        setTimeout(() => {
+            isProgrammaticScroll = false;
+        }, 500);
     }
+
+    // Klik-afhandeling voor pijltjes en Nieuw Spel
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.scroll-arrow-btn')) {
+            updateScroll(currentStep + 1);
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        if (e.target && (e.target.innerText.includes('Nieuw Spel') || e.target.id === 'nieuw-spel-btn' || e.target.innerText.includes('Ja, score wissen'))) {
+            updateScroll(0);
+        }
+    });
+
+    // Handmatige scroll-synchronisatie
+    document.addEventListener("DOMContentLoaded", function () {
+        const wrappers = document.querySelectorAll('.score-table-wrapper');
+        if (wrappers.length >= 2) {
+            let isSyncing = false;
+
+            wrappers.forEach(wrapper => {
+                wrapper.addEventListener('scroll', function () {
+                    if (isProgrammaticScroll || isSyncing) return;
+                    isSyncing = true;
+
+                    const targetScrollLeft = this.scrollLeft;
+                    requestAnimationFrame(() => {
+                        wrappers.forEach(otherWrapper => {
+                            if (otherWrapper !== this) {
+                                otherWrapper.scrollLeft = targetScrollLeft;
+                            }
+                        });
+                        isSyncing = false;
+                    });
+                });
+            });
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => updateScroll(0));
+    setTimeout(() => updateScroll(0), 50);
+})();
+</script>
+
+<script>
+(function() {
+    function adjustColumnWidths() {
+        // Controleer of we op een klein scherm (telefoon) zitten
+        if (!window.matchMedia("(max-width: 600px)").matches) return;
+
+        const wrappers = document.querySelectorAll('.score-table-wrapper');
+        wrappers.forEach(wrapper => {
+            const table = wrapper.querySelector('table.yatzee-table');
+            if (!table) return;
+
+            const labelCol = table.querySelector('th:first-child, td:first-child');
+            const labelWidth = labelCol ? labelCol.offsetWidth : 140;
+            
+            // Bereken de exacte resterende ruimte voor de speelkolom op telefoon
+            const dynamicWidth = wrapper.clientWidth - labelWidth;
+
+            // Pas de breedte alleen toe op telefoons
+            table.querySelectorAll('th:not(:first-child), td.score-cell').forEach(cell => {
+                cell.style.width = dynamicWidth + 'px';
+                cell.style.minWidth = dynamicWidth + 'px';
+                cell.style.maxWidth = dynamicWidth + 'px';
+            });
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', adjustColumnWidths);
+    window.addEventListener('resize', adjustColumnWidths);
+    setTimeout(adjustColumnWidths, 100);
+})();
 </script>
 
 </body>
