@@ -301,31 +301,31 @@
 
         /* Toetsenborden & Eigen In-App Modals Overlays */
         .overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 100;
-            justify-content: center;
-            align-items: flex-end;
-            padding: 15px;
-        }
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 100;
+    padding: 15px;
+    justify-content: center; /* Zorgt dat alles weer strak in het midden staat */
+}
 
-        .overlay.centered {
-            align-items: center;
-        }
+.overlay.centered {
+    align-items: center;
+}
 
-        .overlay.position-top {
-            align-items: flex-start;
-            padding-top: 30px;
-        }
-        .overlay.position-bottom {
-            align-items: flex-end;
-            padding-bottom: 30px;
-        }
+.overlay.position-top {
+    align-items: flex-start;
+    padding-top: 30px;
+}
+
+.overlay.position-bottom {
+    align-items: flex-end;
+    padding-bottom: 30px;
+}
 
         /* Eigen In-app Melding / Pop-up styling met Kruisje */
         .custom-modal {
@@ -375,15 +375,22 @@
             font-weight: normal;
         }
 
-        .keypad {
-            background-image: url('dobs.png');
-            background-size: cover;          /* Zorgt dat de afbeelding het hele venster vult */
-            background-position: center;     /* Centreert de afbeelding in de pop-up */
-            background-repeat: no-repeat;    /* Voorkomt dat het plaatje gaat herhalen */
+     .keypad {
+            background-image: url('yatzee/dobs.png');
+            background-size: cover;          
+            background-position: center;     
+            background-repeat: no-repeat;    
             border-radius: 12px;
             padding: 15px;
             box-shadow: 0 8px 24px rgba(0,0,0,0.3);
             border: 2px solid #333;
+            cursor: grab; /* Laat een handje zien dat je hem kunt oppakken */
+            user-select: none; /* Voorkomt dat tekst/icoontjes geselecteerd worden tijdens het slepen */
+            touch-action: none; /* Voorkomt dat de pagina meetrekt op mobiel tijdens het slepen */
+        }
+
+        .keypad:active {
+            cursor: grabbing; /* Het handje sluit zich wanneer je hem vastpakt en versleept */
         }
 
         .keypad-display {
@@ -463,6 +470,18 @@
             padding: 0 !important;
             margin: 0 !important;
         }
+
+/* Zodra er 2 knoppen zijn (bijv. score en een streep): compacte rechthoekige layout zonder loze ruimte */
+#choice-popup-overlay #popup-buttons-container:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+    display: flex !important;
+    flex-wrap: nowrap !important;
+    gap: 12px !important;
+    justify-content: center !important;
+    align-items: center !important;
+    width: auto !important;
+    height: auto !important;
+    max-width: 300px !important;
+}
 
         /* Zodra er 5 knoppen zijn (Deel 1 keuzes): grid-layout voor de 4 hoeken + midden */
         #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) {
@@ -975,10 +994,10 @@
 
     table.yatzee-table td, 
     table.yatzee-table th {
-        height: 1px !important; /* Dwingt de cellen gelijk te trekken op basis van beschikbare ruimte */
-        max-height: 1px !important;
-        padding-top: 0 !important;
-        padding-bottom: 0 !important;
+        /* height: 1px !important; --> Deze mag weg */
+        /* max-height: 1px !important; --> Deze mag ook weg */
+        padding-top: 4px !important;
+        padding-bottom: 4px !important;
         box-sizing: border-box !important;
     }
 
@@ -1112,12 +1131,12 @@
 
 <!-- Screensaver Overlay -->
 <div id="screensaver-overlay" onclick="hideScreensaver()">
-    <div class="ss-dice" id="ss-dice-0"><img src="dobbelsteen1.png" alt="1"></div>
-    <div class="ss-dice" id="ss-dice-1"><img src="dobbelsteen2.png" alt="2"></div>
-    <div class="ss-dice" id="ss-dice-2"><img src="dobbelsteen3.png" alt="3"></div>
-    <div class="ss-dice" id="ss-dice-3"><img src="dobbelsteen4.png" alt="4"></div>
-    <div class="ss-dice" id="ss-dice-4"><img src="dobbelsteen5.png" alt="5"></div>
-    <div class="ss-dice" id="ss-dice-5"><img src="dobbelsteen6.png" alt="6"></div>
+    <div class="ss-dice" id="ss-dice-0"><img src="yatzee/dobbelsteen1.png" alt="1"></div>
+    <div class="ss-dice" id="ss-dice-1"><img src="yatzee/dobbelsteen2.png" alt="2"></div>
+    <div class="ss-dice" id="ss-dice-2"><img src="yatzee/dobbelsteen3.png" alt="3"></div>
+    <div class="ss-dice" id="ss-dice-3"><img src="yatzee/dobbelsteen4.png" alt="4"></div>
+    <div class="ss-dice" id="ss-dice-4"><img src="yatzee/dobbelsteen5.png" alt="5"></div>
+    <div class="ss-dice" id="ss-dice-5"><img src="yatzee/dobbelsteen6.png" alt="6"></div>
 </div>
 
 <!-- Overlay voor Speleraantal & Namen -->
@@ -1209,12 +1228,12 @@
 
     const rowsPart1 = [
         { type: 'header', title: 'deel 1' },
-        { type: 'score', id: 'd1_0', name: 'enen <span class="dice-icon"><img src="dobbelsteen1.png" alt="1"></span>', sub: 'tel alle enen op', val: 1 },
-        { type: 'score', id: 'd1_1', name: 'tweeën <span class="dice-icon"><img src="dobbelsteen2.png" alt="2"></span>', sub: 'tel alle tweeën op', val: 2 },
-        { type: 'score', id: 'd1_2', name: 'drieën <span class="dice-icon"><img src="dobbelsteen3.png" alt="3"></span>', sub: 'tel alle drieën op', val: 3 },
-        { type: 'score', id: 'd1_3', name: 'vieren <span class="dice-icon"><img src="dobbelsteen4.png" alt="4"></span>', sub: 'tel alle vieren op', val: 4 },
-        { type: 'score', id: 'd1_4', name: 'vijven <span class="dice-icon"><img src="dobbelsteen5.png" alt="5"></span>', sub: 'tel alle vijven op', val: 5 },
-        { type: 'score', id: 'd1_5', name: 'zessen <span class="dice-icon"><img src="dobbelsteen6.png" alt="6"></span>', sub: 'tel alle zessen op', val: 6 },
+        { type: 'score', id: 'd1_0', name: 'enen <span class="dice-icon"><img src="yatzee/dobbelsteen1.png" alt="1"></span>', sub: 'tel alle enen op', val: 1 },
+        { type: 'score', id: 'd1_1', name: 'tweeën <span class="dice-icon"><img src="yatzee/dobbelsteen2.png" alt="2"></span>', sub: 'tel alle tweeën op', val: 2 },
+        { type: 'score', id: 'd1_2', name: 'drieën <span class="dice-icon"><img src="yatzee/dobbelsteen3.png" alt="3"></span>', sub: 'tel alle drieën op', val: 3 },
+        { type: 'score', id: 'd1_3', name: 'vieren <span class="dice-icon"><img src="yatzee/dobbelsteen4.png" alt="4"></span>', sub: 'tel alle vieren op', val: 4 },
+        { type: 'score', id: 'd1_4', name: 'vijven <span class="dice-icon"><img src="yatzee/dobbelsteen5.png" alt="5"></span>', sub: 'tel alle vijven op', val: 5 },
+        { type: 'score', id: 'd1_5', name: 'zessen <span class="dice-icon"><img src="yatzee/dobbelsteen6.png" alt="6"></span>', sub: 'tel alle zessen op', val: 6 },
         { type: 'total', id: 'totaal_p1', name: 'totaal aantal punten ➔', sub: '' },
         { type: 'total', id: 'bonus', name: 'extra bonus', sub: 'als puntentotaal 63 of meer is' },
         { type: 'total', id: 'totaal_boven', name: 'totaal van de bovenste helft ➔', sub: '' }
@@ -1634,6 +1653,7 @@
                         delete p.scores[uniqueKey];
                         p.lastActionKey = null;
                         p.hasSubmittedThisTurn = false;
+                        turnEnded = false;
 
                         if (p.lastRoll) {
                             lastActiveRoll = [...p.lastRoll];
@@ -1650,11 +1670,13 @@
             return;
         }
 
-      if (players.length > 1 && p.hasSubmittedThisTurn) {
+        if (p.hasSubmittedThisTurn) {
             showCustomAlert(
                 "Score al ingevuld", 
-                "Je hebt je score al ingevuld voor deze beurt. Klik op de wisselknop (➔) voor de volgende speler!",
-                true
+                players.length > 1 
+                    ? "Je hebt je score al ingevuld voor deze beurt. Klik op de wisselknop (➔) voor de volgende speler!" 
+                    : "Je hebt al gescoord in deze beurt! Klik op 'Gooi 🎲' om een nieuwe beurt te starten.",
+                players.length > 1
             );
             updateArrowPulse();
             return;
@@ -1795,10 +1817,14 @@
         }
 
         p.hasSubmittedThisTurn = true;
+        turnEnded = true;
+        lastActiveRoll = null;
 
         if (players.length === 1) {
-            p.hasSubmittedThisTurn = false;
-            resetForNextTurn();
+            if (!diceModeActive) {
+                p.hasSubmittedThisTurn = false;
+                resetForNextTurn();
+            }
         } else {
             if (diceModeActive) {
                 endTurn("Wissel van speler ➔");
@@ -1871,6 +1897,12 @@
 
     function handleRollClick() {
         const p = players[currentPlayerIndex];
+
+        if (turnEnded && diceModeActive && players.length === 1) {
+            resetForNextTurn();
+            rollAllDice();
+            return;
+        }
 
         if (rollCount >= 3 || turnEnded) {
             showCustomAlert(
@@ -2227,10 +2259,13 @@
                 delete p.scores[uniqueKey];
                 if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
                 p.hasSubmittedThisTurn = false;
+                turnEnded = false;
             } else if (currentInputValue === '/') {
                 p.scores[uniqueKey] = '/';
                 p.lastActionKey = uniqueKey;
                 p.hasSubmittedThisTurn = true;
+                turnEnded = true;
+                lastActiveRoll = null;
             } else {
                 let numVal = parseInt(currentInputValue, 10);
                 if (numVal === 0) {
@@ -2246,11 +2281,19 @@
                 p.scores[uniqueKey] = numVal;
                 p.lastActionKey = uniqueKey;
                 p.hasSubmittedThisTurn = true;
+                turnEnded = true;
+                lastActiveRoll = null;
             }
 
             if (players.length === 1) {
-                p.hasSubmittedThisTurn = false;
-                resetForNextTurn();
+                if (diceModeActive) {
+                    p.hasSubmittedThisTurn = true;
+                    turnEnded = true;
+                    lastActiveRoll = null;
+                } else {
+                    p.hasSubmittedThisTurn = false;
+                    resetForNextTurn();
+                }
             }
 
             saveToStorage();
@@ -2319,6 +2362,8 @@
                 p.scores[`c${colIndex}_totaal_d1_copy`] = boven;
             }
 
+
+
             let sumD2 = 0, countD2 = 0;
             ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
                 if (hasVal(id)) { sumD2 += getVal(id); countD2++; }
@@ -2364,6 +2409,27 @@
                 p.scores[`c${c}_totaal_boven`] = boven;
                 p.scores[`c${c}_totaal_d1_copy`] = boven;
             }
+
+            // --- Toegevoegd voor automatisch doorrekenen van Deel 2 en Eindtotaal ---
+            let sumD2 = 0, countD2 = 0;
+            ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
+                const val = p.scores[`c${c}_${id}`];
+                if (val !== undefined) {
+                    if (val !== '/') { sumD2 += parseInt(val, 10); }
+                    countD2++;
+                }
+            });
+            if (countD2 >0) {
+           let onder = sumD2;
+                p.scores[`c${c}_totaal_d2`] = sumD2;
+            }
+
+            let d1Total = p.scores[`c${c}_totaal_d1_copy`];
+            let d2Total = p.scores[`c${c}_totaal_d2`];
+            if (d1Total !== undefined && d2Total !== undefined) {
+                p.scores[`c${c}_eindtotaal`] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
+            }
+            // ----------------------------------------------------------------------
 
             allRows.forEach(row => {
                 if (row.type !== 'header') {
@@ -2610,6 +2676,92 @@
     setTimeout(adjustColumnWidths, 100);
 })();
 </script>
+
+<!-- --- BEGIN SLEEP-LOGICA SCRIPT --- -->
+<script>
+    // Maak elk toetsenbord/pop-up sleepbaar met muis of vinger
+    function makeDraggable(element) {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        function dragStart(e) {
+            // Als er op een knop of invoerveld wordt geklikt, niet slepen (anders kun je niet typen/klikken)
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button')) {
+                return;
+            }
+
+            isDragging = true;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            startX = clientX;
+            startY = clientY;
+
+            const rect = element.getBoundingClientRect();
+            element.style.position = 'fixed';
+            element.style.left = rect.left + 'px';
+            element.style.top = rect.top + 'px';
+            element.style.transform = 'none';
+            element.style.margin = '0';
+
+            initialLeft = rect.left;
+            initialTop = rect.top;
+
+            if (e.type === 'touchstart') {
+                document.addEventListener('touchmove', dragMove, { passive: false });
+                document.addEventListener('touchend', dragEnd);
+            } else {
+                document.addEventListener('mousemove', dragMove);
+                document.addEventListener('mouseup', dragEnd);
+            }
+        }
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            if (e.type === 'touchmove') {
+                e.preventDefault(); // Houdt het scherm stabiel op telefoons/tablets tijdens slepen
+            }
+
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+
+            element.style.left = (initialLeft + dx) + 'px';
+            element.style.top = (initialTop + dy) + 'px';
+        }
+
+        function dragEnd(e) {
+            isDragging = false;
+            document.removeEventListener('mousemove', dragMove);
+            document.removeEventListener('mouseup', dragEnd);
+            document.removeEventListener('touchmove', dragMove);
+            document.removeEventListener('touchend', dragEnd);
+        }
+
+        element.addEventListener('mousedown', dragStart);
+        element.addEventListener('touchstart', dragStart, { passive: true });
+    }
+
+    // Zorgt dat elk toetsenbord netjes in het midden start als het opent
+    function openKeypadInCenter(keypadElement) {
+        keypadElement.style.position = 'fixed';
+        keypadElement.style.left = '50%';
+        keypadElement.style.top = '50%';
+        keypadElement.style.transform = 'translate(-50%, -50%)';
+        keypadElement.style.margin = '0';
+    }
+
+    // Activeer het slepen automatisch zodra de pagina laadt voor alle keypads
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.keypad').forEach(kp => {
+            makeDraggable(kp);
+        });
+    });
+</script>
+<!-- --- EINDE SLEEP-LOGICA SCRIPT --- -->
+
 
 </body>
 </html>
