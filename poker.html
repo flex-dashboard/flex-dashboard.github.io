@@ -292,7 +292,7 @@
             background-repeat: no-repeat;
         }
         .card-back {
-            background-image: var(--card-bg, url('kaart.jpg'));
+            background-image: var(--card-bg, url('poker/kaart.jpg'));
             background-size: cover;
             background-position: center;
             border: 2px solid #ffffff;
@@ -601,13 +601,13 @@
     }
 
     const tablesConfig = {
-        1: { name: "Tafel 1", bets: [1,2,3,4,5], cardBg: "url('kaart.jpg')", goal: 2000,
+        1: { name: "Tafel 1", bets: [1,2,3,4,5], cardBg: "url('poker/kaart.jpg')", goal: 2000,
              theme: { core: "#1b2a47", edge: "#090d16", cab1: "#10192d", cab2: "#060911", border: "#d4af37", accent: "#ffd700", btnMain: "linear-gradient(to bottom, #f6d365, #fda085)", btnBet: "linear-gradient(to bottom, #4a69bd, #1e3799)" } },
-        2: { name: "Tafel 2", bets: [1,2,4,6,8,10], cardBg: "url('kaart1.jpg')", goal: 10000,
+        2: { name: "Tafel 2", bets: [1,2,4,6,8,10], cardBg: "url('poker/kaart1.jpg')", goal: 10000,
              theme: { core: "#471b1b", edge: "#160909", cab1: "#2d1010", cab2: "#110606", border: "#ff6b6b", accent: "#ff9999", btnMain: "linear-gradient(to bottom, #ff9999, #cc3333)", btnBet: "linear-gradient(to bottom, #802b2b, #401010)" } },
-        3: { name: "Tafel 3", bets: [5,10,15,20], cardBg: "url('kaart2.jpg')", goal: 25000,
+        3: { name: "Tafel 3", bets: [5,10,15,20], cardBg: "url('poker/kaart2.jpg')", goal: 25000,
              theme: { core: "#1b471e", edge: "#09160a", cab1: "#102d13", cab2: "#061107", border: "#2ecc71", accent: "#a3be8c", btnMain: "linear-gradient(to bottom, #2ecc71, #27ae60)", btnBet: "linear-gradient(to bottom, #1e8449, #145a32)" } },
-        4: { name: "Tafel 4", bets: [5,10,15,20,25,30], cardBg: "url('kaart3.jpg')", goal: 999999,
+        4: { name: "Tafel 4", bets: [5,10,15,20,25,30], cardBg: "url('poker/kaart3.jpg')", goal: 999999,
              theme: { core: "#5a0f14", edge: "#1a0305", cab1: "#3b0a0d", cab2: "#120203", border: "#e74c3c", accent: "#ffadad", btnMain: "linear-gradient(to bottom, #e74c3c, #c0392b)", btnBet: "linear-gradient(to bottom, #962d22, #641e16)" } }
     };
 
@@ -1070,7 +1070,7 @@
     }
 
     function getCardFileName(c) {
-        if (c.val === 'JOKER') return 'cards/red_joker.png';
+        if (c.val === 'JOKER') return 'poker/cards/red_joker.png';
 
         let suitName = '';
         if (c.suit === '♣') suitName = 'clubs';
@@ -1085,7 +1085,7 @@
         else if (c.val === 'A') valName = 'ace';
         else valName = c.val;
 
-        return `cards/${valName}_of_${suitName}.png`;
+        return `poker/cards/${valName}_of_${suitName}.png`;
     }
 
     function updateCardFront(index, c) {
