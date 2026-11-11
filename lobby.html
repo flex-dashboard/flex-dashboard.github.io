@@ -670,21 +670,31 @@
                 }
             }
 
+            // Schrijf mezelf in als actieve speler in Firebase
             await set(playerRef, true);
             onDisconnect(playerRef).remove();
 
+            // Luister live naar de hele room zodat alle inkomende spelers direct gesynchroniseerd worden
             onValue(roomRef, (snapshot) => {
                 const data = snapshot.val();
                 if (!data) return;
 
                 if (data.host) activeHost = data.host;
-                if (data.players) activePlayers = data.players;
+                
+                // Vang de spelerslijst netjes op uit Firebase (zowel object als array-vorm)
+                if (data.players) {
+                    if (Array.isArray(data.players)) {
+                        activePlayers = {};
+                        data.players.forEach(pName => { activePlayers[pName] = true; });
+                    } else {
+                        activePlayers = data.players;
+                    }
+                }
                 activePlayers[playerName] = true;
                 
                 renderUI();
 
-                // Wanneer de host start, gaat iedereen door naar onlineyatzee.html met rijtjes en modus
-             // Wanneer de host start, haal de instellingen uit Firebase en ga door naar onlineyatzee.html
+                // Wanneer de host start, haal de instellingen uit Firebase en ga door naar onlineyatzee.html
                 if (data.status === "gestart") {
                     const roomRows = data.settings ? data.settings.rows : onlineRows;
                     const roomPlayMode = data.settings ? data.settings.playMode : onlinePlayMode;
@@ -703,27 +713,65 @@
             });
         }
 
-    btnStartGame.addEventListener("click", () => {
+        btnStartGame.addEventListener("click", () => {
             if (!btnStartGame.disabled) {
+                // Uitgebreide log-tests van de andere AI om de datastroom te controleren:
+                console.log("ROOM DATA VOOR START (activePlayers):", activePlayers);
+                console.log("PLAYERS KEYS:", Object.keys(activePlayers));
+                console.log("AANTAL SPELERS:", Object.keys(activePlayers || {}).length);
+
+                // Zorg voor een stabiele lijst van spelers (gesorteerd zodat iedereen dezelfde volgorde ziet)
+                const playerNames = Object.keys(activePlayers).sort();
+                
+                const initialTurnIndex = Math.floor(Math.random() * playerNames.length);
+
+                const initialPlayers = playerNames.map((pName, idx) => ({
+                    id: 'p_' + idx,
+                    name: pName,
+                    scores: {},
+                    lastActionKey: null,
+                    lastRoll: null,
+                    hasSubmittedThisTurn: false
+                }));
+
                 const sessionData = {
                     roomCode: currentRoomCode,
                     playerName: myName,
                     isHost: true,
                     rows: onlineRows,
                     playMode: onlinePlayMode,
-                    players: Object.keys(activePlayers)
+                    players: playerNames
                 };
                 localStorage.setItem("yatzee_online_session", JSON.stringify(sessionData));
                 
-                // Sla de instellingen ook op in Firebase zodat gasten ze meekrijgen
-                set(ref(db, 'rooms/' + currentRoomCode + '/settings'), {
-                    rows: onlineRows,
-                    playMode: onlinePlayMode,
-                    players: Object.keys(activePlayers)
-                }).then(() => {
-                    set(ref(db, 'rooms/' + currentRoomCode + '/status'), "gestart").then(() => {
-                        window.top.location.href = "onlineyatzee.html";
-                    });
+                // Schrijf de data direct en compleet weg naar de centrale room in Firebase
+                const roomDataRef = ref(db, 'rooms/' + currentRoomCode);
+
+                const payloadToSave = {
+                    host: myName,
+                    settings: {
+                        rows: onlineRows,
+                        playMode: onlinePlayMode
+                    },
+                    gameState: {
+                        players: initialPlayers,
+                        currentPlayerIndex: initialTurnIndex,
+                        viewingPlayerIndex: initialTurnIndex,
+                        numGames: onlineRows,
+                        rollCount: 0,
+                        turnEnded: false,
+                        timestamp: Date.now()
+                    },
+                    status: "gestart"
+                };
+
+                console.log("WAT GAAT DE LOBBY NU WEGSCHRIJVEN (Volledige Payload):", payloadToSave);
+
+                set(roomDataRef, payloadToSave).then(() => {
+                    console.log("Payload succesvol weggeschreven naar Firebase. Doorsturen naar onlineyatzee.html...");
+                    window.top.location.href = "onlineyatzee.html";
+                }).catch((error) => {
+                    console.error("FOUT bij wegschrijven naar Firebase:", error);
                 });
             }
         });

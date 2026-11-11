@@ -778,7 +778,7 @@
         gap: 6px;
     }
 
-.nav-btn {
+    .nav-btn {
         font-size: 0px !important;
         padding: 3px 5px !important;
         text-align: center;
@@ -1236,14 +1236,13 @@
     import { getDatabase, ref, set, onValue, get, update } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
 
     const firebaseConfig = {
-        apiKey: "AIzaSyCAiObuQPHtatb54tKr7EImt84nLZTCBJI",
+       apiKey: "AIzaSyCAiObuQPHtatb54tKr7EImt84nLZTCBJI",
             authDomain: "yatzee-f23d7.firebaseapp.com",
             projectId: "yatzee-f23d7",
             storageBucket: "yatzee-f23d7.firebasestorage.app",
             messagingSenderId: "817605728347",
             appId: "1:817605728347:web:53575b8bfc71e9e2a7077e",
             measurementId: "G-GZF4K7T835"
-
     };
 
     const app = initializeApp(firebaseConfig);
@@ -1256,13 +1255,13 @@
 
     let currentPlayerIndex = 0;
     let viewingPlayerIndex = 0;
-    let lastAlertedTurnPlayer = null; // Voorkomt oneindige herhaling van de pop-up
+    let lastAlertedTurnPlayer = null;
 
-    let onlineSession = JSON.parse(localStorage.getItem('yatzee_online_session') || '{}');
+    // --- LOCALSTORAGE VERWIJDERD VOOR SESSIE: RECHTSTREEKS UIT FIREBASE ---
+    const onlineSession = JSON.parse(localStorage.getItem('yatzee_online_session') || '{}');
     let currentRoomCode = onlineSession.roomCode || "default_room";
     let myName = onlineSession.playerName || "Speler";
-    let localPlayerId = localStorage.getItem('yatzee_local_pid') || ('p_' + Math.random().toString(36).substr(2, 9));
-    localStorage.setItem('yatzee_local_pid', localPlayerId);
+    let localPlayerId = 'p_' + Math.random().toString(36).substr(2, 9);
 
     const rowsPart1 = [
         { type: 'header', title: 'deel 1' },
@@ -1340,7 +1339,7 @@
             
             btn.onclick = function() {
                 viewingPlayerIndex = idx;
-                window.userManuallySwitched = true; // Zorg dat auto-focus niet direct overschrijft
+                window.userManuallySwitched = true;
                 updateHeaderPlayerName();
                 updateDisplay();
                 closePlayerSwitchMenu();
@@ -1712,12 +1711,16 @@
         const inBtn = document.getElementById('in-btn');
         const switchBtn = document.getElementById('player-switch-btn');
 
-        const canAct = (viewingPlayerIndex === currentPlayerIndex);
+        const activePlayerObj = players[currentPlayerIndex];
+        const activePlayerName = activePlayerObj ? activePlayerObj.name : '';
+
+        const isMyTurn = (activePlayerName === myName);
+        const isViewingMyOwnSheet = (viewingPlayerIndex === currentPlayerIndex);
+        const canAct = isMyTurn && isViewingMyOwnSheet;
 
         if (!canAct) {
             if (rollBtn) rollBtn.classList.add('read-only-locked');
             if (inBtn) inBtn.classList.add('read-only-locked');
-            if (switchBtn) switchBtn.classList.add('read-only-locked');
         } else {
             if (rollBtn) rollBtn.classList.remove('read-only-locked');
             if (inBtn) inBtn.classList.remove('read-only-locked');
@@ -2663,8 +2666,8 @@
         }
     }
 
-    // --- FIREBASE SYNC & LOCALSTORAGE CRASH-HERSTEL ---
-    function saveToFirebase() {
+    // --- FIREBASE SYNC ZONDER LOCALSTORAGE ---
+    window.saveToFirebase = function() {
         if (!currentRoomCode) return;
         const gameState = {
             players: players,
@@ -2678,12 +2681,9 @@
             timestamp: Date.now()
         };
         set(ref(db, 'rooms/' + currentRoomCode + '/gameState'), gameState);
-        
-        // Lokale opslag voor crash-herstel van de eigen speler
-        localStorage.setItem('yatzee_saved_players_' + currentRoomCode, JSON.stringify(players));
-    }
+    };
 
-    function loadFromFirebase() {
+window.loadFromFirebase = function() {
         if (!currentRoomCode) {
             buildGrid();
             updateDisplay();
@@ -2693,61 +2693,60 @@
         const roomRef = ref(db, 'rooms/' + currentRoomCode);
         onValue(roomRef, (snapshot) => {
             const data = snapshot.val();
-            const localBackup = localStorage.getItem('yatzee_saved_players_' + currentRoomCode);
 
-            if (data && data.settings) {
-                if (data.settings.rows) {
-                    numGames = parseInt(data.settings.rows, 10) || 6;
+            // --- HIER ZIJN DE LOGFILES WEER TERUG ---
+            console.log("DATA UIT FIREBASE:", data);
+            console.log("PLAYERS UIT FIREBASE (gameState.players):", data ? data.gameState?.players : "data");
+            console.log("PLAYERS UIT FIREBASE (root players):", data ? data.players : "data");
+            // ----------------------------------------
+
+            if (!data) return;
+
+            // Als gameState.players rechtstreeks als schone array aanwezig is, nemen we die direct blind en volledig over!
+            if (data.gameState && Array.isArray(data.gameState.players) && data.gameState.players.length > 0) {
+                players = data.gameState.players;
+                console.log("SPELERS DIRECT OVERGENOMEN UIT gameState.players:", players);
+            } else {
+                let rawPlayers = null;
+                if (data.gameState && data.gameState.players) {
+                    rawPlayers = data.gameState.players;
+                } else if (data.players) {
+                    rawPlayers = data.players;
+                } else if (data.settings && data.settings.players) {
+                    rawPlayers = data.settings.players;
                 }
-                if (data.settings.players && Array.isArray(data.settings.players)) {
-                    // Zorg dat alle namen uit de lobby netjes in de spelersarray komen
-                    let roomPlayerNames = data.settings.players;
-                    let existingScoresMap = {};
-                    players.forEach(p => { existingScoresMap[p.name] = p.scores; });
-                    if (localBackup) {
-                        try {
-                            JSON.parse(localBackup).forEach(bp => { existingScoresMap[bp.name] = bp.scores; });
-                        } catch(e){}
+
+                if (rawPlayers) {
+                    if (!Array.isArray(rawPlayers) && typeof rawPlayers === 'object') {
+                        rawPlayers = Object.keys(rawPlayers);
                     }
 
-                    players = roomPlayerNames.map((nameStr, idx) => ({
-                        id: 'p_' + idx,
-                        name: nameStr,
-                        scores: existingScoresMap[nameStr] || {},
-                        lastActionKey: null,
-                        lastRoll: null,
-                        hasSubmittedThisTurn: false
-                    }));
+                    if (Array.isArray(rawPlayers)) {
+                        players = rawPlayers.map((p, idx) => {
+                            const pName = typeof p === 'object' && p !== null ? (p.name || p) : p;
+                            return {
+                                id: 'p_' + idx,
+                                name: typeof pName === 'string' ? pName : 'Speler ' + (idx + 1),
+                                scores: (typeof p === 'object' && p.scores) ? p.scores : {},
+                                lastActionKey: (typeof p === 'object' && p.lastActionKey) ? p.lastActionKey : null,
+                                lastRoll: (typeof p === 'object' && p.lastRoll) ? p.lastRoll : null,
+                                hasSubmittedThisTurn: (typeof p === 'object' && !!p.hasSubmittedThisTurn) ? p.hasSubmittedThisTurn : false
+                            };
+                        });
+                    }
                 }
             }
 
-            if (data && data.gameState) {
-                const gs = data.gameState;
-                if (gs.players && Array.isArray(gs.players)) {
-                    gs.players.forEach(remoteP => {
-                        let localP = players.find(p => p.name === remoteP.name);
-                        if (localP) {
-                            localP.scores = remoteP.scores || {};
-                            localP.hasSubmittedThisTurn = remoteP.hasSubmittedThisTurn;
-                        }
-                    });
-                }
-                
-                if (gs.currentPlayerIndex !== undefined) {
-                    let oldTurn = currentPlayerIndex;
-                    currentPlayerIndex = gs.currentPlayerIndex;
+            if (data.settings && data.settings.rows) {
+                numGames = parseInt(data.settings.rows, 10) || 6;
+            }
 
-                    // 6. Melding "U bent aan de beurt!" triggeren als de beurt wisselt naar jou
-                    let activePlayerObj = players[currentPlayerIndex];
-                    if (activePlayerObj && activePlayerObj.name === myName && lastAlertedTurnPlayer !== currentPlayerIndex) {
-                        if (oldTurn !== currentPlayerIndex) {
-                            showCustomAlert("U bent aan de beurt!", `Je bent nu aan de beurt (${myName}). Veel succes!`);
-                        }
-                        lastAlertedTurnPlayer = currentPlayerIndex;
-                    }
+            if (data.gameState) {
+                const gs = data.gameState;
+                if (gs.currentPlayerIndex !== undefined) {
+                    currentPlayerIndex = gs.currentPlayerIndex;
                 }
                 
-                // 3. Automatische scherm-focus naar de actieve speler (tenzij handmatig gespiced)
                 if (!window.userManuallySwitched) {
                     viewingPlayerIndex = currentPlayerIndex;
                 }
@@ -2768,13 +2767,6 @@
                         }
                     });
                 }
-            } else if (data && !data.gameState && players.length > 1) {
-                // 1. Willekeurige startbepaling voor de eerste beurt door de host
-                if (onlineSession.isHost) {
-                    currentPlayerIndex = Math.floor(Math.random() * players.length);
-                    viewingPlayerIndex = currentPlayerIndex;
-                    saveToFirebase();
-                }
             }
 
             buildGrid();
@@ -2783,8 +2775,7 @@
             updateArrowPulse();
             checkTurnPermissions();
         });
-    }
-
+    };
     window.confirmReset = function() {
         showCustomAlert(
             "Nieuw Spel", 
@@ -2800,8 +2791,6 @@
                 currentPlayerIndex = 0;
                 viewingPlayerIndex = 0;
                 isOnlineGameActive = false;
-                
-                localStorage.removeItem('yatzee_saved_players_' + currentRoomCode);
 
                 document.querySelectorAll('.score-table-wrapper').forEach(wrapper => {
                     wrapper.scrollLeft = 0;
@@ -2817,7 +2806,6 @@
         );
     };
 </script>
-
 <script>
 (function() {
     let currentStep = 0;

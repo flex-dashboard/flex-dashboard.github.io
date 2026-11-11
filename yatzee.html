@@ -1631,7 +1631,7 @@
         });
     }
 
-    // -- LOKAAL SPEL BEHEER --
+// -- LOKAAL SPEL BEHEER --
     function isMyTurn() {
         return true;
     }
@@ -1640,23 +1640,34 @@
         // Volledig lokaal: geen vergrendelingen nodig
     }
 
-    // Globale streep-logica: check of Kans nog open staat in *enkele* van de actieve kolommen
-    function canAnyColumnPlayKans() {
+    // Context-gevoelige kans-check: kijkt bij strict alleen naar het huidige rijtje, bij random naar alle rijtjes
+    function canPlayKansInCurrentContext(colIndex) {
         const p = players[currentPlayerIndex];
-        for (let c = 0; c < numGames; c++) {
-            const kansKey = `c${c}_d2_6`;
-            if (p.scores[kansKey] === undefined) {
-                return true; 
+        const playerMode = p.playMode || 'random';
+        
+        if (playerMode === 'strict') {
+            return p.scores[`c${colIndex}_d2_6`] === undefined;
+        } else {
+            for (let c = 0; c < numGames; c++) {
+                if (p.scores[`c${c}_d2_6`] === undefined) return true;
             }
+            return false;
         }
-        return false; 
     }
 
-    // Globale streep-logica: check of er nog ergens in de actieve kolommen gescoord kan worden
-    function checkCanScoreInActiveGames(activeDice) {
+    // Aangepast: check of er in het relevante rijtje (bij strict) of ergens (bij random) nog gescoord kan worden
+    function checkCanScoreInActiveGames(activeDice, colIndex) {
         const p = players[currentPlayerIndex];
+        const playerMode = p.playMode || 'random';
         
-        for (let c = 0; c < numGames; c++) {
+        let colsToCheck = [];
+        if (playerMode === 'strict') {
+            colsToCheck = [colIndex];
+        } else {
+            for (let i = 0; i < numGames; i++) colsToCheck.push(i);
+        }
+
+        for (let c of colsToCheck) {
             const kansKey = `c${c}_d2_6`;
             if (p.scores[kansKey] === undefined) return true;
 
@@ -1761,7 +1772,7 @@
                 return;
             }
 
-            const canScoreInAnyCol = checkCanScoreInActiveGames(activeDice);
+            const canScoreInAnyCol = checkCanScoreInActiveGames(activeDice, colIndex);
             let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
 
             if (canScoreInAnyCol) {
@@ -1769,13 +1780,19 @@
                     activeTarget = { colIndex, rowId };
                     submitChoice(calculatedScore);
                 } else {
-                    showCustomAlert("Verplicht invullen", "Je kunt in één van je actieve rijtjes nog punten halen of op Kans invullen!");
+                    showCustomAlert("Verplicht invullen", playerMode === 'strict' ? "Je kunt in dit rijtje nog punten halen of op Kans invullen!" : "Je kunt in één van je actieve rijtjes nog punten halen of op Kans invullen!");
                 }
                 return;
             }
 
-            if (canAnyColumnPlayKans()) {
-                showCustomAlert("Verplicht invullen", "Je moet eerst Kans invullen in de actieve kolommen voordat je een streep kunt zetten!");
+            if (canPlayKansInCurrentContext(colIndex)) {
+                showCustomAlert("Verplicht invullen", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen voordat je een streep kunt zetten!" : "Je moet eerst Kans invullen in de actieve kolommen voordat je een streep kunt zetten!");
+                return;
+            }
+
+            // Strenge controle: je mag pas strepen na de 3e worp (als je digitaal speelt)
+            if (rollCount < 3) {
+                showCustomAlert("Maak je worpen af", "Je mag nog niet strepen! Je hebt nog worpen over, gooi eerst drie keer of maak je worpen af.");
                 return;
             }
 
@@ -1803,18 +1820,24 @@
             choices = [v, v*2, v*3, v*4];
         } else if (rowObj.fixed !== undefined) {
             const p = players[currentPlayerIndex];
-            let allKansFilled = true;
-            for (let i = 0; i < numGames; i++) {
-                if (p.scores[`c${i}_d2_6`] === undefined) {
-                    allKansFilled = false;
-                    break;
+            const playerMode = p.playMode || 'random';
+
+            // Voor random-modus: controleer of er *ergens* in de actieve rijtjes nog een Kans leeg is
+            if (playerMode === 'random') {
+                let allKansFilled = true;
+                for (let i = 0; i < numGames; i++) {
+                    if (p.scores[`c${i}_d2_6`] === undefined) {
+                        allKansFilled = false;
+                        break;
+                    }
+                }
+                // Zolang er ergens nog een Kans openstaat, direct automatisch invullen zonder popup
+                if (!allKansFilled) {
+                    submitChoice(rowObj.fixed);
+                    return;
                 }
             }
 
-            if (!allKansFilled) {
-                submitChoice(rowObj.fixed);
-                return;
-            }
             choices = [rowObj.fixed];
         } else {
             openKeypad(colIndex, rowId);
@@ -1829,9 +1852,11 @@
             btn.onclick = () => submitChoice(val);
             container.appendChild(btn);
         });
+        const p = players[currentPlayerIndex];
+        const playerMode = p.playMode || 'random';
+        const canPlayKansHere = canPlayKansInCurrentContext(colIndex);
 
-        const canKans = canAnyColumnPlayKans();
-        if (!canKans) {
+        if (!canPlayKansHere) {
             const slashBtn = document.createElement('button');
             slashBtn.className = 'key-btn action';
             slashBtn.innerText = '/';
@@ -1976,7 +2001,6 @@
         if (isRolling || rollCount === 0 || turnEnded) return;
         endTurn("Ingezet - Kies categorie");
     }
-
     function endTurn(customText) {
         turnEnded = true;
         rollCount = 3;
@@ -2278,7 +2302,7 @@
         document.getElementById('alpha-overlay').style.display = 'none';
     }
 
-    function openKeypad(colIndex, rowId) {
+function openKeypad(colIndex, rowId) {
         if (colIndex >= numGames) {
             showCustomAlert("Niet actief", `Je speelt maar voor ${numGames} ${String(numGames).trim() === '1' ? 'rijtje' : 'rijtjes'}!`);
             return;
@@ -2289,14 +2313,9 @@
         const uniqueKey = `c${colIndex}_${rowId}`;
         currentInputValue = p.scores[uniqueKey] !== undefined ? String(p.scores[uniqueKey]) : '';
         
-        document.querySelectorAll('td').forEach(el => el.classList.remove('active-cell'));
-        const cellEl = document.getElementById(`cell_${uniqueKey}`);
-        if (cellEl) {
-            cellEl.classList.add('active-cell');
-            cellEl.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'nearest' });
-        }
+        const playerMode = p.playMode || 'random';
+        const canKans = (playerMode === 'strict') ? (p.scores[`c${activeTarget.colIndex}_d2_6`] === undefined) : canAnyColumnPlayKans();
 
-        const canKans = canAnyColumnPlayKans();
         const slashBtnEl = document.getElementById('keypad-slash-btn');
         if (slashBtnEl) {
             slashBtnEl.style.display = !canKans ? 'block' : 'none';
@@ -2329,9 +2348,14 @@
     function pressKey(val) {
         if (val === 'CLEAR') {
             currentInputValue = '';
-        } else if (val === '/') {
-            if (canAnyColumnPlayKans()) {
-                showCustomAlert("Geen streep mogelijk", "Je kunt in één van de actieve kolommen nog Kans invullen!");
+       } else if (val === '/') {
+            const p = players[currentPlayerIndex];
+            const playerMode = p.playMode || 'random';
+            const kansFilledInThisCol = p.scores[`c${activeTarget.colIndex}_d2_6`] !== undefined;
+            const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canAnyColumnPlayKans();
+
+            if (canPlayKansHere) {
+                showCustomAlert("Geen streep mogelijk", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen!" : "Je kunt in één van de actieve kolommen nog Kans invullen!");
                 return;
             }
             currentInputValue = '/';
@@ -2349,8 +2373,12 @@
                 p.hasSubmittedThisTurn = false;
                 turnEnded = false;
             } else if (currentInputValue === '/') {
-                if (canAnyColumnPlayKans()) {
-                    showCustomAlert("Geen streep mogelijk", "Je kunt in één van de actieve kolommen nog Kans invullen!");
+                const kansFilledInThisCol = p.scores[`c${activeTarget.colIndex}_d2_6`] !== undefined;
+                const playerMode = p.playMode || 'random';
+                const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canAnyColumnPlayKans();
+
+                if (canPlayKansHere) {
+                    showCustomAlert("Geen streep mogelijk", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen!" : "Je kunt in één van de actieve kolommen nog Kans invullen!");
                     return;
                 }
                 p.scores[uniqueKey] = '/';
