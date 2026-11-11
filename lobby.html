@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <style>
+        body { 
+            background: transparent !important;
+            background-color: transparent !important;
+            pointer-events: none !important;
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+        }
+        #lobbyModal, .card, #draggableCard {
+            pointer-events: auto !important;
+        }
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: transparent; 
+            display: flex; 
+            pointer-events: none;
+            align-items: center; 
+            justify-content: center; 
+            z-index: 9999; 
+        }
+        .card { 
+            position: absolute;
+            background: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('yatzee/dobs.png') no-repeat center center; 
+            background-size: cover; 
+            padding: 25px; 
+            pointer-events: auto;
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+            width: 420px; 
+            max-width: 90vw;
+            max-height: 90vh;
+            text-align: left; 
+            resize: both; 
+            overflow: auto; 
+            box-sizing: border-box;
+        }
+        .card-header {
+            cursor: grab;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+            user-select: none;
+            text-align: center;
+        }
+        .card-header:active {
+            cursor: grabbing;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            width: 25px;
+            height: 25px;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: #333;
+            padding: 0;
+            line-height: 1;
+            z-index: 99999;
+        }
+        .close-btn:hover { color: #000; }
+        
+        input, select { padding: 10px; font-size: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; background: rgba(255, 255, 255, 0.95); }
+        label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; color: #222; }
+        button { padding: 12px 15px; font-size: 16px; cursor: pointer; margin-top: 5px; border: none; border-radius: 6px; width: 100%; font-weight: bold; }
+        
+        .tile-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .tile {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        .tile:hover {
+            border-color: #007bff;
+        }
+        .tile.selected {
+            background: #28a745 !important;
+            color: white !important;
+            border-color: #1e7e34 !important;
+        }
+
+        .btn-main { background: #007bff; color: white; }
+        .btn-main:hover { background: #0056b3; }
+        .btn-sub { background: #6c757d; color: white; }
+        .btn-sub:hover { background: #545b62; }
+        .btn-whatsapp { background: #25D366; color: white; display: block; text-align: center; text-decoration: none; margin-top: 10px; padding: 12px 15px; border-radius: 6px; font-weight: bold; }
+        .btn-whatsapp:hover { background: #1ebe57; }
+        
+        .btn-start-disabled { background: #dc3545 !important; color: white; margin-top: 15px; cursor: not-allowed; opacity: 0.7; }
+        .btn-start-active { background: #28a745 !important; color: white; margin-top: 15px; cursor: pointer; opacity: 1; }
+        .btn-start-active:hover { background: #218838 !important; }
+
+        .player-list { background: rgba(241, 241, 241, 0.9); padding: 10px; border-radius: 6px; min-height: 60px; margin-top: 10px; }
+        .player-list ul { margin: 0; padding-left: 20px; }
+        .center { text-align: center; }
+        .hidden { display: none !important; }
+        .player-inputs-container { max-height: 150px; overflow-y: auto; margin-bottom: 10px; }
+
+        /* Aangepaste rijen voor kortere naambalken + keuzeknoppen ernaast */
+        .player-row-item {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 12px;
+            align-items: center;
+        }
+        .player-row-item input {
+            width: 50% !important;
+            margin-bottom: 0 !important;
+        }
+        .mode-toggle-group {
+            display: flex;
+            gap: 4px;
+            flex: 1;
+        }
+        .mode-btn {
+            flex: 1;
+            padding: 8px 4px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-top: 0;
+        }
+        .mode-btn.selected {
+            background: #28a745 !important;
+            color: white !important;
+            border-color: #1e7e34 !important;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="lobbyModal" class="modal-overlay">
+        <div class="card" id="draggableCard">
+            <button id="btnCloseModal" class="close-btn">X</button>
+            
+            <div class="card-header" id="cardHeader">
+                <h2 style="margin:0; font-size: 20px; display: inline-block;">LOBBY</h2>
+            </div>
+
+            <!-- STAP 1: ALGEMENE SPELINSTELLINGEN -->
+            <div id="stepSettings">
+                <label>Aantal Rijtjes / Kolommen:</label>
+                <div id="rowsTiles" class="tile-container">
+                    <div class="tile selected" data-value="1">1</div>
+                    <div class="tile" data-value="2">2</div>
+                    <div class="tile" data-value="3">3</div>
+                    <div class="tile" data-value="4">4</div>
+                    <div class="tile" data-value="5">5</div>
+                    <div class="tile" data-value="6">6</div>
+                </div>
+
+                <div id="playerSection">
+                    <label>Aantal Spelers:</label>
+                    <div id="playersTiles" class="tile-container">
+                        <div class="tile selected" data-value="1">1</div>
+                        <div class="tile" data-value="2">2</div>
+                        <div class="tile" data-value="3">3</div>
+                        <div class="tile" data-value="4">4</div>
+                        <div class="tile" data-value="5">5</div>
+                        <div class="tile" data-value="6">6</div>
+                    </div>
+                </div>
+
+                <div id="deviceSection" style="display: none;">
+    <label>Aantal Toestellen:</label>
+    <div id="devicesTiles" class="tile-container">
+        <div class="tile selected" data-value="1">1</div>
+        <div class="tile" data-value="2">2</div>
+        <div class="tile" data-value="3">3</div>
+        <div class="tile" data-value="4">4</div>
+        <div class="tile" data-value="5">5</div>
+        <div class="tile" data-value="6">6</div>
+    </div>
+</div>
+
+                <label>Spelersnamen & Spelmodus Instellen:</label>
+                <div id="playerInputsContainer" class="player-inputs-container"></div>
+
+                <!-- Knoppenrij met dobbelsteenvinkje, startknop en de 3 modus-knoppen -->
+                <div style="display: flex; gap: 6px; align-items: center; margin-top: 15px;">
+                    <label for="toggleDiceBar" style="background: rgba(255, 255, 255, 0.95); border: 1px solid #ccc; border-radius: 5px; padding: 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 0; user-select: none; height: 42px; box-sizing: border-box;" title="Digitale Dobbelsteen In/Uitschakelen">
+                        <input type="checkbox" id="toggleDiceBar" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+                        <span style="font-size: 15px;">🎲</span>
+                    </label>
+                    <button id="btnActionLocal" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #007bff; font-size: 13px;">Start Game</button>
+                    <button id="btnActionOnline" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #17a2b8; font-size: 13px;">Online</button>
+                    <button id="btnActionGuest" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #28a745; font-size: 13px;">Gast</button>
+                </div>
+            </div>
+
+            <!-- STAP 2: ONLINE KEUZEMENU (Zonder de middelste gastenknop) -->
+            <div id="stepOnlineChoice" class="hidden">
+                <p class="center"><b>Online Multiplayer Koppeling</b></p>
+                <button id="btnChooseHost" class="btn-main" style="margin-bottom: 10px;">👑 Nieuw Spel Hosten</button>
+                <button id="btnBackToSettings" class="btn-sub" style="background: #444;">Terug naar Instellingen</button>
+            </div>
+
+            <!-- STAP 3A: HOST SCHERM MET RIJTJES EN SPELMODUS -->
+            <div id="stepHost" class="hidden">
+                <h3>Nieuw Spel Hosten</h3>
+                <label>Jouw Naam (Host):</label>
+                <input type="text" id="hostNameInput" placeholder="Jouw naam...">
+                
+                <label>Gegenereerde Roomcode:</label>
+                <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+                    <input type="text" id="hostRoomDisplay" readonly style="background: #e9ecef; font-weight: bold; color: #007bff; margin-bottom: 0; flex: 1;">
+                    <button type="button" id="btnCopyRoom" class="btn-main" style="margin-top: 0; width: 90px; height: 42px; font-size: 13px;" title="Kopieer roomcode">Kopieer</button>
+                </div>
+                
+                <label>Aantal Rijtjes / Kolommen (Online):</label>
+                <div id="onlineRowsTiles" class="tile-container" style="margin-bottom: 10px;">
+                    <div class="tile selected" data-value="1">1</div>
+                    <div class="tile" data-value="2">2</div>
+                    <div class="tile" data-value="3">3</div>
+                    <div class="tile" data-value="4">4</div>
+                    <div class="tile" data-value="5">5</div>
+                    <div class="tile" data-value="6">6</div>
+                </div>
+
+                <label>Spelmodus (Online):</label>
+                <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                    <button type="button" id="onlineModeRandom" class="mode-btn selected" style="padding: 10px; font-size: 14px;">Vrij</button>
+                    <button type="button" id="onlineModeStrict" class="mode-btn" style="padding: 10px; font-size: 14px;">Volgorde</button>
+                </div>
+
+                <button id="btnConfirmHost" class="btn-main">Open Room & Naar Lobby</button>
+                
+                <!-- WhatsApp Uitnodigingsknop -->
+                <a id="btnWhatsAppInvite" href="#" target="_blank" class="btn-whatsapp hidden">📱 Deel uitnodiging via WhatsApp</a>
+
+                <button id="btnBackFromHost" class="btn-sub" style="margin-top: 8px;">Terug</button>
+            </div>
+
+            <!-- STAP 3B: GAST SCHERM -->
+            <div id="stepGuest" class="hidden">
+                <h3>Deelnemen aan Spel</h3>
+                <label>Jouw Naam:</label>
+                <input type="text" id="guestNameInput" placeholder="Jouw naam...">
+                
+                <label>Roomcode van de Host:</label>
+                <input type="text" id="guestRoomInput" placeholder="Plak of typ de roomcode...">
+                
+                <button id="btnConfirmGuest" class="btn-main">Stap In Room</button>
+                <button id="btnBackFromGuest" class="btn-sub" style="margin-top: 8px;">Terug</button>
+            </div>
+
+            <!-- STAP 4: LOBBY WACHTSCHERM (Online) -->
+            <div id="stepLobby" class="hidden">
+                <p><b>Roomcode:</b> <span id="lobbyRoomCode" style="color: #007bff; font-weight: bold;"></span></p>
+                <p><b>Spelers in de room:</b></p>
+                <div class="player-list">
+                    <ul id="playerList"></ul>
+                </div>
+
+                <div id="hostControls" class="hidden">
+                    <button id="btnStartGame" class="btn-start-disabled" disabled>🚀 WACHT OP MEERDERE SPELERS...</button>
+                </div>
+
+                <p id="guestWaitMessage" class="center hidden" style="margin-top: 15px; font-weight: bold; color: #555;">Wacht op de host om te starten...</p>
+            </div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+        import { getDatabase, ref, set, onValue, onDisconnect, get } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyCAiObuQPHtatb54tKr7EImt84nLZTCBJI",
+            authDomain: "yatzee-f23d7.firebaseapp.com",
+            projectId: "yatzee-f23d7",
+            storageBucket: "yatzee-f23d7.firebasestorage.app",
+            messagingSenderId: "817605728347",
+            appId: "1:817605728347:web:53575b8bfc71e9e2a7077e",
+            measurementId: "G-GZF4K7T835"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app, "https://yatzee-f23d7-default-rtdb.europe-west1.firebasedatabase.app");
+
+        const lobbyModal = document.getElementById("lobbyModal");
+        const btnCloseModal = document.getElementById("btnCloseModal");
+        const cardHeader = document.getElementById("cardHeader");
+        const draggableCard = document.getElementById("draggableCard");
+
+        const stepSettings = document.getElementById("stepSettings");
+        const playerInputsContainer = document.getElementById("playerInputsContainer");
+        const btnActionLocal = document.getElementById("btnActionLocal");
+        const btnActionOnline = document.getElementById("btnActionOnline");
+        const btnActionGuest = document.getElementById("btnActionGuest");
+
+        const playerSection = document.getElementById("playerSection");
+        const deviceSection = document.getElementById("deviceSection");
+
+        const stepOnlineChoice = document.getElementById("stepOnlineChoice");
+        const btnChooseHost = document.getElementById("btnChooseHost");
+        const btnBackToSettings = document.getElementById("btnBackToSettings");
+
+        const stepHost = document.getElementById("stepHost");
+        const hostNameInput = document.getElementById("hostNameInput");
+        const hostRoomDisplay = document.getElementById("hostRoomDisplay");
+        const btnConfirmHost = document.getElementById("btnConfirmHost");
+        const btnWhatsAppInvite = document.getElementById("btnWhatsAppInvite");
+        const btnBackFromHost = document.getElementById("btnBackFromHost");
+
+        const stepGuest = document.getElementById("stepGuest");
+        const guestNameInput = document.getElementById("guestNameInput");
+        const guestRoomInput = document.getElementById("guestRoomInput");
+        const btnConfirmGuest = document.getElementById("btnConfirmGuest");
+        const btnBackFromGuest = document.getElementById("btnBackFromGuest");
+
+        const stepLobby = document.getElementById("stepLobby");
+        const lobbyRoomCode = document.getElementById("lobbyRoomCode");
+        const playerList = document.getElementById("playerList");
+        const hostControls = document.getElementById("hostControls");
+        const btnStartGame = document.getElementById("btnStartGame");
+        const guestWaitMessage = document.getElementById("guestWaitMessage");
+        const toggleDiceBarCheckbox = document.getElementById("toggleDiceBar");
+
+        let selectedRows = 1;
+        let selectedPlayers = 1;
+        let selectedDevices = 1;
+        let onlineRows = 1;
+        let onlinePlayMode = "random";
+
+        let myName = "";
+        let currentRoomCode = "";
+        let activePlayers = {};
+
+        function setupTiles(containerId, callback) {
+            const container = document.getElementById(containerId);
+            if (!container) return;
+            const tiles = container.querySelectorAll(".tile");
+            tiles.forEach(tile => {
+                tile.addEventListener("click", () => {
+                    tiles.forEach(t => t.classList.remove("selected"));
+                    tile.classList.add("selected");
+                    if (callback) callback(parseInt(tile.getAttribute("data-value")));
+                });
+            });
+        }
+
+        setupTiles("rowsTiles", (val) => { selectedRows = val; });
+        setupTiles("onlineRowsTiles", (val) => { onlineRows = val; });
+        setupTiles("playersTiles", (val) => { 
+            selectedPlayers = val; 
+            updatePlayerInputs(); 
+        });
+        setupTiles("devicesTiles", (val) => { selectedDevices = val; });
+
+        // Online mode knoppen logica voor host-scherm
+        const btnOnlineRandom = document.getElementById("onlineModeRandom");
+        const btnOnlineStrict = document.getElementById("onlineModeStrict");
+        if (btnOnlineRandom && btnOnlineStrict) {
+            btnOnlineRandom.addEventListener("click", () => {
+                onlinePlayMode = "random";
+                btnOnlineRandom.classList.add("selected");
+                btnOnlineStrict.classList.remove("selected");
+            });
+            btnOnlineStrict.addEventListener("click", () => {
+                onlinePlayMode = "strict";
+                btnOnlineStrict.classList.add("selected");
+                btnOnlineRandom.classList.remove("selected");
+            });
+        }
+
+        let isDragging = false;
+        let startX, startY, initialX, initialY;
+
+        cardHeader.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            const rect = draggableCard.getBoundingClientRect();
+            initialX = rect.left;
+            initialY = rect.top;
+            draggableCard.style.transform = "none";
+            draggableCard.style.left = initialX + "px";
+            draggableCard.style.top = initialY + "px";
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+        });
+
+        function onMouseMove(e) {
+            if (!isDragging) return;
+            const dx = e.clientX - startX;
+            const dy = e.clientY - startY;
+            draggableCard.style.left = (initialX + dx) + "px";
+            draggableCard.style.top = (initialY + dy) + "px";
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            document.removeEventListener("mousemove", onMouseMove);
+            document.removeEventListener("mouseup", onMouseUp);
+        }
+
+        function updatePlayerInputs() {
+            playerSection.style.display = "block";
+            // deviceSection.style.display = "block"; // Uitgezet omdat het toestellen-blok verborgen wordt
+
+            playerInputsContainer.innerHTML = "";
+            for (let i = 0; i < selectedPlayers; i++) {
+                const rowDiv = document.createElement("div");
+
+                const input = document.createElement("input");
+                input.type = "text";
+                input.value = "Speler " + (i + 1);
+                input.className = "player-name-field";
+                input.placeholder = "Naam speler " + (i + 1);
+
+                // Alleen bij Speler 1 (i === 0) de Vrij/Volgorde knoppen toevoegen
+                if (i === 0) {
+                    rowDiv.className = "player-row-item has-toggle";
+
+                    const toggleGroup = document.createElement("div");
+                    toggleGroup.className = "mode-toggle-group";
+
+                    const btnRandom = document.createElement("button");
+                    btnRandom.type = "button";
+                    btnRandom.className = "mode-btn selected";
+                    btnRandom.innerText = "Vrij";
+                    btnRandom.setAttribute("data-mode", "random");
+
+                    const btnStrict = document.createElement("button");
+                    btnStrict.type = "button";
+                    btnStrict.className = "mode-btn";
+                    btnStrict.innerText = "Volgorde";
+                    btnStrict.setAttribute("data-mode", "strict");
+
+                    btnRandom.addEventListener("click", () => {
+                        btnRandom.classList.add("selected");
+                        btnStrict.classList.remove("selected");
+                    });
+
+                    btnStrict.addEventListener("click", () => {
+                        btnStrict.classList.add("selected");
+                        btnRandom.classList.remove("selected");
+                    });
+
+                    toggleGroup.appendChild(btnRandom);
+                    toggleGroup.appendChild(btnStrict);
+
+                    rowDiv.appendChild(input);
+                    rowDiv.appendChild(toggleGroup);
+                } else {
+                    // Overige spelers krijgen een schone balk zonder knoppen
+                    rowDiv.className = "player-row-item";
+                    rowDiv.appendChild(input);
+                }
+
+                playerInputsContainer.appendChild(rowDiv);
+            }
+        }
+
+        updatePlayerInputs();
+
+        function closeLobbyAndStartGame(settingsData) {
+            localStorage.setItem("yatzee_settings", JSON.stringify(settingsData));
+            try {
+                lobbyModal.style.display = "none";
+                lobbyModal.classList.add("hidden");
+                if (window.parent) {
+                    window.parent.postMessage({ action: 'startNewGame', settings: settingsData }, '*');
+                    window.parent.postMessage({ action: 'closeLobby' }, '*');
+                }
+            } catch(e) {
+                lobbyModal.style.display = "none";
+                lobbyModal.classList.add("hidden");
+                if (window.parent) {
+                    window.parent.postMessage({ action: 'startNewGame', settings: settingsData }, '*');
+                    window.parent.postMessage({ action: 'closeLobby' }, '*');
+                }
+            }
+        }
+
+        btnCloseModal.addEventListener("click", () => {
+            const useDiceVal = toggleDiceBarCheckbox ? toggleDiceBarCheckbox.checked : false;
+            closeLobbyAndStartGame({ mode: "local", rows: selectedRows, players: [{ name: "Speler 1", playMode: "random" }], devices: 1, useDice: useDiceVal });
+        });
+
+        // Knoppenacties hoofdscherm (Lokaal start direct een lokaal spel)
+        btnActionLocal.addEventListener("click", () => {
+            const useDiceVal = toggleDiceBarCheckbox ? toggleDiceBarCheckbox.checked : false;
+            const rowItems = playerInputsContainer.querySelectorAll(".player-row-item");
+            
+            // Haal de gekozen modus op van de eerste speler (die telt voor iedereen)
+            let globalMode = "random";
+            if (rowItems.length > 0) {
+                const firstModeBtn = rowItems[0].querySelector(".mode-btn.selected");
+                if (firstModeBtn) {
+                    globalMode = firstModeBtn.getAttribute("data-mode");
+                }
+            }
+
+            const players = [];
+
+            rowItems.forEach(item => {
+                const nameInput = item.querySelector("input");
+                const nameVal = nameInput ? nameInput.value.trim() : "";
+
+                if (nameVal !== "") {
+                    // Dwing de gekozen hoofdmodus op aan ELKE speler
+                    players.push({ name: nameVal, playMode: globalMode });
+                }
+            });
+
+            if (players.length === 0) {
+                alert("Vul ten minste één spelersnaam in!");
+                return;
+            }
+            closeLobbyAndStartGame({ mode: "local", rows: selectedRows, players: players, devices: selectedDevices, useDice: useDiceVal });
+        });
+
+        btnActionOnline.addEventListener("click", () => {
+            stepSettings.classList.add("hidden");
+            stepOnlineChoice.classList.remove("hidden");
+        });
+
+        btnActionGuest.addEventListener("click", () => {
+            stepSettings.classList.add("hidden");
+            stepGuest.classList.remove("hidden");
+        });
+
+        btnBackToSettings.addEventListener("click", () => {
+            stepOnlineChoice.classList.add("hidden");
+            stepSettings.classList.remove("hidden");
+        });
+
+        btnChooseHost.addEventListener("click", () => {
+            stepOnlineChoice.classList.add("hidden");
+            stepHost.classList.remove("hidden");
+            const randomCode = 'room_' + Math.random().toString(36).substring(2, 8);
+            hostRoomDisplay.value = randomCode;
+
+            const siteLink = window.location.href.split('?')[0];
+            const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${randomCode}\nLink: ${siteLink}`);
+            btnWhatsAppInvite.href = `https://api.whatsapp.com/send?text=${inviteText}`;
+            btnWhatsAppInvite.classList.remove("hidden");
+        });
+
+        // Kopieer-knop logica voor de roomcode
+        const btnCopyRoom = document.getElementById("btnCopyRoom");
+        if (btnCopyRoom) {
+            btnCopyRoom.addEventListener("click", () => {
+                if (hostRoomDisplay.value) {
+                    navigator.clipboard.writeText(hostRoomDisplay.value).then(() => {
+                        const originalText = btnCopyRoom.innerText;
+                        btnCopyRoom.innerText = "Gekopieerd!";
+                        btnCopyRoom.style.background = "#28a745";
+                        setTimeout(() => {
+                            btnCopyRoom.innerText = originalText;
+                            btnCopyRoom.style.background = "";
+                        }, 1500);
+                    });
+                }
+            });
+        }
+
+        btnBackFromHost.addEventListener("click", () => {
+            stepHost.classList.add("hidden");
+            stepOnlineChoice.classList.remove("hidden");
+        });
+
+        btnBackFromGuest.addEventListener("click", () => {
+            stepGuest.classList.add("hidden");
+            stepSettings.classList.remove("hidden");
+        });
+
+        btnConfirmHost.addEventListener("click", async () => {
+            myName = hostNameInput.value.trim();
+            currentRoomCode = hostRoomDisplay.value.trim();
+            if (!myName) { alert("Vul je naam in!"); return; }
+            stepHost.classList.add("hidden");
+            await enterRoom(currentRoomCode, myName, true);
+        });
+
+        btnConfirmGuest.addEventListener("click", async () => {
+            myName = guestNameInput.value.trim();
+            currentRoomCode = guestRoomInput.value.trim();
+            if (!myName || !currentRoomCode) { alert("Vul naam en roomcode in!"); return; }
+            stepGuest.classList.add("hidden");
+            await enterRoom(currentRoomCode, myName, false);
+        });
+
+        async function enterRoom(roomCode, playerName, isHost) {
+            stepLobby.classList.remove("hidden");
+            lobbyRoomCode.innerText = roomCode;
+
+            const roomBasePath = 'rooms/' + roomCode;
+            const hostRef = ref(db, roomBasePath + '/host');
+            const playerRef = ref(db, roomBasePath + '/players/' + playerName);
+            const roomRef = ref(db, roomBasePath);
+
+            let activeHost = isHost ? playerName : "";
+            let activePlayers = {};
+            activePlayers[playerName] = true;
+
+            function renderUI() {
+                playerList.innerHTML = "";
+                const playerNames = Object.keys(activePlayers);
+
+                playerNames.forEach(p => {
+                    const li = document.createElement("li");
+                    let label = p;
+                    if (p === activeHost) {
+                        label += " (host)";
+                    }
+                    li.innerText = label;
+                    playerList.appendChild(li);
+                });
+
+                if (activeHost === playerName) {
+                    hostControls.classList.remove("hidden");
+                    guestWaitMessage.classList.add("hidden");
+
+                    if (playerNames.length >= 1) {
+                        btnStartGame.disabled = false;
+                        btnStartGame.className = "btn-start-active";
+                        btnStartGame.innerText = "🚀 START SPEL VOOR IEDEREEN";
+                    } else {
+                        btnStartGame.disabled = true;
+                        btnStartGame.className = "btn-start-disabled";
+                        btnStartGame.innerText = "🚀 WACHT OP SPELERS...";
+                    }
+                } else {
+                    hostControls.classList.add("hidden");
+                    guestWaitMessage.classList.remove("hidden");
+                }
+            }
+
+            renderUI();
+
+            if (isHost) {
+                await set(hostRef, playerName);
+                activeHost = playerName;
+            } else {
+                const hostSnap = await get(hostRef);
+                if (hostSnap.val()) {
+                    activeHost = hostSnap.val();
+                }
+            }
+
+            await set(playerRef, true);
+            onDisconnect(playerRef).remove();
+
+            onValue(roomRef, (snapshot) => {
+                const data = snapshot.val();
+                if (!data) return;
+
+                if (data.host) activeHost = data.host;
+                if (data.players) activePlayers = data.players;
+                activePlayers[playerName] = true;
+                
+                renderUI();
+
+                // Wanneer de host start, gaat iedereen door naar onlineyatzee.html met rijtjes en modus
+             // Wanneer de host start, haal de instellingen uit Firebase en ga door naar onlineyatzee.html
+                if (data.status === "gestart") {
+                    const roomRows = data.settings ? data.settings.rows : onlineRows;
+                    const roomPlayMode = data.settings ? data.settings.playMode : onlinePlayMode;
+                    const roomPlayers = data.settings ? data.settings.players : Object.keys(activePlayers);
+
+                    localStorage.setItem("yatzee_online_session", JSON.stringify({
+                        roomCode: roomCode,
+                        playerName: playerName,
+                        isHost: (activeHost === playerName),
+                        rows: roomRows,
+                        playMode: roomPlayMode,
+                        players: roomPlayers
+                    }));
+                    window.top.location.href = "onlineyatzee.html";
+                }
+            });
+        }
+
+    btnStartGame.addEventListener("click", () => {
+            if (!btnStartGame.disabled) {
+                const sessionData = {
+                    roomCode: currentRoomCode,
+                    playerName: myName,
+                    isHost: true,
+                    rows: onlineRows,
+                    playMode: onlinePlayMode,
+                    players: Object.keys(activePlayers)
+                };
+                localStorage.setItem("yatzee_online_session", JSON.stringify(sessionData));
+                
+                // Sla de instellingen ook op in Firebase zodat gasten ze meekrijgen
+                set(ref(db, 'rooms/' + currentRoomCode + '/settings'), {
+                    rows: onlineRows,
+                    playMode: onlinePlayMode,
+                    players: Object.keys(activePlayers)
+                }).then(() => {
+                    set(ref(db, 'rooms/' + currentRoomCode + '/status'), "gestart").then(() => {
+                        window.top.location.href = "onlineyatzee.html";
+                    });
+                });
+            }
+        });
+    </script>
+</body>
+</html>
