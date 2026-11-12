@@ -744,6 +744,15 @@
         min-height: 48px;
     }
 
+.score-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-height: calc(100vh - 200px); /* Of zoals het in het oude script stond */
+        background: #fff;
+        position: relative;
+}
+
+
     /* Tablet header indeling (geldt nu puur tussen 481px en 768px, de laptop blijft onaangeraakt) */
     .header-bar {
         padding: 8px 12px;
@@ -2346,53 +2355,53 @@ function openKeypad(colIndex, rowId) {
     }
 
     function pressKey(val) {
-        if (val === 'CLEAR') {
-            currentInputValue = '';
-       } else if (val === '/') {
-            const p = players[currentPlayerIndex];
-            const playerMode = p.playMode || 'random';
+    if (val === 'CLEAR') {
+        currentInputValue = '';
+    } else if (val === '/') {
+        const p = players[currentPlayerIndex];
+        const playerMode = p.playMode || 'random';
+        const kansFilledInThisCol = p.scores[`c${activeTarget.colIndex}_d2_6`] !== undefined;
+        const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canPlayKansInCurrentContext(activeTarget.colIndex);
+
+        if (canPlayKansHere) {
+            showCustomAlert("Geen streep mogelijk", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen!" : "Je kunt in één van de actieve kolommen nog Kans invullen!");
+            return;
+        }
+        currentInputValue = '/';
+    } else if (val === '0') {
+        if (currentInputValue === '') {
+            return;
+        }
+        if (currentInputValue.length < 3) currentInputValue += val;
+    } else if (val === 'ENTER') {
+        const p = players[currentPlayerIndex];
+        const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
+        if (currentInputValue === '' || currentInputValue === 'Tel al je stenen op' || currentInputValue === '0') {
+            delete p.scores[uniqueKey];
+            if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
+            p.hasSubmittedThisTurn = false;
+            turnEnded = false;
+        } else if (currentInputValue === '/') {
             const kansFilledInThisCol = p.scores[`c${activeTarget.colIndex}_d2_6`] !== undefined;
+            const playerMode = p.playMode || 'random';
             const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canPlayKansInCurrentContext(activeTarget.colIndex);
 
             if (canPlayKansHere) {
                 showCustomAlert("Geen streep mogelijk", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen!" : "Je kunt in één van de actieve kolommen nog Kans invullen!");
                 return;
             }
-            currentInputValue = '/';
-        } else if (val === '0') {
-            if (currentInputValue === '') {
+            p.scores[uniqueKey] = '/';
+            p.lastActionKey = uniqueKey;
+            p.hasSubmittedThisTurn = true;
+            turnEnded = true;
+            lastActiveRoll = null;
+        } else {
+            let numVal = parseInt(currentInputValue, 10);
+            if (numVal === 0) {
+                delete p.scores[uniqueKey];
+                closeKeypad();
                 return;
             }
-            if (currentInputValue.length < 3) currentInputValue += val;
-        } else if (val === 'ENTER') {
-            const p = players[currentPlayerIndex];
-            const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
-            if (currentInputValue === '' || currentInputValue === 'Tel al je stenen op' || currentInputValue === '0') {
-                delete p.scores[uniqueKey];
-                if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
-                p.hasSubmittedThisTurn = false;
-                turnEnded = false;
-            } else if (currentInputValue === '/') {
-                const kansFilledInThisCol = p.scores[`c${activeTarget.colIndex}_d2_6`] !== undefined;
-                const playerMode = p.playMode || 'random';
-                const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canAnyColumnPlayKans();
-
-                if (canPlayKansHere) {
-                    showCustomAlert("Geen streep mogelijk", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen!" : "Je kunt in één van de actieve kolommen nog Kans invullen!");
-                    return;
-                }
-                p.scores[uniqueKey] = '/';
-                p.lastActionKey = uniqueKey;
-                p.hasSubmittedThisTurn = true;
-                turnEnded = true;
-                lastActiveRoll = null;
-            } else {
-                let numVal = parseInt(currentInputValue, 10);
-                if (numVal === 0) {
-                    delete p.scores[uniqueKey];
-                    closeKeypad();
-                    return;
-                }
                 if ((activeTarget.rowId === 'd2_0' || activeTarget.rowId === 'd2_1' || activeTarget.rowId === 'd2_6') && numVal > 29) {
                     currentInputValue = 'Tel al je stenen op';
                     document.getElementById('keypad-display').innerText = currentInputValue;
