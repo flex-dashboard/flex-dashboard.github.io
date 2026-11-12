@@ -1236,13 +1236,14 @@
     import { getDatabase, ref, set, onValue, get, update } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
 
     const firebaseConfig = {
-       apiKey: "AIzaSyCAiObuQPHtatb54tKr7EImt84nLZTCBJI",
-            authDomain: "yatzee-f23d7.firebaseapp.com",
-            projectId: "yatzee-f23d7",
-            storageBucket: "yatzee-f23d7.firebasestorage.app",
-            messagingSenderId: "817605728347",
-            appId: "1:817605728347:web:53575b8bfc71e9e2a7077e",
-            measurementId: "G-GZF4K7T835"
+       apiKey: "AIzaSyAnmGikJGj0wDywALg_xBNINQfaQtLeOd8",
+    authDomain: "yatzee-f23d7.firebaseapp.com",
+    databaseURL: "https://yatzee-f23d7-default-rtdb.europe-west1.firebasedatabase.app",
+    projectId: "yatzee-f23d7",
+    storageBucket: "yatzee-f23d7.firebasestorage.app",
+    messagingSenderId: "817605728347",
+    appId: "1:817605728347:web:782b279d14f99a1ea7077e",
+    measurementId: "G-F2JRYMGBP5"
     };
 
     const app = initializeApp(firebaseConfig);
@@ -2684,99 +2685,78 @@
     };
 
 window.loadFromFirebase = function() {
-        if (!currentRoomCode) {
-            buildGrid();
-            updateDisplay();
-            return;
+    if (!currentRoomCode) {
+        buildGrid();
+        updateDisplay();
+        return;
+    }
+
+    const roomRef = ref(db, 'rooms/' + currentRoomCode);
+    onValue(roomRef, (snapshot) => {
+        const data = snapshot.val();
+        if (!data) return;
+
+        // --- DIRECTE EN KEIHARDE OVERNAME VAN DE FIREBASE SPELERSLIJST ---
+        if (data.gameState && data.gameState.players) {
+            let fbPlayers = data.gameState.players;
+            
+            // Als Firebase een object of array teruggeeft, dwingen we het in de juiste vorm voor álle schermen
+            if (Array.isArray(fbPlayers) && fbPlayers.length > 0) {
+                players = fbPlayers.map((p, idx) => {
+                    return {
+                        id: p.id || ('p_' + idx),
+                        name: typeof p === 'string' ? p : (p.name || ('Speler ' + (idx + 1))),
+                        scores: p.scores || {},
+                        lastActionKey: p.lastActionKey || null,
+                        lastRoll: p.lastRoll || null,
+                        hasSubmittedThisTurn: !!p.hasSubmittedThisTurn
+                    };
+                });
+            }
+        }
+        // -----------------------------------------------------------------
+
+        if (data.settings && data.settings.rows) {
+            numGames = parseInt(data.settings.rows, 10) || 6;
         }
 
-        const roomRef = ref(db, 'rooms/' + currentRoomCode);
-        onValue(roomRef, (snapshot) => {
-            const data = snapshot.val();
+        if (data.gameState) {
+            const gs = data.gameState;
+            if (gs.currentPlayerIndex !== undefined) {
+                currentPlayerIndex = gs.currentPlayerIndex;
+            }
+            
+            if (!window.userManuallySwitched) {
+                viewingPlayerIndex = currentPlayerIndex;
+            }
 
-            // --- HIER ZIJN DE LOGFILES WEER TERUG ---
-            console.log("DATA UIT FIREBASE:", data);
-            console.log("PLAYERS UIT FIREBASE (gameState.players):", data ? data.gameState?.players : "data");
-            console.log("PLAYERS UIT FIREBASE (root players):", data ? data.players : "data");
-            // ----------------------------------------
+            if (gs.numGames !== undefined) numGames = gs.numGames;
+            if (gs.rollCount !== undefined) rollCount = gs.rollCount;
+            if (gs.turnEnded !== undefined) turnEnded = gs.turnEnded;
 
-            if (!data) return;
-
-            // Als gameState.players rechtstreeks als schone array aanwezig is, nemen we die direct blind en volledig over!
-            if (data.gameState && Array.isArray(data.gameState.players) && data.gameState.players.length > 0) {
-                players = data.gameState.players;
-                console.log("SPELERS DIRECT OVERGENOMEN UIT gameState.players:", players);
-            } else {
-                let rawPlayers = null;
-                if (data.gameState && data.gameState.players) {
-                    rawPlayers = data.gameState.players;
-                } else if (data.players) {
-                    rawPlayers = data.players;
-                } else if (data.settings && data.settings.players) {
-                    rawPlayers = data.settings.players;
-                }
-
-                if (rawPlayers) {
-                    if (!Array.isArray(rawPlayers) && typeof rawPlayers === 'object') {
-                        rawPlayers = Object.keys(rawPlayers);
+            if (gs.diceValues && Array.isArray(gs.diceValues)) {
+                gs.diceValues.forEach((dv, idx) => {
+                    if (diceInstances[idx]) {
+                        diceInstances[idx].value = dv.val;
+                        diceInstances[idx].isLocked = dv.locked;
+                        diceInstances[idx].holder.classList.toggle('locked', dv.locked);
+                        const rot = faceRotation(dv.val);
+                        diceInstances[idx].cube.style.transition = 'none';
+                        diceInstances[idx].cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
                     }
-
-                    if (Array.isArray(rawPlayers)) {
-                        players = rawPlayers.map((p, idx) => {
-                            const pName = typeof p === 'object' && p !== null ? (p.name || p) : p;
-                            return {
-                                id: 'p_' + idx,
-                                name: typeof pName === 'string' ? pName : 'Speler ' + (idx + 1),
-                                scores: (typeof p === 'object' && p.scores) ? p.scores : {},
-                                lastActionKey: (typeof p === 'object' && p.lastActionKey) ? p.lastActionKey : null,
-                                lastRoll: (typeof p === 'object' && p.lastRoll) ? p.lastRoll : null,
-                                hasSubmittedThisTurn: (typeof p === 'object' && !!p.hasSubmittedThisTurn) ? p.hasSubmittedThisTurn : false
-                            };
-                        });
-                    }
-                }
+                });
             }
+        }
 
-            if (data.settings && data.settings.rows) {
-                numGames = parseInt(data.settings.rows, 10) || 6;
-            }
+        buildGrid();
+        updateDisplay();
+        updateHeaderPlayerName();
+        updateArrowPulse();
+        checkTurnPermissions();
+    });
+};   
 
-            if (data.gameState) {
-                const gs = data.gameState;
-                if (gs.currentPlayerIndex !== undefined) {
-                    currentPlayerIndex = gs.currentPlayerIndex;
-                }
-                
-                if (!window.userManuallySwitched) {
-                    viewingPlayerIndex = currentPlayerIndex;
-                }
-
-                if (gs.numGames !== undefined) numGames = gs.numGames;
-                if (gs.rollCount !== undefined) rollCount = gs.rollCount;
-                if (gs.turnEnded !== undefined) turnEnded = gs.turnEnded;
-
-                if (gs.diceValues && Array.isArray(gs.diceValues)) {
-                    gs.diceValues.forEach((dv, idx) => {
-                        if (diceInstances[idx]) {
-                            diceInstances[idx].value = dv.val;
-                            diceInstances[idx].isLocked = dv.locked;
-                            diceInstances[idx].holder.classList.toggle('locked', dv.locked);
-                            const rot = faceRotation(dv.val);
-                            diceInstances[idx].cube.style.transition = 'none';
-                            diceInstances[idx].cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
-                        }
-                    });
-                }
-            }
-
-            buildGrid();
-            updateDisplay();
-            updateHeaderPlayerName();
-            updateArrowPulse();
-            checkTurnPermissions();
-        });
-    };
-    window.confirmReset = function() {
+ window.confirmReset = function() {
         showCustomAlert(
             "Nieuw Spel", 
             "Weet je zeker dat je alle scoreblaadjes wilt leegmaken voor een nieuw spel?", 
