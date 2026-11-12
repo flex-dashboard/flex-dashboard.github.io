@@ -2314,7 +2314,7 @@ function openKeypad(colIndex, rowId) {
         currentInputValue = p.scores[uniqueKey] !== undefined ? String(p.scores[uniqueKey]) : '';
         
         const playerMode = p.playMode || 'random';
-        const canKans = (playerMode === 'strict') ? (p.scores[`c${activeTarget.colIndex}_d2_6`] === undefined) : canAnyColumnPlayKans();
+        const canKans = (playerMode === 'strict') ? (p.scores[`c${activeTarget.colIndex}_d2_6`] === undefined) : canPlayKansInCurrentContext(colIndex);
 
         const slashBtnEl = document.getElementById('keypad-slash-btn');
         if (slashBtnEl) {
@@ -2352,7 +2352,7 @@ function openKeypad(colIndex, rowId) {
             const p = players[currentPlayerIndex];
             const playerMode = p.playMode || 'random';
             const kansFilledInThisCol = p.scores[`c${activeTarget.colIndex}_d2_6`] !== undefined;
-            const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canAnyColumnPlayKans();
+            const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canPlayKansInCurrentContext(activeTarget.colIndex);
 
             if (canPlayKansHere) {
                 showCustomAlert("Geen streep mogelijk", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen!" : "Je kunt in één van de actieve kolommen nog Kans invullen!");
