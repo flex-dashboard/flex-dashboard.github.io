@@ -205,16 +205,15 @@
                 <label>Spelersnamen & Spelmodus Instellen:</label>
                 <div id="playerInputsContainer" class="player-inputs-container"></div>
 
-                <!-- Knoppenrij met dobbelsteenvinkje, startknop en de 3 modus-knoppen -->
-                <div style="display: flex; gap: 6px; align-items: center; margin-top: 15px;">
-                    <label for="toggleDiceBar" style="background: rgba(255, 255, 255, 0.95); border: 1px solid #ccc; border-radius: 5px; padding: 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 0; user-select: none; height: 42px; box-sizing: border-box;" title="Digitale Dobbelsteen In/Uitschakelen">
-                        <input type="checkbox" id="toggleDiceBar" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
-                        <span style="font-size: 15px;">🎲</span>
-                    </label>
-                    <button id="btnActionLocal" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #007bff; font-size: 13px;">Start Game</button>
-                    <button id="btnActionOnline" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #17a2b8; font-size: 13px;">Online</button>
-                    <button id="btnActionGuest" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #28a745; font-size: 13px;">Gast</button>
-                </div>
+                <!-- Knoppenrij met dobbelsteenvinkje, startknop en online knop -->
+<div style="display: flex; gap: 6px; align-items: center; margin-top: 15px;">
+    <label for="toggleDiceBar" style="background: rgba(255, 255, 255, 0.95); border: 1px solid #ccc; border-radius: 5px; padding: 0 8px; display: flex; align-items: center; justify-content: center; cursor: pointer; margin-bottom: 0; user-select: none; height: 42px; box-sizing: border-box;" title="Digitale Dobbelsteen In/Uitschakelen">
+        <input type="checkbox" id="toggleDiceBar" style="width: 16px; height: 16px; margin: 0; cursor: pointer;">
+        <span style="font-size: 15px;">🎲</span>
+    </label>
+    <button id="btnActionLocal" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #007bff; font-size: 13px;">Start Game</button>
+    <button id="btnActionOnline" class="btn-main" style="margin-top: 0; flex: 1; height: 42px; padding: 0 4px; background: #17a2b8; font-size: 13px;">Online</button>
+</div>
             </div>
 
             <!-- STAP 2: ONLINE KEUZEMENU (Zonder de middelste gastenknop) -->
@@ -543,8 +542,7 @@
         });
 
         btnActionOnline.addEventListener("click", () => {
-            stepSettings.classList.add("hidden");
-            stepOnlineChoice.classList.remove("hidden");
+            window.top.location.href = "yatzeeonline.html";
         });
 
         btnActionGuest.addEventListener("click", () => {

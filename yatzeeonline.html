@@ -1,0 +1,3469 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Digitale Nederlandse Yatzee-scorekaart</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: #f0f2f5;
+            color: #000;
+            padding: 10px;
+            font-size: 18px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            overflow: hidden;
+        }
+
+        /* Zwarte bovenbalk met knoppen en Nieuw Spel */
+        .header-bar {
+            background-color: #000;
+            color: #fff;
+            padding: 12px 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .nav-btn {
+            color: #fff;
+            text-decoration: none;
+            font-size: 18px;
+            background: #222;
+            padding: 6px 12px;
+            border-radius: 6px;
+            border: 1px solid #444;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            transition: background 0.2s;
+        }
+
+        .nav-btn:hover {
+            background: #333;
+        }
+
+        .nav-btn.active {
+            background: #27ae60;
+            border-color: #2ecc71;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            margin-left: 5px;
+        }
+
+        .player-name-container {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .player-name-input {
+            background: #fff;
+            color: #000;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            padding: 6px 12px;
+            font-size: 18px;
+            font-weight: bold;
+            width: 120px;
+            cursor: pointer;
+            text-align: center;
+        }
+
+        .dice-icon {
+            position: absolute;
+            left: 95px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 30px;
+            height: 30px;
+            text-align: center;
+        }
+
+        .dice-icon img {
+            width: 100%;
+            height: 100%;
+            border-radius: 6px;
+            object-fit: cover;
+        }
+
+        /* Handmatige speler-wissel pijltjesknop & Knipperanimatie */
+        .player-switch-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .player-switch-btn:hover {
+            background: #2ecc71;
+        }
+
+        @keyframes pulseArrow {
+            0% { transform: scale(1); background-color: #27ae60; box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+            50% { transform: scale(1.15); background-color: #2ecc71; box-shadow: 0 0 15px 5px rgba(46, 204, 113, 0.9); }
+            100% { transform: scale(1); background-color: #27ae60; box-shadow: 0 0 0 0 rgba(39, 174, 96, 0.7); }
+        }
+
+        .player-switch-btn.pulsing {
+            animation: pulseArrow 1s infinite ease-in-out;
+        }
+
+        /* Rode Nieuw Spel knop in zwarte bovenbalk */
+        .btn-reset-top {
+            background-color: #d9534f;
+            color: white;
+            border: none;
+            padding: 7px 12px;
+            font-size: 14px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        .btn-reset-top:hover {
+            background-color: #c9302c;
+        }
+
+        /* Beurtenteller en Totaal-vakje in de zwarte bovenbalk */
+        .header-right-group {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .turn-counter-box {
+            background: #222;
+            color: #3498db;
+            border: 2px solid #444;
+            border-radius: 6px;
+            padding: 6px 12px;
+            font-size: 16px;
+            font-weight: bold;
+            text-align: center;
+            letter-spacing: 0.5px;
+            white-space: nowrap;
+        }
+
+        .global-total-box {
+            background: #222;
+            color: #f1c40f;
+            border: 2px solid #444;
+            border-radius: 6px;
+            padding: 6px 14px;
+            font-size: 20px;
+            font-weight: bold;
+            text-align: center;
+            min-width: 90px;
+            letter-spacing: 1px;
+        }
+
+        /* Tabel Wrapper met horizontale scroll */
+        .score-table-wrapper {
+            overflow-x: auto;
+            max-height: calc(100vh - 220px);
+            background: #fff;
+            position: relative;
+        }
+
+        /* Echte HTML Tabel met keiharde zwarte randen op ELKE cel */
+        table.yatzee-table {
+            border-collapse: collapse;
+            width: 100%;
+            min-width: 750px;
+            table-layout: fixed;
+        }
+
+        table.yatzee-table th, 
+        table.yatzee-table td {
+            border: 1px solid #000 !important;
+            height: 44px;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 17px;
+            font-weight: bold;
+            padding: 0 4px;
+            position: relative;
+        }
+
+        /* Vaste linker kolom (Sticky) */
+        table.yatzee-table td.category-cell,
+        table.yatzee-table th.category-cell {
+            position: sticky;
+            left: 0;
+            z-index: 5;
+            background-color: #fff;
+            border-right: 3px solid #000 !important;
+            text-align: left;
+            padding: 0 10px;
+            width: 235px;
+        }
+
+        .cat-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            width: 100%;
+            font-size: 14px;
+            font-weight: bold;
+        }
+
+        .sub-text {
+            font-size: 10px;
+            color: #555;
+            font-weight: normal;
+        }
+
+        /* Duidelijke grote diagonale schuine streep over hele cel */
+        .big-slash {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+        .big-slash::before {
+            content: "";
+            position: absolute;
+            top: 4px;
+            bottom: 4px;
+            left: 50%;
+            width: 3px;
+            background-color: #000;
+            transform: translateX(-50%) rotate(-45deg);
+        }
+
+        /* Sectiekoppen (Deel 1 & Deel 2) */
+        tr.section-header th,
+        tr.section-header td {
+            background-color: #e0e0e0 !important;
+            font-size: 15px;
+            font-weight: bold;
+            border-bottom: 2px solid #000 !important;
+            border-top: 2px solid #000 !important;
+        }
+
+        /* Totaalrijen met afwijkende achtergrond */
+        tr.total-row td,
+        tr.total-row th {
+            background-color: #f2f2f2 !important;
+            font-weight: bold;
+            border-bottom: 2px solid #000 !important;
+        }
+
+        /* Invoervakjes in de spellen */
+        td.score-cell {
+            cursor: pointer;
+            background-color: #fff;
+            transition: background 0.15s;
+        }
+
+        td.score-cell:hover {
+            background-color: #e6f2ff;
+        }
+
+        /* Actieve cel bij selectie */
+        td.active-cell {
+            background-color: #ffe680 !important;
+            box-shadow: inset 0 0 0 3px #ff9900;
+        }
+
+        /* Toetsenborden & Eigen In-App Modals Overlays */
+        .overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.4);
+            z-index: 100;
+            padding: 15px;
+            justify-content: center;
+        }
+
+        .overlay.centered {
+            align-items: center;
+        }
+
+        .overlay.position-top {
+            align-items: flex-start;
+            padding-top: 30px;
+        }
+
+        .overlay.position-bottom {
+            align-items: flex-end;
+            padding-bottom: 30px;
+        }
+
+        /* Eigen In-app Melding / Pop-up styling met Kruisje */
+        .custom-modal {
+            background: #fff;
+            width: 320px;
+            max-width: 90vw;
+            border-radius: 12px;
+            padding: 20px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            border: 2px solid #333;
+            text-align: center;
+            position: relative;
+        }
+
+        .modal-close-cross {
+            position: absolute;
+            top: 8px;
+            right: 12px;
+            font-size: 22px;
+            font-weight: bold;
+            color: #666;
+            cursor: pointer;
+            line-height: 1;
+            padding: 4px;
+        }
+        .modal-close-cross:hover {
+            color: #000;
+        }
+
+        .custom-modal h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #d9534f;
+        }
+
+        .custom-modal p {
+            font-size: 15px;
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.4;
+        }
+
+        .popup-subtext {
+            font-size: 12px;
+            color: #666;
+            margin-top: 6px;
+            font-weight: normal;
+        }
+
+        .keypad {
+            background-image: url('yatzee/dobs.png');
+            background-size: cover;          
+            background-position: center;     
+            background-repeat: no-repeat;    
+            border-radius: 12px;
+            padding: 15px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+            border: 2px solid #333;
+            cursor: grab;
+            user-select: none;
+            touch-action: none;
+        }
+
+        .keypad:active {
+            cursor: grabbing;
+        }
+
+        .keypad-display {
+            background: #f0f2f5;
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            font-size: 22px;
+            font-weight: bold;
+            text-align: right;
+            padding: 8px;
+            margin-bottom: 8px;
+            min-height: 40px;
+            max-height: 40px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+
+        .keypad-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 6px;
+        }
+
+        .key-btn {
+            background: #e9ecef;
+            border: 2px solid #b0b8c4;
+            border-radius: 12px;
+            font-size: 24px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            text-align: center;
+            color: #000;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15);
+            padding: 10px 0;
+        }
+
+        .key-btn:active { background: #cbd3da; }
+        .key-btn.action { 
+            background: #ffcccc; 
+            color: #b30000; 
+            font-size: 30px !important;
+            font-weight: 900 !important;
+        }
+        .key-btn.enter { background: #d4edda; color: #155724; grid-column: span 2; }
+        .key-btn.next-player { background: #27ae60; color: #fff; }
+        .key-btn.next-player:hover { background: #2ecc71; }
+
+        .alpha-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+
+        #choice-keypad {
+            width: auto !important;
+            display: inline-block !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container {
+            display: flex !important;
+            flex-wrap: wrap !important;
+            gap: 12px !important;
+            justify-content: center !important;
+            align-items: center !important;
+            margin: 0 auto !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container .key-btn {
+            width: 65px !important;
+            height: 65px !important;
+            font-size: 22px !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(2)):not(:has(> :nth-child(3))) {
+            display: flex !important;
+            flex-wrap: nowrap !important;
+            gap: 12px !important;
+            justify-content: center !important;
+            align-items: center !important;
+            width: auto !important;
+            height: auto !important;
+            max-width: 300px !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-rows: repeat(3, 1fr) !important;
+            width: 220px !important;
+            height: 220px !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(1) { grid-area: 1 / 1 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(2) { grid-area: 1 / 3 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(3) { grid-area: 3 / 1 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(4) { grid-area: 3 / 3 !important; }
+        #choice-popup-overlay #popup-buttons-container:has(> :nth-child(5)) .key-btn:nth-child(5) { grid-area: 2 / 2 !important; }
+
+        .alpha-grid .key-btn { font-size: 13px; padding: 8px 0; }
+        .alpha-grid .space-key { grid-column: span 3; background: #e2e8f0; }
+        .alpha-grid .clear-key { grid-column: span 2; background: #ffcccc; color: #b30000; }
+        .alpha-grid .enter-key { grid-column: span 2; background: #d4edda; color: #155724; }
+
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) {
+            display: grid !important;
+            grid-template-columns: repeat(3, 1fr) !important;
+            grid-template-rows: repeat(3, 1fr) !important;
+            width: 220px !important;
+            height: 220px !important;
+        }
+
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(1) { grid-area: 1 / 1 !important; }
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(2) { grid-area: 1 / 3 !important; }
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(3) { grid-area: 3 / 1 !important; }
+        #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(4) { grid-area: 3 / 3 !important; }
+
+        /* --- SCREENSAVER STIJLEN --- */
+        #screensaver-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: #000;
+            z-index: 9999;
+            overflow: hidden;
+            cursor: pointer;
+        }
+
+        .ss-dice {
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            overflow: hidden;
+            will-change: transform, left, top;
+            animation: screensaverRotate 8s linear infinite;
+        }
+
+        .ss-dice img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+        @keyframes screensaverRotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* --- PURE CSS 3D DOBBELBEKER STIJLEN --- */
+        .dice-bar-wrapper {
+            display: none;
+            background: #222222;
+            border-top: 3px solid #000;
+            border-bottom: 3px solid #000;
+            width: 100%;
+        }
+
+        .dice-bar-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+            background: #222222;
+            padding: 10px 15px;
+            width: 100%;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+
+        .dice-row {
+            display: flex;
+            gap: 8px;
+            flex-wrap: nowrap;
+        }
+
+        .gds-mode-3d {
+            perspective: 700px;
+            perspective-origin: 50% 50%;
+        }
+
+        .gds-cube-holder {
+            width: 68px;
+            height: 68px;
+            position: relative;
+            cursor: pointer;
+            border-radius: 12px;
+            transition: transform 0.15s;
+        }
+
+        .gds-cube-holder:hover {
+            transform: scale(1.04);
+        }
+
+        .gds-cube-holder.locked {
+            box-shadow: 0 0 12px rgba(241, 196, 15, 0.8);
+            border-radius: 12px;
+        }
+
+        .lock-badge {
+            position: absolute;
+            top: -11px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: #f1c40f;
+            color: #000;
+            font-size: 9px;
+            font-weight: bold;
+            padding: 1px 5px;
+            border-radius: 3px;
+            display: none;
+            z-index: 20;
+        }
+
+        .gds-cube-holder.locked .lock-badge {
+            display: block;
+        }
+
+        .gds-cube {
+            position: relative;
+            width: 68px;
+            height: 68px;
+            transform-style: preserve-3d;
+            will-change: transform;
+        }
+
+        .gds-face {
+            position: absolute;
+            width: 68px;
+            height: 68px;
+            background: linear-gradient(145deg, #ffffff, #eef2f5);
+            border: 1px solid #cfd6dc;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: inset 0 0 6px rgba(0,0,0,0.08);
+            backface-visibility: hidden;
+        }
+
+        .gds-face-front  { transform: translateZ(34px); }
+        .gds-face-back   { transform: rotateY(180deg) translateZ(34px); }
+        .gds-face-right  { transform: rotateY(90deg)  translateZ(34px); }
+        .gds-face-left   { transform: rotateY(-90deg) translateZ(34px); }
+        .gds-face-top    { transform: rotateX(90deg)  translateZ(34px); }
+        .gds-face-bottom { transform: rotateX(-90deg) translateZ(34px); }
+
+        .gds-pip {
+            position: absolute;
+            width: 13px;
+            height: 13px;
+            margin: -6.5px 0 0 -6.5px;
+            border-radius: 50%;
+            background: radial-gradient(circle at 35% 30%, #4a5a6a, #2c3e50 70%);
+            box-shadow: inset 0 -1px 2px rgba(0,0,0,0.35);
+        }
+
+        .controls-middle {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-pill {
+            background: #181818;
+            color: #fff;
+            padding: 7px 10px;
+            border-radius: 6px;
+            border: 1px solid #333;
+            font-size: 13px;
+            white-space: nowrap;
+            text-align: center;
+        }
+
+        .in-btn {
+            background-color: #d35400;
+            color: white;
+            border: none;
+            width: 32px;
+            height: 32px;
+            font-size: 12px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.1s;
+        }
+        .in-btn:hover { background-color: #e67e22; }
+        .in-btn:active { transform: scale(0.95); }
+        .in-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
+
+        .combo-pill {
+            background: #2c3e50;
+            color: #f1c40f;
+            font-weight: bold;
+            border: 1px solid #34495e;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 13px;
+            white-space: nowrap;
+            width: 155px;
+            text-align: center;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .roll-btn {
+            background-color: #27ae60;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: bold;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 125px;
+            text-align: center;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.4);
+            transition: background 0.2s, transform 0.1s;
+            white-space: nowrap;
+        }
+        .roll-btn:hover { background-color: #2ecc71; }
+        .roll-btn:active { transform: scale(0.96); }
+        .roll-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
+
+        /* LOBBY MODAL STYLING (Geïntegreerd als div met losse stappen) */
+        .modal-overlay { 
+            position: fixed; 
+            inset: 0; 
+            background: rgba(0,0,0,0.5); 
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            z-index: 99999; 
+        }
+        .card { 
+            position: absolute;
+            background: linear-gradient(rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.92)), url('yatzee/dobs.png') no-repeat center center; 
+            background-size: cover; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 8px 24px rgba(0,0,0,0.4); 
+            width: 420px; 
+            max-width: 90vw;
+            max-height: 90vh;
+            text-align: left; 
+            resize: both; 
+            overflow: auto; 
+            box-sizing: border-box;
+        }
+        .card-header {
+            cursor: grab;
+            margin-bottom: 15px;
+            border-bottom: 2px solid rgba(0, 0, 0, 0.1);
+            padding-bottom: 10px;
+            user-select: none;
+            text-align: center;
+        }
+        .card-header:active {
+            cursor: grabbing;
+        }
+        .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background: red;
+            width: 25px;
+            height: 25px;
+            border: none;
+            font-size: 26px;
+            cursor: pointer;
+            color: #333;
+            padding: 0;
+            line-height: 1;
+            z-index: 99999;
+        }
+        .close-btn:hover { color: #000; }
+        
+        input, select { padding: 10px; font-size: 15px; width: 100%; margin-bottom: 12px; box-sizing: border-box; border: 1px solid #ccc; border-radius: 5px; background: rgba(255, 255, 255, 0.95); }
+        label { font-weight: bold; font-size: 14px; display: block; margin-bottom: 5px; color: #222; }
+        
+        .tile-container {
+            display: grid;
+            grid-template-columns: repeat(6, 1fr);
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .tile {
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ccc;
+            border-radius: 6px;
+            padding: 10px 0;
+            text-align: center;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            user-select: none;
+            color: #333;
+            transition: all 0.2s ease;
+        }
+        .tile:hover {
+            border-color: #007bff;
+        }
+        .tile.selected {
+            background: #28a745 !important;
+            color: white !important;
+            border-color: #1e7e34 !important;
+        }
+
+        .btn-main { background: #007bff; color: white; padding: 12px 15px; font-size: 16px; cursor: pointer; margin-top: 5px; border: none; border-radius: 6px; width: 100%; font-weight: bold; }
+        .btn-main:hover { background: #0056b3; }
+        .btn-sub { background: #6c757d; color: white; padding: 12px 15px; font-size: 16px; cursor: pointer; margin-top: 5px; border: none; border-radius: 6px; width: 100%; font-weight: bold; }
+        .btn-sub:hover { background: #545b62; }
+        .btn-whatsapp { background: #25D366; color: white; display: block; text-align: center; text-decoration: none; margin-top: 10px; padding: 12px 15px; border-radius: 6px; font-weight: bold; }
+        .btn-whatsapp:hover { background: #1ebe57; }
+        
+        .btn-start-disabled { background: #dc3545 !important; color: white; margin-top: 15px; cursor: not-allowed; opacity: 0.7; width: 100%; padding: 12px 15px; border-radius: 6px; font-weight: bold; border: none; }
+        .btn-start-active { background: #28a745 !important; color: white; margin-top: 15px; cursor: pointer; opacity: 1; width: 100%; padding: 12px 15px; border-radius: 6px; font-weight: bold; border: none; }
+        .btn-start-active:hover { background: #218838 !important; }
+
+        .player-list { background: rgba(241, 241, 241, 0.9); padding: 10px; border-radius: 6px; min-height: 60px; margin-top: 10px; }
+        .player-list ul { margin: 0; padding-left: 20px; }
+        .center { text-align: center; }
+        .hidden { display: none !important; }
+
+        .mode-btn {
+            flex: 1;
+            padding: 8px 4px;
+            font-size: 12px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid #ccc;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+            margin-top: 0;
+        }
+        .mode-btn.selected {
+            background: #28a745 !important;
+            color: white !important;
+            border-color: #1e7e34 !important;
+        }
+
+@media (min-width: 769px) {
+    .scroll-arrow-btn {
+        display: none !important;
+    }
+}
+
+@media (min-width: 481px) and (max-width: 768px) {
+    #alpha-overlay .keypad {
+        width: 460px !important;
+        padding: 15px;
+    }
+    #alpha-overlay .alpha-grid .key-btn {
+        font-size: 18px !important;
+        padding: 14px 0 !important;
+    }
+    #alpha-display {
+        font-size: 26px !important;
+        min-height: 48px;
+    }
+
+    .score-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        max-height: calc(100vh - 200px);
+        background: #fff;
+        position: relative;
+    }
+
+    .header-bar {
+        padding: 8px 12px;
+        gap: 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .header-left {
+        width: 100%;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+    }
+
+    .header-title {
+        font-size: 20px;
+        text-align: center;
+    }
+
+    .player-name-container {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 12px;
+        margin-top: 6px;
+    }
+
+    .player-name-input {
+        width: 120px;
+        font-size: 15px;
+        padding: 5px 8px;
+    }
+
+    .header-right-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+}
+@media (max-width: 768px) {
+    html, body {
+        padding: 2px;
+    }
+    
+    .header-bar {
+        padding: 4px 6px;
+        gap: 4px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        position: relative;
+    }
+
+    .header-left {
+        width: 100%;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 4px;
+        position: relative;
+    }
+
+    .header-left > *:nth-child(2) {
+        margin-right: auto;
+    }
+
+    button.nav-btn {
+        font-size: 0px !important;
+        padding: 4px 5px !important;
+        min-width: 26px;
+        flex-shrink: 0;
+    }
+    button.nav-btn::before {
+        font-size: 14px;
+    }
+    button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
+    button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
+    button.nav-btn:nth-of-type(3)::before { content: "👥"; }
+    
+    a.nav-btn {
+        font-size: 0px !important;
+        padding: 4px 5px !important;
+        min-width: 26px;
+        flex-shrink: 0;
+    }
+    a.nav-btn::before {
+        content: "🏠";
+        font-size: 14px;
+    }
+
+    .header-title {
+        font-size: 16px;
+        text-align: center;
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+        margin: 0;
+        letter-spacing: 0.5px;
+        pointer-events: none;
+        white-space: nowrap;
+        z-index: 5;
+    }
+
+    .player-name-container {
+        width: 100%;
+        display: flex;
+        flex-wrap: nowrap;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 4px;
+        margin-top: 2px;
+        padding: 0 4px;
+        padding-right: 95px; 
+        position: relative;
+    }
+
+    .player-name-input {
+        width: 70px;
+        font-size: 13px;
+        padding: 3px 4px;
+    }
+
+    .player-switch-btn {
+        padding: 3px 5px;
+        font-size: 11px;
+    }
+
+    .btn-reset-top {
+        padding: 3px 5px;
+        font-size: 11px;
+    }
+
+    .header-right-group {
+        display: flex;
+        position: absolute;
+        right: 6px;
+        bottom: 6px;
+        align-items: center;
+        gap: 2px;
+        z-index: 10;
+    }
+
+    .turn-counter-box {
+        font-size: 10px;
+        padding: 2px 4px;
+    }
+
+    .global-total-box {
+        font-size: 11px;
+        padding: 2px 4px;
+        min-width: 35px;
+    }
+
+    .score-table-wrapper {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        width: 100%;
+        position: relative;
+        max-height: calc(100vh - 200px);
+    }
+
+    table.yatzee-table {
+        width: 750px;
+        min-width: 750px;
+        table-layout: fixed;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
+
+    table.yatzee-table td.category-cell, 
+    table.yatzee-table th:first-child {
+        position: sticky;
+        left: 0;
+        background-color: #ffffff;
+        z-index: 20;
+        border-right: 3px solid #000000 !important;
+    }
+
+    table.yatzee-table th, table.yatzee-table td { 
+        height: 38px; 
+        font-size: 15px;
+    }
+
+    table.yatzee-table td.category-cell { width: 170px; padding: 0 6px; }
+    .cat-title { font-size: 12px; }
+    .sub-text { font-size: 9px; }
+
+    .scroll-arrow-btn {
+        position: fixed;
+        right: 5px;
+        top: 60%;
+        transform: translateY(-50%);
+        background: rgba(0, 0, 0, 0.3);
+        color: #fff;
+        border: 1px solid #fff;
+        font-size: 14px;
+        font-weight: bold;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer;
+        z-index: 50;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+        opacity: 0.6;
+    }
+    
+    .keypad { width: 240px; padding: 8px; }
+    .key-btn { padding: 6px 0; font-size: 15px; }
+    .alpha-grid .key-btn { font-size: 10px; padding: 5px 0; }
+    
+    .dice-bar-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        gap: 6px;
+        padding: 8px;
+    }
+
+    .dice-row {
+        width: 100%;
+        display: flex;
+        gap: 4px;
+        justify-content: center;
+    }
+    .gds-cube-holder, .gds-cube, .gds-face { width: 42px; height: 42px; }
+    .gds-face-front  { transform: translateZ(21px); }
+    .gds-face-back   { transform: rotateY(180deg) translateZ(21px); }
+    .gds-face-right  { transform: rotateY(90deg)  translateZ(21px); }
+    .gds-face-left   { transform: rotateY(-90deg) translateZ(21px); }
+    .gds-face-top    { transform: rotateX(90deg)  translateZ(21px); }
+    .gds-face-bottom { transform: rotateX(-90deg) translateZ(21px); }
+    .gds-pip { width: 8px; height: 8px; margin: -4px 0 0 -4px; }
+
+    .controls-middle {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        flex: 1;
+    }
+    .info-pill { padding: 6px 8px; font-size: 11px; }
+    .in-btn { width: 30px; height: 30px; font-size: 11px; }
+    .combo-pill { width: 90px; font-size: 11px; padding: 6px; }
+
+    .roll-btn { 
+        width: 110px; 
+        font-size: 12px; 
+        padding: 8px 10px; 
+        flex-shrink: 0;
+    }
+}
+</style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header-bar">
+        <div class="header-left">
+            <a href="index.html" class="nav-btn" title="Naar Hoofddashboard">🏠</a>
+            <button class="nav-btn" onclick="toggleFullscreen()" title="Volledig Scherm In/Uitschakelen">⛶ Fullscreen</button>
+            
+            
+            <div class="header-title">YATZEE</div>
+        </div>
+        <div class="player-name-container">
+            <div id="player-name-display" class="player-name-input" onclick="openPlayerInspectionOrSetup()" title="Klik om spelers te bekijken of in te stellen">Naam</div>
+            <button id="player-switch-btn" class="player-switch-btn" onclick="nextPlayerManually()" title="Naar volgende speler">➔</button>
+            <button class="btn-reset-top" onclick="confirmReset()">Nieuw Spel</button>
+        </div>
+        <div class="header-right-group">
+            <div id="turn-counter-display" class="turn-counter-box" title="Aantal gespeelde beurten">Beurt: 0</div>
+            <div id="global-total-display" class="global-total-box" title="Totaalscore van actieve speler">-</div>
+        </div>
+    </div>
+
+    <!-- Scoreblad Deel 1 -->
+    <div class="score-table-wrapper" id="table-wrapper-1">
+        <table class="yatzee-table">
+            <tbody id="table-body-d1"></tbody>
+        </table>
+        <button class="scroll-arrow-btn" onclick="scrollNextColumn()" title="Volgende kolom / Oneindige loop">›</button>
+    </div>
+
+    <!-- Midden-balk: Digitale Dobbelbeker -->
+    <div id="dice-bar-wrapper" class="dice-bar-wrapper">
+        <div class="dice-bar-container gds-mode-3d">
+            <div class="dice-row" id="dice-row"></div>
+            <div class="controls-middle">
+                <div class="info-pill">W: <strong id="worp-count" style="color:#f1c40f;">0/3</strong></div>
+                <button id="in-btn" class="in-btn" onclick="handleIn()" title="Innen" disabled>In</button>
+                <div class="combo-pill" id="combo-display">Nieuwe beurt</div>
+            </div>
+            <button id="roll-btn" class="roll-btn" onclick="handleRollClick()">Gooi 🎲</button>
+        </div>
+    </div>
+
+    <!-- Scoreblad Deel 2 -->
+    <div class="score-table-wrapper" id="table-wrapper-2">
+        <table class="yatzee-table">
+            <tbody id="table-body-d2"></tbody>
+        </table>
+        <button class="scroll-arrow-btn" onclick="scrollNextColumn()" title="Volgende kolom / Oneindige loop">›</button>
+    </div>
+</div>
+
+<!-- GEÏNTEGREERDE LOBBY MODAL -->
+<div id="lobbyModal" class="modal-overlay">
+    <div class="card" id="draggableCard">
+        <button id="btnCloseModal" class="close-btn">X</button>
+        
+        <div class="card-header" id="cardHeader">
+            <h2 style="margin:0; font-size: 20px; display: inline-block;">LOBBY</h2>
+        </div>
+
+        <!-- STAP 1: DIRECT BEGINNEN MET HOST / GAST -->
+        <div id="stepOnlineChoice" class="">
+            <p class="center"><b>Online Multiplayer Koppeling</b></p>
+            <button id="btnChooseHost" class="btn-main" style="margin-bottom: 10px;">👑 Nieuw Spel Hosten</button>
+            <button id="btnChooseGuest" class="btn-main" style="margin-bottom: 10px; background: #28a745;">👤 Gast (Deelnemen)</button>
+        </div>
+
+        <!-- STAP 2: HOST SCHERM -->
+        <div id="stepHost" class="hidden">
+            <h3>Nieuw Spel Hosten</h3>
+            <label>Jouw Naam (Host):</label>
+            <input type="text" id="hostNameInput" placeholder="Jouw naam...">
+            
+            <label>Gegenereerde Roomcode:</label>
+            <div style="display: flex; gap: 6px; margin-bottom: 12px;">
+                <input type="text" id="hostRoomDisplay" readonly style="background: #e9ecef; font-weight: bold; color: #007bff; margin-bottom: 0; flex: 1;">
+                <button type="button" id="btnCopyRoom" class="btn-main" style="margin-top: 0; width: 90px; height: 42px; font-size: 13px;" title="Kopieer roomcode">Kopieer</button>
+            </div>
+            
+            <label>Aantal Rijtjes / Kolommen (Online):</label>
+            <div id="onlineRowsTiles" class="tile-container" style="margin-bottom: 10px;">
+                <div class="tile selected" data-value="1">1</div>
+                <div class="tile" data-value="2">2</div>
+                <div class="tile" data-value="3">3</div>
+                <div class="tile" data-value="4">4</div>
+                <div class="tile" data-value="5">5</div>
+                <div class="tile" data-value="6">6</div>
+            </div>
+
+            <label>Spelmodus (Online):</label>
+            <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+                <button type="button" id="onlineModeRandom" class="mode-btn selected" style="padding: 10px; font-size: 14px;">Vrij</button>
+                <button type="button" id="onlineModeStrict" class="mode-btn" style="padding: 10px; font-size: 14px;">Volgorde</button>
+            </div>
+
+            <button id="btnConfirmHost" class="btn-main">Open Room & Naar Lobby</button>
+            
+            <a id="btnWhatsAppInvite" href="#" target="_blank" class="btn-whatsapp hidden">📱 Deel uitnodiging via WhatsApp</a>
+
+            <button id="btnBackFromHost" class="btn-sub" style="margin-top: 8px;">Terug</button>
+        </div>
+
+        <!-- STAP 3: GAST SCHERM -->
+        <div id="stepGuest" class="hidden">
+            <h3>Deelnemen aan Spel</h3>
+            <label>Jouw Naam:</label>
+            <input type="text" id="guestNameInput" placeholder="Jouw naam...">
+            
+            <label>Roomcode van de Host:</label>
+            <input type="text" id="guestRoomInput" placeholder="Plak of typ de roomcode...">
+            
+            <button id="btnConfirmGuest" class="btn-main">Stap In Room</button>
+            <button id="btnBackFromGuest" class="btn-sub" style="margin-top: 8px;">Terug</button>
+        </div>
+
+        <!-- STAP 4: LOBBY WACHTSCHERM -->
+        <div id="stepLobby" class="hidden">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+                <p style="margin: 0;"><b>Roomcode:</b> <span id="lobbyRoomCode" style="color: #007bff; font-weight: bold;"></span></p>
+                <button type="button" id="btnCopyLobbyRoom" class="btn-main" style="margin-top: 0; width: 90px; height: 36px; font-size: 13px; padding: 0;" title="Kopieer roomcode">Kopieer</button>
+            </div>
+            <p><b>Spelers in de room:</b></p>
+            <div class="player-list">
+                <ul id="playerList"></ul>
+            </div>
+
+            <div id="hostControls" class="hidden">
+                <button id="btnStartGame" class="btn-start-disabled" disabled>🚀 WACHT OP MEERDERE SPELERS...</button>
+            </div>
+
+            <p id="guestWaitMessage" class="center hidden" style="margin-top: 15px; font-weight: bold; color: #555;">Wacht op de host om te starten...</p>
+        </div>
+    </div>
+</div>
+
+<!-- Melding / Pop-up Overlay -->
+<div id="custom-alert-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'custom-alert-overlay')">
+    <div class="custom-modal">
+        <span class="modal-close-cross" onclick="closeCustomAlert()">×</span>
+        <h3 id="custom-alert-title">Let op!</h3>
+        <p id="custom-alert-text">Bericht tekst...</p>
+        <button id="custom-alert-main-btn" class="key-btn enter" style="width: 100%;" onclick="closeCustomAlert()">OK ↵</button>
+        <div id="custom-alert-subtext" class="popup-subtext"></div>
+    </div>
+</div>
+
+<!-- Screensaver Overlay -->
+<div id="screensaver-overlay" onclick="hideScreensaver()">
+    <div class="ss-dice" id="ss-dice-0"><img src="yatzee/dobbelsteen1.png" alt="1"></div>
+    <div class="ss-dice" id="ss-dice-1"><img src="yatzee/dobbelsteen2.png" alt="2"></div>
+    <div class="ss-dice" id="ss-dice-2"><img src="yatzee/dobbelsteen3.png" alt="3"></div>
+    <div class="ss-dice" id="ss-dice-3"><img src="yatzee/dobbelsteen4.png" alt="4"></div>
+    <div class="ss-dice" id="ss-dice-4"><img src="yatzee/dobbelsteen5.png" alt="5"></div>
+    <div class="ss-dice" id="ss-dice-5"><img src="yatzee/dobbelsteen6.png" alt="6"></div>
+</div>
+
+<!-- Overlay voor Speleraantal, Namen & Rijtjes -->
+<div id="player-setup-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'player-setup-overlay')">
+    <div class="keypad" style="width: 320px; text-align: center;">
+        <h3 style="margin-bottom: 6px; font-size: 17px;">Aantal Spelers</h3>
+        <div style="display: flex; justify-content: center; gap: 6px; margin-bottom: 10px;">
+            <button class="key-btn player-btn" id="player-btn-1" style="width: 50px; font-size: 18px;" onclick="selectPlayerCount(1)">1</button>
+            <button class="key-btn player-btn" id="player-btn-2" style="width: 50px; font-size: 18px;" onclick="selectPlayerCount(2)">2</button>
+            <button class="key-btn player-btn" id="player-btn-3" style="width: 50px; font-size: 18px;" onclick="selectPlayerCount(3)">3</button>
+            <button class="key-btn player-btn" id="player-btn-4" style="width: 50px; font-size: 18px;" onclick="selectPlayerCount(4)">4</button>
+        </div>
+
+        <h3 style="margin-bottom: 6px; font-size: 17px;">Aantal Rijtjes</h3>
+        <div style="display: flex; justify-content: center; gap: 4px; margin-bottom: 10px;">
+            <button class="key-btn rows-btn" id="rows-btn-1" style="width: 40px; font-size: 16px;" onclick="selectRowCount(1)">1</button>
+            <button class="key-btn rows-btn" id="rows-btn-2" style="width: 40px; font-size: 16px;" onclick="selectRowCount(2)">2</button>
+            <button class="key-btn rows-btn" id="rows-btn-3" style="width: 40px; font-size: 16px;" onclick="selectRowCount(3)">3</button>
+            <button class="key-btn rows-btn" id="rows-btn-4" style="width: 40px; font-size: 16px;" onclick="selectRowCount(4)">4</button>
+            <button class="key-btn rows-btn" id="rows-btn-5" style="width: 40px; font-size: 16px;" onclick="selectRowCount(5)">5</button>
+            <button class="key-btn rows-btn" id="rows-btn-6" style="width: 40px; font-size: 16px;" onclick="selectRowCount(6)">6</button>
+        </div>
+
+        <div id="player-inputs-list" style="display: flex; flex-direction: column; gap: 6px; margin-bottom: 12px;"></div>
+        <button id="start-game-btn" class="key-btn enter" style="width: 100%;" onclick="savePlayerSetup()">Start Spel ↵</button>
+    </div>
+</div>
+
+<!-- Speler Inspectie / Room Overzicht Overlay -->
+<div id="player-inspect-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'player-inspect-overlay')">
+    <div class="custom-modal" style="width: 340px;">
+        <span class="modal-close-cross" onclick="closePlayerInspect()">×</span>
+        <h3>Spelers in Room & Bord Bekijken</h3>
+        <p style="font-size: 13px; color: #555;">Klik op een speler om diens scoreblad te bekijken (Spectator / Read-Only):</p>
+        <div id="inspect-player-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"></div>
+    </div>
+</div>
+
+<!-- Keuzemenu / Pop-up Overlay -->
+<div id="choice-popup-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'choice-popup-overlay')">
+    <div id="choice-keypad" class="keypad" style="width: auto; max-width: 300px; text-align: center; padding: 15px;">
+        <div id="popup-buttons-container"></div>
+    </div>
+</div>
+
+<!-- Cijfertoetsenbord Overlay -->
+<div id="keypad-overlay" class="overlay" onclick="handleOverlayClick(event, 'keypad-overlay')">
+    <div class="keypad">
+        <div id="keypad-display" class="keypad-display"></div>
+        <div class="keypad-grid">
+            <button class="key-btn" onclick="pressKey('1')">1</button>
+            <button class="key-btn" onclick="pressKey('2')">2</button>
+            <button class="key-btn" onclick="pressKey('3')">3</button>
+            <button class="key-btn" onclick="pressKey('4')">4</button>
+            <button class="key-btn" onclick="pressKey('5')">5</button>
+            <button class="key-btn" onclick="pressKey('6')">6</button>
+            <button class="key-btn" onclick="pressKey('7')">7</button>
+            <button class="key-btn" onclick="pressKey('8')">8</button>
+            <button class="key-btn" onclick="pressKey('9')">9</button>
+            <button class="key-btn action" onclick="pressKey('CLEAR')">Wis</button>
+            <button class="key-btn" onclick="pressKey('0')">0</button>
+            <button class="key-btn action" id="keypad-slash-btn" onclick="pressKey('/')">/</button>
+            <button class="key-btn enter" onclick="pressKey('ENTER')" style="grid-column: span 3;">Enter ↵</button>
+        </div>
+    </div>
+</div>
+
+<!-- Alfabettoetsenbord Overlay -->
+<div id="alpha-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'alpha-overlay')">
+    <div class="keypad" style="width: 320px;">
+        <div id="alpha-display" class="keypad-display"></div>
+        <div class="alpha-grid">
+            <button class="key-btn" onclick="pressAlpha('A')">A</button>
+            <button class="key-btn" onclick="pressAlpha('B')">B</button>
+            <button class="key-btn" onclick="pressAlpha('C')">C</button>
+            <button class="key-btn" onclick="pressAlpha('D')">D</button>
+            <button class="key-btn" onclick="pressAlpha('E')">E</button>
+            <button class="key-btn" onclick="pressAlpha('F')">F</button>
+            <button class="key-btn" onclick="pressAlpha('G')">G</button>
+            <button class="key-btn" onclick="pressAlpha('H')">H</button>
+            <button class="key-btn" onclick="pressAlpha('I')">I</button>
+            <button class="key-btn" onclick="pressAlpha('J')">J</button>
+            <button class="key-btn" onclick="pressAlpha('K')">K</button>
+            <button class="key-btn" onclick="pressAlpha('L')">L</button>
+            <button class="key-btn" onclick="pressAlpha('M')">M</button>
+            <button class="key-btn" onclick="pressAlpha('N')">N</button>
+            <button class="key-btn" onclick="pressAlpha('O')">O</button>
+            <button class="key-btn" onclick="pressAlpha('P')">P</button>
+            <button class="key-btn" onclick="pressAlpha('Q')">Q</button>
+            <button class="key-btn" onclick="pressAlpha('R')">R</button>
+            <button class="key-btn" onclick="pressAlpha('S')">S</button>
+            <button class="key-btn" onclick="pressAlpha('T')">T</button>
+            <button class="key-btn" onclick="pressAlpha('U')">U</button>
+            <button class="key-btn" onclick="pressAlpha('V')">V</button>
+            <button class="key-btn" onclick="pressAlpha('W')">W</button>
+            <button class="key-btn" onclick="pressAlpha('X')">X</button>
+            <button class="key-btn" onclick="pressAlpha('Y')">Y</button>
+            <button class="key-btn" onclick="pressAlpha('Z')">Z</button>
+            <button class="key-btn" onclick="pressAlpha('BACKSPACE')">⌫</button>
+            <button class="key-btn space-key" onclick="pressAlpha('SPACE')">Spatie</button>
+            <button class="key-btn clear-key" onclick="pressAlpha('CLEAR')">Wis</button>
+            <button class="key-btn enter-key" onclick="pressAlpha('ENTER')">Enter ↵</button>
+        </div>
+    </div>
+</div>
+
+<!-- FIREBASE INTEGRATIE SCRIPT (Module) -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
+    import { getDatabase, ref, set, onValue, onDisconnect, get } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyAnmGikJGj0wDywALg_xBNINQfaQtLeOd8",
+        authDomain: "yatzee-f23d7.firebaseapp.com",
+        databaseURL: "https://yatzee-f23d7-default-rtdb.europe-west1.firebasedatabase.app",
+        projectId: "yatzee-f23d7",
+        storageBucket: "yatzee-f23d7.firebasestorage.app",
+        messagingSenderId: "817605728347",
+        appId: "1:817605728347:web:782b279d14f99a1ea7077e",
+        measurementId: "G-F2JRYMGBP5"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app, "https://yatzee-f23d7-default-rtdb.europe-west1.firebasedatabase.app");
+
+    const lobbyModal = document.getElementById("lobbyModal");
+    const btnCloseModal = document.getElementById("btnCloseModal");
+    const cardHeader = document.getElementById("cardHeader");
+    const draggableCard = document.getElementById("draggableCard");
+
+    const stepOnlineChoice = document.getElementById("stepOnlineChoice");
+    const btnChooseHost = document.getElementById("btnChooseHost");
+    const btnChooseGuest = document.getElementById("btnChooseGuest");
+
+    const stepHost = document.getElementById("stepHost");
+    const hostNameInput = document.getElementById("hostNameInput");
+    const hostRoomDisplay = document.getElementById("hostRoomDisplay");
+    const btnConfirmHost = document.getElementById("btnConfirmHost");
+    const btnWhatsAppInvite = document.getElementById("btnWhatsAppInvite");
+    const btnBackFromHost = document.getElementById("btnBackFromHost");
+
+    const stepGuest = document.getElementById("stepGuest");
+    const guestNameInput = document.getElementById("guestNameInput");
+    const guestRoomInput = document.getElementById("guestRoomInput");
+    const btnConfirmGuest = document.getElementById("btnConfirmGuest");
+    const btnBackFromGuest = document.getElementById("btnBackFromGuest");
+
+    const stepLobby = document.getElementById("stepLobby");
+    const lobbyRoomCode = document.getElementById("lobbyRoomCode");
+    const playerList = document.getElementById("playerList");
+    const hostControls = document.getElementById("hostControls");
+    const btnStartGame = document.getElementById("btnStartGame");
+    const guestWaitMessage = document.getElementById("guestWaitMessage");
+
+    let onlineRows = 6;
+    let onlinePlayMode = "random";
+
+    window.myName = "";
+    window.currentRoomCode = "";
+    let activePlayers = {};
+    window.isOnlineGame = false;
+
+    function setupTiles(containerId, callback) {
+        const container = document.getElementById(containerId);
+        if (!container) return;
+        const tiles = container.querySelectorAll(".tile");
+        tiles.forEach(tile => {
+            tile.addEventListener("click", () => {
+                tiles.forEach(t => t.classList.remove("selected"));
+                tile.classList.add("selected");
+                if (callback) callback(parseInt(tile.getAttribute("data-value")));
+            });
+        });
+    }
+
+    setupTiles("onlineRowsTiles", (val) => { onlineRows = val; });
+
+    const btnOnlineRandom = document.getElementById("onlineModeRandom");
+    const btnOnlineStrict = document.getElementById("onlineModeStrict");
+    if (btnOnlineRandom && btnOnlineStrict) {
+        btnOnlineRandom.addEventListener("click", () => {
+            onlinePlayMode = "random";
+            btnOnlineRandom.classList.add("selected");
+            btnOnlineStrict.classList.remove("selected");
+        });
+        btnOnlineStrict.addEventListener("click", () => {
+            onlinePlayMode = "strict";
+            btnOnlineStrict.classList.add("selected");
+            btnOnlineRandom.classList.remove("selected");
+        });
+    }
+
+    let isDragging = false;
+    let startX, startY, initialX, initialY;
+
+    if (cardHeader && draggableCard) {
+        cardHeader.addEventListener("mousedown", (e) => {
+            isDragging = true;
+            startX = e.clientX;
+            startY = e.clientY;
+            const rect = draggableCard.getBoundingClientRect();
+            initialX = rect.left;
+            initialY = rect.top;
+            draggableCard.style.transform = "none";
+            draggableCard.style.left = initialX + "px";
+            draggableCard.style.top = initialY + "px";
+            document.addEventListener("mousemove", onMouseMove);
+            document.addEventListener("mouseup", onMouseUp);
+        });
+    }
+
+    function onMouseMove(e) {
+        if (!isDragging) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+        draggableCard.style.left = (initialX + dx) + "px";
+        draggableCard.style.top = (initialY + dy) + "px";
+    }
+
+    function onMouseUp() {
+        isDragging = false;
+        document.removeEventListener("mousemove", onMouseMove);
+        document.removeEventListener("mouseup", onMouseUp);
+    }
+
+    window.openLobbyPopup = function() {
+        if (lobbyModal) {
+            lobbyModal.style.display = "flex";
+            lobbyModal.classList.remove("hidden");
+            stepOnlineChoice.classList.remove("hidden");
+            stepHost.classList.add("hidden");
+            stepGuest.classList.add("hidden");
+            stepLobby.classList.add("hidden");
+        }
+    };
+
+    window.closeLobbyAndStartGame = function(settingsData) {
+        if (lobbyModal) {
+            lobbyModal.style.display = "none";
+            lobbyModal.classList.add("hidden");
+        }
+        if (settingsData) {
+            window.isOnlineGame = true;
+            if (settingsData.rows) {
+                numGames = parseInt(settingsData.rows, 10) || 6;
+            }
+            if (settingsData.players && Array.isArray(settingsData.players)) {
+                players = settingsData.players.map((item, idx) => ({
+                    id: typeof item === 'object' && item.id ? item.id : ('p_' + idx),
+                    name: typeof item === 'string' ? item : item.name,
+                    scores: {},
+                    playMode: typeof item === 'object' && item.playMode ? item.playMode : 'random',
+                    lastActionKey: null,
+                    lastRoll: null,
+                    hasSubmittedThisTurn: false
+                }));
+            }
+            currentPlayerIndex = 0;
+        }
+
+        // FORCEER DIGITALE DOBBELSTENEN ALTIJD AAN BIJ ONLINE SPEL
+        diceModeActive = true;
+        const wrapper = document.getElementById('dice-bar-wrapper');
+        const btnDice = document.getElementById('toggle-dice-btn');
+        if (wrapper) wrapper.style.display = 'block';
+        if (btnDice) btnDice.classList.add('active');
+
+        buildGrid();
+        updateDisplay();
+        checkTurnPermissions();
+    };
+
+    if (btnCloseModal) {
+        btnCloseModal.addEventListener("click", () => {
+            if (lobbyModal) {
+                lobbyModal.style.display = "none";
+                lobbyModal.classList.add("hidden");
+            }
+        });
+    }
+
+    if (btnChooseHost) {
+        btnChooseHost.addEventListener("click", () => {
+            stepOnlineChoice.classList.add("hidden");
+            stepHost.classList.remove("hidden");
+            const randomCode = 'room_' + Math.random().toString(36).substring(2, 8);
+            hostRoomDisplay.value = randomCode;
+
+            const siteLink = window.location.href.split('?')[0];
+            const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${randomCode}\nLink: ${siteLink}`);
+            btnWhatsAppInvite.href = `https://api.whatsapp.com/send?text=${inviteText}`;
+            btnWhatsAppInvite.classList.remove("hidden");
+        });
+    }
+
+    if (btnChooseGuest) {
+        btnChooseGuest.addEventListener("click", () => {
+            stepOnlineChoice.classList.add("hidden");
+            stepGuest.classList.remove("hidden");
+        });
+    }
+const btnCopyRoom = document.getElementById("btnCopyRoom");
+    if (btnCopyRoom) {
+        btnCopyRoom.addEventListener("click", () => {
+            const hostRoomDisplay = document.getElementById("hostRoomDisplay");
+            const codeText = hostRoomDisplay ? (hostRoomDisplay.value || hostRoomDisplay.innerText) : "";
+            if (codeText) {
+                navigator.clipboard.writeText(codeText).then(() => {
+                    const originalText = btnCopyRoom.innerText;
+                    btnCopyRoom.innerText = "Gekopieerd!";
+                    btnCopyRoom.style.background = "#28a745";
+                    setTimeout(() => {
+                        btnCopyRoom.innerText = originalText;
+                        btnCopyRoom.style.background = "";
+                    }, 1500);
+                }).catch(() => {
+                    // Fallback voor lokale file:/// omgevingen
+                    fallbackCopyText(codeText, btnCopyRoom);
+                });
+            }
+        });
+    }
+    const btnCopyLobbyRoom = document.getElementById("btnCopyLobbyRoom");
+    if (btnCopyLobbyRoom) {
+        btnCopyLobbyRoom.addEventListener("click", () => {
+            if (lobbyRoomCode.innerText) {
+                navigator.clipboard.writeText(lobbyRoomCode.innerText).then(() => {
+                    const originalText = btnCopyLobbyRoom.innerText;
+                    btnCopyLobbyRoom.innerText = "Gekopieerd!";
+                    btnCopyLobbyRoom.style.background = "#28a745";
+                    setTimeout(() => {
+                        btnCopyLobbyRoom.innerText = originalText;
+                        btnCopyLobbyRoom.style.background = "";
+                    }, 1500);
+                });
+            }
+        });
+    }
+
+    if (btnBackFromHost) {
+        btnBackFromHost.addEventListener("click", () => {
+            stepHost.classList.add("hidden");
+            stepOnlineChoice.classList.remove("hidden");
+        });
+    }
+
+    if (btnBackFromGuest) {
+        btnBackFromGuest.addEventListener("click", () => {
+            stepGuest.classList.add("hidden");
+            stepOnlineChoice.classList.remove("hidden");
+        });
+    }
+
+    if (btnConfirmHost) {
+        btnConfirmHost.addEventListener("click", async () => {
+            window.myName = hostNameInput.value.trim();
+            window.currentRoomCode = hostRoomDisplay.value.trim();
+            if (!window.myName) { alert("Vul je naam in!"); return; }
+            stepHost.classList.add("hidden");
+            updateHeaderPlayerName();
+            await enterRoom(window.currentRoomCode, window.myName, true);
+        });
+    }
+
+    if (btnConfirmGuest) {
+        btnConfirmGuest.addEventListener("click", async () => {
+            window.myName = guestNameInput.value.trim();
+            window.currentRoomCode = guestRoomInput.value.trim();
+            if (!window.myName || !window.currentRoomCode) { alert("Vul naam en roomcode in!"); return; }
+            stepGuest.classList.add("hidden");
+            updateHeaderPlayerName();
+            await enterRoom(window.currentRoomCode, window.myName, false);
+        });
+    }
+
+    async function enterRoom(roomCode, playerName, isHost) {
+        stepLobby.classList.remove("hidden");
+        lobbyRoomCode.innerText = roomCode;
+
+        const roomBasePath = 'rooms/' + roomCode;
+        const hostRef = ref(db, roomBasePath + '/host');
+        const playerRef = ref(db, roomBasePath + '/players/' + playerName);
+        const roomRef = ref(db, roomBasePath);
+
+        let activeHost = isHost ? playerName : "";
+        activePlayers = {};
+        activePlayers[playerName] = true;
+
+        // CONSOLE LOG 1: FIREBASE PAYLOAD & CONNECTION
+        console.log(`[LOG 1 - FIREBASE PAYLOAD] Entering room ${roomCode} as ${playerName} (Host: ${isHost})`);
+
+        function renderUI() {
+            playerList.innerHTML = "";
+            const playerNames = Object.keys(activePlayers);
+
+            playerNames.forEach(p => {
+                const li = document.createElement("li");
+                let label = p;
+                if (p === activeHost) {
+                    label += " (host)";
+                }
+                li.innerText = label;
+                playerList.appendChild(li);
+            });
+
+            if (activeHost === playerName) {
+                hostControls.classList.remove("hidden");
+                guestWaitMessage.classList.add("hidden");
+
+                if (playerNames.length >= 1) {
+                    btnStartGame.disabled = false;
+                    btnStartGame.className = "btn-start-active";
+                    btnStartGame.innerText = "🚀 START SPEL VOOR IEDEREEN";
+                } else {
+                    btnStartGame.disabled = true;
+                    btnStartGame.className = "btn-start-disabled";
+                    btnStartGame.innerText = "🚀 WACHT OP SPELERS...";
+                }
+            } else {
+                hostControls.classList.add("hidden");
+                guestWaitMessage.classList.remove("hidden");
+            }
+        }
+
+        renderUI();
+
+        if (isHost) {
+            await set(hostRef, playerName);
+            activeHost = playerName;
+        } else {
+            const hostSnap = await get(hostRef);
+            if (hostSnap.val()) {
+                activeHost = hostSnap.val();
+            }
+        }
+
+        await set(playerRef, true);
+        onDisconnect(playerRef).remove();
+
+        onValue(roomRef, (snapshot) => {
+            const data = snapshot.val();
+            // CONSOLE LOG 2: SYNC UPDATE
+            console.log("[LOG 2 - SYNC UPDATE] Received Firebase room update:", data);
+
+            if (!data) return;
+
+            if (data.host) activeHost = data.host;
+            
+            if (data.players) {
+                if (Array.isArray(data.players)) {
+                    activePlayers = {};
+                    data.players.forEach(pName => { activePlayers[pName] = true; });
+                } else {
+                    activePlayers = data.players;
+                }
+            }
+            activePlayers[playerName] = true;
+            
+            renderUI();
+
+            // 1. Alleen bij de start één keer aanroepen:
+            if (data.status === "gestart" && !window.isOnlineGame) {
+                const roomRows = data.settings ? data.settings.rows : onlineRows;
+                const roomPlayMode = data.settings ? data.settings.playMode : onlinePlayMode;
+                const roomPlayers = data.settings ? data.settings.players : Object.keys(activePlayers);
+
+                closeLobbyAndStartGame({
+                    mode: "online",
+                    rows: roomRows,
+                    players: roomPlayers.map(pName => ({ name: pName, playMode: roomPlayMode })),
+                    devices: 1,
+                    useDice: true
+                });
+            }
+
+            // 2. Staat hier netjes BUITEN, zodat dit continu blijft meelopen:
+            if (data.gameState) {
+                syncGameStateFromFirebase(data.gameState);
+            }
+        });
+    } // <--- Deze sluit de enterRoom functie correct af!
+
+    if (btnStartGame) {
+        btnStartGame.addEventListener("click", () => {
+            if (!btnStartGame.disabled) {
+                const playerNames = Object.keys(activePlayers).sort();
+                
+                const roomDataRef = ref(db, 'rooms/' + window.currentRoomCode);
+                const initialGameState = {
+                    currentPlayerIndex: 0,
+                    rollCount: 0,
+                    turnEnded: false,
+                    diceValues: [1, 1, 1, 1, 1],
+                    lockedDice: [false, false, false, false, false],
+                    scores: {}
+                };
+
+                const payloadToSave = {
+                    host: window.myName,
+                    settings: {
+                        rows: onlineRows,
+                        playMode: onlinePlayMode,
+                        players: playerNames
+                    },
+                    status: "gestart",
+                    gameState: initialGameState
+                };
+
+                // CONSOLE LOG 1: FIREBASE PAYLOAD START GAME
+                console.log("[LOG 1 - FIREBASE PAYLOAD] Host starting game with payload:", payloadToSave);
+
+                set(roomDataRef, payloadToSave).then(() => {
+                    closeLobbyAndStartGame({
+                        mode: "online",
+                        rows: onlineRows,
+                        players: playerNames.map(pName => ({ name: pName, playMode: onlinePlayMode })),
+                        devices: 1,
+                        useDice: true
+                    });
+                }).catch((error) => {
+                    console.error("FOUT bij wegschrijven naar Firebase:", error);
+                });
+            }
+        });
+    }
+
+    // Exporteer push naar Firebase voor game acties
+    window.pushGameStateToFirebase = function(extraUpdates = {}) {
+        if (!window.isOnlineGame || !window.currentRoomCode) return;
+        const gameStateRef = ref(db, 'rooms/' + window.currentRoomCode + '/gameState');
+        
+        const currentActivePlayer = players[currentPlayerIndex];
+        const payload = {
+            currentPlayerIndex: currentPlayerIndex,
+            rollCount: rollCount,
+            turnEnded: turnEnded,
+            diceValues: diceInstances.map(d => d.value),
+            lockedDice: diceInstances.map(d => d.isLocked),
+            players: players.map(p => ({ name: p.name, scores: p.scores, hasSubmittedThisTurn: p.hasSubmittedThisTurn })),
+            ...extraUpdates
+        };
+
+        // CONSOLE LOG 1: FIREBASE PAYLOAD ACTION
+        console.log("[LOG 1 - FIREBASE PAYLOAD] Pushing gameState update:", payload);
+        set(gameStateRef, payload);
+    };
+
+    function syncGameStateFromFirebase(gs) {
+        if (!gs) return;
+        // CONSOLE LOG 3: TURN & PERMISSION
+        console.log("[LOG 3 - TURN & PERMISSION] Syncing gameState. Current turn index:", gs.currentPlayerIndex, "My name:", window.myName);
+
+       // 1. Controleer OF dit een echte nieuwe worp is (gs.rollCount is hoger dan onze huidige rollCount)
+        // Dit doen we VOORDAT we rollCount hieronder overschrijven!
+        const isNewRoll = gs.rollCount !== undefined && gs.rollCount > rollCount;
+
+        if (gs.currentPlayerIndex !== undefined && gs.currentPlayerIndex !== currentPlayerIndex) {
+            currentPlayerIndex = gs.currentPlayerIndex;
+            inspectingPlayerIndex = null; 
+            window._turnPopupShownForTurn = null;
+            updateHeaderPlayerName();
+        }
+        if (gs.rollCount !== undefined) rollCount = gs.rollCount;
+        if (gs.turnEnded !== undefined) turnEnded = gs.turnEnded;
+
+        // 2. Dobbelsteen-synchronisatie
+        if (gs.diceValues && Array.isArray(gs.diceValues) && diceInstances.length === 5) {
+            diceInstances.forEach((d, i) => {
+                d.value = gs.diceValues[i];
+                d.isLocked = gs.lockedDice ? gs.lockedDice[i] : false;
+                d.holder.classList.toggle('locked', d.isLocked);
+                
+                const rot = faceRotation(d.value);
+                
+                // Als het niet jouw beurt is:
+                if (!isMyTurn()) {
+                    // Als het een nieuwe worp is EN de dobbelsteen zit niet vast: ALTIJD draaien!
+                    // (Zelfs als het getal toevallig hetzelfde blijft, zoals een 5 die opnieuw gegooid wordt)
+                    if (isNewRoll && !d.isLocked) {
+                        const spinX = 360 * 2 + rot.x;
+                        const spinY = 360 * 2 + rot.y;
+                        d.cube.style.transition = 'transform 0.6s cubic-bezier(.2,.8,.25,1)';
+                        d.cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
+                    } else {
+                        // Anders (bij vastzetten of geen nieuwe worp): direct strak neerzetten
+                        d.cube.style.transition = 'none';
+                        d.cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+                    }
+                }
+else {
+                    // Jouw eigen scherm: ook direct strak neerzetten om echo's te voorkomen
+                    d.cube.style.transition = 'none';
+                    d.cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+                }
+            });
+        }
+
+        updateDisplay();
+        checkTurnPermissions();
+    }
+</script>
+
+<!-- YATZEE SPEL LOGICA SCRIPT -->
+<script>
+    let numGames = 6;
+    let diceModeActive = true; // ALTIJD AAN
+    let tempSelectedRows = 6;
+
+    const rowsPart1 = [
+        { type: 'header', title: 'deel 1' },
+        { type: 'score', id: 'd1_0', name: 'enen <span class="dice-icon"><img src="yatzee/dobbelsteen1.png" alt="1"></span>', sub: 'tel alle enen op', val: 1 },
+        { type: 'score', id: 'd1_1', name: 'tweeën <span class="dice-icon"><img src="yatzee/dobbelsteen2.png" alt="2"></span>', sub: 'tel alle tweeën op', val: 2 },
+        { type: 'score', id: 'd1_2', name: 'drieën <span class="dice-icon"><img src="yatzee/dobbelsteen3.png" alt="3"></span>', sub: 'tel alle drieën op', val: 3 },
+        { type: 'score', id: 'd1_3', name: 'vieren <span class="dice-icon"><img src="yatzee/dobbelsteen4.png" alt="4"></span>', sub: 'tel alle vieren op', val: 4 },
+        { type: 'score', id: 'd1_4', name: 'vijven <span class="dice-icon"><img src="yatzee/dobbelsteen5.png" alt="5"></span>', sub: 'tel alle vijven op', val: 5 },
+        { type: 'score', id: 'd1_5', name: 'zessen <span class="dice-icon"><img src="yatzee/dobbelsteen6.png" alt="6"></span>', sub: 'tel alle zessen op', val: 6 },
+        { type: 'total', id: 'totaal_p1', name: 'totaal aantal punten ➔', sub: '' },
+        { type: 'total', id: 'bonus', name: 'extra bonus', sub: 'als puntentotaal 63 of meer is' },
+        { type: 'total', id: 'totaal_boven', name: 'totaal van de bovenste helft ➔', sub: '' }
+    ];
+
+    const rowsPart2 = [
+        { type: 'header', title: 'deel 2' },
+        { type: 'score', id: 'd2_0', name: 'three of a kind', sub: 'totaal v.d. 5 stenen' },
+        { type: 'score', id: 'd2_1', name: 'carré', sub: 'totaal v.d. 5 stenen' },
+        { type: 'score', id: 'd2_2', name: 'full house', sub: '25 punten', fixed: 25 },
+        { type: 'score', id: 'd2_3', name: 'kleine straat', sub: '30 punten', fixed: 30 },
+        { type: 'score', id: 'd2_4', name: 'grote straat', sub: '40 punten', fixed: 40 },
+        { type: 'score', id: 'd2_5', name: 'yatzee', sub: '50 punten', fixed: 50 },
+        { type: 'score', id: 'd2_6', name: 'kans', sub: 'totaal v.d. 5 stenen' },
+        { type: 'total', id: 'totaal_d2', name: 'totaal deel 2 ➔', sub: '' },
+        { type: 'total', id: 'totaal_d1_copy', name: 'totaal deel 1 ➔', sub: '' },
+        { type: 'total', id: 'eindtotaal', name: 'totaal ➔', sub: '' }
+    ];
+
+    let players = [
+        { id: 'p_host', name: 'Speler 1', scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
+    ];
+    let currentPlayerIndex = 0;
+    let inspectingPlayerIndex = null; // Voor als je iemands bord bekijkt
+
+    let activeTarget = { colIndex: null, rowId: null };
+    let currentInputValue = '';
+    let currentAlphaValue = '';
+    let isFirstAlphaKey = true;
+    let editingPlayerIdx = null;
+
+    function showCustomAlert(title, message, isNextPlayerAction = false, subtext = '', customCallback = null) {
+        document.getElementById('custom-alert-title').innerText = title;
+        document.getElementById('custom-alert-text').innerText = message;
+        
+        const mainBtn = document.getElementById('custom-alert-main-btn');
+        const subtextEl = document.getElementById('custom-alert-subtext');
+
+        if (customCallback) {
+            mainBtn.className = "key-btn enter";
+            mainBtn.innerText = "Ja, score wissen ↵";
+            mainBtn.onclick = function() {
+                closeCustomAlert();
+                customCallback();
+            };
+            subtextEl.innerText = subtext || "";
+        } else if (isNextPlayerAction) {
+            mainBtn.className = "key-btn next-player";
+            mainBtn.innerText = "Volgende Speler ➔";
+            mainBtn.onclick = function() {
+                closeCustomAlert();
+                nextPlayerManually();
+            };
+            subtextEl.innerText = subtext || "Klik hier om direct door te gaan naar de volgende speler";
+        } else {
+            mainBtn.className = "key-btn enter";
+            mainBtn.innerText = "OK ↵";
+            mainBtn.onclick = function() {
+                closeCustomAlert();
+            };
+            subtextEl.innerText = subtext || "";
+        }
+
+        document.getElementById('custom-alert-overlay').style.display = 'flex';
+    }
+
+    function closeCustomAlert() {
+        document.getElementById('custom-alert-overlay').style.display = 'none';
+    }
+
+    function scrollNextColumn() {
+        const wrapper1 = document.getElementById('table-wrapper-1');
+        const wrapper2 = document.getElementById('table-wrapper-2');
+        const maxScroll = wrapper1.scrollWidth - wrapper1.clientWidth;
+        
+        let targetScroll = wrapper1.scrollLeft + 150;
+        if (wrapper1.scrollLeft >= maxScroll - 10) {
+            targetScroll = 0;
+        }
+
+        wrapper1.scrollTo({ left: targetScroll, behavior: 'smooth' });
+        wrapper2.scrollTo({ left: targetScroll, behavior: 'smooth' });
+    }
+
+    let inactivityTimer = null;
+    const INACTIVITY_LIMIT = 2 * 60 * 1000;
+    let screensaverActive = false;
+    let ssAnimFrame = null;
+    let ssDiceObjects = [];
+
+    function resetInactivityTimer() {
+        if (screensaverActive) return;
+        clearTimeout(inactivityTimer);
+        inactivityTimer = setTimeout(showScreensaver, INACTIVITY_LIMIT);
+    }
+
+    function showScreensaver() {
+        screensaverActive = true;
+        document.body.style.overflow = 'hidden';
+        const overlay = document.getElementById('screensaver-overlay');
+        overlay.style.display = 'block';
+
+        ssDiceObjects = [];
+        for (let i = 0; i < 6; i++) {
+            ssDiceObjects.push({
+                el: document.getElementById(`ss-dice-${i}`),
+                x: Math.random() * (window.innerWidth - 70),
+                y: Math.random() * (window.innerHeight - 70),
+                dx: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random() * 2),
+                dy: (Math.random() > 0.5 ? 1 : -1) * (1.5 + Math.random() * 2)
+            });
+        }
+        animateScreensaver();
+    }
+
+    function hideScreensaver() {
+        if (!screensaverActive) return;
+        screensaverActive = false;
+        cancelAnimationFrame(ssAnimFrame);
+        document.getElementById('screensaver-overlay').style.display = 'none';
+        document.body.style.overflow = '';
+        resetInactivityTimer();
+    }
+
+    function animateScreensaver() {
+        if (!screensaverActive) return;
+        const maxX = window.innerWidth - 60;
+        const maxY = window.innerHeight - 60;
+
+        ssDiceObjects.forEach(d => {
+            d.x += d.dx;
+            d.y += d.dy;
+            if (d.x <= 0) { d.x = 0; d.dx *= -1; }
+            else if (d.x >= maxX) { d.x = maxX; d.dx *= -1; }
+            if (d.y <= 0) { d.y = 0; d.dy *= -1; }
+            else if (d.y >= maxY) { d.y = maxY; d.dy *= -1; }
+
+            d.el.style.left = d.x + 'px';
+            d.el.style.top = d.y + 'px';
+        });
+        ssAnimFrame = requestAnimationFrame(animateScreensaver);
+    }
+
+    ['mousemove', 'mousedown', 'keydown', 'touchstart', 'click'].forEach(evt => {
+        window.addEventListener(evt, resetInactivityTimer, true);
+    });
+
+    const NUM_DICE = 5;
+    const diceInstances = [];
+    let isRolling = false;
+    let rollCount = 0;
+    let turnEnded = false;
+    let lastActiveRoll = null;
+
+    function pipPositions(value) {
+        var C = [50, 50], TL = [27, 27], TR = [73, 27], BL = [27, 73],
+            BR = [73, 73], ML = [27, 50], MR = [73, 50];
+        switch (value) {
+            case 1: return [C];
+            case 2: return [TL, BR];
+            case 3: return [TL, C, BR];
+            case 4: return [TL, TR, BL, BR];
+            case 5: return [TL, TR, C, BL, BR];
+            case 6: return [TL, TR, ML, MR, BL, BR];
+            default: return [];
+        }
+    }
+
+    function faceRotation(value) {
+        switch (value) {
+            case 1: return { x: 0,   y: 0 };
+            case 6: return { x: 0,   y: 180 };
+            case 3: return { x: 0,   y: -90 };
+            case 4: return { x: 0,   y: 90 };
+            case 5: return { x: -90, y: 0 };
+            case 2: return { x: 90,  y: 0 };
+            default: return { x: 0,  y: 0 };
+        }
+    }
+
+    function playDiceSound() {
+        try {
+            const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            const bufferSize = audioCtx.sampleRate * 0.35;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const data = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                data[i] = (Math.random() * 2 - 1) * Math.exp(-i / (audioCtx.sampleRate * 0.08));
+            }
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'bandpass';
+            filter.frequency.value = 900;
+            filter.Q.value = 3;
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.4, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.35);
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+            noise.start();
+        } catch (e) {}
+    }
+
+    function buildCube(value) {
+        const cube = document.createElement('div');
+        cube.className = 'gds-cube';
+        const faceVals = [1, 6, 3, 4, 5, 2];
+        const faceCls  = ['front', 'back', 'right', 'left', 'top', 'bottom'];
+        
+        for (let i = 0; i < 6; i++) {
+            const face = document.createElement('div');
+            face.className = 'gds-face gds-face-' + faceCls[i];
+            pipPositions(faceVals[i]).forEach(pos => {
+                const pip = document.createElement('span');
+                pip.className = 'gds-pip';
+                pip.style.left = pos[0] + '%';
+                pip.style.top = pos[1] + '%';
+                face.appendChild(pip);
+            });
+            cube.appendChild(face);
+        }
+        const rot = faceRotation(value || 1);
+        cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
+        return cube;
+    }
+
+    function init3DDice() {
+        const rowEl = document.getElementById('dice-row');
+        rowEl.innerHTML = '';
+        diceInstances.length = 0;
+
+        for (let i = 0; i < NUM_DICE; i++) {
+            const holder = document.createElement('div');
+            holder.className = 'gds-cube-holder';
+            holder.id = `dice-holder-${i}`;
+
+            const badge = document.createElement('div');
+            badge.className = 'lock-badge';
+            badge.innerText = 'VAST';
+            holder.appendChild(badge);
+
+            const cube = buildCube(1);
+            holder.appendChild(cube);
+
+            holder.onclick = () => toggleLock(i);
+            rowEl.appendChild(holder);
+
+            diceInstances.push({ index: i, holder, cube, value: 1, isLocked: false, lockedInRoll: 0 });
+        }
+    }
+
+    window.onload = function() {
+        buildGrid();
+        init3DDice();
+        updateDisplay();
+        resetInactivityTimer();
+
+        // Forceer digitale dobbelstenen direct aan bij laden
+        const wrapper = document.getElementById('dice-bar-wrapper');
+        const btnDice = document.getElementById('toggle-dice-btn');
+        if (wrapper) wrapper.style.display = 'block';
+        if (btnDice) btnDice.classList.add('active');
+
+        checkTurnPermissions();
+    };
+
+    function toggleFullscreen() {
+        if (!document.fullscreenElement) {
+            document.documentElement.requestFullscreen().catch(err => {});
+        } else {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            }
+        }
+    }
+
+    function toggleDiceBar() {
+        // Digitale dobbelstenen mogen in online modus niet uitgezet worden
+        if (window.isOnlineGame) return;
+        diceModeActive = !diceModeActive;
+        const wrapper = document.getElementById('dice-bar-wrapper');
+        const btn = document.getElementById('toggle-dice-btn');
+
+        if (diceModeActive) {
+            wrapper.style.display = 'block';
+            btn.classList.add('active');
+        } else {
+            wrapper.style.display = 'none';
+            btn.classList.remove('active');
+        }
+    }
+
+    function buildGrid() {
+        buildTableSection('table-body-d1', rowsPart1);
+        buildTableSection('table-body-d2', rowsPart2);
+        updateHeaderPlayerName();
+        updateArrowPulse();
+    }
+
+    function updateHeaderPlayerName() {
+        const activeTargetPlayer = (inspectingPlayerIndex !== null) ? players[inspectingPlayerIndex] : players[currentPlayerIndex];
+        const nameEl = document.getElementById('player-name-display');
+        if (nameEl) {
+            let label = activeTargetPlayer ? activeTargetPlayer.name : (window.myName || 'Naam');
+            if (inspectingPlayerIndex !== null && inspectingPlayerIndex !== currentPlayerIndex) {
+                label += " (kijkt)";
+            }
+            nameEl.innerText = label;
+        }
+    }
+
+    function updateArrowPulse() {
+        const p = players[currentPlayerIndex];
+        const arrowBtn = document.getElementById('player-switch-btn');
+        if (arrowBtn) {
+            if (p && p.hasSubmittedThisTurn && players.length > 1) {
+                arrowBtn.classList.add('pulsing');
+            } else {
+                arrowBtn.classList.remove('pulsing');
+            }
+        }
+    }
+
+    function buildTableSection(tbodyId, rowsDef) {
+        const tbody = document.getElementById(tbodyId);
+        tbody.innerHTML = '';
+
+        rowsDef.forEach(row => {
+            const tr = document.createElement('tr');
+            if (row.type === 'header') {
+                tr.className = 'section-header';
+                const thCat = document.createElement('th');
+                thCat.className = 'category-cell';
+                thCat.innerText = row.title;
+                tr.appendChild(thCat);
+                for (let c = 0; c < 6; c++) {
+                    const thGame = document.createElement('th');
+                    thGame.innerText = `${c + 1}e spel`;
+                    if (c < numGames) {
+                        thGame.style.color = '#e74c3c';
+                        thGame.style.fontWeight = 'bold';
+                    }
+                    tr.appendChild(thGame);
+                }
+            } else {
+                if (row.type === 'total') tr.className = 'total-row';
+
+                const tdCat = document.createElement('td');
+                tdCat.className = 'category-cell';
+                let subHTML = row.sub ? `<span class="sub-text">${row.sub}</span>` : '';
+                tdCat.innerHTML = `<div class="cat-title"><span>${row.name}</span> ${subHTML}</div>`;
+                tr.appendChild(tdCat);
+
+                for (let c = 0; c < 6; c++) {
+                    const tdCell = document.createElement('td');
+                    const uniqueKey = `c${c}_${row.id}`;
+                    tdCell.id = `cell_${uniqueKey}`;
+
+                    if (row.type === 'total') {
+                        tdCell.onclick = () => calculateTotal(c, row.id);
+                    } else {
+                        tdCell.className = 'score-cell';
+                        tdCell.onclick = () => handleScoreClick(c, row.id, row);
+                    }
+                    tr.appendChild(tdCell);
+                }
+            }
+            tbody.appendChild(tr);
+        });
+    }
+
+    // CHECK OF IK MAG SPELEN (READ-ONLY / SPECTATOR LOGICA)
+    function isMyTurn() {
+        if (!window.isOnlineGame) return true;
+        const currentActivePlayer = players[currentPlayerIndex];
+        if (!currentActivePlayer) return false;
+        return currentActivePlayer.name === window.myName;
+    }
+
+    function checkTurnPermissions() {
+        const myTurn = isMyTurn();
+        const rollBtn = document.getElementById('roll-btn');
+        const inBtn = document.getElementById('in-btn');
+        
+        // CONSOLE LOG 3: TURN & PERMISSION
+        console.log(`[LOG 3 - TURN & PERMISSION] Checking permissions. My name: ${window.myName}, Active player: ${players[currentPlayerIndex]?.name}, Is my turn: ${myTurn}`);
+
+        if (rollBtn) {
+            rollBtn.style.opacity = myTurn ? '1' : '0.5';
+        }
+
+        // Trigger pop-up "U bent aan de beurt" als het online mijn beurt is en ik nog niet heb ingediend
+        if (window.isOnlineGame && myTurn) {
+    const p = players[currentPlayerIndex];
+    // Voeg extra toe: p.name === window.myName
+    if (p && p.name === window.myName && !p.hasSubmittedThisTurn && window._turnPopupShownForTurn !== currentPlayerIndex) {
+        window._turnPopupShownForTurn = currentPlayerIndex;
+        showCustomAlert("U bent aan de beurt!", `Het is jouw beurt (${window.myName}), gooi de dobbelstenen en kies een score.`);
+    }
+}
+        if (!myTurn) {
+            window._turnPopupShownForTurn = null;
+        }
+    }
+
+    function openPlayerInspectionOrSetup() {
+        if (window.isOnlineGame) {
+            // Open inspectie modal om te kiezen wiens bord je wilt bekijken
+            const overlay = document.getElementById('player-inspect-overlay');
+            const listContainer = document.getElementById('inspect-player-list');
+            if (overlay && listContainer) {
+                listContainer.innerHTML = '';
+                players.forEach((p, idx) => {
+                    const btn = document.createElement('button');
+                    btn.className = 'btn-main';
+                    let label = p.name;
+                    if (idx === currentPlayerIndex) label += " (Aan de beurt)";
+                    if (inspectingPlayerIndex === idx) label += " [Bekijkt nu]";
+                    btn.innerText = label;
+                    btn.onclick = () => {
+                        inspectingPlayerIndex = idx;
+                        updateHeaderPlayerName();
+                        updateDisplay();
+                        document.getElementById('player-inspect-overlay').style.display = 'none';
+                    };
+                    listContainer.appendChild(btn);
+                });
+
+                const resetBtn = document.createElement('button');
+                resetBtn.className = 'btn-sub';
+                resetBtn.innerText = "Terug naar eigen weergave";
+                resetBtn.onclick = () => {
+                    inspectingPlayerIndex = null;
+                    updateHeaderPlayerName();
+                    updateDisplay();
+                    document.getElementById('player-inspect-overlay').style.display = 'none';
+                };
+                listContainer.appendChild(resetBtn);
+
+                overlay.style.display = 'flex';
+            }
+        } else {
+            openPlayerSetup();
+        }
+    }
+
+    function closePlayerInspect() {
+        document.getElementById('player-inspect-overlay').style.display = 'none';
+    }
+
+    function canPlayKansInCurrentContext(colIndex) {
+        const targetPlayerIndex = inspectingPlayerIndex !== null ? inspectingPlayerIndex : currentPlayerIndex;
+        const p = players[targetPlayerIndex];
+        const playerMode = p.playMode || 'random';
+        
+        if (playerMode === 'strict') {
+            return p.scores[`c${colIndex}_d2_6`] === undefined;
+        } else {
+            for (let c = 0; c < numGames; c++) {
+                if (p.scores[`c${c}_d2_6`] === undefined) return true;
+            }
+            return false;
+        }
+    }
+
+    function checkCanScoreInActiveGames(activeDice, colIndex) {
+        const targetPlayerIndex = inspectingPlayerIndex !== null ? inspectingPlayerIndex : currentPlayerIndex;
+        const p = players[targetPlayerIndex];
+        const playerMode = p.playMode || 'random';
+        
+        let colsToCheck = [];
+        if (playerMode === 'strict') {
+            colsToCheck = [colIndex];
+        } else {
+            for (let i = 0; i < numGames; i++) colsToCheck.push(i);
+        }
+
+        for (let c of colsToCheck) {
+            const kansKey = `c${c}_d2_6`;
+            if (p.scores[kansKey] === undefined) return true;
+
+            const scoreRows = [
+                ...rowsPart1.filter(r => r.type === 'score'),
+                ...rowsPart2.filter(r => r.type === 'score')
+            ];
+
+            for (let rowObj of scoreRows) {
+                const cellKey = `c${c}_${rowObj.id}`;
+                if (p.scores[cellKey] === undefined) {
+                    let points = calculateScoreForCategory(rowObj.id, rowObj, activeDice);
+                    if (points > 0) return true;
+                }
+            }
+        }
+        return false;
+    }
+
+    function handleScoreClick(colIndex, rowId, rowObj) {
+        // Read-only check: als het online niet mijn beurt is, mag ik niet invullen
+        if (window.isOnlineGame && !isMyTurn()) {
+            showCustomAlert("Niet jouw beurt", "Je staat in Read-Only modus omdat een andere speler aan de beurt is!");
+            return;
+        }
+
+        if (colIndex >= numGames) {
+            showCustomAlert("Niet actief", `Je speelt maar voor ${numGames} ${String(numGames).trim() === '1' ? 'rijtje' : 'rijtjes'}!`);
+            return;
+        }
+
+        const p = players[currentPlayerIndex];
+        const uniqueKey = `c${colIndex}_${rowId}`;
+        const isFilled = p.scores[uniqueKey] !== undefined;
+        const isLastAction = (uniqueKey === p.lastActionKey);
+
+        if (isFilled) {
+            if (isLastAction) {
+                const currentVal = p.scores[uniqueKey];
+                showCustomAlert(
+                    "Score wissen?", 
+                    `Wil je de score van ${currentVal === '/' ? 'schuine streep' : currentVal} wissen?`, 
+                    false, 
+                    "", 
+                    function() {
+                        delete p.scores[uniqueKey];
+                        p.lastActionKey = null;
+                        p.hasSubmittedThisTurn = false;
+                        turnEnded = false;
+                        updateDisplay();
+                        updateArrowPulse();
+                        if (window.isOnlineGame) pushGameStateToFirebase();
+                    }
+                );
+            }
+            return;
+        }
+
+        const playerMode = p.playMode || 'random';
+        if (playerMode === 'strict' && colIndex > 0) {
+            for (let prevCol = 0; prevCol < colIndex; prevCol++) {
+                let prevColComplete = true;
+                const checkRows = [
+                    ...rowsPart1.filter(r => r.type === 'score'),
+                    ...rowsPart2.filter(r => r.type === 'score')
+                ];
+                for (let rObj of checkRows) {
+                    if (p.scores[`c${prevCol}_${rObj.id}`] === undefined) {
+                        prevColComplete = false;
+                        break;
+                    }
+                }
+                if (!prevColComplete) {
+                    showCustomAlert("Volgorde regel", `U speelt op volgorde, u moet eerst rijtje ${prevCol + 1} helemaal vol maken.`);
+                    return;
+                }
+            }
+        }
+
+        if (p.hasSubmittedThisTurn) {
+            showCustomAlert(
+                "Score al ingevuld", 
+                "Je hebt je score al ingevuld voor deze beurt.", 
+                true, 
+                "Klik hieronder om door te gaan naar de volgende speler"
+            );
+            return;
+        }
+
+        if (diceModeActive) {
+            let activeDice = lastActiveRoll;
+            if (rollCount > 0) {
+                activeDice = diceInstances.map(d => d.value);
+            }
+            if (!activeDice) {
+                showCustomAlert("Nog niet gegooid", "Gooi eerst minimaal één keer met de dobbelstenen voordat je een categorie kiest!");
+                return;
+            }
+
+            const canScoreInAnyCol = checkCanScoreInActiveGames(activeDice, colIndex);
+            let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
+
+            if (canScoreInAnyCol) {
+                if (calculatedScore > 0 || rowObj.id === 'd2_6') {
+                    activeTarget = { colIndex, rowId };
+                    submitChoice(calculatedScore);
+                } else {
+                    showCustomAlert("Verplicht invullen", "Je kunt in dit rijtje nog punten halen of op Kans invullen!");
+                }
+                return;
+            }
+
+            if (canPlayKansInCurrentContext(colIndex)) {
+                showCustomAlert("Verplicht invullen", "Je moet eerst Kans in dit rijtje invullen voordat je een streep kunt zetten!");
+                return;
+            }
+
+            if (rollCount < 3) {
+                showCustomAlert("Maak je worpen af", "Je mag nog niet strepen! Je hebt nog worpen over.");
+                return;
+            }
+
+            activeTarget = { colIndex, rowId };
+            submitChoice('/');
+            return;
+        }
+
+        openPhysicalChoicePopup(colIndex, rowId, rowObj);
+    }
+
+    function openPhysicalChoicePopup(colIndex, rowId, rowObj) {
+        if (colIndex >= numGames) return;
+
+        activeTarget = { colIndex, rowId };
+        const container = document.getElementById('popup-buttons-container');
+        container.innerHTML = '';
+        let choices = [];
+
+        if (rowObj.val !== undefined) {
+            const v = rowObj.val;
+            choices = [v, v*2, v*3, v*4];
+        } else if (rowObj.fixed !== undefined) {
+            choices = [rowObj.fixed];
+        } else {
+            openKeypad(colIndex, rowId);
+            return;
+        }
+
+        choices.forEach(val => {
+            const btn = document.createElement('button');
+            btn.className = 'key-btn';
+            btn.style.background = '#e2e8f0';
+            btn.innerText = val;
+            btn.onclick = () => submitChoice(val);
+            container.appendChild(btn);
+        });
+
+        const canPlayKansHere = canPlayKansInCurrentContext(colIndex);
+        if (!canPlayKansHere) {
+            const slashBtn = document.createElement('button');
+            slashBtn.className = 'key-btn action';
+            slashBtn.innerText = '/';
+            slashBtn.onclick = () => submitChoice('/');
+            container.appendChild(slashBtn);
+        }
+
+        applySmartOverlayPosition('choice-popup-overlay', rowId.startsWith('d2_'));
+        document.getElementById('choice-popup-overlay').style.display = 'flex';
+    }
+
+    function applySmartOverlayPosition(overlayId, isPart2Row) {
+        const overlay = document.getElementById(overlayId);
+        overlay.classList.remove('position-top', 'position-bottom', 'centered');
+        if (isPart2Row) overlay.classList.add('position-top');
+        else overlay.classList.add('position-bottom');
+    }
+
+    function submitChoice(val) {
+        const p = players[currentPlayerIndex];
+        const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
+
+        if (val === '/') {
+            p.scores[uniqueKey] = '/';
+        } else {
+            p.scores[uniqueKey] = parseInt(val, 10);
+        }
+
+        p.lastActionKey = uniqueKey;
+        if (lastActiveRoll) p.lastRoll = [...lastActiveRoll];
+
+        p.hasSubmittedThisTurn = true;
+        turnEnded = true;
+        lastActiveRoll = null;
+
+        updateDisplay();
+        updateArrowPulse();
+        closeChoicePopup();
+
+        if (window.isOnlineGame) {
+            pushGameStateToFirebase();
+        }
+    }
+
+    function closeChoicePopup() {
+        document.getElementById('choice-popup-overlay').style.display = 'none';
+        activeTarget = { colIndex: null, rowId: null };
+    }
+
+    function calculateScoreForCategory(rowId, rowObj, diceValues) {
+        const sumAll = diceValues.reduce((a, b) => a + b, 0);
+        const counts = {};
+        diceValues.forEach(v => counts[v] = (counts[v] || 0) + 1);
+        const countsArr = Object.values(counts).sort((a, b) => b - a);
+
+        if (rowObj.val !== undefined) {
+            const targetVal = rowObj.val;
+            return diceValues.filter(v => v === targetVal).length * targetVal;
+        }
+
+        if (rowId === 'd2_0') { return countsArr[0] >= 3 ? sumAll : 0; }
+        if (rowId === 'd2_1') { return countsArr[0] >= 4 ? sumAll : 0; }
+        if (rowId === 'd2_2') { return ((countsArr[0] === 3 && countsArr[1] === 2) || countsArr[0] === 5) ? 25 : 0; }
+        if (rowId === 'd2_3') {
+            const uniqueSorted = [...new Set(diceValues)].sort((a,b)=>a-b);
+            const isKleine = hasSubsequence(uniqueSorted, [1,2,3,4]) ||
+                             hasSubsequence(uniqueSorted, [2,3,4,5]) ||
+                             hasSubsequence(uniqueSorted, [3,4,5,6]);
+            return isKleine ? 30 : 0;
+        }
+        if (rowId === 'd2_4') {
+            const uniqueSorted = [...new Set(diceValues)].sort((a,b)=>a-b);
+            const str = uniqueSorted.join('');
+            return (str === '12345' || str === '23456') ? 40 : 0;
+        }
+        if (rowId === 'd2_5') { return countsArr[0] === 5 ? 50 : 0; }
+        if (rowId === 'd2_6') { return sumAll; }
+
+        return 0;
+    }
+
+    function toggleLock(index) {
+        if (window.isOnlineGame && !isMyTurn()) {
+            showCustomAlert("Niet jouw beurt", "Alleen de actieve speler mag dobbelstenen vastzetten.");
+            return;
+        }
+        const p = players[currentPlayerIndex];
+        if (isRolling || rollCount === 0 || turnEnded) return;
+        
+        const d = diceInstances[index];
+        if (d.isLocked && d.lockedInRoll > 0 && d.lockedInRoll < rollCount) return;
+
+        d.isLocked = !d.isLocked;
+        d.lockedInRoll = d.isLocked ? rollCount : 0;
+        d.holder.classList.toggle('locked', d.isLocked);
+
+        if (window.isOnlineGame) {
+            pushGameStateToFirebase();
+        }
+    }
+
+    function handleRollClick() {
+        if (window.isOnlineGame && !isMyTurn()) {
+            showCustomAlert("Niet jouw beurt", "Alleen de actieve speler mag gooien.");
+            return;
+        }
+
+        const p = players[currentPlayerIndex];
+if (p.hasSubmittedThisTurn) {
+    showCustomAlert("Score is al ingevuld", "Je hebt je score al ingediend voor deze beurt.", true, "Klik hieronder om door te gaan naar de volgende speler, of sluit dit scherm om je score nog te wijzigen.");
+    return;
+}
+if (rollCount >= 3 || turnEnded) {
+    showCustomAlert("Vul eerst je score in", "Je hebt al 3 keer gegooid! Vul eerst je punten in.");
+    return;
+}
+
+        rollAllDice();
+    }
+
+    function handleIn() {
+        if (window.isOnlineGame && !isMyTurn()) return;
+        const p = players[currentPlayerIndex];
+        if (isRolling || rollCount === 0 || turnEnded) return;
+        endTurn("Ingezet - Kies categorie");
+        if (window.isOnlineGame) pushGameStateToFirebase();
+    }
+
+    function endTurn(customText) {
+        turnEnded = true;
+        rollCount = 3;
+        document.getElementById('worp-count').innerText = "3/3";
+        document.getElementById('in-btn').disabled = true;
+        document.getElementById('roll-btn').innerText = "Gooi 🎲";
+        
+        diceInstances.forEach(d => {
+            d.isLocked = true;
+            d.holder.classList.add('locked');
+        });
+
+        if (customText) {
+            document.getElementById('combo-display').innerText = customText;
+        }
+        updateArrowPulse();
+    }
+
+    function rollAllDice() {
+        if (isRolling || turnEnded) return;
+
+        isRolling = true;
+        rollCount++;
+        playDiceSound();
+
+        document.getElementById('worp-count').innerText = `${rollCount}/3`;
+        document.getElementById('roll-btn').disabled = true;
+        document.getElementById('in-btn').disabled = true;
+
+        diceInstances.forEach(d => {
+            if (!d.isLocked) {
+                d.value = Math.floor(Math.random() * 6) + 1;
+            }
+        });
+
+        diceInstances.forEach((d, i) => {
+            if (!d.isLocked) {
+                const rot = faceRotation(d.value);
+                const spinX = 360 * (2 + (i % 2)) + rot.x;
+                const spinY = 360 * (2 + ((i + 1) % 2)) + rot.y;
+                d.cube.style.transition = 'transform 0.95s cubic-bezier(.2,.8,.25,1)';
+                void d.cube.offsetWidth;
+                d.cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
+            }
+        });
+
+        setTimeout(() => {
+            isRolling = false;
+            document.getElementById('roll-btn').disabled = false;
+
+            // WEGGEHAALD: De lus die 'transition = none' en een harde reset deed, 
+            // waardoor de dobbelsteen versprong. De dobbelsteen staat nu al keurig stil op de juiste kant!
+
+            lastActiveRoll = diceInstances.map(d => d.value);
+            const isYahtzee = updateScoreAndCombos();
+
+            if (isYahtzee) {
+                diceInstances.forEach(d => {
+                    d.isLocked = true;
+                    d.holder.classList.add('locked');
+                });
+                endTurn("🎉 YAHTZEE!");
+            } else if (rollCount < 3) {
+                document.getElementById('in-btn').disabled = false;
+                const btn = document.getElementById('roll-btn');
+                btn.innerText = rollCount === 1 ? "2e Worp 🎲" : "3e Worp 🎲";
+            } else {
+                endTurn("Max worpen - Vul score in!");
+            }
+
+            if (window.isOnlineGame) {
+                pushGameStateToFirebase();
+            }
+        }, 950);
+    }
+
+    function updateScoreAndCombos() {
+        const values = diceInstances.map(d => d.value);
+        const total = values.reduce((sum, v) => sum + v, 0);
+
+        const counts = {};
+        values.forEach(v => counts[v] = (counts[v] || 0) + 1);
+        const countsArr = Object.values(counts).sort((a, b) => b - a);
+
+        let comboText = `Totaal: ${total}`;
+        let isYahtzee = false;
+
+        if (countsArr[0] === 5) {
+            comboText = "🎉 YAHTZEE!";
+            isYahtzee = true;
+        } else {
+            const uniqueSorted = [...new Set(values)].sort((a,b)=>a-b);
+            const str = uniqueSorted.join('');
+
+            if (str === '12345' || str === '23456') {
+                comboText = "Grote Straat";
+            } else if (
+                hasSubsequence(uniqueSorted, [1,2,3,4]) ||
+                hasSubsequence(uniqueSorted, [2,3,4,5]) ||
+                hasSubsequence(uniqueSorted, [3,4,5,6])
+            ) {
+                comboText = "Kleine Straat";
+            } else if (countsArr[0] === 3 && countsArr[1] === 2) {
+                comboText = "Full House";
+            } else if (countsArr[0] === 4) {
+                comboText = `Carré (${total})`;
+            } else if (countsArr[0] === 3) {
+                comboText = `3 of a kind (${total})`;
+            }
+        }
+
+        document.getElementById('combo-display').innerText = comboText;
+        return isYahtzee;
+    }
+
+    function hasSubsequence(array, targetSub) {
+        return targetSub.every(val => array.includes(val));
+    }
+
+    function nextPlayerManually() {
+        if (window.isOnlineGame && !isMyTurn()) {
+            showCustomAlert("Niet jouw beurt", "Alleen de actieve speler mag de beurt doorgeven.");
+            return;
+        }
+
+        if (players.length <= 1) return;
+        const p = players[currentPlayerIndex];
+        
+        if (!p.hasSubmittedThisTurn) {
+            showCustomAlert("Nog geen score ingevuld", "Je moet eerst een score invullen voordat je de beurt doorgeeft!");
+            return;
+        }
+
+        currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
+inspectingPlayerIndex = null; 
+window._turnPopupShownForTurn = null;
+const nextP = players[currentPlayerIndex];
+
+        nextP.hasSubmittedThisTurn = false;
+        rollCount = 0;
+        turnEnded = false;
+        lastActiveRoll = null;
+        nextP.lastRoll = null;
+
+        diceInstances.forEach(d => {
+            d.isLocked = false;
+            d.lockedInRoll = 0;
+            d.holder.classList.remove('locked');
+        });
+
+        document.getElementById('worp-count').innerText = "0/3";
+        document.getElementById('combo-display').innerText = "Nieuwe beurt";
+        document.getElementById('in-btn').disabled = true;
+        document.getElementById('roll-btn').disabled = false;
+        document.getElementById('roll-btn').innerText = "Gooi 🎲";
+
+        updateHeaderPlayerName();
+        updateDisplay();
+        updateArrowPulse();
+        checkTurnPermissions();
+
+        if (window.isOnlineGame) {
+            pushGameStateToFirebase({
+                currentPlayerIndex: currentPlayerIndex,
+                rollCount: 0,
+                turnEnded: false,
+                diceValues: [1, 1, 1, 1, 1],
+                lockedDice: [false, false, false, false, false]
+            });
+        }
+    }
+
+    function openPlayerSetup() {
+        if (window.isOnlineGame) return; // In online modus via lobby
+        document.getElementById('player-setup-overlay').style.display = 'flex';
+        selectPlayerCount(players.length);
+        selectRowCount(numGames);
+    }
+
+    function selectRowCount(num) {
+        tempSelectedRows = num;
+        document.querySelectorAll('.rows-btn').forEach(btn => {
+            btn.style.background = '#e9ecef';
+            btn.style.color = '#000';
+        });
+        const activeBtn = document.getElementById(`rows-btn-${num}`);
+        if (activeBtn) {
+            activeBtn.style.background = '#27ae60';
+            activeBtn.style.color = '#fff';
+        }
+    }
+
+    function selectPlayerCount(num) {
+        document.querySelectorAll('.player-btn').forEach(btn => {
+            btn.style.background = '#e9ecef';
+            btn.style.color = '#000';
+        });
+        const activeBtn = document.getElementById(`player-btn-${num}`);
+        if (activeBtn) {
+            activeBtn.style.background = '#27ae60';
+            activeBtn.style.color = '#fff';
+        }
+
+        const container = document.getElementById('player-inputs-list');
+        container.innerHTML = '';
+        for (let i = 0; i < num; i++) {
+            const pName = players[i] ? players[i].name : `Speler ${i + 1}`;
+            const row = document.createElement('div');
+            row.style.display = 'flex';
+            row.style.gap = '6px';
+            row.innerHTML = `<input type="text" id="setup-p-name-${i}" class="player-name-input" style="width:100%; text-align:left; padding-left:10px;" value="${pName}" readonly onclick="openAlphaKeypadForPlayer(${i})">`;
+            container.appendChild(row);
+        }
+        document.getElementById('start-game-btn').style.display = 'block';
+        document.getElementById('start-game-btn').setAttribute('data-count', num);
+    }
+
+    function openAlphaKeypadForPlayer(idx) {
+        editingPlayerIdx = idx;
+        const inputEl = document.getElementById(`setup-p-name-${idx}`);
+        currentAlphaValue = inputEl ? inputEl.value : `Speler ${idx + 1}`;
+        isFirstAlphaKey = true;
+        document.getElementById('alpha-display').innerText = currentAlphaValue;
+        document.getElementById('player-setup-overlay').style.display = 'none';
+        document.getElementById('alpha-overlay').style.display = 'flex';
+    }
+
+    function savePlayerSetup() {
+        const btn = document.getElementById('start-game-btn');
+        const count = parseInt(btn.getAttribute('data-count') || '1', 10);
+        let newPlayers = [];
+
+        for (let i = 0; i < count; i++) {
+            const inputEl = document.getElementById(`setup-p-name-${i}`);
+            const nameVal = inputEl ? inputEl.value.trim() : `Speler ${i + 1}`;
+            if (players[i]) {
+                players[i].name = nameVal || `Speler ${i + 1}`;
+                newPlayers.push(players[i]);
+            } else {
+                newPlayers.push({
+                    id: 'p_' + i,
+                    name: nameVal || `Speler ${i + 1}`,
+                    scores: {},
+                    lastActionKey: null,
+                    lastRoll: null,
+                    hasSubmittedThisTurn: false
+                });
+            }
+        }
+
+        players = newPlayers;
+        numGames = tempSelectedRows;
+        if (currentPlayerIndex >= players.length) currentPlayerIndex = 0;
+
+        updateHeaderPlayerName();
+        buildGrid();
+        updateDisplay();
+        checkTurnPermissions();
+        document.getElementById('player-setup-overlay').style.display = 'none';
+    }
+
+    function pressAlpha(key) {
+        if (isFirstAlphaKey && key !== 'ENTER' && key !== 'CLEAR' && key !== 'BACKSPACE') {
+            currentAlphaValue = '';
+            isFirstAlphaKey = false;
+        }
+
+        if (key === 'CLEAR') {
+            currentAlphaValue = '';
+            isFirstAlphaKey = false;
+        } else if (key === 'BACKSPACE') {
+            currentAlphaValue = currentAlphaValue.slice(0, -1);
+            isFirstAlphaKey = false;
+        } else if (key === 'SPACE') {
+            if (currentAlphaValue.length < 15) currentAlphaValue += ' ';
+            isFirstAlphaKey = false;
+        } else if (key === 'ENTER') {
+            if (editingPlayerIdx !== null) {
+                const inputEl = document.getElementById(`setup-p-name-${editingPlayerIdx}`);
+                if (inputEl) inputEl.value = currentAlphaValue.trim() || `Speler ${editingPlayerIdx + 1}`;
+            }
+            closeAlphaKeypad();
+            document.getElementById('player-setup-overlay').style.display = 'flex';
+            return;
+        } else {
+            if (currentAlphaValue.length < 15) currentAlphaValue += key;
+            isFirstAlphaKey = false;
+        }
+        document.getElementById('alpha-display').innerText = currentAlphaValue;
+    }
+
+    function closeAlphaKeypad() {
+        document.getElementById('alpha-overlay').style.display = 'none';
+    }
+
+    function openKeypad(colIndex, rowId) {
+        if (window.isOnlineGame && !isMyTurn()) return;
+        if (colIndex >= numGames) return;
+
+        activeTarget = { colIndex, rowId };
+        const p = players[currentPlayerIndex];
+        const uniqueKey = `c${colIndex}_${rowId}`;
+        currentInputValue = p.scores[uniqueKey] !== undefined ? String(p.scores[uniqueKey]) : '';
+        
+        const playerMode = p.playMode || 'random';
+        const canKans = (playerMode === 'strict') ? (p.scores[`c${activeTarget.colIndex}_d2_6`] === undefined) : canPlayKansInCurrentContext(colIndex);
+
+        const slashBtnEl = document.getElementById('keypad-slash-btn');
+        if (slashBtnEl) {
+            slashBtnEl.style.display = !canKans ? 'block' : 'none';
+        }
+
+        applySmartOverlayPosition('keypad-overlay', rowId.startsWith('d2_'));
+        document.getElementById('keypad-display').innerText = currentInputValue;
+        document.getElementById('keypad-overlay').style.display = 'flex';
+    }
+
+    function handleOverlayClick(event, overlayId) {
+        if (event.target.id === overlayId) {
+            if (overlayId === 'keypad-overlay') closeKeypad();
+            if (overlayId === 'alpha-overlay') closeAlphaKeypad();
+            if (overlayId === 'player-setup-overlay') document.getElementById('player-setup-overlay').style.display = 'none';
+            if (overlayId === 'player-inspect-overlay') closePlayerInspect();
+            if (overlayId === 'choice-popup-overlay') closeChoicePopup();
+            if (overlayId === 'custom-alert-overlay') closeCustomAlert();
+        }
+    }
+
+    function closeKeypad() {
+        document.getElementById('keypad-overlay').style.display = 'none';
+        document.querySelectorAll('td').forEach(el => el.classList.remove('active-cell'));
+        activeTarget = { colIndex: null, rowId: null };
+    }
+
+    function pressKey(val) {
+        if (val === 'CLEAR') {
+            currentInputValue = '';
+        } else if (val === '/') {
+            const p = players[currentPlayerIndex];
+            const playerMode = p.playMode || 'random';
+            const kansFilledInThisCol = p.scores[`c${activeTarget.colIndex}_d2_6`] !== undefined;
+            const canPlayKansHere = (playerMode === 'strict') ? !kansFilledInThisCol : canPlayKansInCurrentContext(activeTarget.colIndex);
+
+            if (canPlayKansHere) {
+                showCustomAlert("Geen streep mogelijk", "Je moet eerst Kans in dit rijtje invullen!");
+                return;
+            }
+            currentInputValue = '/';
+        } else if (val === '0') {
+            if (currentInputValue === '') return;
+            if (currentInputValue.length < 3) currentInputValue += val;
+        } else if (val === 'ENTER') {
+            const p = players[currentPlayerIndex];
+            const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
+            if (currentInputValue === '' || currentInputValue === 'Tel al je stenen op' || currentInputValue === '0') {
+                delete p.scores[uniqueKey];
+                if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
+                p.hasSubmittedThisTurn = false;
+                turnEnded = false;
+            } else if (currentInputValue === '/') {
+                p.scores[uniqueKey] = '/';
+                p.lastActionKey = uniqueKey;
+                p.hasSubmittedThisTurn = true;
+                turnEnded = true;
+                lastActiveRoll = null;
+            } else {
+                let numVal = parseInt(currentInputValue, 10);
+                if (numVal === 0) {
+                    delete p.scores[uniqueKey];
+                    closeKeypad();
+                    return;
+                }
+                p.scores[uniqueKey] = numVal;
+                p.lastActionKey = uniqueKey;
+                p.hasSubmittedThisTurn = true;
+                turnEnded = true;
+                lastActiveRoll = null;
+            }
+
+            updateDisplay();
+            updateArrowPulse();
+            closeKeypad();
+
+            if (window.isOnlineGame) {
+                pushGameStateToFirebase();
+            }
+            return;
+        } else {
+            if (currentInputValue === '/' || currentInputValue === 'Tel al je stenen op') currentInputValue = '';
+            if (currentInputValue.length < 3) currentInputValue += val;
+        }
+        document.getElementById('keypad-display').innerText = currentInputValue;
+    }
+
+    function calculateTotal(colIndex, totalRowId) {
+        if (colIndex >= numGames) return;
+
+        const p = players[currentPlayerIndex];
+        const getVal = (rowId) => {
+            const val = p.scores[`c${colIndex}_${rowId}`];
+            if (val === '/') return 0;
+            return (val !== undefined && !isNaN(val)) ? val : 0;
+        };
+
+        const hasVal = (rowId) => p.scores[`c${colIndex}_${rowId}`] !== undefined;
+        let targetKey = `c${colIndex}_${totalRowId}`;
+
+        if (totalRowId === 'totaal_p1' || totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
+            let sum = 0;
+            let count = 0;
+            ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
+                if (hasVal(id)) { sum += getVal(id); count++; }
+            });
+            p.scores[`c${colIndex}_totaal_p1`] = sum;
+
+            if (totalRowId === 'bonus' || totalRowId === 'totaal_boven') {
+                if (count < 6) return;
+                let bonusVal = (sum >= 63) ? 35 : 0;
+                p.scores[`c${colIndex}_bonus`] = bonusVal;
+                p.scores[`c${colIndex}_totaal_boven`] = sum + bonusVal;
+            }
+        } 
+        else if (totalRowId === 'totaal_d2') {
+            let sum = 0;
+            let count = 0;
+            ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
+                if (hasVal(id)) { sum += getVal(id); count++; }
+            });
+            if (count > 0) p.scores[targetKey] = sum;
+        } 
+        else if (totalRowId === 'totaal_d1_copy') {
+            let boven = p.scores[`c${colIndex}_totaal_boven`];
+            if (boven !== undefined) {
+                p.scores[targetKey] = boven;
+            }
+        } 
+        else if (totalRowId === 'eindtotaal') {
+            let sumD1 = 0, countD1 = 0;
+            ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
+                if (hasVal(id)) { sumD1 += getVal(id); countD1++; }
+            });
+            if (countD1 === 6) {
+                p.scores[`c${colIndex}_totaal_p1`] = sumD1;
+                let bonusVal = (sumD1 >= 63) ? 35 : 0;
+                p.scores[`c${colIndex}_bonus`] = bonusVal;
+                let boven = sumD1 + bonusVal;
+                p.scores[`c${colIndex}_totaal_boven`] = boven;
+                p.scores[`c${colIndex}_totaal_d1_copy`] = boven;
+            }
+
+            let sumD2 = 0, countD2 = 0;
+            ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
+                if (hasVal(id)) { sumD2 += getVal(id); countD2++; }
+            });
+            if (countD2 > 0) {
+                p.scores[`c${colIndex}_totaal_d2`] = sumD2;
+            }
+
+            let d1Total = p.scores[`c${colIndex}_totaal_d1_copy`];
+            let d2Total = p.scores[`c${colIndex}_totaal_d2`];
+            if (d1Total !== undefined && d2Total !== undefined) {
+                p.scores[targetKey] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
+            }
+        }
+
+        updateDisplay();
+    }
+
+    function updateDisplay() {
+        const targetPlayerIdx = inspectingPlayerIndex !== null ? inspectingPlayerIndex : currentPlayerIndex;
+        const p = players[targetPlayerIdx];
+        if (!p) return;
+
+        const allRows = [...rowsPart1, ...rowsPart2];
+        let filledCount = 0;
+
+        for (let c = 0; c < 6; c++) {
+            let sumD1 = 0, countD1 = 0;
+            ['d1_0', 'd1_1', 'd1_2', 'd1_3', 'd1_4', 'd1_5'].forEach(id => {
+                const val = p.scores[`c${c}_${id}`];
+                if (val !== undefined) {
+                    if (val !== '/') { sumD1 += parseInt(val, 10); }
+                    countD1++;
+                }
+            });
+            if (countD1 > 0) {
+                p.scores[`c${c}_totaal_p1`] = sumD1;
+            }
+            if (countD1 === 6) {
+                let bonusVal = (sumD1 >= 63) ? 35 : 0;
+                p.scores[`c${c}_bonus`] = bonusVal;
+                let boven = sumD1 + bonusVal;
+                p.scores[`c${c}_totaal_boven`] = boven;
+                p.scores[`c${c}_totaal_d1_copy`] = boven;
+            }
+
+            let sumD2 = 0, countD2 = 0;
+            ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
+                const val = p.scores[`c${c}_${id}`];
+                if (val !== undefined) {
+                    if (val !== '/') { sumD2 += parseInt(val, 10); }
+                    countD2++;
+                }
+            });
+            if (countD2 > 0) {
+                p.scores[`c${c}_totaal_d2`] = sumD2;
+            }
+
+            let d1Total = p.scores[`c${c}_totaal_d1_copy`];
+            let d2Total = p.scores[`c${c}_totaal_d2`];
+            if (d1Total !== undefined && d2Total !== undefined) {
+                p.scores[`c${c}_eindtotaal`] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
+            }
+
+            allRows.forEach(row => {
+                if (row.type !== 'header') {
+                    const uniqueKey = `c${c}_${row.id}`;
+                    const cellEl = document.getElementById(`cell_${uniqueKey}`);
+                    const val = p.scores[uniqueKey];
+
+                    if (cellEl) {
+                        if (val === '/') {
+                            cellEl.innerHTML = '<span class="big-slash"></span>';
+                            if (row.type !== 'total' && c < numGames) filledCount++;
+                        } else if (val !== undefined) {
+                            cellEl.innerText = val;
+                            if (row.type !== 'total' && c < numGames) filledCount++;
+                        } else {
+                            cellEl.innerText = (row.type === 'total' ? '-' : '');
+                        }
+                    }
+                }
+            });
+        }
+
+        const turnEl = document.getElementById('turn-counter-display');
+        if (turnEl) {
+            turnEl.innerText = `Beurt: ${filledCount}`;
+        }
+
+        updateGlobalTotal();
+        checkTurnPermissions();
+    }
+
+    function updateGlobalTotal() {
+        const targetPlayerIdx = inspectingPlayerIndex !== null ? inspectingPlayerIndex : currentPlayerIndex;
+        const p = players[targetPlayerIdx];
+        if (!p) return;
+
+        let sumGlobal = 0;
+        let hasAnyTotal = false;
+
+        for (let c = 0; c < numGames; c++) {
+            const eindtotaalKey = `c${c}_eindtotaal`;
+            const val = p.scores[eindtotaalKey];
+            if (val !== undefined && !isNaN(val)) {
+                sumGlobal += val;
+                hasAnyTotal = true;
+            }
+        }
+
+        const globalEl = document.getElementById('global-total-display');
+        if (hasAnyTotal) {
+            globalEl.innerText = sumGlobal;
+        } else {
+            globalEl.innerText = '-';
+        }
+    }
+
+function confirmReset() {
+    showCustomAlert(
+        "Spel verlaten", 
+        "Wil je het spel verlaten? Je eigen gegevens worden uit de room gewist, zodat de andere spelers ongestoord kunnen doorgaan.", 
+        false, 
+        "", 
+        function() {
+            // Controleer of we in een online spel zitten en ruim alleen onze eigen Firebase-data op
+            if (window.isOnlineGame && typeof firebase !== 'undefined' && window.currentRoomId && window.myPlayerId) {
+                firebase.database().ref('rooms/' + window.currentRoomId + '/players/' + window.myPlayerId).remove()
+                    .then(() => {
+                        // Pagina herladen voor een volledig schone start
+                        location.reload();
+                    })
+                    .catch((error) => {
+                        console.error("Fout bij het verlaten van de room:", error);
+                        location.reload(); // Altijd herladen als fallback
+                    });
+            } else {
+                // Als het geen online spel is, direct herladen
+                location.reload();
+            }
+        }
+    );
+}
+</script>
+
+<script>
+(function() {
+    let currentStep = 0;
+    let isProgrammaticScroll = false;
+
+    document.addEventListener("DOMContentLoaded", function () {
+        document.querySelectorAll('table.yatzee-table').forEach(table => {
+            if (table.dataset.cloned) return;
+            
+            const headerRow = table.querySelector('tr');
+            const firstTh = headerRow ? headerRow.querySelector('th:nth-child(2)') : null;
+            if (firstTh) {
+                const cloneTh = firstTh.cloneNode(true);
+                headerRow.appendChild(cloneTh);
+            }
+
+            table.querySelectorAll('tr').forEach(row => {
+                const firstTd = row.querySelector('td.score-cell, td:nth-child(2)');
+                if (firstTd) {
+                    const cloneTd = firstTd.cloneNode(true);
+                    cloneTd.querySelectorAll('input').forEach(input => input.value = '');
+                    row.appendChild(cloneTd);
+                }
+            });
+            
+            table.dataset.cloned = "true";
+        });
+    });
+
+    function updateScroll(step) {
+        currentStep = (step + 7) % 7; 
+        isProgrammaticScroll = true;
+        
+        const wrappers = document.querySelectorAll('.score-table-wrapper');
+        wrappers.forEach(wrapper => {
+            const table = wrapper.querySelector('table.yatzee-table');
+            if (!table) return;
+
+            if (currentStep === 0) {
+                wrapper.scrollTo({ left: 0, behavior: 'smooth' });
+            } else {
+                const col = table.querySelector('th:nth-child(2), td.score-cell');
+                const width = col ? col.offsetWidth : 180;
+                
+                wrapper.scrollTo({ left: currentStep * width, behavior: 'smooth' });
+            }
+        });
+
+        if (currentStep === 6) {
+            setTimeout(() => {
+                currentStep = 0;
+                wrappers.forEach(wrapper => {
+                    wrapper.scrollTo({ left: 0, behavior: 'auto' });
+                });
+            }, 400);
+        }
+
+        setTimeout(() => {
+            isProgrammaticScroll = false;
+        }, 500);
+    }
+
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.scroll-arrow-btn')) {
+            updateScroll(currentStep + 1);
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        if (e.target && (e.target.innerText.includes('Nieuw Spel') || e.target.id === 'nieuw-spel-btn' || e.target.innerText.includes('Ja, score wissen'))) {
+            updateScroll(0);
+        }
+    });
+
+    document.addEventListener("DOMContentLoaded", function () {
+        const wrappers = document.querySelectorAll('.score-table-wrapper');
+        if (wrappers.length >= 2) {
+            let isSyncing = false;
+
+            wrappers.forEach(wrapper => {
+                wrapper.addEventListener('scroll', function () {
+                    if (isProgrammaticScroll || isSyncing) return;
+                    isSyncing = true;
+
+                    const targetScrollLeft = this.scrollLeft;
+                    requestAnimationFrame(() => {
+                        wrappers.forEach(otherWrapper => {
+                            if (otherWrapper !== this) {
+                                otherWrapper.scrollLeft = targetScrollLeft;
+                            }
+                        });
+                        isSyncing = false;
+                    });
+                });
+            });
+        }
+    });
+
+    window.addEventListener('DOMContentLoaded', () => updateScroll(0));
+    setTimeout(() => updateScroll(0), 50);
+})();
+</script>
+
+<script>
+(function() {
+    function adjustColumnWidths() {
+        if (!window.matchMedia("(max-width: 600px)").matches) return;
+
+        const wrappers = document.querySelectorAll('.score-table-wrapper');
+        wrappers.forEach(wrapper => {
+            const table = wrapper.querySelector('table.yatzee-table');
+            if (!table) return;
+
+            const labelCol = table.querySelector('th:first-child, td:first-child');
+            const labelWidth = labelCol ? labelCol.offsetWidth : 140;
+            const dynamicWidth = wrapper.clientWidth - labelWidth;
+
+            table.querySelectorAll('th:not(:first-child), td.score-cell').forEach(cell => {
+                cell.style.width = dynamicWidth + 'px';
+                cell.style.minWidth = dynamicWidth + 'px';
+                cell.style.maxWidth = dynamicWidth + 'px';
+            });
+        });
+    }
+
+    window.addEventListener('DOMContentLoaded', adjustColumnWidths);
+    window.addEventListener('resize', adjustColumnWidths);
+    setTimeout(adjustColumnWidths, 100);
+})();
+</script>
+
+<!-- SLEEP-LOGICA SCRIPT -->
+<script>
+    function makeDraggable(element) {
+        let isDragging = false;
+        let startX, startY, initialLeft, initialTop;
+
+        function dragStart(e) {
+            if (e.target.tagName === 'BUTTON' || e.target.tagName === 'INPUT' || e.target.closest('button')) {
+                return;
+            }
+
+            isDragging = true;
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            startX = clientX;
+            startY = clientY;
+
+            const rect = element.getBoundingClientRect();
+            element.style.position = 'fixed';
+            element.style.left = rect.left + 'px';
+            element.style.top = rect.top + 'px';
+            element.style.transform = 'none';
+            element.style.margin = '0';
+
+            initialLeft = rect.left;
+            initialTop = rect.top;
+
+            if (e.type === 'touchstart') {
+                document.addEventListener('touchmove', dragMove, { passive: false });
+                document.addEventListener('touchend', dragEnd);
+            } else {
+                document.addEventListener('mousemove', dragMove);
+                document.addEventListener('mouseup', dragEnd);
+            }
+        }
+
+        function dragMove(e) {
+            if (!isDragging) return;
+            if (e.type === 'touchmove') e.preventDefault();
+
+            const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+            const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+
+            const dx = clientX - startX;
+            const dy = clientY - startY;
+
+            element.style.left = (initialLeft + dx) + 'px';
+            element.style.top = (initialTop + dy) + 'px';
+        }
+
+        function dragEnd(e) {
+            isDragging = false;
+            document.removeEventListener('mousemove', dragMove);
+            document.removeEventListener('mouseup', dragEnd);
+            document.removeEventListener('touchmove', dragMove);
+            document.removeEventListener('touchend', dragEnd);
+        }
+
+        element.addEventListener('mousedown', dragStart);
+        element.addEventListener('touchstart', dragStart, { passive: true });
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.keypad, .card').forEach(kp => {
+            makeDraggable(kp);
+        });
+    });
+</script>
+
+</body>
+</html>
