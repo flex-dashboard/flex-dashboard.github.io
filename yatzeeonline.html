@@ -1573,8 +1573,10 @@
             const randomCode = 'room_' + Math.random().toString(36).substring(2, 8);
             hostRoomDisplay.value = randomCode;
 
-            const siteLink = window.location.href.split('?')[0];
-            const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${randomCode}\nLink: ${siteLink}`);
+            const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+const siteLink = baseUrl + "yatzeeonline.html?room=" + randomCode;
+
+const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${randomCode}\nLink: ${siteLink}`);
             btnWhatsAppInvite.href = `https://api.whatsapp.com/send?text=${inviteText}`;
             btnWhatsAppInvite.classList.remove("hidden");
         });
