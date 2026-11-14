@@ -511,6 +511,123 @@
         #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(3) { grid-area: 3 / 1 !important; }
         #choice-popup-overlay #popup-buttons-container:not(:has(:nth-child(5))) .key-btn:nth-child(4) { grid-area: 3 / 3 !important; }
 
+        /* --- CHAT STYLING --- */
+        .chat-btn-badge {
+            position: relative;
+        }
+        .chat-badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background: #e74c3c;
+            color: white;
+            font-size: 11px;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 50%;
+            display: none;
+        }
+        #chatModal {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            width: 320px;
+            height: 400px;
+            max-width: 90vw;
+            max-height: 80vh;
+            background: #fff;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0,0,0,0.4);
+            border: 2px solid #333;
+            display: none;
+            flex-direction: column;
+            z-index: 10000;
+            resize: both;
+            overflow: auto;
+        }
+        .chat-header {
+            background: #000;
+            color: #fff;
+            padding: 10px 15px;
+            cursor: grab;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-weight: bold;
+            user-select: none;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: auto;
+            background: #f9f9f9;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 14px;
+        }
+        .chat-message {
+            background: #e2e8f0;
+            padding: 6px 10px;
+            border-radius: 6px;
+            max-width: 85%;
+            word-break: break-word;
+        }
+        .chat-message.mine {
+            background: #d4edda;
+            align-self: flex-end;
+        }
+        .chat-message .sender {
+            font-size: 11px;
+            color: #555;
+            margin-bottom: 2px;
+            font-weight: bold;
+        }
+        .chat-input-area {
+            display: flex;
+            flex-direction: column;
+            border-top: 1px solid #ccc;
+            background: #fff;
+        }
+        .chat-input-row {
+            display: flex;
+            padding: 8px;
+            gap: 6px;
+        }
+        .chat-input-row input {
+            flex: 1;
+            margin-bottom: 0;
+            padding: 6px 10px;
+            font-size: 14px;
+        }
+        .chat-input-row button {
+            margin-top: 0;
+            padding: 6px 12px;
+            font-size: 14px;
+            width: auto;
+        }
+        .chat-keypad {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            padding: 4px;
+            background: #eee;
+            border-top: 1px solid #ddd;
+        }
+        .chat-keypad button {
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 12px;
+            font-weight: bold;
+            padding: 5px 0;
+            cursor: pointer;
+            text-align: center;
+        }
+        .chat-keypad button:active {
+            background: #ddd;
+        }
+
         /* --- SCREENSAVER STIJLEN --- */
         #screensaver-overlay {
             display: none;
@@ -949,8 +1066,8 @@
         font-size: 14px;
     }
     button.nav-btn:nth-of-type(1)::before { content: "⛶"; }
-    button.nav-btn:nth-of-type(2)::before { content: "🎲"; }
-    button.nav-btn:nth-of-type(3)::before { content: "👥"; }
+    button.nav-btn:nth-of-type(2)::before { content: "👥"; }
+    button.nav-btn:nth-of-type(3)::before { content: "💬"; }
     
     a.nav-btn {
         font-size: 0px !important;
@@ -1137,7 +1254,7 @@
         <div class="header-left">
             <a href="index.html" class="nav-btn" title="Naar Hoofddashboard">🏠</a>
             <button class="nav-btn" onclick="toggleFullscreen()" title="Volledig Scherm In/Uitschakelen">⛶ Fullscreen</button>
-            
+            <button class="nav-btn chat-btn-badge" onclick="toggleChatPopup()" title="Open Chat">💬<span id="chatBadge" class="chat-badge">0</span></button>
             
             <div class="header-title">YATZEE</div>
         </div>
@@ -1182,6 +1299,468 @@
     </div>
 </div>
 
+<!-- CHAT MODAL -->
+<div id="chatModal"
+style="
+display:none;
+position:fixed;
+top:50%;
+left:50%;
+transform:translate(-50%,-50%);
+z-index:1000;
+width:500px;
+height:600px;
+max-width:95vw;
+max-height:85vh;
+min-width:300px;
+min-height:350px;
+background:#222;
+border:1px solid #444;
+border-radius:8px;
+box-shadow:0 4px 20px rgba(0,0,0,.6);
+box-sizing:border-box;
+">
+
+    <!-- BINNENCONTAINER VOOR FLEX-INRICHTING -->
+    <div style="display:flex; flex-direction:column; width:100%; height:100%; box-sizing:border-box; position:relative; border-radius:8px;">
+
+        <!-- TOP-BALK MET SLUITKNOP -->
+        <div id="chatHeader" style="height:40px; background:#1c1c1c; display:flex; justify-content:flex-end; align-items:center; padding:0 8px; flex-shrink:0; border-top-left-radius:8px; border-top-right-radius:8px;">
+            <button
+            onclick="toggleChatPopup()"
+            style="
+            width:28px;
+            height:28px;
+            background:#d9534f;
+            border:none;
+            color:white;
+            cursor:pointer;
+            border-radius:4px;
+            font-size:18px;
+            display:flex;
+            align-items:center;
+            justify-content:center;
+            flex-shrink:0;
+            ">
+            ×
+            </button>
+        </div>
+
+        <!-- BERICHTEN -->
+        <div id="chatMessages"
+        style="
+        flex:1;
+        overflow-y:auto;
+        padding:12px;
+        background:#1a1a1a;
+        color:white;
+        display:flex;
+        flex-direction:column;
+        align-items:stretch;
+        gap:6px;
+        font-size:16px;
+        text-align:left;
+        box-sizing:border-box;
+        ">
+        </div>
+
+        <!-- INPUT & TOETSENBORD -->
+        <div
+        style="
+        padding:10px;
+        background:#222;
+        flex-shrink:0;
+        box-sizing:border-box;
+        ">
+
+            <div
+            style="
+            display:flex;
+            gap:6px;
+            margin-bottom:8px;
+            align-items:center;
+            box-sizing:border-box;
+            ">
+
+                <input
+                type="text"
+                id="chatInput"
+                placeholder="Typ een bericht..."
+                autocomplete="off"
+                style="
+                flex:1;
+                min-width:0;
+                height:46px;
+                padding:0 12px;
+                font-size:16px;
+                background:#333;
+                color:white;
+                border:1px solid #555;
+                border-radius:4px;
+                box-sizing:border-box;
+                margin:0;
+                "
+                >
+
+                <button
+                onclick="sendChatMessage()"
+                style="
+                height:46px;
+                padding:0 16px;
+                background:#0275d8;
+                color:white;
+                border:none;
+                border-radius:4px;
+                cursor:pointer;
+                font-size:15px;
+                box-sizing:border-box;
+                display:flex;
+                align-items:center;
+                justify-content:center;
+                flex-shrink:0;
+                margin:0;
+                ">
+                Verstuur
+                </button>
+
+            </div>
+
+            <!-- LETTERS (Alfabetisch A t/m Z) -->
+            <div id="viewLetters"
+            style="
+            display:grid;
+            grid-template-columns:repeat(10,1fr);
+            gap:3px;
+            width:100%;
+            box-sizing:border-box;
+            ">
+                <button onclick="typeChatKey('A')">A</button>
+                <button onclick="typeChatKey('B')">B</button>
+                <button onclick="typeChatKey('C')">C</button>
+                <button onclick="typeChatKey('D')">D</button>
+                <button onclick="typeChatKey('E')">E</button>
+                <button onclick="typeChatKey('F')">F</button>
+                <button onclick="typeChatKey('G')">G</button>
+                <button onclick="typeChatKey('H')">H</button>
+                <button onclick="typeChatKey('I')">I</button>
+                <button onclick="typeChatKey('J')">J</button>
+                <button onclick="typeChatKey('K')">K</button>
+                <button onclick="typeChatKey('L')">L</button>
+                <button onclick="typeChatKey('M')">M</button>
+                <button onclick="typeChatKey('N')">N</button>
+                <button onclick="typeChatKey('O')">O</button>
+                <button onclick="typeChatKey('P')">P</button>
+                <button onclick="typeChatKey('Q')">Q</button>
+                <button onclick="typeChatKey('R')">R</button>
+                <button onclick="typeChatKey('S')">S</button>
+                <button onclick="typeChatKey('T')">T</button>
+                <button onclick="typeChatKey('U')">U</button>
+                <button onclick="typeChatKey('V')">V</button>
+                <button onclick="typeChatKey('W')">W</button>
+                <button onclick="typeChatKey('X')">X</button>
+                <button onclick="typeChatKey('Y')">Y</button>
+                <button onclick="typeChatKey('Z')">Z</button>
+                <button onclick="toggleKeypadView()">123</button>
+                <button onclick="typeChatKey('SPACE')" style="grid-column:span 2;">Spatie</button>
+                <button onclick="typeChatKey('BACK')">⌫</button>
+            </div>
+
+            <!-- SYMBOLEN -->
+            <div id="viewSymbols"
+            style="
+            display:none;
+            grid-template-columns:repeat(10,1fr);
+            gap:3px;
+            width:100%;
+            box-sizing:border-box;
+            ">
+                <button onclick="typeChatKey('1')">1</button>
+                <button onclick="typeChatKey('2')">2</button>
+                <button onclick="typeChatKey('3')">3</button>
+                <button onclick="typeChatKey('4')">4</button>
+                <button onclick="typeChatKey('5')">5</button>
+                <button onclick="typeChatKey('6')">6</button>
+                <button onclick="typeChatKey('7')">7</button>
+                <button onclick="typeChatKey('8')">8</button>
+                <button onclick="typeChatKey('9')">9</button>
+                <button onclick="toggleKeypadView()">ABC</button>
+                <button onclick="typeChatKey('0')">0</button>
+                <button onclick="typeChatKey('.')">.</button>
+                <button onclick="typeChatKey(',')">,</button>
+                <button onclick="typeChatKey('?')">?</button>
+                <button onclick="typeChatKey('!')">!</button>
+                <button onclick="typeChatKey('/')">/</button>
+                <button onclick="typeChatKey('-')">-</button>
+                <button onclick="typeChatKey('+')">+</button>
+                <button onclick="typeChatKey('@')">@</button>
+                <button onclick="typeChatKey('#')">#</button>
+                <button onclick="typeChatKey('😊')">😊</button>
+                <button onclick="typeChatKey('❤️')">❤️</button>
+                <button onclick="typeChatKey('👍')">👍</button>
+                <button onclick="typeChatKey('🎲')">🎲</button>
+                <button onclick="typeChatKey('SPACE')" style="grid-column:span 4;">Spatie</button>
+                <button onclick="typeChatKey('BACK')" style="grid-column:span 2;">⌫</button>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<style>
+@media (max-width: 768px) {
+    #chatModal {
+        width: 94vw !important;
+        height: 75vh !important;
+        max-width: 94vw !important;
+        max-height: 85vh !important;
+    }
+}
+
+#chatMessages div {
+    width: 100% !important;
+    word-break: break-word !important;
+    padding: 2px 0 !important;
+    line-height: 1.4 !important;
+    text-align: left !important;
+    background: transparent !important;
+    background-color: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    font-size: 16px !important;
+    color: #fff !important;
+}
+
+#viewLetters button,
+#viewSymbols button {
+    width: 100%;
+    min-height: 42px;
+    font-size: clamp(13px, 1vw, 18px);
+    font-weight: bold;
+    cursor: pointer;
+    background: #333;
+    color: #fff;
+    border: 1px solid #555;
+    border-radius: 4px;
+    box-sizing: border-box;
+    padding: 0;
+}
+</style>
+
+<script>
+function toggleChatPopup(){
+    const modal = document.getElementById('chatModal');
+    if(!modal) return;
+    if(modal.style.display === 'none' || modal.style.display === ''){
+        modal.style.display='block';
+    } else {
+        modal.style.display='none';
+    }
+}
+
+function toggleKeypadView(){
+    const letters = document.getElementById('viewLetters');
+    const symbols = document.getElementById('viewSymbols');
+    if(!letters || !symbols) return;
+    if(letters.style.display==='none'){
+        letters.style.display='grid';
+        symbols.style.display='none';
+    } else {
+        letters.style.display='none';
+        symbols.style.display='grid';
+    }
+}
+
+function typeChatKey(key){
+    const input = document.getElementById('chatInput');
+    if(!input) return;
+    if(key==='BACK'){
+        input.value = input.value.slice(0,-1);
+    } else if(key==='SPACE'){
+        input.value += ' ';
+    } else {
+        input.value += key;
+    }
+    input.focus();
+}
+
+if (typeof window.pendingChatSender === 'undefined') {
+    window.pendingChatSender = "";
+}
+
+function addChatMessage(player, message) {
+    const box = document.getElementById('chatMessages');
+    if (!box) return;
+
+    let finalSender = "";
+    let finalMessage = "";
+
+    if (message === undefined || message === null || message === "") {
+        if (!window.pendingChatSender) {
+            window.pendingChatSender = player;
+            return;
+        } else {
+            finalSender = window.pendingChatSender;
+            finalMessage = player;
+            window.pendingChatSender = "";
+        }
+    } else {
+        finalSender = player;
+        finalMessage = message;
+        window.pendingChatSender = "";
+    }
+
+    const row = document.createElement('div');
+    row.style.cssText = "width:100%; word-break:break-word; padding:3px 0; color:#fff; font-size:16px; text-align:left; display:flex; align-items:baseline; gap:6px;";
+
+    const nameSpan = document.createElement('span');
+    nameSpan.style.cssText = "font-weight:bold; color:#6ec1ff; flex-shrink:0;";
+    nameSpan.textContent = finalSender + ":";
+
+    const textSpan = document.createElement('span');
+    textSpan.style.cssText = "color:#ffffff; word-break:break-word;";
+    textSpan.textContent = finalMessage;
+
+    row.appendChild(nameSpan);
+    row.appendChild(textSpan);
+
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+}
+
+
+/* UNIVERSEEL RAND-RESIZE & SLEEP SCRIPT (Met pijltjes aan de zijkanten en hoeken) */
+document.addEventListener('DOMContentLoaded', () => {
+    const modal = document.getElementById('chatModal');
+    if (!modal) return;
+
+    let isResizing = false;
+    let resizeDir = '';
+    let startX, startY, startW, startH, startL, startT;
+    const EDGE = 10; // Gevoeligheidszone van de randen in pixels
+
+    // Cursor aanpassen als je over de randen beweegt
+    modal.addEventListener('mousemove', (e) => {
+        if (isResizing) return;
+        const rect = modal.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = modal.offsetWidth;
+        const h = modal.offsetHeight;
+
+        let cursor = 'default';
+        if (x > w - EDGE && y > h - EDGE) cursor = 'se-resize';
+        else if (x < EDGE && y > h - EDGE) cursor = 'sw-resize';
+        else if (x > w - EDGE && y < EDGE) cursor = 'ne-resize';
+        else if (x < EDGE && y < EDGE) cursor = 'nw-resize';
+        else if (x > w - EDGE) cursor = 'e-resize';
+        else if (x < EDGE) cursor = 'w-resize';
+        else if (y > h - EDGE) cursor = 's-resize';
+        else if (y < EDGE) cursor = 'n-resize';
+        
+        modal.style.cursor = cursor;
+    });
+
+    // Muisklik: start rand-resizing of anders vrij slepen
+    modal.addEventListener('mousedown', (e) => {
+        const rect = modal.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = modal.offsetWidth;
+        const h = modal.offsetHeight;
+
+        let dir = '';
+        if (x > w - EDGE && y > h - EDGE) dir = 'se';
+        else if (x < EDGE && y > h - EDGE) dir = 'sw';
+        else if (x > w - EDGE && y < EDGE) dir = 'ne';
+        else if (x < EDGE && y < EDGE) dir = 'nw';
+        else if (x > w - EDGE) dir = 'e';
+        else if (x < EDGE) dir = 'w';
+        else if (y > h - EDGE) dir = 's';
+        else if (y < EDGE) dir = 'n';
+
+        // Als we op een rand klikken -> Resizen met pijltjes
+        if (dir) {
+            isResizing = true;
+            resizeDir = dir;
+            startX = e.clientX;
+            startY = e.clientY;
+            startW = w;
+            startH = h;
+            startL = rect.left;
+            startT = rect.top;
+            e.preventDefault();
+            e.stopPropagation();
+            return;
+        }
+
+        // Anders: Vrij verslepen (klik niet op input, knoppen of toetsenbord)
+        if (['INPUT', 'BUTTON', 'TEXTAREA'].includes(e.target.tagName)) return;
+
+        let isDragging = true;
+        let dragStartX = e.clientX;
+        let dragStartY = e.clientY;
+        let modalStartX = rect.left;
+        let modalStartY = rect.top;
+
+        modal.style.transform = 'none';
+        modal.style.left = modalStartX + 'px';
+        modal.style.top = modalStartY + 'px';
+
+        function onMouseMove(em) {
+            if (!isDragging) return;
+            modal.style.left = (modalStartX + (em.clientX - dragStartX)) + 'px';
+            modal.style.top = (modalStartY + (em.clientY - dragStartY)) + 'px';
+        }
+
+        function onMouseUp() {
+            isDragging = false;
+            window.removeEventListener('mousemove', onMouseMove);
+            window.removeEventListener('mouseup', onMouseUp);
+        }
+
+        window.addEventListener('mousemove', onMouseMove);
+        window.addEventListener('mouseup', onMouseUp);
+        e.preventDefault();
+    });
+
+    // Uitvoeren van het resizen bij bewegen muis
+    window.addEventListener('mousemove', (e) => {
+        if (!isResizing) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newW = startW;
+        let newH = startH;
+        let newL = startL;
+        let newT = startT;
+
+        if (resizeDir.includes('e')) newW = Math.max(300, startW + dx);
+        if (resizeDir.includes('s')) newH = Math.max(350, startH + dy);
+        if (resizeDir.includes('w')) {
+            const pW = startW - dx;
+            if (pW > 300) { newW = pW; newL = startL + dx; }
+        }
+        if (resizeDir.includes('n')) {
+            const pH = startH - dy;
+            if (pH > 350) { newH = pH; newT = startT + dy; }
+        }
+
+        modal.style.width = newW + 'px';
+        modal.style.height = newH + 'px';
+        modal.style.left = newL + 'px';
+        modal.style.top = newT + 'px';
+        modal.style.transform = 'none';
+    });
+
+    window.addEventListener('mouseup', () => {
+        isResizing = false;
+        resizeDir = '';
+    });
+});
+</script>
+
 <!-- GEÏNTEGREERDE LOBBY MODAL -->
 <div id="lobbyModal" class="modal-overlay">
     <div class="card" id="draggableCard">
@@ -1205,10 +1784,11 @@
             <input type="text" id="hostNameInput" placeholder="Jouw naam...">
             
             <label>Gegenereerde Roomcode:</label>
-            <div style="display: flex; gap: 6px; margin-bottom: 12px;">
-                <input type="text" id="hostRoomDisplay" readonly style="background: #e9ecef; font-weight: bold; color: #007bff; margin-bottom: 0; flex: 1;">
-                <button type="button" id="btnCopyRoom" class="btn-main" style="margin-top: 0; width: 90px; height: 42px; font-size: 13px;" title="Kopieer roomcode">Kopieer</button>
-            </div>
+<div style="display: flex; gap: 6px; margin-bottom: 12px;">
+    <input type="text" id="hostRoomDisplay" readonly style="background: #e9ecef; font-weight: bold; color: #007bff; margin-bottom: 0; flex: 1;">
+    <button type="button" id="btnCopyRoom" class="btn-main" style="margin-top: 0; width: 75px; height: 42px; font-size: 12px;" title="Kopieer roomcode">Code</button>
+    <button type="button" id="btnCopyLink" class="btn-main" style="margin-top: 0; width: 75px; height: 42px; font-size: 12px; background: #17a2b8;" title="Kopieer complete link">Link</button>
+</div>
             
             <label>Aantal Rijtjes / Kolommen (Online):</label>
             <div id="onlineRowsTiles" class="tile-container" style="margin-bottom: 10px;">
@@ -1394,7 +1974,7 @@
 <!-- FIREBASE INTEGRATIE SCRIPT (Module) -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
-    import { getDatabase, ref, set, onValue, onDisconnect, get } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
+    import { getDatabase, ref, set, onValue, onDisconnect, get, push } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyAnmGikJGj0wDywALg_xBNINQfaQtLeOd8",
@@ -1446,6 +2026,24 @@
     window.currentRoomCode = "";
     let activePlayers = {};
     window.isOnlineGame = false;
+
+    // --- URL PARAMETER AFHANDELING ---
+    window.addEventListener('DOMContentLoaded', () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomParam = urlParams.get('room');
+        if (roomParam) {
+            setTimeout(() => {
+                if (lobbyModal) {
+                    lobbyModal.style.display = "flex";
+                    lobbyModal.classList.remove("hidden");
+                    stepOnlineChoice.classList.add("hidden");
+                    stepHost.classList.add("hidden");
+                    stepGuest.classList.remove("hidden");
+                    if (guestRoomInput) guestRoomInput.value = roomParam;
+                }
+            }, 300);
+        }
+    });
 
     function setupTiles(containerId, callback) {
         const container = document.getElementById(containerId);
@@ -1545,7 +2143,6 @@
             currentPlayerIndex = 0;
         }
 
-        // FORCEER DIGITALE DOBBELSTENEN ALTIJD AAN BIJ ONLINE SPEL
         diceModeActive = true;
         const wrapper = document.getElementById('dice-bar-wrapper');
         const btnDice = document.getElementById('toggle-dice-btn');
@@ -1555,6 +2152,7 @@
         buildGrid();
         updateDisplay();
         checkTurnPermissions();
+        initChatSystem();
     };
 
     if (btnCloseModal) {
@@ -1566,21 +2164,24 @@
         });
     }
 
-    if (btnChooseHost) {
-        btnChooseHost.addEventListener("click", () => {
-            stepOnlineChoice.classList.add("hidden");
-            stepHost.classList.remove("hidden");
-            const randomCode = 'room_' + Math.random().toString(36).substring(2, 8);
-            hostRoomDisplay.value = randomCode;
+   if (btnChooseHost) {
+    btnChooseHost.addEventListener("click", () => {
+        stepOnlineChoice.classList.add("hidden");
+        stepHost.classList.remove("hidden");
+        const randomCode = 'room_' + Math.random().toString(36).substring(2, 8);
+        hostRoomDisplay.value = randomCode;
 
-            const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-const siteLink = baseUrl + "yatzeeonline.html?room=" + randomCode;
+        const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+        const siteLink = baseUrl + "yatzeeonline.html?room=" + randomCode;
+        
+        // Sla de complete link hier op
+        window.currentSiteLinkToCopy = siteLink;
 
-const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${randomCode}\nLink: ${siteLink}`);
-            btnWhatsAppInvite.href = `https://api.whatsapp.com/send?text=${inviteText}`;
-            btnWhatsAppInvite.classList.remove("hidden");
-        });
-    }
+        const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${randomCode}\nLink: ${siteLink}`);
+        btnWhatsAppInvite.href = `https://api.whatsapp.com/send?text=${inviteText}`;
+        btnWhatsAppInvite.classList.remove("hidden");
+    });
+}
 
     if (btnChooseGuest) {
         btnChooseGuest.addEventListener("click", () => {
@@ -1588,7 +2189,8 @@ const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de 
             stepGuest.classList.remove("hidden");
         });
     }
-const btnCopyRoom = document.getElementById("btnCopyRoom");
+
+    const btnCopyRoom = document.getElementById("btnCopyRoom");
     if (btnCopyRoom) {
         btnCopyRoom.addEventListener("click", () => {
             const hostRoomDisplay = document.getElementById("hostRoomDisplay");
@@ -1602,13 +2204,33 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
                         btnCopyRoom.innerText = originalText;
                         btnCopyRoom.style.background = "";
                     }, 1500);
-                }).catch(() => {
-                    // Fallback voor lokale file:/// omgevingen
-                    fallbackCopyText(codeText, btnCopyRoom);
                 });
             }
         });
     }
+
+    const btnCopyLink = document.getElementById("btnCopyLink");
+    if (btnCopyLink) {
+        btnCopyLink.addEventListener("click", () => {
+            const hostRoomDisplay = document.getElementById("hostRoomDisplay");
+            const codeText = hostRoomDisplay ? (hostRoomDisplay.value || hostRoomDisplay.innerText) : "";
+            if (codeText) {
+                const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
+                const siteLink = baseUrl + "yatzeeonline.html?room=" + codeText;
+                
+                navigator.clipboard.writeText(siteLink).then(() => {
+                    const originalText = btnCopyLink.innerText;
+                    btnCopyLink.innerText = "Gekopieerd!";
+                    btnCopyLink.style.background = "#28a745";
+                    setTimeout(() => {
+                        btnCopyLink.innerText = originalText;
+                        btnCopyLink.style.background = "";
+                    }, 1500);
+                });
+            }
+        });
+    }
+
     const btnCopyLobbyRoom = document.getElementById("btnCopyLobbyRoom");
     if (btnCopyLobbyRoom) {
         btnCopyLobbyRoom.addEventListener("click", () => {
@@ -1675,9 +2297,6 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
         activePlayers = {};
         activePlayers[playerName] = true;
 
-        // CONSOLE LOG 1: FIREBASE PAYLOAD & CONNECTION
-        console.log(`[LOG 1 - FIREBASE PAYLOAD] Entering room ${roomCode} as ${playerName} (Host: ${isHost})`);
-
         function renderUI() {
             playerList.innerHTML = "";
             const playerNames = Object.keys(activePlayers);
@@ -1728,9 +2347,6 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
 
         onValue(roomRef, (snapshot) => {
             const data = snapshot.val();
-            // CONSOLE LOG 2: SYNC UPDATE
-            console.log("[LOG 2 - SYNC UPDATE] Received Firebase room update:", data);
-
             if (!data) return;
 
             if (data.host) activeHost = data.host;
@@ -1747,7 +2363,6 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
             
             renderUI();
 
-            // 1. Alleen bij de start één keer aanroepen:
             if (data.status === "gestart" && !window.isOnlineGame) {
                 const roomRows = data.settings ? data.settings.rows : onlineRows;
                 const roomPlayMode = data.settings ? data.settings.playMode : onlinePlayMode;
@@ -1762,12 +2377,11 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
                 });
             }
 
-            // 2. Staat hier netjes BUITEN, zodat dit continu blijft meelopen:
             if (data.gameState) {
                 syncGameStateFromFirebase(data.gameState);
             }
         });
-    } // <--- Deze sluit de enterRoom functie correct af!
+    }
 
     if (btnStartGame) {
         btnStartGame.addEventListener("click", () => {
@@ -1795,9 +2409,6 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
                     gameState: initialGameState
                 };
 
-                // CONSOLE LOG 1: FIREBASE PAYLOAD START GAME
-                console.log("[LOG 1 - FIREBASE PAYLOAD] Host starting game with payload:", payloadToSave);
-
                 set(roomDataRef, payloadToSave).then(() => {
                     closeLobbyAndStartGame({
                         mode: "online",
@@ -1813,12 +2424,10 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
         });
     }
 
-    // Exporteer push naar Firebase voor game acties
     window.pushGameStateToFirebase = function(extraUpdates = {}) {
         if (!window.isOnlineGame || !window.currentRoomCode) return;
         const gameStateRef = ref(db, 'rooms/' + window.currentRoomCode + '/gameState');
         
-        const currentActivePlayer = players[currentPlayerIndex];
         const payload = {
             currentPlayerIndex: currentPlayerIndex,
             rollCount: rollCount,
@@ -1829,18 +2438,11 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
             ...extraUpdates
         };
 
-        // CONSOLE LOG 1: FIREBASE PAYLOAD ACTION
-        console.log("[LOG 1 - FIREBASE PAYLOAD] Pushing gameState update:", payload);
         set(gameStateRef, payload);
     };
 
     function syncGameStateFromFirebase(gs) {
         if (!gs) return;
-        // CONSOLE LOG 3: TURN & PERMISSION
-        console.log("[LOG 3 - TURN & PERMISSION] Syncing gameState. Current turn index:", gs.currentPlayerIndex, "My name:", window.myName);
-
-       // 1. Controleer OF dit een echte nieuwe worp is (gs.rollCount is hoger dan onze huidige rollCount)
-        // Dit doen we VOORDAT we rollCount hieronder overschrijven!
         const isNewRoll = gs.rollCount !== undefined && gs.rollCount > rollCount;
 
         if (gs.currentPlayerIndex !== undefined && gs.currentPlayerIndex !== currentPlayerIndex) {
@@ -1852,7 +2454,6 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
         if (gs.rollCount !== undefined) rollCount = gs.rollCount;
         if (gs.turnEnded !== undefined) turnEnded = gs.turnEnded;
 
-        // 2. Dobbelsteen-synchronisatie
         if (gs.diceValues && Array.isArray(gs.diceValues) && diceInstances.length === 5) {
             diceInstances.forEach((d, i) => {
                 d.value = gs.diceValues[i];
@@ -1861,23 +2462,17 @@ const btnCopyRoom = document.getElementById("btnCopyRoom");
                 
                 const rot = faceRotation(d.value);
                 
-                // Als het niet jouw beurt is:
                 if (!isMyTurn()) {
-                    // Als het een nieuwe worp is EN de dobbelsteen zit niet vast: ALTIJD draaien!
-                    // (Zelfs als het getal toevallig hetzelfde blijft, zoals een 5 die opnieuw gegooid wordt)
                     if (isNewRoll && !d.isLocked) {
                         const spinX = 360 * 2 + rot.x;
                         const spinY = 360 * 2 + rot.y;
                         d.cube.style.transition = 'transform 0.6s cubic-bezier(.2,.8,.25,1)';
                         d.cube.style.transform = `rotateX(${spinX}deg) rotateY(${spinY}deg)`;
                     } else {
-                        // Anders (bij vastzetten of geen nieuwe worp): direct strak neerzetten
                         d.cube.style.transition = 'none';
                         d.cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
                     }
-                }
-else {
-                    // Jouw eigen scherm: ook direct strak neerzetten om echo's te voorkomen
+                } else {
                     d.cube.style.transition = 'none';
                     d.cube.style.transform = `rotateX(${rot.x}deg) rotateY(${rot.y}deg)`;
                 }
@@ -1887,12 +2482,97 @@ else {
         updateDisplay();
         checkTurnPermissions();
     }
+
+    // --- CHAT LOGICA & TOETSENBORD ---
+    let unreadChatCount = 0;
+    let chatIsOpen = false;
+
+    window.toggleChatPopup = function() {
+        const chatModal = document.getElementById("chatModal");
+        if (!chatModal) return;
+        chatIsOpen = chatIsOpen ? false : true;
+        chatModal.style.display = chatIsOpen ? "flex" : "none";
+        if (chatIsOpen) {
+            unreadChatCount = 0;
+            const badge = document.getElementById("chatBadge");
+            if (badge) {
+                badge.innerText = "0";
+                badge.style.display = "none";
+            }
+            const msgBox = document.getElementById("chatMessages");
+            if (msgBox) msgBox.scrollTop = msgBox.scrollHeight;
+        }
+    };
+
+    window.typeChatKey = function(char) {
+        const input = document.getElementById("chatInput");
+        if (!input) return;
+        if (char === 'BACK') {
+            input.value = input.value.slice(0, -1);
+        } else if (char === 'SPACE') {
+            input.value += ' ';
+        } else {
+            input.value += char;
+        }
+        input.focus();
+    };
+
+    window.sendChatMessage = function() {
+        const input = document.getElementById("chatInput");
+        if (!input) return;
+        const text = input.value.trim();
+        if (!text || !window.currentRoomCode) return;
+
+        const chatRef = ref(db, 'rooms/' + window.currentRoomCode + '/chat');
+        push(chatRef, {
+            sender: window.myName || "Speler",
+            text: text,
+            timestamp: Date.now()
+        });
+
+        input.value = "";
+    };
+
+    function initChatSystem() {
+        if (!window.currentRoomCode) return;
+        const chatRef = ref(db, 'rooms/' + window.currentRoomCode + '/chat');
+        const msgContainer = document.getElementById("chatMessages");
+        const badge = document.getElementById("chatBadge");
+
+        makeDraggable(document.getElementById("chatModal"));
+
+        onValue(chatRef, (snapshot) => {
+            const data = snapshot.val();
+            if (!msgContainer) return;
+            msgContainer.innerHTML = "";
+
+            if (data) {
+                let hasNew = false;
+                Object.values(data).forEach(msg => {
+                    const div = document.createElement("div");
+                    const isMine = msg.sender === window.myName;
+                    div.className = "chat-message" + (isMine ? " mine" : "");
+                    div.innerHTML = `<div class="sender">${msg.sender}</div><div>${msg.text}</div>`;
+                    msgContainer.appendChild(div);
+                });
+                msgContainer.scrollTop = msgContainer.scrollHeight;
+
+                if (!chatIsOpen) {
+                    unreadChatCount++;
+                    if (badge) {
+                        badge.innerText = unreadChatCount;
+                        badge.style.display = "inline-block";
+                    }
+                }
+            }
+        });
+    }
 </script>
 
 <!-- YATZEE SPEL LOGICA SCRIPT -->
 <script>
     let numGames = 6;
-    let diceModeActive = true; // ALTIJD AAN
+    let diceModeActive = true; 
     let tempSelectedRows = 6;
 
     const rowsPart1 = [
@@ -1926,7 +2606,7 @@ else {
         { id: 'p_host', name: 'Speler 1', scores: {}, lastActionKey: null, lastRoll: null, hasSubmittedThisTurn: false }
     ];
     let currentPlayerIndex = 0;
-    let inspectingPlayerIndex = null; // Voor als je iemands bord bekijkt
+    let inspectingPlayerIndex = null; 
 
     let activeTarget = { colIndex: null, rowId: null };
     let currentInputValue = '';
@@ -2162,7 +2842,6 @@ else {
         updateDisplay();
         resetInactivityTimer();
 
-        // Forceer digitale dobbelstenen direct aan bij laden
         const wrapper = document.getElementById('dice-bar-wrapper');
         const btnDice = document.getElementById('toggle-dice-btn');
         if (wrapper) wrapper.style.display = 'block';
@@ -2178,22 +2857,6 @@ else {
             if (document.exitFullscreen) {
                 document.exitFullscreen();
             }
-        }
-    }
-
-    function toggleDiceBar() {
-        // Digitale dobbelstenen mogen in online modus niet uitgezet worden
-        if (window.isOnlineGame) return;
-        diceModeActive = !diceModeActive;
-        const wrapper = document.getElementById('dice-bar-wrapper');
-        const btn = document.getElementById('toggle-dice-btn');
-
-        if (diceModeActive) {
-            wrapper.style.display = 'block';
-            btn.classList.add('active');
-        } else {
-            wrapper.style.display = 'none';
-            btn.classList.remove('active');
         }
     }
 
@@ -2276,7 +2939,6 @@ else {
         });
     }
 
-    // CHECK OF IK MAG SPELEN (READ-ONLY / SPECTATOR LOGICA)
     function isMyTurn() {
         if (!window.isOnlineGame) return true;
         const currentActivePlayer = players[currentPlayerIndex];
@@ -2287,24 +2949,18 @@ else {
     function checkTurnPermissions() {
         const myTurn = isMyTurn();
         const rollBtn = document.getElementById('roll-btn');
-        const inBtn = document.getElementById('in-btn');
         
-        // CONSOLE LOG 3: TURN & PERMISSION
-        console.log(`[LOG 3 - TURN & PERMISSION] Checking permissions. My name: ${window.myName}, Active player: ${players[currentPlayerIndex]?.name}, Is my turn: ${myTurn}`);
-
         if (rollBtn) {
             rollBtn.style.opacity = myTurn ? '1' : '0.5';
         }
 
-        // Trigger pop-up "U bent aan de beurt" als het online mijn beurt is en ik nog niet heb ingediend
         if (window.isOnlineGame && myTurn) {
-    const p = players[currentPlayerIndex];
-    // Voeg extra toe: p.name === window.myName
-    if (p && p.name === window.myName && !p.hasSubmittedThisTurn && window._turnPopupShownForTurn !== currentPlayerIndex) {
-        window._turnPopupShownForTurn = currentPlayerIndex;
-        showCustomAlert("U bent aan de beurt!", `Het is jouw beurt (${window.myName}), gooi de dobbelstenen en kies een score.`);
-    }
-}
+            const p = players[currentPlayerIndex];
+            if (p && p.name === window.myName && !p.hasSubmittedThisTurn && window._turnPopupShownForTurn !== currentPlayerIndex) {
+                window._turnPopupShownForTurn = currentPlayerIndex;
+                showCustomAlert("U bent aan de beurt!", `Het is jouw beurt (${window.myName}), gooi de dobbelstenen en kies een score.`);
+            }
+        }
         if (!myTurn) {
             window._turnPopupShownForTurn = null;
         }
@@ -2312,7 +2968,6 @@ else {
 
     function openPlayerInspectionOrSetup() {
         if (window.isOnlineGame) {
-            // Open inspectie modal om te kiezen wiens bord je wilt bekijken
             const overlay = document.getElementById('player-inspect-overlay');
             const listContainer = document.getElementById('inspect-player-list');
             if (overlay && listContainer) {
@@ -2403,14 +3058,13 @@ else {
     }
 
     function handleScoreClick(colIndex, rowId, rowObj) {
-        // Read-only check: als het online niet mijn beurt is, mag ik niet invullen
         if (window.isOnlineGame && !isMyTurn()) {
             showCustomAlert("Niet jouw beurt", "Je staat in Read-Only modus omdat een andere speler aan de beurt is!");
             return;
         }
 
         if (colIndex >= numGames) {
-            showCustomAlert("Niet actief", `Je speelt maar voor ${numGames} ${String(numGames).trim() === '1' ? 'rijtje' : 'rijtjes'}!`);
+            showCustomAlert("Niet actief", `Je speelt maar voor ${numGames} rijtje(s)!`);
             return;
         }
 
@@ -2650,14 +3304,14 @@ else {
         }
 
         const p = players[currentPlayerIndex];
-if (p.hasSubmittedThisTurn) {
-    showCustomAlert("Score is al ingevuld", "Je hebt je score al ingediend voor deze beurt.", true, "Klik hieronder om door te gaan naar de volgende speler, of sluit dit scherm om je score nog te wijzigen.");
-    return;
-}
-if (rollCount >= 3 || turnEnded) {
-    showCustomAlert("Vul eerst je score in", "Je hebt al 3 keer gegooid! Vul eerst je punten in.");
-    return;
-}
+        if (p.hasSubmittedThisTurn) {
+            showCustomAlert("Score is al ingevuld", "Je hebt je score al ingediend voor deze beurt.", true, "Klik hieronder om door te gaan naar de volgende speler.");
+            return;
+        }
+        if (rollCount >= 3 || turnEnded) {
+            showCustomAlert("Vul eerst je score in", "Je hebt al 3 keer gegooid! Vul eerst je punten in.");
+            return;
+        }
 
         rollAllDice();
     }
@@ -2719,9 +3373,6 @@ if (rollCount >= 3 || turnEnded) {
         setTimeout(() => {
             isRolling = false;
             document.getElementById('roll-btn').disabled = false;
-
-            // WEGGEHAALD: De lus die 'transition = none' en een harde reset deed, 
-            // waardoor de dobbelsteen versprong. De dobbelsteen staat nu al keurig stil op de juiste kant!
 
             lastActiveRoll = diceInstances.map(d => d.value);
             const isYahtzee = updateScoreAndCombos();
@@ -2804,9 +3455,9 @@ if (rollCount >= 3 || turnEnded) {
         }
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
-inspectingPlayerIndex = null; 
-window._turnPopupShownForTurn = null;
-const nextP = players[currentPlayerIndex];
+        inspectingPlayerIndex = null; 
+        window._turnPopupShownForTurn = null;
+        const nextP = players[currentPlayerIndex];
 
         nextP.hasSubmittedThisTurn = false;
         rollCount = 0;
@@ -2843,7 +3494,7 @@ const nextP = players[currentPlayerIndex];
     }
 
     function openPlayerSetup() {
-        if (window.isOnlineGame) return; // In online modus via lobby
+        if (window.isOnlineGame) return;
         document.getElementById('player-setup-overlay').style.display = 'flex';
         selectPlayerCount(players.length);
         selectRowCount(numGames);
@@ -3239,31 +3890,17 @@ const nextP = players[currentPlayerIndex];
         }
     }
 
-function confirmReset() {
-    showCustomAlert(
-        "Spel verlaten", 
-        "Wil je het spel verlaten? Je eigen gegevens worden uit de room gewist, zodat de andere spelers ongestoord kunnen doorgaan.", 
-        false, 
-        "", 
-        function() {
-            // Controleer of we in een online spel zitten en ruim alleen onze eigen Firebase-data op
-            if (window.isOnlineGame && typeof firebase !== 'undefined' && window.currentRoomId && window.myPlayerId) {
-                firebase.database().ref('rooms/' + window.currentRoomId + '/players/' + window.myPlayerId).remove()
-                    .then(() => {
-                        // Pagina herladen voor een volledig schone start
-                        location.reload();
-                    })
-                    .catch((error) => {
-                        console.error("Fout bij het verlaten van de room:", error);
-                        location.reload(); // Altijd herladen als fallback
-                    });
-            } else {
-                // Als het geen online spel is, direct herladen
+    function confirmReset() {
+        showCustomAlert(
+            "Spel verlaten", 
+            "Wil je het spel verlaten? Je eigen gegevens worden uit de room gewist, zodat de andere spelers ongestoord kunnen doorgaan.", 
+            false, 
+            "", 
+            function() {
                 location.reload();
             }
-        }
-    );
-}
+        );
+    }
 </script>
 
 <script>
@@ -3461,11 +4098,190 @@ function confirmReset() {
     }
 
     window.addEventListener('DOMContentLoaded', () => {
-        document.querySelectorAll('.keypad, .card').forEach(kp => {
+        document.querySelectorAll('.keypad, .card, #chatModal').forEach(kp => {
             makeDraggable(kp);
         });
     });
 </script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    let activePopup = null;
+    let resizeDir = '';
+    let startX, startY, startW, startH;
+    const EDGE = 12; // Gevoeligheidszone in pixels vanaf de rand
+
+    // Automatische detectie van actieve pop-ups/vensters op het scherm
+    function getPopupContainer(target) {
+        let el = target.closest('div');
+        while (el && el !== document.body) {
+            const style = window.getComputedStyle(el);
+            if ((style.position === 'fixed' || style.position === 'absolute') && el.offsetWidth > 100 && el.offsetHeight > 100) {
+                return el;
+            }
+            el = el.parentElement;
+        }
+        return null;
+    }
+
+    // Toon direct resize-pijltjes als je de rand van WELKE pop-up dan ook nadert
+    document.addEventListener('mousemove', (e) => {
+        if (activePopup) return;
+        const popup = getPopupContainer(e.target);
+        if (!popup) return;
+
+        const rect = popup.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = popup.offsetWidth;
+        const h = popup.offsetHeight;
+
+        let cursor = 'default';
+        if (x > w - EDGE && y > h - EDGE) cursor = 'se-resize';
+        else if (x < EDGE && y > h - EDGE) cursor = 'sw-resize';
+        else if (x > w - EDGE && y < EDGE) cursor = 'ne-resize';
+        else if (x < EDGE && y < EDGE) cursor = 'nw-resize';
+        else if (x > w - EDGE) cursor = 'e-resize';
+        else if (x < EDGE) cursor = 'w-resize';
+        else if (y > h - EDGE) cursor = 's-resize';
+        else if (y < EDGE) cursor = 'n-resize';
+
+        popup.style.cursor = cursor;
+    });
+
+    // Start het resizen ALLEEN als je op een rand klikt, zonder de pop-up te vervormen
+    document.addEventListener('mousedown', (e) => {
+        const popup = getPopupContainer(e.target);
+        if (!popup) return;
+
+        const rect = popup.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const w = popup.offsetWidth;
+        const h = popup.offsetHeight;
+
+        let dir = '';
+        if (x > w - EDGE && y > h - EDGE) dir = 'se';
+        else if (x < EDGE && y > h - EDGE) dir = 'sw';
+        else if (x > w - EDGE && y < EDGE) dir = 'ne';
+        else if (x < EDGE && y < EDGE) dir = 'nw';
+        else if (x > w - EDGE) dir = 'e';
+        else if (x < EDGE) dir = 'w';
+        else if (y > h - EDGE) dir = 's';
+        else if (y < EDGE) dir = 'n';
+
+        if (dir) {
+            activePopup = popup;
+            resizeDir = dir;
+            startX = e.clientX;
+            startY = e.clientY;
+            
+            // Neem de huidige werkelijke afmetingen over als startpunt
+            startW = w;
+            startH = h;
+
+            // Fixeer de huidige grootte in pixels zodat de pop-up zijn vorm behoudt bij het slepen
+            popup.style.width = w + 'px';
+            popup.style.height = h + 'px';
+
+            // Als de pop-up gecentreerd was via transform, zet dit om naar vaste coordinaten
+            const computed = window.getComputedStyle(popup);
+            if (computed.transform && computed.transform !== 'none') {
+                popup.style.left = rect.left + 'px';
+                popup.style.top = rect.top + 'px';
+                popup.style.transform = 'none';
+            }
+
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
+
+    // Pas de grootte geleidelijk aan tijdens het slepen
+    window.addEventListener('mousemove', (e) => {
+        if (!activePopup) return;
+        const dx = e.clientX - startX;
+        const dy = e.clientY - startY;
+
+        let newW = startW;
+        let newH = startH;
+
+        if (resizeDir.includes('e')) newW = Math.max(200, startW + dx);
+        if (resizeDir.includes('s')) newH = Math.max(150, startH + dy);
+        if (resizeDir.includes('w')) {
+            const pW = startW - dx;
+            if (pW > 200) newW = pW;
+        }
+        if (resizeDir.includes('n')) {
+            const pH = startH - dy;
+            if (pH > 150) newH = pH;
+        }
+
+        activePopup.style.width = newW + 'px';
+        activePopup.style.height = newH + 'px';
+    });
+
+    window.addEventListener('mouseup', () => {
+        if (activePopup) {
+            activePopup.style.cursor = 'default';
+            activePopup = null;
+            resizeDir = '';
+        }
+    });
+});
+</script>
+
+<script>
+let pendingChatSender = "";
+
+// Een lijst met 6 heldere, onderscheidende kleuren voor tot wel 6 spelers
+const colorPalette = ['#6ec1ff', '#ff6b6b', '#51cf66', '#fcc419', '#cc5de8', '#ff922b'];
+const playerColors = {};
+let colorIndex = 0;
+
+// Automatische kleurtoewijzing op basis van de ingevoerde naam
+function getPlayerColor(name) {
+    if (!name) return '#6ec1ff';
+    if (!playerColors[name]) {
+        playerColors[name] = colorPalette[colorIndex % colorPalette.length];
+        colorIndex++;
+    }
+    return playerColors[name];
+}
+
+function addChatMessage(player, message) {
+    const box = document.getElementById('chatMessages');
+    if (!box) return;
+
+    let name = "";
+    let text = "";
+
+    // Vangt losse aanroepen op (eerst naam, dan pas de tekst)
+    if (message === undefined || message === null || message === "") {
+        if (!pendingChatSender) {
+            pendingChatSender = player;
+            return; // Wacht op het volgende seintje met de tekst
+        } else {
+            name = pendingChatSender;
+            text = player;
+            pendingChatSender = "";
+        }
+    } else {
+        name = player;
+        text = message;
+        pendingChatSender = "";
+    }
+
+    const color = getPlayerColor(name);
+
+    const row = document.createElement('div');
+    row.style.cssText = "width:100%; word-break:break-word; padding:2px 0; color:#fff; font-size:16px; text-align:left;";
+    row.innerHTML = '<span style="color:' + color + '; font-weight:bold;">' + name + ': </span><span>' + text + '</span>';
+
+    box.appendChild(row);
+    box.scrollTop = box.scrollHeight;
+}
+</script>
+
 
 </body>
 </html>
