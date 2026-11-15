@@ -1697,121 +1697,228 @@
     }
 
     function handleScoreClick(colIndex, rowId, rowObj) {
-        if (colIndex >= numGames) {
-            showCustomAlert("Niet actief", `Je speelt maar voor ${numGames} ${String(numGames).trim() === '1' ? 'rijtje' : 'rijtjes'}!`);
-            return;
-        }
+    if (colIndex >= numGames) {
+        showCustomAlert("Niet actief", `Je speelt maar voor ${numGames} ${String(numGames).trim() === '1' ? 'rijtje' : 'rijtjes'}!`);
+        return;
+    }
 
-        const p = players[currentPlayerIndex];
-        const uniqueKey = `c${colIndex}_${rowId}`;
-        const isFilled = p.scores[uniqueKey] !== undefined;
-        const isLastAction = (uniqueKey === p.lastActionKey);
+    const p = players[currentPlayerIndex];
+    const uniqueKey = `c${colIndex}_${rowId}`;
+    const isFilled = p.scores[uniqueKey] !== undefined;
+    const isLastAction = (uniqueKey === p.lastActionKey);
+    const isYahtzeeRow = (rowId === 'd2_5');
+    const playerMode = p.playMode || 'random';
 
-        if (isFilled) {
+
+
+
+   if (isFilled) {
+        // --- YAHTZEE VELD KLIK LOGICA ---
+        if (rowId === 'd2_5') {
+            const currentVal = p.scores[uniqueKey];
+            if (currentVal === '/') return; // Streep blijft streep
+
+            // STAP 1: ALS HET JE LAATSTE ACTIE IS (je hebt het net in deze beurt ingevuld), 
+            // dan mag je het ALTIJD direct kunnen wissen/aanpassen, ongeacht of de rest al vol is!
             if (isLastAction) {
-                const currentVal = p.scores[uniqueKey];
-                showCustomAlert(
-                    "Score wissen?", 
-                    `Wil je de score van ${currentVal === '/' ? 'schuine streep' : currentVal} wissen?`, 
-                    false, 
-                    "", 
-                    function() {
+                activeTarget = { colIndex, rowId };
+                const container = document.getElementById('popup-buttons-container');
+                container.innerHTML = '';
+
+                // Knop 1: Wis (als het 50 is, volledig wissen; bij hoger trekt hij er 50 af)
+                const btnClear = document.createElement('button');
+                btnClear.className = 'key-btn action';
+                btnClear.innerText = 'Wis';
+                btnClear.onclick = function() {
+                    // Als dit niet je allerlaatste actie is, of de key komt niet overeen, direct stoppen
+                    if (!isLastAction || p.lastActionKey !== uniqueKey) {
+                        return;
+                    }
+
+                    if (currentVal > 50) {
+                        p.scores[uniqueKey] = currentVal - 50;
+                    } else if (currentVal === 50) {
                         delete p.scores[uniqueKey];
-                        p.lastActionKey = null;
-                        p.hasSubmittedThisTurn = false;
-                        turnEnded = false;
+                        delete p.scores[`c${colIndex}_totaal_d2`];
+                        delete p.scores[`c${colIndex}_totaal_d1_copy`];
+                        delete p.scores[`c${colIndex}_eindtotaal`];
+                    }
 
-                        if (p.lastRoll) {
-                            lastActiveRoll = [...p.lastRoll];
-                            if (diceModeActive) {
-                                restoreDiceValues(p.lastRoll);
-                            }
+                    // DIRECT HET GEHEUGEN WISSEN: na één keer wissen is de actie klaar en vergrendeld
+                    p.lastActionKey = null;
+
+                    saveToStorage();
+                    updateDisplay();
+                    updateArrowPulse();
+                    closeChoicePopup();
+                };
+                container.appendChild(btnClear);
+
+
+// Controle of alle Yahtzee-vakjes vol zijn in random-modus voordat +50 mag verschijnen
+                let magBonus = true;
+                if (playerMode === 'random' && numGames > 1) {
+                    for (let c = 0; c < numGames; c++) {
+                        if (p.scores[`c${c}_d2_5`] === undefined) {
+                            magBonus = false;
+                            break;
                         }
-                        saveToStorage();
-                        updateDisplay();
-                        updateArrowPulse();
-                    }
-                );
-            }
-            return;
-        }
-
-        // --- HIER IS DE VOLGORDE CONTROLE TOEGEVOEGD ---
-        const playerMode = p.playMode || 'random';
-        if (playerMode === 'strict' && colIndex > 0) {
-            for (let prevCol = 0; prevCol < colIndex; prevCol++) {
-                let prevColComplete = true;
-                const checkRows = [
-                    ...rowsPart1.filter(r => r.type === 'score'),
-                    ...rowsPart2.filter(r => r.type === 'score')
-                ];
-                for (let rObj of checkRows) {
-                    if (p.scores[`c${prevCol}_${rObj.id}`] === undefined) {
-                        prevColComplete = false;
-                        break;
                     }
                 }
-                if (!prevColComplete) {
-                    showCustomAlert("Volgorde regel", `U speelt op volgorde, u moet eerst rijtje ${prevCol + 1} helemaal vol maken.`);
-                    return;
+
+             
+                
+
+                // Knop 2: +50 erbij
+                const btnPlus = document.createElement('button');
+                btnPlus.className = 'key-btn enter';
+                btnPlus.innerText = `+50 (${currentVal + 50})`;
+                btnPlus.onclick = function() {
+                    p.scores[uniqueKey] = currentVal + 50;
+                    p.lastActionKey = uniqueKey;
+                    p.hasSubmittedThisTurn = true;
+                    turnEnded = true;
+                    lastActiveRoll = null;
+                    saveToStorage();
+                    updateDisplay();
+                    updateArrowPulse();
+                    closeChoicePopup();
+                };
+                container.appendChild(btnPlus);
+
+                document.getElementById('choice-popup-overlay').style.display = 'flex';
+                return;
+            }
+
+            // STAP 2: PAS ALS HET EEN LATERE BEURT IS, geldt de random check (alle Yahtzee-vakjes moeten vol zijn voor de bonus)
+            if (playerMode === 'random' && numGames > 1) {
+                for (let c = 0; c < numGames; c++) {
+                    if (p.scores[`c${c}_d2_5`] === undefined) return;
                 }
             }
-        }
-        // --- EINDE TOEGEVOEGDE CONTROLE ---
 
-        if (p.hasSubmittedThisTurn) {
-            showCustomAlert(
-                "Score al ingevuld", 
-                players.length > 1 
-                    ? "Je hebt je score al ingevuld voor deze beurt. Klik op de wisselknop (➔) voor de volgende speler!" 
-                    : "Je hebt al gescoord in deze beurt! Klik op 'Gooi 🎲' om een nieuwe beurt te starten.",
-                players.length > 1
-            );
+            // STAP 3: LATERE BEURT BONUS (+50 automatisch)
+            p.scores[uniqueKey] = (typeof currentVal === 'number' ? currentVal : 50) + 50;
+            p.lastActionKey = uniqueKey;
+            p.hasSubmittedThisTurn = true;
+            turnEnded = true;
+            lastActiveRoll = null;
+
+            if (players.length === 1 && !diceModeActive) {
+                p.hasSubmittedThisTurn = false;
+                resetForNextTurn();
+            }
+
+            saveToStorage();
+            updateDisplay();
             updateArrowPulse();
             return;
         }
 
-        if (diceModeActive) {
-            let activeDice = lastActiveRoll;
-            if (rollCount > 0) {
-                activeDice = diceInstances.map(d => d.value);
-            }
-            if (!activeDice) {
-                showCustomAlert("Nog niet gegooid", "Gooi eerst minimaal één keer met de dobbelstenen voordat je een categorie kiest!");
-                return;
-            }
+        // --- OVERIGE VELDEN (Niet-Yahtzee) ---
+        if (isLastAction) {
+            const currentVal = p.scores[uniqueKey];
+            showCustomAlert(
+                "Score wissen?", 
+                `Wil je de score van ${currentVal === '/' ? 'schuine streep' : currentVal} wissen?`, 
+                false, 
+                "", 
+                function() {
+                    delete p.scores[uniqueKey];
+                    p.lastActionKey = null;
+                    p.hasSubmittedThisTurn = false;
+                    turnEnded = false;
 
-            const canScoreInAnyCol = checkCanScoreInActiveGames(activeDice, colIndex);
-            let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
-
-            if (canScoreInAnyCol) {
-                if (calculatedScore > 0 || rowObj.id === 'd2_6') {
-                    activeTarget = { colIndex, rowId };
-                    submitChoice(calculatedScore);
-                } else {
-                    showCustomAlert("Verplicht invullen", playerMode === 'strict' ? "Je kunt in dit rijtje nog punten halen of op Kans invullen!" : "Je kunt in één van je actieve rijtjes nog punten halen of op Kans invullen!");
+                    if (p.lastRoll) {
+                        lastActiveRoll = [...p.lastRoll];
+                        if (diceModeActive) {
+                            restoreDiceValues(p.lastRoll);
+                        }
+                    }
+                    saveToStorage();
+                    updateDisplay();
+                    updateArrowPulse();
                 }
-                return;
-            }
-
-            if (canPlayKansInCurrentContext(colIndex)) {
-                showCustomAlert("Verplicht invullen", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen voordat je een streep kunt zetten!" : "Je moet eerst Kans invullen in de actieve kolommen voordat je een streep kunt zetten!");
-                return;
-            }
-
-            // Strenge controle: je mag pas strepen na de 3e worp (als je digitaal speelt)
-            if (rollCount < 3) {
-                showCustomAlert("Maak je worpen af", "Je mag nog niet strepen! Je hebt nog worpen over, gooi eerst drie keer of maak je worpen af.");
-                return;
-            }
-
-            activeTarget = { colIndex, rowId };
-            submitChoice('/');
+            );
             return;
         }
 
-        openPhysicalChoicePopup(colIndex, rowId, rowObj);
+        return; // Overige ingevulde cellen blijven netjes op slot
     }
+
+    // --- VOLGORDE CONTROLE (STRICT) VOOR NORMALE CELLEN ---
+    if (playerMode === 'strict' && colIndex > 0) {
+        for (let prevCol = 0; prevCol < colIndex; prevCol++) {
+            let prevColComplete = true;
+            const checkRows = [
+                ...rowsPart1.filter(r => r.type === 'score'),
+                ...rowsPart2.filter(r => r.type === 'score')
+            ];
+            for (let rObj of checkRows) {
+                if (p.scores[`c${prevCol}_${rObj.id}`] === undefined) {
+                    prevColComplete = false;
+                    break;
+                }
+            }
+            if (!prevColComplete) {
+                showCustomAlert("Volgorde regel", `U speelt op volgorde, u moet eerst rijtje ${prevCol + 1} helemaal vol maken.`);
+                return;
+            }
+        }
+    }
+
+    if (p.hasSubmittedThisTurn) {
+        showCustomAlert(
+            "Score al ingevuld", 
+            players.length > 1 
+                ? "Je hebt je score al ingevuld voor deze beurt. Klik op de wisselknop (➔) voor de volgende speler!" 
+                : "Je hebt al gescoord in deze beurt! Klik op 'Gooi 🎲' om een nieuwe beurt te starten.",
+            players.length > 1
+        );
+        updateArrowPulse();
+        return;
+    }
+
+    if (diceModeActive) {
+        let activeDice = lastActiveRoll;
+        if (rollCount > 0) {
+            activeDice = diceInstances.map(d => d.value);
+        }
+        if (!activeDice) {
+            showCustomAlert("Nog niet gegooid", "Gooi eerst minimaal één keer met de dobbelstenen voordat je een categorie kiest!");
+            return;
+        }
+
+        const canScoreInAnyCol = checkCanScoreInActiveGames(activeDice, colIndex);
+        let calculatedScore = calculateScoreForCategory(rowId, rowObj, activeDice);
+
+        if (canScoreInAnyCol) {
+            if (calculatedScore > 0 || rowObj.id === 'd2_6') {
+                activeTarget = { colIndex, rowId };
+                submitChoice(calculatedScore);
+            } else {
+                showCustomAlert("Verplicht invullen", playerMode === 'strict' ? "Je kunt in dit rijtje nog punten halen of op Kans invullen!" : "Je kunt in één van je actieve rijtjes nog punten halen of op Kans invullen!");
+            }
+            return;
+        }
+
+        if (canPlayKansInCurrentContext(colIndex)) {
+            showCustomAlert("Verplicht invullen", playerMode === 'strict' ? "Je moet eerst Kans in dit rijtje invullen voordat je een streep kunt zetten!" : "Je moet eerst Kans invullen in de actieve kolommen voordat je een streep kunt zetten!");
+            return;
+        }
+
+        if (rollCount < 3) {
+            showCustomAlert("Maak je worpen af", "Je mag nog niet strepen! Je hebt nog worpen over, gooi eerst drie keer of maak je worpen af.");
+            return;
+        }
+
+        activeTarget = { colIndex, rowId };
+        submitChoice('/');
+        return;
+    }
+
+    openPhysicalChoicePopup(colIndex, rowId, rowObj);
+}
 
     function openPhysicalChoicePopup(colIndex, rowId, rowObj) {
         if (colIndex >= numGames) {
@@ -1827,6 +1934,9 @@
         if (rowObj.val !== undefined) {
             const v = rowObj.val;
             choices = [v, v*2, v*3, v*4];
+
+
+
         } else if (rowObj.fixed !== undefined) {
             const p = players[currentPlayerIndex];
             const playerMode = p.playMode || 'random';
@@ -1840,15 +1950,25 @@
                         break;
                     }
                 }
-                // Zolang er ergens nog een Kans openstaat, direct automatisch invullen zonder popup
                 if (!allKansFilled) {
                     submitChoice(rowObj.fixed);
                     return;
                 }
             }
 
+            // --- VOEG DIT STUKJE TOE VOOR STRICT / OP VOLGORDE ---
+            if (playerMode === 'strict' && canPlayKansInCurrentContext(colIndex)) {
+                submitChoice(rowObj.fixed);
+                return;
+            }
+            // ---------------------------------------------------
+
             choices = [rowObj.fixed];
-        } else {
+        }
+
+
+
+else {
             openKeypad(colIndex, rowId);
             return;
         }
@@ -1861,6 +1981,8 @@
             btn.onclick = () => submitChoice(val);
             container.appendChild(btn);
         });
+
+
         const p = players[currentPlayerIndex];
         const playerMode = p.playMode || 'random';
         const canPlayKansHere = canPlayKansInCurrentContext(colIndex);
@@ -1995,7 +2117,23 @@
             return;
         }
 
-        if (rollCount >= 3 || turnEnded || p.hasSubmittedThisTurn) {
+        // 1. ALS JE SCORE AL WÉL IS INGEVULD: geef de Volgende Speler knop
+        if (p.hasSubmittedThisTurn) {
+            if (players.length > 1) {
+                showCustomAlert(
+                    "Beurt al ingevuld", 
+                    "Je hebt je score al ingevuld voor deze beurt. Klik op de knop om naar de volgende speler te gaan!", 
+                    true // Activeert de Volgende Speler knop
+                );
+            } else {
+                showCustomAlert("Al ingevuld", "Je hebt al gescoord in deze beurt! Klik op 'Gooi 🎲' om een nieuwe beurt te starten.");
+            }
+            updateArrowPulse();
+            return;
+        }
+
+        // 2. ALS ER NOG GEEN SCORE IS INGEVULD: strenge OK-melding, niet doorgaan!
+        if (rollCount >= 3 || turnEnded) {
             showCustomAlert("Vul eerst je score in", "Je hebt al 3 keer gegooid! Vul eerst je punten in of zet een streep voordat je verder kunt.");
             updateArrowPulse();
             return;
@@ -2003,7 +2141,6 @@
 
         rollAllDice();
     }
-
     function handleIn() {
         const p = players[currentPlayerIndex];
         if (players.length > 1 && p.hasSubmittedThisTurn) return;
@@ -2493,18 +2630,26 @@ function openKeypad(colIndex, rowId) {
                 p.scores[`c${colIndex}_totaal_d1_copy`] = boven;
             }
 
-            let sumD2 = 0, countD2 = 0;
+          let sumD2 = 0, countD2 = 0;
             ['d2_0', 'd2_1', 'd2_2', 'd2_3', 'd2_4', 'd2_5', 'd2_6'].forEach(id => {
-                if (hasVal(id)) { sumD2 += getVal(id); countD2++; }
+                const val = p.scores[`c${c}_${id}`];
+                if (val !== undefined) {
+                    if (val !== '/') { sumD2 += parseInt(val, 10); }
+                    countD2++;
+                }
             });
             if (countD2 > 0) {
-                p.scores[`c${colIndex}_totaal_d2`] = sumD2;
+                p.scores[`c${c}_totaal_d2`] = sumD2;
+            } else {
+                delete p.scores[`c${c}_totaal_d2`]; // <-- DIT TOEVOEGEN
             }
 
-            let d1Total = p.scores[`c${colIndex}_totaal_d1_copy`];
-            let d2Total = p.scores[`c${colIndex}_totaal_d2`];
+            let d1Total = p.scores[`c${c}_totaal_d1_copy`];
+            let d2Total = p.scores[`c${c}_totaal_d2`];
             if (d1Total !== undefined && d2Total !== undefined) {
-                p.scores[targetKey] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
+                p.scores[`c${c}_eindtotaal`] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
+            } else {
+                delete p.scores[`c${c}_eindtotaal`]; // <-- DIT TOEVOEGEN
             }
         }
 
