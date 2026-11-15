@@ -1973,6 +1973,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 <!-- FIREBASE INTEGRATIE SCRIPT (Module) -->
 <script type="module">
+    import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-auth.js";
     import { initializeApp } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-app.js";
     import { getDatabase, ref, set, onValue, onDisconnect, get, push } from "https://www.gstatic.com/firebasejs/13.2.0/firebase-database.js";
 
@@ -1989,6 +1990,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app, "https://yatzee-f23d7-default-rtdb.europe-west1.firebasedatabase.app");
+
+   const auth = getAuth(app);
+signInAnonymously(auth);
 
     const lobbyModal = document.getElementById("lobbyModal");
     const btnCloseModal = document.getElementById("btnCloseModal");
