@@ -92,9 +92,12 @@
             padding: 6px 12px;
             font-size: 18px;
             font-weight: bold;
-            width: 120px;
+            width: 140px;
             cursor: pointer;
             text-align: center;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
         }
 
         .dice-icon {
@@ -292,6 +295,15 @@
             background-color: #e6f2ff;
         }
 
+        /* Read-Only / Spectator weergave vergrendeling op cellen */
+        table.yatzee-table.read-only-board td.score-cell {
+            cursor: default !important;
+            background-color: #fafafa;
+        }
+        table.yatzee-table.read-only-board td.score-cell:hover {
+            background-color: #fafafa !important;
+        }
+
         /* Actieve cel bij selectie */
         td.active-cell {
             background-color: #ffe680 !important;
@@ -306,8 +318,8 @@
             left: 0;
             width: 100vw;
             height: 100vh;
-            background: rgba(0, 0, 0, 0.4);
-            z-index: 100;
+            background: rgba(0, 0, 0, 0.45);
+            z-index: 100000;
             padding: 15px;
             justify-content: center;
         }
@@ -840,6 +852,18 @@
         .roll-btn:hover { background-color: #2ecc71; }
         .roll-btn:active { transform: scale(0.96); }
         .roll-btn:disabled { background-color: #444; color: #888; cursor: not-allowed; }
+        .roll-btn.state-score {
+            background-color: #e67e22;
+        }
+        .roll-btn.state-score:hover {
+            background-color: #f39c12;
+        }
+        .roll-btn.state-next {
+            background-color: #2980b9;
+        }
+        .roll-btn.state-next:hover {
+            background-color: #3498db;
+        }
 
         /* LOBBY MODAL STYLING (Geïntegreerd als div met losse stappen) */
         .modal-overlay { 
@@ -1271,7 +1295,7 @@
 
     <!-- Scoreblad Deel 1 -->
     <div class="score-table-wrapper" id="table-wrapper-1">
-        <table class="yatzee-table">
+        <table class="yatzee-table" id="yatzee-table-1">
             <tbody id="table-body-d1"></tbody>
         </table>
         <button class="scroll-arrow-btn" onclick="scrollNextColumn()" title="Volgende kolom / Oneindige loop">›</button>
@@ -1292,7 +1316,7 @@
 
     <!-- Scoreblad Deel 2 -->
     <div class="score-table-wrapper" id="table-wrapper-2">
-        <table class="yatzee-table">
+        <table class="yatzee-table" id="yatzee-table-2">
             <tbody id="table-body-d2"></tbody>
         </table>
         <button class="scroll-arrow-btn" onclick="scrollNextColumn()" title="Volgende kolom / Oneindige loop">›</button>
@@ -1638,9 +1662,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let isResizing = false;
     let resizeDir = '';
     let startX, startY, startW, startH, startL, startT;
-    const EDGE = 10; // Gevoeligheidszone van de randen in pixels
+    const EDGE = 10;
 
-    // Cursor aanpassen als je over de randen beweegt
     modal.addEventListener('mousemove', (e) => {
         if (isResizing) return;
         const rect = modal.getBoundingClientRect();
@@ -1662,7 +1685,6 @@ document.addEventListener('DOMContentLoaded', () => {
         modal.style.cursor = cursor;
     });
 
-    // Muisklik: start rand-resizing of anders vrij slepen
     modal.addEventListener('mousedown', (e) => {
         const rect = modal.getBoundingClientRect();
         const x = e.clientX - rect.left;
@@ -1680,7 +1702,6 @@ document.addEventListener('DOMContentLoaded', () => {
         else if (y > h - EDGE) dir = 's';
         else if (y < EDGE) dir = 'n';
 
-        // Als we op een rand klikken -> Resizen met pijltjes
         if (dir) {
             isResizing = true;
             resizeDir = dir;
@@ -1695,7 +1716,6 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
-        // Anders: Vrij verslepen (klik niet op input, knoppen of toetsenbord)
         if (['INPUT', 'BUTTON', 'TEXTAREA'].includes(e.target.tagName)) return;
 
         let isDragging = true;
@@ -1725,7 +1745,6 @@ document.addEventListener('DOMContentLoaded', () => {
         e.preventDefault();
     });
 
-    // Uitvoeren van het resizen bij bewegen muis
     window.addEventListener('mousemove', (e) => {
         if (!isResizing) return;
         const dx = e.clientX - startX;
@@ -1777,18 +1796,14 @@ document.addEventListener('DOMContentLoaded', () => {
             <button id="btnChooseGuest" class="btn-main" style="margin-bottom: 10px; background: #28a745;">👤 Gast (Deelnemen)</button>
         </div>
 
-        <!-- STAP 2: HOST SCHERM -->
+        <!-- STAP 2: HOST SCHERM (To-Do 1: Kopieer/WhatsApp knoppen verplaatst naar #stepLobby) -->
         <div id="stepHost" class="hidden">
             <h3>Nieuw Spel Hosten</h3>
             <label>Jouw Naam (Host):</label>
             <input type="text" id="hostNameInput" placeholder="Jouw naam...">
             
             <label>Gegenereerde Roomcode:</label>
-<div style="display: flex; gap: 6px; margin-bottom: 12px;">
-    <input type="text" id="hostRoomDisplay" readonly style="background: #e9ecef; font-weight: bold; color: #007bff; margin-bottom: 0; flex: 1;">
-    <button type="button" id="btnCopyRoom" class="btn-main" style="margin-top: 0; width: 75px; height: 42px; font-size: 12px;" title="Kopieer roomcode">Code</button>
-    <button type="button" id="btnCopyLink" class="btn-main" style="margin-top: 0; width: 75px; height: 42px; font-size: 12px; background: #17a2b8;" title="Kopieer complete link">Link</button>
-</div>
+            <input type="text" id="hostRoomDisplay" readonly style="background: #e9ecef; font-weight: bold; color: #007bff; margin-bottom: 12px;">
             
             <label>Aantal Rijtjes / Kolommen (Online):</label>
             <div id="onlineRowsTiles" class="tile-container" style="margin-bottom: 10px;">
@@ -1807,9 +1822,6 @@ document.addEventListener('DOMContentLoaded', () => {
             </div>
 
             <button id="btnConfirmHost" class="btn-main">Open Room & Naar Lobby</button>
-            
-            <a id="btnWhatsAppInvite" href="#" target="_blank" class="btn-whatsapp hidden">📱 Deel uitnodiging via WhatsApp</a>
-
             <button id="btnBackFromHost" class="btn-sub" style="margin-top: 8px;">Terug</button>
         </div>
 
@@ -1826,12 +1838,17 @@ document.addEventListener('DOMContentLoaded', () => {
             <button id="btnBackFromGuest" class="btn-sub" style="margin-top: 8px;">Terug</button>
         </div>
 
-        <!-- STAP 4: LOBBY WACHTSCHERM -->
+        <!-- STAP 4: LOBBY WACHTSCHERM (To-Do 1: WhatsApp, Code en Link knoppen hier veilig gecentraliseerd) -->
         <div id="stepLobby" class="hidden">
-            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px;">
+            <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px;">
                 <p style="margin: 0;"><b>Roomcode:</b> <span id="lobbyRoomCode" style="color: #007bff; font-weight: bold;"></span></p>
-                <button type="button" id="btnCopyLobbyRoom" class="btn-main" style="margin-top: 0; width: 90px; height: 36px; font-size: 13px; padding: 0;" title="Kopieer roomcode">Kopieer</button>
             </div>
+            <div style="display: flex; gap: 6px; margin-bottom: 10px;">
+                <button type="button" id="btnCopyRoom" class="btn-main" style="margin-top: 0; flex: 1; height: 38px; font-size: 13px; padding: 0;" title="Kopieer roomcode">📋 Code</button>
+                <button type="button" id="btnCopyLink" class="btn-main" style="margin-top: 0; flex: 1; height: 38px; font-size: 13px; padding: 0; background: #17a2b8;" title="Kopieer complete link">🔗 Link</button>
+            </div>
+            <a id="btnWhatsAppInvite" href="#" target="_blank" class="btn-whatsapp" style="margin-top: 0; margin-bottom: 10px;">📱 Deel uitnodiging via WhatsApp</a>
+
             <p><b>Spelers in de room:</b></p>
             <div class="player-list">
                 <ul id="playerList"></ul>
@@ -1893,12 +1910,12 @@ document.addEventListener('DOMContentLoaded', () => {
     </div>
 </div>
 
-<!-- Speler Inspectie / Room Overzicht Overlay -->
+<!-- Speler Inspectie / Room Overzicht Overlay (To-Do 3: Overbodige grijze knop verwijderd) -->
 <div id="player-inspect-overlay" class="overlay centered" onclick="handleOverlayClick(event, 'player-inspect-overlay')">
     <div class="custom-modal" style="width: 340px;">
         <span class="modal-close-cross" onclick="closePlayerInspect()">×</span>
         <h3>Spelers in Room & Bord Bekijken</h3>
-        <p style="font-size: 13px; color: #555;">Klik op een speler om diens scoreblad te bekijken (Spectator / Read-Only):</p>
+        <p style="font-size: 13px; color: #555;">Klik op een speler om diens scoreblad te bekijken:</p>
         <div id="inspect-player-list" style="display: flex; flex-direction: column; gap: 8px; margin-top: 10px;"></div>
     </div>
 </div>
@@ -1990,10 +2007,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const app = initializeApp(firebaseConfig);
     const db = getDatabase(app, "https://yatzee-f23d7-default-rtdb.europe-west1.firebasedatabase.app");
+    const auth = getAuth(app);
 
-   const auth = getAuth(app);
-signInAnonymously(auth);
+    // Maak alles globaal beschikbaar zodat regel 2096 en je hostknop er feilloos bij kunnen
+    window.db = db;
+    window.auth = auth;
+    window.authReadyPromise = signInAnonymously(auth).catch(err => console.error("Auth fout:", err));
+</script>
 
+<script>
     const lobbyModal = document.getElementById("lobbyModal");
     const btnCloseModal = document.getElementById("btnCloseModal");
     const cardHeader = document.getElementById("cardHeader");
@@ -2030,11 +2052,78 @@ signInAnonymously(auth);
     window.currentRoomCode = "";
     let activePlayers = {};
     window.isOnlineGame = false;
+    window._lastSyncedTurnIndex = null;
 
-    // --- URL PARAMETER AFHANDELING ---
-    window.addEventListener('DOMContentLoaded', () => {
+    // --- TO-DO 2: NAADLOOS SESSIEHERSTEL (localStorage) ---
+    const SESSION_STORAGE_KEY = "yatzee_online_session_v1";
+
+    window.saveOnlineSession = function(roomCode, playerName, isHost) {
+        try {
+            localStorage.setItem(SESSION_STORAGE_KEY, JSON.stringify({
+                roomCode: roomCode,
+                playerName: playerName,
+                isHost: !!isHost,
+                timestamp: Date.now()
+            }));
+        } catch (e) {}
+    };
+
+    window.clearOnlineSession = function() {
+        try {
+            localStorage.removeItem(SESSION_STORAGE_KEY);
+        } catch (e) {}
+    };
+
+    function getSavedOnlineSession() {
+        try {
+            const raw = localStorage.getItem(SESSION_STORAGE_KEY);
+            if (!raw) return null;
+            const parsed = JSON.parse(raw);
+            if (!parsed || !parsed.roomCode || !parsed.playerName) return null;
+            // Maximaal 12 uur geldig voor sessieherstel
+            if (parsed.timestamp && (Date.now() - parsed.timestamp) > 12 * 60 * 60 * 1000) {
+                window.clearOnlineSession();
+                return null;
+            }
+            return parsed;
+        } catch (e) {
+            return null;
+        }
+    }
+
+    // --- URL PARAMETER & SESSIEHERSTEL BIJ LADEN ---
+    window.addEventListener('DOMContentLoaded', async () => {
+        await authReadyPromise;
+
         const urlParams = new URLSearchParams(window.location.search);
         const roomParam = urlParams.get('room');
+        const savedSession = getSavedOnlineSession();
+
+        // 1. Als er een opgeslagen sessie is (en geen afwijkende room-link in URL), herstel naadloos!
+        if (savedSession && (!roomParam || roomParam === savedSession.roomCode)) {
+            const roomSnap = await get(ref(db, 'rooms/' + savedSession.roomCode));
+            const roomData = roomSnap.val();
+            if (roomData) {
+                window.myName = savedSession.playerName;
+                window.currentRoomCode = savedSession.roomCode;
+                const isHostRestored = (roomData.host === savedSession.playerName) || savedSession.isHost;
+
+                if (lobbyModal) {
+                    lobbyModal.style.display = "flex";
+                    lobbyModal.classList.remove("hidden");
+                    stepOnlineChoice.classList.add("hidden");
+                    stepHost.classList.add("hidden");
+                    stepGuest.classList.add("hidden");
+                }
+                updateHeaderPlayerName();
+                await enterRoom(savedSession.roomCode, savedSession.playerName, isHostRestored);
+                return;
+            } else {
+                window.clearOnlineSession();
+            }
+        }
+
+        // 2. Anders: normale URL parameter ?room=... afhandeling voor gast
         if (roomParam) {
             setTimeout(() => {
                 if (lobbyModal) {
@@ -2137,14 +2226,15 @@ signInAnonymously(auth);
                 players = settingsData.players.map((item, idx) => ({
                     id: typeof item === 'object' && item.id ? item.id : ('p_' + idx),
                     name: typeof item === 'string' ? item : item.name,
-                    scores: {},
+                    scores: (typeof item === 'object' && item.scores) ? { ...item.scores } : {},
                     playMode: typeof item === 'object' && item.playMode ? item.playMode : 'random',
                     lastActionKey: null,
                     lastRoll: null,
-                    hasSubmittedThisTurn: false
+                    hasSubmittedThisTurn: (typeof item === 'object' && item.hasSubmittedThisTurn) ? !!item.hasSubmittedThisTurn : false
                 }));
             }
             currentPlayerIndex = 0;
+            inspectingPlayerIndex = null;
         }
 
         diceModeActive = true;
@@ -2155,6 +2245,7 @@ signInAnonymously(auth);
 
         buildGrid();
         updateDisplay();
+        updateActionButtons();
         checkTurnPermissions();
         initChatSystem();
     };
@@ -2168,24 +2259,14 @@ signInAnonymously(auth);
         });
     }
 
-   if (btnChooseHost) {
-    btnChooseHost.addEventListener("click", () => {
-        stepOnlineChoice.classList.add("hidden");
-        stepHost.classList.remove("hidden");
-        const randomCode = 'room_' + Math.random().toString(36).substring(2, 8);
-        hostRoomDisplay.value = randomCode;
-
-        const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-        const siteLink = baseUrl + "yatzeeonline.html?room=" + randomCode;
-        
-        // Sla de complete link hier op
-        window.currentSiteLinkToCopy = siteLink;
-
-        const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${randomCode}\nLink: ${siteLink}`);
-        btnWhatsAppInvite.href = `https://api.whatsapp.com/send?text=${inviteText}`;
-        btnWhatsAppInvite.classList.remove("hidden");
-    });
-}
+    if (btnChooseHost) {
+        btnChooseHost.addEventListener("click", () => {
+            stepOnlineChoice.classList.add("hidden");
+            stepHost.classList.remove("hidden");
+            const randomCode = 'room_' + Math.random().toString(36).substring(2, 8);
+            hostRoomDisplay.value = randomCode;
+        });
+    }
 
     if (btnChooseGuest) {
         btnChooseGuest.addEventListener("click", () => {
@@ -2194,11 +2275,23 @@ signInAnonymously(auth);
         });
     }
 
+    // --- TO-DO 1: UITNODIGINGS- & KOPIEERKNOPPEN IN HET ACTIEVE LOBBY-SCHERM (#stepLobby) ---
+    function updateLobbyInviteLinks(roomCode) {
+        if (!roomCode) return;
+        const baseUrl = window.location.href.split('?')[0];
+        const siteLink = baseUrl + "?room=" + encodeURIComponent(roomCode);
+        window.currentSiteLinkToCopy = siteLink;
+
+        if (btnWhatsAppInvite) {
+            const inviteText = encodeURIComponent(`Kom je ook mee Yatzee spelen? Klik op de link om direct mee te doen!\n\nRoomcode: ${roomCode}\nLink: ${siteLink}`);
+            btnWhatsAppInvite.href = `[https://api.whatsapp.com/send?text=$](https://api.whatsapp.com/send?text=$){inviteText}`;
+        }
+    }
+
     const btnCopyRoom = document.getElementById("btnCopyRoom");
     if (btnCopyRoom) {
         btnCopyRoom.addEventListener("click", () => {
-            const hostRoomDisplay = document.getElementById("hostRoomDisplay");
-            const codeText = hostRoomDisplay ? (hostRoomDisplay.value || hostRoomDisplay.innerText) : "";
+            const codeText = window.currentRoomCode || (lobbyRoomCode ? lobbyRoomCode.innerText.trim() : "");
             if (codeText) {
                 navigator.clipboard.writeText(codeText).then(() => {
                     const originalText = btnCopyRoom.innerText;
@@ -2216,36 +2309,17 @@ signInAnonymously(auth);
     const btnCopyLink = document.getElementById("btnCopyLink");
     if (btnCopyLink) {
         btnCopyLink.addEventListener("click", () => {
-            const hostRoomDisplay = document.getElementById("hostRoomDisplay");
-            const codeText = hostRoomDisplay ? (hostRoomDisplay.value || hostRoomDisplay.innerText) : "";
+            const codeText = window.currentRoomCode || (lobbyRoomCode ? lobbyRoomCode.innerText.trim() : "");
             if (codeText) {
-                const baseUrl = window.location.href.substring(0, window.location.href.lastIndexOf('/') + 1);
-                const siteLink = baseUrl + "yatzeeonline.html?room=" + codeText;
-                
+                const baseUrl = window.location.href.split('?')[0];
+                const siteLink = baseUrl + "?room=" + encodeURIComponent(codeText);
                 navigator.clipboard.writeText(siteLink).then(() => {
                     const originalText = btnCopyLink.innerText;
                     btnCopyLink.innerText = "Gekopieerd!";
                     btnCopyLink.style.background = "#28a745";
                     setTimeout(() => {
                         btnCopyLink.innerText = originalText;
-                        btnCopyLink.style.background = "";
-                    }, 1500);
-                });
-            }
-        });
-    }
-
-    const btnCopyLobbyRoom = document.getElementById("btnCopyLobbyRoom");
-    if (btnCopyLobbyRoom) {
-        btnCopyLobbyRoom.addEventListener("click", () => {
-            if (lobbyRoomCode.innerText) {
-                navigator.clipboard.writeText(lobbyRoomCode.innerText).then(() => {
-                    const originalText = btnCopyLobbyRoom.innerText;
-                    btnCopyLobbyRoom.innerText = "Gekopieerd!";
-                    btnCopyLobbyRoom.style.background = "#28a745";
-                    setTimeout(() => {
-                        btnCopyLobbyRoom.innerText = originalText;
-                        btnCopyLobbyRoom.style.background = "";
+                        btnCopyLink.style.background = "#17a2b8";
                     }, 1500);
                 });
             }
@@ -2270,8 +2344,9 @@ signInAnonymously(auth);
         btnConfirmHost.addEventListener("click", async () => {
             window.myName = hostNameInput.value.trim();
             window.currentRoomCode = hostRoomDisplay.value.trim();
-            if (!window.myName) { alert("Vul je naam in!"); return; }
+            if (!window.myName) { showCustomAlert("Naam ontbreekt", "Vul je naam in voordat je de room opent!"); return; }
             stepHost.classList.add("hidden");
+            window.saveOnlineSession(window.currentRoomCode, window.myName, true);
             updateHeaderPlayerName();
             await enterRoom(window.currentRoomCode, window.myName, true);
         });
@@ -2281,16 +2356,19 @@ signInAnonymously(auth);
         btnConfirmGuest.addEventListener("click", async () => {
             window.myName = guestNameInput.value.trim();
             window.currentRoomCode = guestRoomInput.value.trim();
-            if (!window.myName || !window.currentRoomCode) { alert("Vul naam en roomcode in!"); return; }
+            if (!window.myName || !window.currentRoomCode) { showCustomAlert("Gegevens ontbreken", "Vul je naam en de roomcode in!"); return; }
             stepGuest.classList.add("hidden");
+            window.saveOnlineSession(window.currentRoomCode, window.myName, false);
             updateHeaderPlayerName();
             await enterRoom(window.currentRoomCode, window.myName, false);
         });
     }
 
     async function enterRoom(roomCode, playerName, isHost) {
+        await authReadyPromise;
         stepLobby.classList.remove("hidden");
         lobbyRoomCode.innerText = roomCode;
+        updateLobbyInviteLinks(roomCode);
 
         const roomBasePath = 'rooms/' + roomCode;
         const hostRef = ref(db, roomBasePath + '/host');
@@ -2370,7 +2448,7 @@ signInAnonymously(auth);
             if (data.status === "gestart" && !window.isOnlineGame) {
                 const roomRows = data.settings ? data.settings.rows : onlineRows;
                 const roomPlayMode = data.settings ? data.settings.playMode : onlinePlayMode;
-                const roomPlayers = data.settings ? data.settings.players : Object.keys(activePlayers);
+                const roomPlayers = data.settings ? data.settings.players : Object.keys(activePlayers).sort();
 
                 closeLobbyAndStartGame({
                     mode: "online",
@@ -2399,7 +2477,12 @@ signInAnonymously(auth);
                     turnEnded: false,
                     diceValues: [1, 1, 1, 1, 1],
                     lockedDice: [false, false, false, false, false],
-                    scores: {}
+                    players: playerNames.map(pName => ({
+                        name: pName,
+                        scores: {},
+                        playMode: onlinePlayMode,
+                        hasSubmittedThisTurn: false
+                    }))
                 };
 
                 const payloadToSave = {
@@ -2438,26 +2521,66 @@ signInAnonymously(auth);
             turnEnded: turnEnded,
             diceValues: diceInstances.map(d => d.value),
             lockedDice: diceInstances.map(d => d.isLocked),
-            players: players.map(p => ({ name: p.name, scores: p.scores, hasSubmittedThisTurn: p.hasSubmittedThisTurn })),
+            players: players.map(p => ({
+                name: p.name,
+                scores: p.scores || {},
+                playMode: p.playMode || 'random',
+                hasSubmittedThisTurn: !!p.hasSubmittedThisTurn
+            })),
             ...extraUpdates
         };
 
         set(gameStateRef, payload);
     };
 
+    // --- TO-DO 5 & 6: LIVE DATA SYNC (SCORES + WORPEN) & AUTOMATISCHE BEURTWISSEL ---
     function syncGameStateFromFirebase(gs) {
         if (!gs) return;
         const isNewRoll = gs.rollCount !== undefined && gs.rollCount > rollCount;
+        const turnChanged = gs.currentPlayerIndex !== undefined && gs.currentPlayerIndex !== window._lastSyncedTurnIndex;
 
-        if (gs.currentPlayerIndex !== undefined && gs.currentPlayerIndex !== currentPlayerIndex) {
+        // 1. Synchroniseer alle scores en spelersstatus uit Firebase (zodat je nooit op een leeg bord kijkt)
+        if (gs.players && Array.isArray(gs.players)) {
+            gs.players.forEach((remoteP, idx) => {
+                if (players[idx]) {
+                    players[idx].name = remoteP.name || players[idx].name;
+                    players[idx].scores = remoteP.scores ? { ...remoteP.scores } : {};
+                    if (remoteP.playMode) players[idx].playMode = remoteP.playMode;
+                    players[idx].hasSubmittedThisTurn = !!remoteP.hasSubmittedThisTurn;
+                } else {
+                    players.push({
+                        id: 'p_' + idx,
+                        name: remoteP.name || ('Speler ' + (idx + 1)),
+                        scores: remoteP.scores ? { ...remoteP.scores } : {},
+                        playMode: remoteP.playMode || 'random',
+                        lastActionKey: null,
+                        lastRoll: null,
+                        hasSubmittedThisTurn: !!remoteP.hasSubmittedThisTurn
+                    });
+                }
+            });
+        }
+
+        // 2. Bij beurtwissel springt iedereen automatisch naar het bord van de speler die aan de beurt is (en To-Do 6: wis verleden-actie)
+        if (turnChanged) {
             currentPlayerIndex = gs.currentPlayerIndex;
-            inspectingPlayerIndex = null; 
+            window._lastSyncedTurnIndex = gs.currentPlayerIndex;
+            inspectingPlayerIndex = null;
             window._turnPopupShownForTurn = null;
+            players.forEach(pl => {
+                pl.lastActionKey = null;
+            });
+            updateHeaderPlayerName();
+        } else if (gs.currentPlayerIndex !== undefined && gs.currentPlayerIndex !== currentPlayerIndex) {
+            currentPlayerIndex = gs.currentPlayerIndex;
+            inspectingPlayerIndex = null;
             updateHeaderPlayerName();
         }
+
         if (gs.rollCount !== undefined) rollCount = gs.rollCount;
         if (gs.turnEnded !== undefined) turnEnded = gs.turnEnded;
 
+        // 3. Synchroniseer live dobbelsteenworpen & vergrendelde stenen
         if (gs.diceValues && Array.isArray(gs.diceValues) && diceInstances.length === 5) {
             diceInstances.forEach((d, i) => {
                 d.value = gs.diceValues[i];
@@ -2483,7 +2606,19 @@ signInAnonymously(auth);
             });
         }
 
+        // Werk worpenteller en combo-tekst bij voor toeschouwers
+        const worpEl = document.getElementById('worp-count');
+        if (worpEl) worpEl.innerText = `${rollCount}/3`;
+        if (rollCount > 0) {
+            updateScoreAndCombos();
+        } else {
+            const comboEl = document.getElementById('combo-display');
+            if (comboEl) comboEl.innerText = "Nieuwe beurt";
+        }
+
         updateDisplay();
+        updateArrowPulse();
+        updateActionButtons();
         checkTurnPermissions();
     }
 
@@ -2494,7 +2629,7 @@ signInAnonymously(auth);
     window.toggleChatPopup = function() {
         const chatModal = document.getElementById("chatModal");
         if (!chatModal) return;
-        chatIsOpen = chatIsOpen ? false : true;
+        chatIsOpen = !chatIsOpen;
         chatModal.style.display = chatIsOpen ? "flex" : "none";
         if (chatIsOpen) {
             unreadChatCount = 0;
@@ -2551,7 +2686,6 @@ signInAnonymously(auth);
             msgContainer.innerHTML = "";
 
             if (data) {
-                let hasNew = false;
                 Object.values(data).forEach(msg => {
                     const div = document.createElement("div");
                     const isMine = msg.sender === window.myName;
@@ -2844,6 +2978,7 @@ signInAnonymously(auth);
         buildGrid();
         init3DDice();
         updateDisplay();
+        updateActionButtons();
         resetInactivityTimer();
 
         const wrapper = document.getElementById('dice-bar-wrapper');
@@ -2887,11 +3022,67 @@ signInAnonymously(auth);
         const p = players[currentPlayerIndex];
         const arrowBtn = document.getElementById('player-switch-btn');
         if (arrowBtn) {
-            if (p && p.hasSubmittedThisTurn && players.length > 1) {
+            if (p && p.hasSubmittedThisTurn && players.length > 1 && isMyTurn()) {
                 arrowBtn.classList.add('pulsing');
             } else {
                 arrowBtn.classList.remove('pulsing');
             }
+        }
+    }
+
+    // --- TO-DO 5: HULPFUNCTIE VOOR STRIKTE READ-ONLY & SPECTATOR CONTROLE ---
+    function isViewingReadOnlyBoard() {
+        if (window.isOnlineGame && !isMyTurn()) return true;
+        if (inspectingPlayerIndex !== null && inspectingPlayerIndex !== currentPlayerIndex) return true;
+        return false;
+    }
+
+    function updateBoardReadOnlyVisuals() {
+        const readOnly = isViewingReadOnlyBoard();
+        const t1 = document.getElementById('yatzee-table-1');
+        const t2 = document.getElementById('yatzee-table-2');
+        if (t1) t1.classList.toggle('read-only-board', readOnly);
+        if (t2) t2.classList.toggle('read-only-board', readOnly);
+    }
+
+    // --- TO-DO 4: DYNAMISCHE 3-STATEN GROENE KNOP LOGICA ---
+    function updateActionButtons() {
+        const rollBtn = document.getElementById('roll-btn');
+        const inBtn = document.getElementById('in-btn');
+        if (!rollBtn) return;
+
+        const p = players[currentPlayerIndex];
+        const myTurn = isMyTurn();
+
+        rollBtn.classList.remove('state-score', 'state-next');
+
+        if (!myTurn) {
+            rollBtn.disabled = true;
+            rollBtn.innerText = "Wacht op beurt";
+            rollBtn.style.opacity = '0.5';
+            if (inBtn) inBtn.disabled = true;
+            return;
+        }
+
+        rollBtn.disabled = isRolling;
+        rollBtn.style.opacity = '1';
+
+        if (p && p.hasSubmittedThisTurn) {
+            // STAAT 3: Score is ingevuld -> 'Volgende ➔'
+            rollBtn.innerText = "Volgende ➔";
+            rollBtn.classList.add('state-next');
+            if (inBtn) inBtn.disabled = true;
+        } else if (rollCount >= 3 || turnEnded) {
+            // STAAT 2: W: 3/3 (of na 'In') en score nog NIET ingevuld -> 'Scoren'
+            rollBtn.innerText = "Scoren";
+            rollBtn.classList.add('state-score');
+            if (inBtn) inBtn.disabled = true;
+        } else {
+            // STAAT 1: Minder dan 3 worpen (< 3) en nog geen score ingevuld -> 'Gooi 🎲' / '2e Worp 🎲' / '3e Worp 🎲'
+            if (rollCount === 0) rollBtn.innerText = "Gooi 🎲";
+            else if (rollCount === 1) rollBtn.innerText = "2e Worp 🎲";
+            else rollBtn.innerText = "3e Worp 🎲";
+            if (inBtn) inBtn.disabled = (rollCount === 0 || isRolling);
         }
     }
 
@@ -2934,7 +3125,10 @@ signInAnonymously(auth);
                         tdCell.onclick = () => calculateTotal(c, row.id);
                     } else {
                         tdCell.className = 'score-cell';
-                        tdCell.onclick = () => handleScoreClick(c, row.id, row);
+                        tdCell.onclick = (e) => {
+                            e.stopPropagation();
+                            handleScoreClick(c, row.id, row);
+                        };
                     }
                     tr.appendChild(tdCell);
                 }
@@ -2952,11 +3146,8 @@ signInAnonymously(auth);
 
     function checkTurnPermissions() {
         const myTurn = isMyTurn();
-        const rollBtn = document.getElementById('roll-btn');
-        
-        if (rollBtn) {
-            rollBtn.style.opacity = myTurn ? '1' : '0.5';
-        }
+        updateActionButtons();
+        updateBoardReadOnlyVisuals();
 
         if (window.isOnlineGame && myTurn) {
             const p = players[currentPlayerIndex];
@@ -2970,6 +3161,7 @@ signInAnonymously(auth);
         }
     }
 
+    // --- TO-DO 3 & 5: SPELER INSPECTIE ZONDER OVERBODIGE GRIJZE KNOP + KLIK-ISOLATIE ---
     function openPlayerInspectionOrSetup() {
         if (window.isOnlineGame) {
             const overlay = document.getElementById('player-inspect-overlay');
@@ -2981,27 +3173,24 @@ signInAnonymously(auth);
                     btn.className = 'btn-main';
                     let label = p.name;
                     if (idx === currentPlayerIndex) label += " (Aan de beurt)";
-                    if (inspectingPlayerIndex === idx) label += " [Bekijkt nu]";
+                    if (p.name === window.myName) label += " [Jij]";
+                    if (inspectingPlayerIndex === idx) label += " • Bekijkt nu";
                     btn.innerText = label;
-                    btn.onclick = () => {
-                        inspectingPlayerIndex = idx;
+                    btn.onclick = (e) => {
+                        e.stopPropagation();
+                        // Klik je op degene die aan de beurt is (of op jezelf terwijl jij aan de beurt bent), keer dan terug naar de actieve beurtweergave
+                        if (idx === currentPlayerIndex) {
+                            inspectingPlayerIndex = null;
+                        } else {
+                            inspectingPlayerIndex = idx;
+                        }
                         updateHeaderPlayerName();
                         updateDisplay();
+                        updateBoardReadOnlyVisuals();
                         document.getElementById('player-inspect-overlay').style.display = 'none';
                     };
                     listContainer.appendChild(btn);
                 });
-
-                const resetBtn = document.createElement('button');
-                resetBtn.className = 'btn-sub';
-                resetBtn.innerText = "Terug naar eigen weergave";
-                resetBtn.onclick = () => {
-                    inspectingPlayerIndex = null;
-                    updateHeaderPlayerName();
-                    updateDisplay();
-                    document.getElementById('player-inspect-overlay').style.display = 'none';
-                };
-                listContainer.appendChild(resetBtn);
 
                 overlay.style.display = 'flex';
             }
@@ -3055,15 +3244,23 @@ signInAnonymously(auth);
                 if (p.scores[cellKey] === undefined) {
                     let points = calculateScoreForCategory(rowObj.id, rowObj, activeDice);
                     if (points > 0) return true;
+                } else if (rowObj.id === 'd2_5' && p.scores[cellKey] !== '/' && p.scores[cellKey] > 0) {
+                    // Extra Yahtzee (+50) is ook een geldige score-optie als je Yahtzee gooit!
+                    let points = calculateScoreForCategory(rowObj.id, rowObj, activeDice);
+                    if (points === 50) return true;
                 }
             }
         }
         return false;
     }
 
+    // --- TO-DO 5, 6 & 7: SCORE KLIK MET SPECTATOR-BLOKKADE, STRIKTE WIS-BEPERKING & YAHTZEE +50 ---
     function handleScoreClick(colIndex, rowId, rowObj) {
+        // TO-DO 5: Strikte Read-Only & Klik-isolatie (voorkomt click-passthrough)
         if (window.isOnlineGame && !isMyTurn()) {
-            showCustomAlert("Niet jouw beurt", "Je staat in Read-Only modus omdat een andere speler aan de beurt is!");
+            return;
+        }
+        if (inspectingPlayerIndex !== null && inspectingPlayerIndex !== currentPlayerIndex) {
             return;
         }
 
@@ -3074,12 +3271,119 @@ signInAnonymously(auth);
 
         const p = players[currentPlayerIndex];
         const uniqueKey = `c${colIndex}_${rowId}`;
-        const isFilled = p.scores[uniqueKey] !== undefined;
+        const currentVal = p.scores[uniqueKey];
+        const isFilled = currentVal !== undefined;
         const isLastAction = (uniqueKey === p.lastActionKey);
 
+        // --- TO-DO 7: YAHTZEE-BONUS (+50 STAPPEN) & STREEP = VOL LOGICA ---
+        if (rowId === 'd2_5' && isFilled) {
+            // Streep = definitief dicht (geen bonus mogelijk)
+            if (currentVal === '/') {
+                if (isLastAction) {
+                    showCustomAlert(
+                        "Streep wissen?",
+                        "Wil je de schuine streep op Yatzee wissen?",
+                        false,
+                        "",
+                        function() {
+                            delete p.scores[uniqueKey];
+                            p.lastActionKey = null;
+                            p.hasSubmittedThisTurn = false;
+                            turnEnded = false;
+                            updateDisplay();
+                            updateArrowPulse();
+                            updateActionButtons();
+                            if (window.isOnlineGame) pushGameStateToFirebase();
+                        }
+                    );
+                }
+                return;
+            }
+
+            // Controleer of het een actuele Yahtzee-worp is voor +50 bonus
+            let activeDice = lastActiveRoll || (rollCount > 0 ? diceInstances.map(d => d.value) : null);
+            const rolledYahtzeeNow = activeDice ? (calculateScoreForCategory('d2_5', rowObj, activeDice) === 50) : false;
+
+            // In 'random' modus (meerdere rijtjes) mag +50 bonus pas zodra alle actieve Yahtzee-vakjes gevuld zijn
+            const playerMode = p.playMode || 'random';
+            let allYahtzeesFilled = true;
+            if (playerMode !== 'strict') {
+                for (let c = 0; c < numGames; c++) {
+                    if (p.scores[`c${c}_d2_5`] === undefined) {
+                        allYahtzeesFilled = false;
+                        break;
+                    }
+                }
+            }
+
+            // Binnen dezelfde beurt (isLastAction): optie om te wissen (en als voorwaarden kloppen ook +50)
+            if (isLastAction) {
+                const container = document.getElementById('popup-buttons-container');
+                container.innerHTML = '';
+
+                const wisBtn = document.createElement('button');
+                wisBtn.className = 'key-btn action';
+                wisBtn.style.fontSize = '16px';
+                wisBtn.innerText = 'Wis';
+                wisBtn.onclick = () => {
+                    // Als er al een eerdere Yahtzee stond vóór deze beurt, verlaag met 50; anders helemaal wissen
+                    if (typeof p._prevYahtzeeScoreBeforeTurn === 'number' && p._prevYahtzeeScoreBeforeTurn > 0) {
+                        p.scores[uniqueKey] = p._prevYahtzeeScoreBeforeTurn;
+                        delete p._prevYahtzeeScoreBeforeTurn;
+                    } else {
+                        delete p.scores[uniqueKey];
+                    }
+                    p.lastActionKey = null;
+                    p.hasSubmittedThisTurn = false;
+                    turnEnded = false;
+                    closeChoicePopup();
+                    updateDisplay();
+                    updateArrowPulse();
+                    updateActionButtons();
+                    if (window.isOnlineGame) pushGameStateToFirebase();
+                };
+                container.appendChild(wisBtn);
+
+                if (rolledYahtzeeNow && allYahtzeesFilled && !p.hasSubmittedThisTurn) {
+                    const bonusBtn = document.createElement('button');
+                    bonusBtn.className = 'key-btn';
+                    bonusBtn.style.background = '#27ae60';
+                    bonusBtn.style.color = '#fff';
+                    bonusBtn.style.fontSize = '18px';
+                    bonusBtn.innerText = '+50';
+                    bonusBtn.onclick = () => {
+                        p._prevYahtzeeScoreBeforeTurn = parseInt(currentVal, 10) || 50;
+                        activeTarget = { colIndex, rowId };
+                        submitChoice((parseInt(currentVal, 10) || 50) + 50);
+                    };
+                    container.appendChild(bonusBtn);
+                }
+
+                applySmartOverlayPosition('choice-popup-overlay', true);
+                document.getElementById('choice-popup-overlay').style.display = 'flex';
+                return;
+            }
+
+            // Latere beurt: nieuwe Yahtzee gegooid -> +50 stappen (50 -> 100 -> 150 -> 200...)
+            if (!p.hasSubmittedThisTurn && rolledYahtzeeNow) {
+                if (!allYahtzeesFilled) {
+                    showCustomAlert("Nog lege Yatzee-vakjes", "Vul eerst alle lege Yatzee-vakjes van je actieve rijtjes in voordat je +50 bonus toevoegt!");
+                    return;
+                }
+                const prevScore = parseInt(currentVal, 10) || 50;
+                p._prevYahtzeeScoreBeforeTurn = prevScore;
+                activeTarget = { colIndex, rowId };
+                submitChoice(prevScore + 50);
+                return;
+            }
+
+            // To-Do 6: In latere beurten zonder nieuwe Yahtzee is wissen strikt geblokkeerd
+            return;
+        }
+
+        // --- TO-DO 6: SCORE-WISSEN STRIKT BEPERKEN TOT ACTIEVE HUIDIGE BEURT ---
         if (isFilled) {
             if (isLastAction) {
-                const currentVal = p.scores[uniqueKey];
                 showCustomAlert(
                     "Score wissen?", 
                     `Wil je de score van ${currentVal === '/' ? 'schuine streep' : currentVal} wissen?`, 
@@ -3092,6 +3396,7 @@ signInAnonymously(auth);
                         turnEnded = false;
                         updateDisplay();
                         updateArrowPulse();
+                        updateActionButtons();
                         if (window.isOnlineGame) pushGameStateToFirebase();
                     }
                 );
@@ -3125,7 +3430,7 @@ signInAnonymously(auth);
                 "Score al ingevuld", 
                 "Je hebt je score al ingevuld voor deze beurt.", 
                 true, 
-                "Klik hieronder om door te gaan naar de volgende speler"
+                "Klik hieronder op Volgende Speler of gebruik het kruisje om je score nog aan te passen."
             );
             return;
         }
@@ -3237,6 +3542,7 @@ signInAnonymously(auth);
 
         updateDisplay();
         updateArrowPulse();
+        updateActionButtons();
         closeChoicePopup();
 
         if (window.isOnlineGame) {
@@ -3283,10 +3589,8 @@ signInAnonymously(auth);
 
     function toggleLock(index) {
         if (window.isOnlineGame && !isMyTurn()) {
-            showCustomAlert("Niet jouw beurt", "Alleen de actieve speler mag dobbelstenen vastzetten.");
             return;
         }
-        const p = players[currentPlayerIndex];
         if (isRolling || rollCount === 0 || turnEnded) return;
         
         const d = diceInstances[index];
@@ -3301,28 +3605,40 @@ signInAnonymously(auth);
         }
     }
 
+    // --- TO-DO 4: DYNAMISCHE 3-STATEN KNOP AFHANDELING MET DUBBELE POP-UP LOGICA ---
     function handleRollClick() {
         if (window.isOnlineGame && !isMyTurn()) {
-            showCustomAlert("Niet jouw beurt", "Alleen de actieve speler mag gooien.");
             return;
         }
 
         const p = players[currentPlayerIndex];
+
+        // STAAT 3 ('Volgende ➔'): Score is al ingevuld -> pop-up met 'Volgende Speler ➔' en '×' nooduitgang
         if (p.hasSubmittedThisTurn) {
-            showCustomAlert("Score is al ingevuld", "Je hebt je score al ingediend voor deze beurt.", true, "Klik hieronder om door te gaan naar de volgende speler.");
-            return;
-        }
-        if (rollCount >= 3 || turnEnded) {
-            showCustomAlert("Vul eerst je score in", "Je hebt al 3 keer gegooid! Vul eerst je punten in.");
+            showCustomAlert(
+                "Beurt afronden",
+                "Je score is ingevuld. Klik op 'Volgende Speler ➔' om de beurt door te geven, of sluit met '×' om je score nog te corrigeren.",
+                true,
+                "Gebruik '×' rechtsboven als nooduitgang om je score van deze beurt nog te wissen/aan te passen."
+            );
             return;
         }
 
+        // STAAT 2 ('Scoren'): W: 3/3 (of na 'In') en score NIET ingevuld -> verplichte waarschuwings-pop-up
+        if (rollCount >= 3 || turnEnded) {
+            showCustomAlert(
+                "Vul je score in",
+                "Je worpen zijn op! Kies eerst een vakje op je scorekaart om je score (of streep) in te vullen voordat je verder kunt."
+            );
+            return;
+        }
+
+        // STAAT 1 ('Gooi 🎲' / '2e Worp 🎲' / '3e Worp 🎲'): Gooi de dobbelstenen
         rollAllDice();
     }
 
     function handleIn() {
         if (window.isOnlineGame && !isMyTurn()) return;
-        const p = players[currentPlayerIndex];
         if (isRolling || rollCount === 0 || turnEnded) return;
         endTurn("Ingezet - Kies categorie");
         if (window.isOnlineGame) pushGameStateToFirebase();
@@ -3333,7 +3649,6 @@ signInAnonymously(auth);
         rollCount = 3;
         document.getElementById('worp-count').innerText = "3/3";
         document.getElementById('in-btn').disabled = true;
-        document.getElementById('roll-btn').innerText = "Gooi 🎲";
         
         diceInstances.forEach(d => {
             d.isLocked = true;
@@ -3344,6 +3659,7 @@ signInAnonymously(auth);
             document.getElementById('combo-display').innerText = customText;
         }
         updateArrowPulse();
+        updateActionButtons();
     }
 
     function rollAllDice() {
@@ -3389,8 +3705,7 @@ signInAnonymously(auth);
                 endTurn("🎉 YAHTZEE!");
             } else if (rollCount < 3) {
                 document.getElementById('in-btn').disabled = false;
-                const btn = document.getElementById('roll-btn');
-                btn.innerText = rollCount === 1 ? "2e Worp 🎲" : "3e Worp 🎲";
+                updateActionButtons();
             } else {
                 endTurn("Max worpen - Vul score in!");
             }
@@ -3446,7 +3761,6 @@ signInAnonymously(auth);
 
     function nextPlayerManually() {
         if (window.isOnlineGame && !isMyTurn()) {
-            showCustomAlert("Niet jouw beurt", "Alleen de actieve speler mag de beurt doorgeven.");
             return;
         }
 
@@ -3454,9 +3768,13 @@ signInAnonymously(auth);
         const p = players[currentPlayerIndex];
         
         if (!p.hasSubmittedThisTurn) {
-            showCustomAlert("Nog geen score ingevuld", "Je moet eerst een score invullen voordat je de beurt doorgeeft!");
+            showCustomAlert("Vul je score in", "Je moet eerst een score invullen voordat je de beurt doorgeeft!");
             return;
         }
+
+        // To-Do 6: Vergrendel score van afgelopen beurt definitief bij wissel
+        p.lastActionKey = null;
+        delete p._prevYahtzeeScoreBeforeTurn;
 
         currentPlayerIndex = (currentPlayerIndex + 1) % players.length;
         inspectingPlayerIndex = null; 
@@ -3464,6 +3782,7 @@ signInAnonymously(auth);
         const nextP = players[currentPlayerIndex];
 
         nextP.hasSubmittedThisTurn = false;
+        nextP.lastActionKey = null;
         rollCount = 0;
         turnEnded = false;
         lastActiveRoll = null;
@@ -3479,11 +3798,11 @@ signInAnonymously(auth);
         document.getElementById('combo-display').innerText = "Nieuwe beurt";
         document.getElementById('in-btn').disabled = true;
         document.getElementById('roll-btn').disabled = false;
-        document.getElementById('roll-btn').innerText = "Gooi 🎲";
 
         updateHeaderPlayerName();
         updateDisplay();
         updateArrowPulse();
+        updateActionButtons();
         checkTurnPermissions();
 
         if (window.isOnlineGame) {
@@ -3582,6 +3901,7 @@ signInAnonymously(auth);
         updateHeaderPlayerName();
         buildGrid();
         updateDisplay();
+        updateActionButtons();
         checkTurnPermissions();
         document.getElementById('player-setup-overlay').style.display = 'none';
     }
@@ -3622,6 +3942,7 @@ signInAnonymously(auth);
 
     function openKeypad(colIndex, rowId) {
         if (window.isOnlineGame && !isMyTurn()) return;
+        if (inspectingPlayerIndex !== null && inspectingPlayerIndex !== currentPlayerIndex) return;
         if (colIndex >= numGames) return;
 
         activeTarget = { colIndex, rowId };
@@ -3644,6 +3965,7 @@ signInAnonymously(auth);
 
     function handleOverlayClick(event, overlayId) {
         if (event.target.id === overlayId) {
+            event.stopPropagation();
             if (overlayId === 'keypad-overlay') closeKeypad();
             if (overlayId === 'alpha-overlay') closeAlphaKeypad();
             if (overlayId === 'player-setup-overlay') document.getElementById('player-setup-overlay').style.display = 'none';
@@ -3680,10 +4002,12 @@ signInAnonymously(auth);
             const p = players[currentPlayerIndex];
             const uniqueKey = `c${activeTarget.colIndex}_${activeTarget.rowId}`;
             if (currentInputValue === '' || currentInputValue === 'Tel al je stenen op' || currentInputValue === '0') {
-                delete p.scores[uniqueKey];
-                if (p.lastActionKey === uniqueKey) p.lastActionKey = null;
-                p.hasSubmittedThisTurn = false;
-                turnEnded = false;
+                if (p.lastActionKey === uniqueKey) {
+                    delete p.scores[uniqueKey];
+                    p.lastActionKey = null;
+                    p.hasSubmittedThisTurn = false;
+                    turnEnded = false;
+                }
             } else if (currentInputValue === '/') {
                 p.scores[uniqueKey] = '/';
                 p.lastActionKey = uniqueKey;
@@ -3706,6 +4030,7 @@ signInAnonymously(auth);
 
             updateDisplay();
             updateArrowPulse();
+            updateActionButtons();
             closeKeypad();
 
             if (window.isOnlineGame) {
@@ -3721,6 +4046,7 @@ signInAnonymously(auth);
 
     function calculateTotal(colIndex, totalRowId) {
         if (colIndex >= numGames) return;
+        if (isViewingReadOnlyBoard()) return;
 
         const p = players[currentPlayerIndex];
         const getVal = (rowId) => {
@@ -3866,7 +4192,7 @@ signInAnonymously(auth);
         }
 
         updateGlobalTotal();
-        checkTurnPermissions();
+        updateBoardReadOnlyVisuals();
     }
 
     function updateGlobalTotal() {
@@ -3901,6 +4227,7 @@ signInAnonymously(auth);
             false, 
             "", 
             function() {
+                if (window.clearOnlineSession) window.clearOnlineSession();
                 location.reload();
             }
         );
@@ -4112,9 +4439,8 @@ document.addEventListener('DOMContentLoaded', () => {
     let activePopup = null;
     let resizeDir = '';
     let startX, startY, startW, startH;
-    const EDGE = 12; // Gevoeligheidszone in pixels vanaf de rand
+    const EDGE = 12;
 
-    // Automatische detectie van actieve pop-ups/vensters op het scherm
     function getPopupContainer(target) {
         let el = target.closest('div');
         while (el && el !== document.body) {
@@ -4127,7 +4453,6 @@ document.addEventListener('DOMContentLoaded', () => {
         return null;
     }
 
-    // Toon direct resize-pijltjes als je de rand van WELKE pop-up dan ook nadert
     document.addEventListener('mousemove', (e) => {
         if (activePopup) return;
         const popup = getPopupContainer(e.target);
@@ -4152,7 +4477,6 @@ document.addEventListener('DOMContentLoaded', () => {
         popup.style.cursor = cursor;
     });
 
-    // Start het resizen ALLEEN als je op een rand klikt, zonder de pop-up te vervormen
     document.addEventListener('mousedown', (e) => {
         const popup = getPopupContainer(e.target);
         if (!popup) return;
@@ -4178,16 +4502,12 @@ document.addEventListener('DOMContentLoaded', () => {
             resizeDir = dir;
             startX = e.clientX;
             startY = e.clientY;
-            
-            // Neem de huidige werkelijke afmetingen over als startpunt
             startW = w;
             startH = h;
 
-            // Fixeer de huidige grootte in pixels zodat de pop-up zijn vorm behoudt bij het slepen
             popup.style.width = w + 'px';
             popup.style.height = h + 'px';
 
-            // Als de pop-up gecentreerd was via transform, zet dit om naar vaste coordinaten
             const computed = window.getComputedStyle(popup);
             if (computed.transform && computed.transform !== 'none') {
                 popup.style.left = rect.left + 'px';
@@ -4200,7 +4520,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Pas de grootte geleidelijk aan tijdens het slepen
     window.addEventListener('mousemove', (e) => {
         if (!activePopup) return;
         const dx = e.clientX - startX;
@@ -4237,12 +4556,10 @@ document.addEventListener('DOMContentLoaded', () => {
 <script>
 let pendingChatSender = "";
 
-// Een lijst met 6 heldere, onderscheidende kleuren voor tot wel 6 spelers
 const colorPalette = ['#6ec1ff', '#ff6b6b', '#51cf66', '#fcc419', '#cc5de8', '#ff922b'];
 const playerColors = {};
 let colorIndex = 0;
 
-// Automatische kleurtoewijzing op basis van de ingevoerde naam
 function getPlayerColor(name) {
     if (!name) return '#6ec1ff';
     if (!playerColors[name]) {
@@ -4259,11 +4576,10 @@ function addChatMessage(player, message) {
     let name = "";
     let text = "";
 
-    // Vangt losse aanroepen op (eerst naam, dan pas de tekst)
     if (message === undefined || message === null || message === "") {
         if (!pendingChatSender) {
             pendingChatSender = player;
-            return; // Wacht op het volgende seintje met de tekst
+            return;
         } else {
             name = pendingChatSender;
             text = player;
@@ -4285,7 +4601,6 @@ function addChatMessage(player, message) {
     box.scrollTop = box.scrollHeight;
 }
 </script>
-
 
 </body>
 </html>

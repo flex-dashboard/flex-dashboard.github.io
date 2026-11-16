@@ -728,6 +728,17 @@
     .scroll-arrow-btn {
         display: none !important;
     }
+
+    .score-table-wrapper {
+        max-height: none;
+        overflow-x: visible;
+    }
+
+    table.yatzee-table th, 
+    table.yatzee-table td { 
+        height: calc((100vh - 85px) / 21);
+        min-height: 28px;
+    }
 }
 
 @media (min-width: 481px) and (max-width: 768px) {
@@ -747,9 +758,21 @@
 .score-table-wrapper {
         overflow-x: auto;
         -webkit-overflow-scrolling: touch;
-        max-height: calc(100vh - 200px); /* Of zoals het in het oude script stond */
+        max-height: none !important;
         background: #fff;
         position: relative;
+}
+
+.container {
+        min-height: calc(100vh - 4px);
+        display: flex;
+        flex-direction: column;
+}
+
+table.yatzee-table th, 
+table.yatzee-table td { 
+        height: calc((100vh - 76px) / 21) !important;
+        min-height: 36px;
 }
 
 
@@ -774,13 +797,33 @@
         text-align: center;
     }
 
+    /* Fullscreen onder het huisje linksonder plaatsen op tablet */
+    .header-left button.nav-btn:nth-of-type(1) {
+        position: absolute;
+        left: 0px;
+        top: 30px;
+        font-size: 12px !important;
+        padding: 3px 8px !important;
+        z-index: 10;
+    }
+    .header-left button.nav-btn:nth-of-type(1)::before {
+        content: none !important;
+    }
+
+    /* Huisje links houden en dobbelsteen naar rechts duwen op de bovenste rij */
+    .header-left > a.nav-btn {
+        margin-right: auto;
+    }
+
+    /* Speler, pijl en Nieuw Spel netjes naar het midden op tablet */
     .player-name-container {
         width: 100%;
         display: flex;
-        justify-content: center;
+        justify-content: center !important;
         align-items: center;
-        gap: 12px;
+        gap: 10px;
         margin-top: 6px;
+        padding-right: 0 !important;
     }
 
     .player-name-input {
@@ -1023,11 +1066,11 @@
 
 <div class="container">
     <div class="header-bar">
-        <div class="header-left">
+   <div class="header-left">
             <a href="index.html" class="nav-btn" title="Naar Hoofddashboard">🏠</a>
             <button class="nav-btn" onclick="toggleFullscreen()" title="Volledig Scherm In/Uitschakelen">⛶ Fullscreen</button>
             <button id="toggle-dice-btn" class="nav-btn" onclick="toggleDiceBar()" title="Digitale Dobbelsteen In/Uitschakelen">🎲</button>
-            <button class="nav-btn" onclick="openLobbyPopup()" title="Lobby / Instellingen openen">👥 Lobby</button>
+            <!-- <button class="nav-btn" onclick="openLobbyPopup()" title="Lobby / Instellingen openen">👥 Lobby</button> -->
             <div class="header-title">YATZEE</div>
         </div>
         <div class="player-name-container">
@@ -2675,6 +2718,8 @@ function openKeypad(colIndex, rowId) {
             });
             if (countD1 > 0) {
                 p.scores[`c${c}_totaal_p1`] = sumD1;
+            } else {
+                delete p.scores[`c${c}_totaal_p1`];
             }
             if (countD1 === 6) {
                 let bonusVal = (sumD1 >= 63) ? 35 : 0;
@@ -2682,6 +2727,10 @@ function openKeypad(colIndex, rowId) {
                 let boven = sumD1 + bonusVal;
                 p.scores[`c${c}_totaal_boven`] = boven;
                 p.scores[`c${c}_totaal_d1_copy`] = boven;
+            } else {
+                delete p.scores[`c${c}_bonus`];
+                delete p.scores[`c${c}_totaal_boven`];
+                delete p.scores[`c${c}_totaal_d1_copy`];
             }
 
             let sumD2 = 0, countD2 = 0;
@@ -2694,12 +2743,16 @@ function openKeypad(colIndex, rowId) {
             });
             if (countD2 > 0) {
                 p.scores[`c${c}_totaal_d2`] = sumD2;
+            } else {
+                delete p.scores[`c${c}_totaal_d2`];
             }
 
             let d1Total = p.scores[`c${c}_totaal_d1_copy`];
             let d2Total = p.scores[`c${c}_totaal_d2`];
             if (d1Total !== undefined && d2Total !== undefined) {
                 p.scores[`c${c}_eindtotaal`] = (d1Total === '/' ? 0 : d1Total) + (d2Total === '/' ? 0 : d2Total);
+            } else {
+                delete p.scores[`c${c}_eindtotaal`];
             }
 
             allRows.forEach(row => {
